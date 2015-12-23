@@ -1,15 +1,22 @@
 {
-  "name": "exosphere-service-node",
+  "name": "exoservice-js",
   "version": "0.0.1",
   "description": "Opitionated framework to create Exosphere micro-services in Node.js",
   "main": "lib/exosphere-service.js",
   "scripts": {
+    "build": "build",
     "test": "cucumber-js"
   },
   "author": "Kevin Goslar",
   "license": "ISC",
   "dependencies": {
     "debug": "^2.2.0",
+    "docopt": "^0.6.2",
     "robust-callbacks": "0.0.5"
+  },
+  "devDependencies": {
+    "gulp": "^3.9.0",
+    "gulp-lint-ls": "^0.1.0",
+    "livescript": "^1.4.0"
   }
 }

@@ -1,4 +1,4 @@
-# Runner for Exosphere Services written in JavaScript
+# JavaScript Exosphere Services
 
 This tool provides a simple and opinionated way to create
 Exosphere back-end microservices in Node.js.

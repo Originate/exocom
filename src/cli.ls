@@ -1,6 +1,7 @@
 require! {
-  '../package.json' : {name, version}
+  \chalk : {dim}
   'docopt' : {docopt}
+  '../package.json' : {name, version}
   './service-runner' : {run-service}
 }
 
@@ -13,7 +14,7 @@ Usage:
   #{name} -v | --version
 """
 
-console.log "Exosphere Node.js service runner #{version}\n"
+console.log dim "Exosphere Node.js service runner #{version}\n"
 options = docopt doc, help: no
 switch
 | options['-h'] or options['--help']     =>  console.log doc

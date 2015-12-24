@@ -20,12 +20,5 @@ add-missing-handlers = (handlers) ->
          ..after      ?= -> it!
 
 
-# Verifies that the given root directory contains an Exosphere service
-verify-is-service = (done) ->
-  fs.stat process.cwd!, (err, stats) ->
-    | err?.code is 'ENOENT'   =>  return console.log "Error: '#{root}' is not a directory"
-    | not stats.isDirectory!  =>  return console.log "Please provide the directory in which your service is"
-    done!
-
 
 module.exports = {load-service}

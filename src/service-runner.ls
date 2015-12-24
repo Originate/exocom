@@ -1,4 +1,5 @@
 require! {
+  \chalk : {cyan, dim}
   \fs
   \http
   \nitroglycerin : N
@@ -25,7 +26,8 @@ listen = ({port}) ->
   port ?= 3000
   http.create-server handle-request
       .listen port, '127.0.0.1', ->
-        console.log "online at port #{port}"
+        console.log "online at port #{cyan port}"
+        console.log dim "Ctrl-C to stop"
 
 
 

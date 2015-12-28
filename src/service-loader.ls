@@ -1,6 +1,7 @@
 # Loads a service directory and makes it available as a convenient JS object
 
 require! {
+  \defaults
   \livescript
   \path
 }
@@ -14,10 +15,10 @@ load-service = (done) ->
 # Adds empty handlers to the given handlers object
 # so that we can call them without null checks
 add-missing-handlers = (handlers) ->
-  # each ([it] ?= (cb) -> cb!) <[ before-all before after ]>
-  handlers.before-all ?= -> it!
-         ..before     ?= -> it!
-         ..after      ?= -> it!
+  handlers = defaults handlers,
+    before-all: -> it!
+    before:     -> it!
+    after:      -> it!
 
 
 

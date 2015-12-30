@@ -1,8 +1,8 @@
 require! {
-  \chalk : {cyan, dim, red}
-  \fs
   \http
-  \path
+  'chalk' : {cyan, dim, red}
+  'fs'
+  'path'
   'robust-callbacks': roca
   './service-loader' : {load-service}
 }

@@ -1,17 +1,14 @@
-Feature: Running services
+Feature: Defining the port at which the server listens
 
   As an Exosphere developer
-  I want the Exoservice CLI to run my services in an easy way
-  So that I don't have to deal with all the boilerplate of doing so myself and am productive.
+  I want to be able to run my service at a configurable port
+  So that my services fit seamlessly into the networking setup of my infrastructure.
 
 
   Rules:
-  - call "exoservice-js run" in the directory of an Exosphere service to run it
-  - the default port is 3000
+  - call "exoservice-js run" in the directory of an Exosphere service
+    to run the service at the default port 3000
   - the port can be customized via the "--port" command-line switch
-  - the home page shows an HTML admin view of the service
-  - commands can be sent as a POST request to "/run/<command-name>"
-    with the data payload as the request body
 
   Notes:
   - in production there might be other ways to subscribe to commands
@@ -19,7 +16,7 @@ Feature: Running services
 
 
   Background:
-    Given I am in the "hello-world" application directory
+    Given I am in the "hello-world" service directory
 
 
   Scenario: Running with default options

@@ -1,6 +1,6 @@
 require! {
   'chai' : {expect}
-  'nexpect'
+  'nexpect' : {spawn}
   'path'
   'prelude-ls' : {head, tail}
   'request'
@@ -9,18 +9,18 @@ require! {
 
 module.exports = ->
 
-  @Given /^I am in the "([^"]*)" application directory$/, (@app-name) ->
+  @Given /^I am in the "([^"]*)" service directory$/, (@app-name) ->
 
 
   @When /^executing "([^"]*)"$/, (command, done) ->
-    commands = command.split ' '
-    @process = nexpect.spawn(path.join(process.cwd!, 'bin', head(commands)),
-                             tail(commands),
+    command-parts = command.split ' '
+    @process = spawn(path.join(process.cwd!, 'bin', head(command-parts)),
+                             tail(command-parts),
                              cwd: path.join(process.cwd!, 'features', 'example-apps', @app-name),
                              strip-colors: yes)
-                      .wait 'online at port', -> done!
-                      .run (err) ->
-                        throw err if err
+                 .wait 'online at port', -> done!
+                 .run (err) ->
+                   throw err if err
 
 
   @Then /^the service runs at port (\d+)$/, (port, done) ->

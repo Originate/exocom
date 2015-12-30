@@ -16,9 +16,9 @@ load-service = (done) ->
 # so that we can call them without null checks
 add-missing-handlers = (handlers) ->
   handlers = defaults handlers,
-    before-all: -> it!
-    before:     -> it!
-    after:      -> it!
+    before-all: !-> it!
+    before:     !-> it!
+    after:      !-> it!
 
 
 

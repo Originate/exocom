@@ -26,19 +26,21 @@ module.exports = ->
       ..wait 'online at port', done
 
 
-  @When /^I send it a POST request to "([^"]*)"$/, (path, done) ->
-    request.post url: "http://localhost:3000/#{path}", (err, response, body) ->
+  @When /^sending a POST request to "([^"]*)"$/, (path, done) ->
+    request.post url: "http://localhost:3000#{path}", (err, @response, body) ~>
       expect(err).to.be.falsy
-      expect(response.status-code).to.equal 200
       done!
 
 
   @When /^making a GET request to "([^"]*)"$/, (path, done) ->
     request "http://localhost:3000#{path}", (err, response, @response-body) ~>
       expect(err).to.be.falsy
-      expect(response.status-code).to.equal 200
       done!
 
+
+
+  @Then /^it returns a (\d+) response$/, (expected-status) ->
+    expect(@response.status-code).to.equal parse-int(expected-status, 10)
 
 
   @Then /^its console output contains "([^"]*)"$/, (output, done) ->

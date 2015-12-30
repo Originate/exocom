@@ -33,6 +33,13 @@ module.exports = ->
       done!
 
 
+  @When /^making a GET request to "([^"]*)"$/, (path, done) ->
+    request "http://localhost:3000#{path}", (err, response, @response-body) ~>
+      expect(err).to.be.falsy
+      expect(response.status-code).to.equal 200
+      done!
+
+
 
   @Then /^its console output contains "([^"]*)"$/, (output, done) ->
     @process.wait output, done
@@ -40,3 +47,7 @@ module.exports = ->
 
   @Then /^the service runs at port (\d+)$/, (port, done) ->
     request "http://localhost:#{port}", -> done!
+
+
+  @Then /^the service shows "([^"]*)"$/, (content) ->
+    expect(@response-body).to.contain content

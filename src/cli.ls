@@ -19,5 +19,5 @@ options = docopt doc, help: no
 switch
 | options['-h'] or options['--help']     =>  console.log doc
 | options['-v'] or options['--version']  =>  return
-| options.run                            =>  run-service port: options['<port>']
+| options.run                            =>  run-service port: options['--port']
 | _                                      =>  return console.err 'unhandled option'

@@ -24,6 +24,8 @@ Feature: Running services
 
 
   Scenario: Running at a custom port
+    When starting the "hello-world" example application at port 3001
+    Then the service runs at port 3001
 
 
   Scenario:

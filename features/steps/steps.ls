@@ -18,5 +18,15 @@ module.exports = ->
                         throw err if err
 
 
+  @When /^starting the "([^"]*)" example application at port (\d+)$/, (app-name, port, done) ->
+    @process = nexpect.spawn(path.join(process.cwd!, 'bin', 'exoservice-js'),
+                             ['run', '--port', port],
+                             cwd: path.join(process.cwd!, 'features', 'example-apps', app-name),
+                             strip-colors: yes)
+                      .wait 'online at port', -> done!
+                      .run (err) ->
+                        throw err if err
+
+
   @Then /^the service runs at port (\d+)$/, (port, done) ->
     request "http://localhost:#{port}", done

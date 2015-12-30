@@ -1,7 +1,7 @@
 require! {
   'chalk' : {cyan, dim, red}
+  'express'
   'fs'
-  'http'
   'path'
   'robust-callbacks': roca
   './service-loader' : {load-service}
@@ -16,17 +16,18 @@ run-service = ({port}) ->
       listen {port}
 
 
-handle-request = (req, res) ->
-  res.write-head 200, 'Content-Type': 'text/plain'
-  res.end 'hello world\n'
+handle-homepage = (req, res) ->
+  res.send 'hello world\n'
+
 
 
 listen = ({port}) ->
   port ?= 3000
-  http.create-server handle-request
-      .listen port, '127.0.0.1', ->
-        console.log dim "Ctrl-C to stop"
-        console.log "online at port #{cyan port}"
+  app = express!
+    ..get '/', handle-homepage
+  server = app.listen port, ->
+    console.log dim "Ctrl-C to stop"
+    console.log "online at port #{cyan port}"
 
 
 

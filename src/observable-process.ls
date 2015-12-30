@@ -39,7 +39,10 @@ class ObservableProcess
 
 
   on-close: (err) ~>
-    console.log err unless @killed
+    | @killed  =>  return
+    console.log 'PROCESS CRASHED'
+    console.log @output
+    console.log "\nEXIT CODE: #{err}"
 
 
   # Called when new console output arrives

@@ -1,7 +1,9 @@
 # JavaScript Exosphere Services
 
-This tool provides a simple and opinionated way to create
-Exosphere back-end microservices in Node.js.
+> opinionated framework for creating simple Exosphere back-end microservices in Node.js
+
+[![Circle CI](https://circleci.com/gh/Originate/exoservice-js.svg?style=shield&circle-token=33fbf4fc2b0c128479443c5e8bff337815205ec7)](https://circleci.com/gh/Originate/exoservice-js)
+
 
 
 ## Installation

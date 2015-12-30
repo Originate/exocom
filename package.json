@@ -23,6 +23,7 @@
     "gulp": "^3.9.0",
     "gulp-lint-ls": "^0.1.0",
     "livescript": "^1.4.0",
-    "prelude-ls": "^1.1.2"
+    "prelude-ls": "^1.1.2",
+    "request": "^2.67.0"
   }
 }

@@ -36,7 +36,6 @@ class ObservableProcess
   kill: ->
     @killed = yes
     @process.kill!
-    @process = undefined
 
 
   on-close: (err) ~>

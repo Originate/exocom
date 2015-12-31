@@ -2,9 +2,9 @@
 # as a convenient JS object
 
 require! {
-  \defaults
-  \livescript
-  \path
+  'defaults'
+  'livescript'
+  'path'
 }
 
 load-service = (done) ->

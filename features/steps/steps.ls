@@ -11,7 +11,7 @@ module.exports = ->
   @Given /^a running instance of the "([^"]*)" service$/, (service-name, done) ->
     @process = new ObservableProcess("bin/exoservice-js run",
                                      cwd: path.join(process.cwd!, 'features', 'example-apps', service-name),
-                                     verbose: yes)
+                                     verbose: no)
       ..wait 'online at port', done
 
 
@@ -22,7 +22,7 @@ module.exports = ->
   @When /^executing "([^"]*)"$/, (command, done) ->
     @process = new ObservableProcess("bin/#{command}",
                                      cwd: path.join(process.cwd!, 'features', 'example-apps', @service-name),
-                                     verbose: yes)
+                                     verbose: no)
       ..wait 'online at port', done
 
 

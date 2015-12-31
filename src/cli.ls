@@ -15,11 +15,12 @@ Usage:
   #{name} -h | --help
   #{name} -v | --version
 """
+
 options = docopt doc, help: no
 switch
 | options['-h'] or options['--help']     =>  console.log doc
-| options['-v'] or options['--version']  =>  return
+| options['-v'] or options['--version']  =>
 | options.run                            =>  service-runner port: options['--port'] || 3000, (port) ->
                                                console.log dim "Ctrl-C to stop"
                                                console.log "online at port #{cyan port}"
-| otherwise                              =>  return console.err 'unhandled option'
+| otherwise                              =>  console.err 'unhandled option'

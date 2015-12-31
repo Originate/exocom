@@ -22,18 +22,31 @@ handle-command = (req, res) ->
   | _            =>  handler req, -> res.end!
 
 
+add-routes = (app) ->
+  app.get  '/'            , handle-homepage
+    ..post '/run/:command', handle-command
+
+
+run-before-all = (done) ->
+  service.handlers.before-all (err) ->
+    | err  =>  console.log red "Error in before-all handler: #{err}"
+    | _    =>  done!
+
+
+start-express-app = (port, done) ->
+  app = express!
+  add-routes app
+  app.listen port, done
+
+
 # Runs the service in the given directory
 run-service = ({port}) ->
   load-service (srvc) ->
     service := srvc
-    service.handlers.before-all (err) ->
-      | err  =>  return console.log red "Error in before-all handler: #{err}"
-      app = express!
-        ..get '/', handle-homepage
-        ..post '/run/:command', handle-command
-        ..listen port, ->
-          console.log dim "Ctrl-C to stop"
-          console.log "online at port #{cyan port}"
+    run-before-all ->
+      start-express-app port, ->
+        console.log dim "Ctrl-C to stop"
+        console.log "online at port #{cyan port}"
 
 
 

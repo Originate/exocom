@@ -31,9 +31,9 @@ run-service = ({port}) ->
       app = express!
         ..get '/', handle-homepage
         ..post '/run/:command', handle-command
-      server = app.listen port, ->
-        console.log dim "Ctrl-C to stop"
-        console.log "online at port #{cyan port}"
+        ..listen port, ->
+          console.log dim "Ctrl-C to stop"
+          console.log "online at port #{cyan port}"
 
 
 

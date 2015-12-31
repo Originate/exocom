@@ -44,7 +44,7 @@ run-service = ({port}, done) ->
     service := srvc
     run-before-all ->
       start-express-app port, ->
-        done!
+        done port
 
 
 module.exports = run-service

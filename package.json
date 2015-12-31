@@ -10,6 +10,7 @@
   "author": "Kevin Goslar",
   "license": "ISC",
   "dependencies": {
+    "body-parser": "^1.14.2",
     "chalk": "^1.1.1",
     "debug": "^2.2.0",
     "defaults": "^1.0.3",

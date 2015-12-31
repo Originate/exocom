@@ -11,7 +11,7 @@ module.exports = ->
   @Given /^a running instance of the "([^"]*)" service$/, (service-name, done) ->
     @process = new ObservableProcess("bin/exoservice-js run",
                                      cwd: path.join(process.cwd!, 'features', 'example-apps', service-name),
-                                     verbose: no)
+                                     verbose: yes)
       ..wait 'online at port', done
 
 
@@ -28,6 +28,18 @@ module.exports = ->
 
   @When /^sending a POST request to "([^"]*)"$/, (path, done) ->
     request.post url: "http://localhost:3000#{path}", (err, @response, body) ~>
+      expect(err).to.be.falsy
+      done!
+
+
+  @When /^sending a POST request to "([^"]*)" with the payload$/, (path, payload, done) ->
+    options =
+      method: 'POST'
+      url: "http://localhost:3000#{path}"
+      headers:
+        'content-type': 'application/json'
+      body: payload.trim!
+    request options, (err, @response, body) ~>
       expect(err).to.be.falsy
       done!
 

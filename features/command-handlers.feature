@@ -8,8 +8,9 @@ Feature: Command handlers
   Rules:
   - all handlers are defined in a file "src/server.ls"
   - this file exports a hash in which the key is the command name and the value the handler function
-  - commands can be sent as a POST request to "/run/<command-name>"
+  - commands can be sent to the service as a POST request to "/run/<command-name>"
     with the data payload as the request body
+  - data payload of commands goes in the request body, JSON encoded
 
 
   Background:
@@ -17,9 +18,18 @@ Feature: Command handlers
 
 
   Scenario: Sending a valid command
-    When sending a POST request to "/run/hello"
+    When sending a POST request to "/run/hello_world"
     Then it returns a 200 response
-    And its console output contains "Hello there!"
+    And its console output contains "Hello world!"
+
+
+  Scenario: Sending a command with payload
+    When sending a POST request to "/run/hello_name" with the payload
+      """
+      {"name": "Exosphere"}
+      """
+    And its console output contains "Hello Exosphere!"
+    Then it returns a 200 response
 
 
   Scenario: Sending a non-existing command

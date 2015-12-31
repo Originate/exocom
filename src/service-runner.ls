@@ -1,12 +1,11 @@
 require! {
+  'body-parser'
   'express'
   'fs'
   'path'
   'robust-callbacks': roca
   './service-loader'
 }
-
-
 roca.set-timeout 100
 
 
@@ -41,6 +40,7 @@ run-before-all = (done) ->
 
 start-express-app = (port, done) ->
   app = express!
+    ..use bodyParser.json!
   add-routes app
   app.listen port, done
 

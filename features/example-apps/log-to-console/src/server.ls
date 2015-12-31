@@ -1,7 +1,12 @@
 module.exports =
 
-  hello: (req, done) ->
-    console.log "Hello there!"
+  hello_world: (req, done) ->
+    console.log "Hello world!"
+    done!
+
+
+  hello_name: (req, done) ->
+    console.log "Hello #{req.body.name}!"
     done!
 
 

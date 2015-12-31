@@ -10,6 +10,6 @@ Feature: Service Home Page
 
 
   Scenario: viewing the homepage
-    Given a running instance of the "hello-world" service
+    Given an instance of the "hello-world" service
     When making a GET request to "/"
     Then the service shows "hello world"

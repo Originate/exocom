@@ -14,7 +14,7 @@ Feature: Command handlers
 
 
   Background:
-    Given a running instance of the "log-to-console" service
+    Given an instance of the "log-to-console" service
 
 
   Scenario: Sending a valid command

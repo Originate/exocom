@@ -52,7 +52,7 @@ run-before-all = (done) ->
 
 start-express-app = (port, done) ->
   app = express!
-    ..use bodyParser.json!
+    ..use body-parser.json!
   add-routes app
   app.listen port, done
 

@@ -8,6 +8,7 @@ require! {
 }
 
 
+# the exoservice we are executing
 service = null
 
 
@@ -23,7 +24,6 @@ handle-command = (req, res) ->
 
 # Runs the service in the given directory
 run-service = ({port}) ->
-  port ?= 3000
   load-service (srvc) ->
     service := srvc
     service.handlers.before-all (err) ->

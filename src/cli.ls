@@ -5,6 +5,8 @@ require! {
   './service-runner' : {run-service}
 }
 
+console.log dim "Exosphere Node.js service runner #{version}\n"
+
 doc = """
 Runs Exosphere services written in Node.js.
 
@@ -13,8 +15,6 @@ Usage:
   #{name} -h | --help
   #{name} -v | --version
 """
-
-console.log dim "Exosphere Node.js service runner #{version}\n"
 options = docopt doc, help: no
 switch
 | options['-h'] or options['--help']     =>  console.log doc

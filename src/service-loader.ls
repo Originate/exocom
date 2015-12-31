@@ -1,4 +1,5 @@
-# Loads a service directory and makes it available as a convenient JS object
+# Loads an Exoservice directory and makes it available
+# as a convenient JS object
 
 require! {
   \defaults

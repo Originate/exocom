@@ -9,7 +9,6 @@ require! {
 # Cannot use StreamSnitch because it is buggy and blocks the event queue.
 
 
-
 # Spawns the given command into a separate, parallel process
 # and allows to observe it.
 class ObservableProcess
@@ -29,6 +28,8 @@ class ObservableProcess
     # the output captured so far
     @output = ''
 
+    # whether this process has been officially killed
+    # (to avoid unnecessary panic if it ends)
     @killed = no
 
 
@@ -53,6 +54,8 @@ class ObservableProcess
     @check-searches!
 
 
+  # Looks for new matches in the received text.
+  # Called each time the text or search terms change.
   check-searches: ->
     for i from @searches.length-1 to 0 by -1
       if @output.includes @searches[i].text
@@ -60,6 +63,7 @@ class ObservableProcess
         @searches.splice i, 1
 
 
+  # Calls the given handler when the given text shows up in the output
   wait: (text, handler) ->
     @searches.push {text, handler}
     @check-searches!

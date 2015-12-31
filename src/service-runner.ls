@@ -7,6 +7,9 @@ require! {
 }
 
 
+roca.set-timeout 100
+
+
 # the exoservice we are executing
 service = null
 
@@ -18,7 +21,11 @@ handle-homepage = (req, res) ->
 handle-command = (req, res) ->
   match typeof (handler = service.handlers[req.params.command])
   | 'undefined'  =>  res.status(404).end!
-  | _            =>  handler req, -> res.end!
+  | _            =>  handler req, roca (err) ->
+                       if err
+                         console.log "Problem with command '#{req.params.command}': #{err.message}"
+                         res.status(500)
+                       res.end!
 
 
 add-routes = (app) ->

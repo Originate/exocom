@@ -20,6 +20,7 @@ class ObservableProcess
                      options)
       ..on 'close', @on-close
       ..stdout.on 'data', @on-output
+      ..stderr.on 'data', @on-output
       ..stdout.on 'error', @on-output
 
     # the strings to search for

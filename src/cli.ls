@@ -2,7 +2,7 @@ require! {
   \chalk : {dim}
   'docopt' : {docopt}
   '../package.json' : {name, version}
-  './service-runner' : {run-service}
+  './service-runner'
 }
 
 console.log dim "Exosphere Node.js service runner #{version}\n"
@@ -19,5 +19,5 @@ options = docopt doc, help: no
 switch
 | options['-h'] or options['--help']     =>  console.log doc
 | options['-v'] or options['--version']  =>  return
-| options.run                            =>  run-service port: options['--port'] || 3000
+| options.run                            =>  service-runner port: options['--port'] || 3000
 | _                                      =>  return console.err 'unhandled option'

@@ -37,4 +37,4 @@ run-service = ({port}) ->
 
 
 
-module.exports = {run-service}
+module.exports = run-service

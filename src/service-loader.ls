@@ -23,4 +23,4 @@ add-missing-handlers = (handlers) ->
 
 
 
-module.exports = {load-service}
+module.exports = load-service

@@ -3,7 +3,7 @@ require! {
   'fs'
   'path'
   'robust-callbacks': roca
-  './service-loader' : {load-service}
+  './service-loader'
 }
 
 
@@ -40,7 +40,7 @@ start-express-app = (port, done) ->
 
 # Runs the service in the given directory
 run-service = ({port}, done) ->
-  load-service (srvc) ->
+  service-loader (srvc) ->
     service := srvc
     run-before-all ->
       start-express-app port, ->

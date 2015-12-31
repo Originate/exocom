@@ -1,5 +1,4 @@
 require! {
-  'chalk' : {cyan, dim, red}
   'express'
   'fs'
   'path'
@@ -29,7 +28,7 @@ add-routes = (app) ->
 
 run-before-all = (done) ->
   service.handlers.before-all (err) ->
-    | err  =>  console.log red "Error in before-all handler: #{err}"
+    | err  =>  throw new Error "Error in before-all handler: #{err}"
     | _    =>  done!
 
 
@@ -40,14 +39,12 @@ start-express-app = (port, done) ->
 
 
 # Runs the service in the given directory
-run-service = ({port}) ->
+run-service = ({port}, done) ->
   load-service (srvc) ->
     service := srvc
     run-before-all ->
       start-express-app port, ->
-        console.log dim "Ctrl-C to stop"
-        console.log "online at port #{cyan port}"
-
+        done!
 
 
 module.exports = run-service

@@ -1,5 +1,5 @@
 require! {
-  \chalk : {dim}
+  \chalk : {cyan, dim}
   'docopt' : {docopt}
   '../package.json' : {name, version}
   './service-runner'
@@ -19,5 +19,7 @@ options = docopt doc, help: no
 switch
 | options['-h'] or options['--help']     =>  console.log doc
 | options['-v'] or options['--version']  =>  return
-| options.run                            =>  service-runner port: options['--port'] || 3000
-| _                                      =>  return console.err 'unhandled option'
+| options.run                            =>  service-runner port: options['--port'] || 3000, (port) ->
+                                               console.log dim "Ctrl-C to stop"
+                                               console.log "online at port #{cyan port}"
+| otherwise                              =>  return console.err 'unhandled option'

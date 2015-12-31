@@ -46,4 +46,4 @@ Feature: Command handlers
   Scenario: the handler calls "done" twice
     When sending a POST request to "/run/double_done"
     Then it returns a 200 response
-    And its console output contains "Error: already called"
+    And its console output contains "Problem with command 'double_done': already called"

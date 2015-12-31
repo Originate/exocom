@@ -1,5 +1,6 @@
 require! {
   'body-parser'
+  'chalk' : {green, red}
   'express'
   'fs'
   'path'
@@ -13,23 +14,34 @@ roca.set-timeout 100
 service = null
 
 
-handle-homepage = (req, res) ->
+homepage-controller = (req, res) ->
   res.send 'hello world\n'
 
 
-handle-command = (req, res) ->
-  match typeof (handler = service.handlers[req.params.command])
-  | 'undefined'  =>  res.status(404).end!
-  | _            =>  handler req, roca (err) ->
-                       if err
-                         console.log "Problem with command '#{req.params.command}': #{err.message}"
-                         res.status(500)
-                       res.end!
+command-controller = (req, res) ->
+  command = req.params.command
+  run-command command, service.handlers[command], req, res, ({status, message}) ->
+    match status
+    | 200  =>  console.log green "Processed command '#{command}'"
+    | _    =>  console.log red "Problem with command '#{command}': #{message}"
+    res.status(status).send message
+
+
+# Runs the given command, returns the result asynchronously in all cases,
+# even if an exception is thrown.
+run-command = (command-name, handler, req, res, done) ->
+  | typeof handler is 'undefined'  =>  return done status: 404, message: 'Unknown command'
+  try
+    handler req, roca (err) ->
+      | err  =>  done status: 500, message: err.message
+      | _    =>  done status: 200, message: ''
+  catch
+    done status: 500, message: e.message
 
 
 add-routes = (app) ->
-  app.get  '/'            , handle-homepage
-    ..post '/run/:command', handle-command
+  app.get  '/'            , homepage-controller
+    ..post '/run/:command', command-controller
 
 
 run-before-all = (done) ->

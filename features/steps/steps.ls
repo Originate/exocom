@@ -1,6 +1,6 @@
 require! {
   'chai' : {expect}
-  '../../src/observable-process' : ObservableProcess
+  'observable-process' : ObservableProcess
   'path'
   'request'
 }

@@ -1,6 +1,6 @@
 module.exports =
 
-  hello_world: (req) ->
+  hello_world: ->
     console.log "Hello world!"
 
 

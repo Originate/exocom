@@ -1,20 +1,8 @@
 module.exports =
 
-  hello_world: (req, done) ->
+  hello_world: (req) ->
     console.log "Hello world!"
-    done!
 
 
-  hello_name: (req, done) ->
+  hello_name: (req) ->
     console.log "Hello #{req.body.name}!"
-    done!
-
-
-  forget_done: (req, done) ->
-    console.log "forgetting to call done"
-
-
-  double_done: (req, done) ->
-    console.log "calling done twice"
-    done!
-    done!

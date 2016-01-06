@@ -4,10 +4,8 @@ require! {
   'express'
   'fs'
   'path'
-  'robust-callbacks': roca
   './service-loader'
 }
-roca.set-timeout 100
 
 
 # the exoservice we are executing
@@ -20,23 +18,11 @@ homepage-controller = (req, res) ->
 
 command-controller = (req, res) ->
   command = req.params.command
-  run-command command, service.handlers[command], req, res, ({status, message}) ->
-    match status
-    | 200  =>  console.log green "Processed command '#{command}'"
-    | _    =>  console.log red "Problem with command '#{command}': #{message}"
-    res.status(status).send message
-
-
-# Runs the given command, returns the result asynchronously in all cases,
-# even if an exception is thrown.
-run-command = (command-name, handler, req, res, done) ->
-  | typeof handler is 'undefined'  =>  return done status: 404, message: 'Unknown command'
-  try
-    handler req, roca (err) ->
-      | err  =>  done status: 500, message: err.message
-      | _    =>  done status: 200, message: ''
-  catch
-    done status: 500, message: e.message
+  unless (handler = service.handlers[command])
+    console.log red "unknown command: '#{command}'"
+    return res.status(404).send ''
+  res.status(200).send ''
+  handler req
 
 
 add-routes = (app) ->

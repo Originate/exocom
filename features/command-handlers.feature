@@ -35,15 +35,3 @@ Feature: Command handlers
   Scenario: Sending a non-existing command
     When sending a POST request to "/run/zonk"
     Then it returns a 404 response
-
-
-  Scenario: the handler forgets to call "done"
-    When sending a POST request to "/run/forget_done"
-    Then it returns a 500 response
-    And its console output contains "Problem with command 'forget_done': exceeded timeout"
-
-
-  Scenario: the handler calls "done" twice
-    When sending a POST request to "/run/double_done"
-    Then it returns a 200 response
-    And its console output contains "Problem with command 'double_done': already called"

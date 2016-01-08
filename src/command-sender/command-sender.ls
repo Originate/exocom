@@ -11,8 +11,6 @@ class CommandSender
 
 
   send: (obj, done) ->
-    | typeof obj is 'string'  =>  return @send command: obj, done
-
     debug "sending command '#{obj.command}'"
     options =
       method: 'POST'

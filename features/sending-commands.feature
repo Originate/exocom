@@ -15,7 +15,7 @@ Feature: Sending outgoing commands
   Scenario: sending a stand-alone command
     When I send out a "hello-world" command:
       """
-      exo-relay.send 'hello-world', done
+      exo-relay.send command: 'hello-world', done
       """
     Then it makes the requests:
       """

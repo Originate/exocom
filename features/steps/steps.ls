@@ -10,8 +10,13 @@ require! {
 module.exports = ->
 
 
-  @Given /^a running "([^"]*)" example application$/, (app-name, done) ->
-    example-apps[app-name] done
+  @Given /^an ExoRelay instance: "([^"]*)"$/, (code) ->
+    eval "this.#{code}"
+
+
+
+  @When /^I take it online at port (\d+): "([^"]*)"$/, (port, code, done) ->
+    eval "this.#{code}"
 
 
   @When /^sending a POST request to "([^"]*)"$/, (url, done) ->
@@ -25,5 +30,8 @@ module.exports = ->
 
 
 
-  @Then /^it returns a (\d+) response$/, (expected-status) ->
-    expect(@response.status-code).to.equal parse-int(expected-status, 10)
+  @Then /^it is online at port (\d+)$/, (port, done) ->
+    request "http://localhost:#{port}/run", (err, response, body) ->
+      expect(err).to.be.falsy
+      expect(response.status-code).to.equal 200
+      done!

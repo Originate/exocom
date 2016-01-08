@@ -12,6 +12,7 @@ class HttpListener
   ->
     @app = express!
       ..use body-parser.json!
+      ..get '/run', @_overview-controller
       ..post '/run/:command', @_command-controller
 
 
@@ -34,6 +35,10 @@ class HttpListener
       res.status(200).end!
     else
       res.status(404).end!
+
+
+  _overview-controller: (req, res) ->
+    res.end!
 
 
   # Returns the relevant data from a request

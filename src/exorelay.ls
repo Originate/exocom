@@ -17,9 +17,12 @@ class ExoRelay
       ..on 'command', @_on-incoming-command
 
 
+  close: ->
+    @http-listener.close!
+
+
   listen: (port, done) ->
-    @http-listener.listen port
-    done?!
+    @http-listener.listen port, done
 
 
   register-handler: (command, handler) ->

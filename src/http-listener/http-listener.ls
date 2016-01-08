@@ -16,9 +16,15 @@ class HttpListener
       ..post '/run/:command', @_command-controller
 
 
-  listen: (@port) ->
-    @app.listen port, ->
+  close: ->
+    debug "no longer listening at port #{@port}"
+    @server.close!
+
+
+  listen: (@port, done) ->
+    @server = @app.listen port, ->
       debug "listening for Exosphere commands at port #{port}"
+      done?!
 
 
   on: (event-name, handler) ->

@@ -1,14 +1,25 @@
 require! {
   '../..' : ExoRelay
   'chai' : {expect}
+  'chalk' : {red, green, grey}
+  'diff'
   '../example-apps/example-apps'
   'livescript'
+  'nitroglycerin' : N
+  'portfinder' : {get-port}
+  'record-http' : HttpRecorder
   'request'
-  'wait' : {wait-until}
+  'wait' : {wait, wait-until}
 }
 
 
 module.exports = ->
+
+
+  @Given /^an ExoRelay instance$/, (done) ->
+    get-port N (port) ~>
+      @exo-relay = new ExoRelay exo-messaging-port: @exo-messaging-port
+        ..listen port, done
 
 
   @Given /^an ExoRelay instance: "([^"]*)"$/, (code) ->
@@ -23,6 +34,14 @@ module.exports = ->
   @Given /^I add a command listener:$/, (code) ->
     eval livescript.compile "@#{code}"
 
+
+  @Given /^the Exosphere messaging infrastructure runs at port (\d+)$/, (@exo-messaging-port, done) ->
+    @exo-messaging = new HttpRecorder!listen @exo-messaging-port, done
+
+
+
+  @When /^I send out a "([^"]*)" command: "([^"]*)"$/, (command-name, code, done) ->
+    eval livescript.compile "@#{code}"
 
 
   @When /^I take it online at port (\d+): "([^"]*)"$/, (port, code, done) ->
@@ -45,6 +64,21 @@ module.exports = ->
       expect(err).to.be.falsy
       expect(response.status-code).to.equal 200
       done!
+
+
+  @Then /^it sends out the requests:$/, (calls, done) ->
+    changes = diff.diffJson @exo-messaging.calls, eval(calls)
+    return done! if changes.length is 1
+    console.log red '\nxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+    console.log red 'Mismatching call records!\n'
+    for part in changes
+      color = switch
+      | part.added    =>  green
+      | part.removed  =>  red
+      | _             =>  grey
+      process.stdout.write color part.value
+    console.log red '\n\nxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n'
+    done 'Mismatching recorded calls, see above'
 
 
   @Then /^this command handler gets called$/, ->

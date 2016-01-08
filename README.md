@@ -13,8 +13,8 @@ ExoRelay = require('exorelay');
 // Create an ExoRelay instance
 exoRelay = new ExoRelay();
 
-// bring this relay online at port 3000
-exoRelay.listen(3000);
+// bring this relay online
+exoRelay.listen();
 ```
 
 more details in the [spec](features/listen-at-port.feature)
@@ -34,7 +34,7 @@ exoRelay.registerHandler('add', function(payload, send) {
 With the above setup, you can send commands to the relay, for example:
 
 ```
-curl -X POST -H "Content-Type: application/json" -d '[1, 2]' -i http://localhost:3000/run/add
+curl -X POST -H "Content-Type: application/json" -d '[1, 2]' -i http://localhost:4000/run/add
 ```
 
 more info in the [spec](features/command-handlers.feature)

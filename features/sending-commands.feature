@@ -8,21 +8,54 @@ Feature: Sending outgoing commands
   - call "send" on your ExoRelay instance have it send out the given command
 
 
-  Scenario: sending a valid command
+  Background:
     Given the Exosphere messaging infrastructure runs at port 4000
     And an ExoRelay instance
-    When I send out a "yo" command:
+
+  Scenario: sending a stand-alone command
+    When I send out a "hello-world" command:
       """
-      exo-relay.send 'yo', done
+      exo-relay.send 'hello-world', done
       """
-    Then it sends out the requests:
+    Then it makes the requests:
       """
       [
         {
-          "body": {},
-          "headers": {},
-          "method": "POST",
-          "url": "/send/yo",
+          url: "/send/hello-world",
+          method: "POST",
+          body: {},
+          headers: {
+            accept: "application/json",
+            'content-type': "application/json"
+          }
         }
       ]
       """
+
+
+  Scenario: sending a stand-alone command with data payload
+    When I send out a "yo" command with payload:
+      """
+      exo-relay.send command: 'hello', payload: { name: 'world' }, done
+      """
+    Then it makes the requests:
+      """
+      [
+        {
+          url: "/send/hello",
+          method: "POST",
+          body: {
+            name: 'world'
+          },
+          "headers": {
+            accept: "application/json",
+            "content-type": "application/json"
+          }
+        }
+      ]
+      """
+
+
+
+  Scenario: sending a reply to another command
+

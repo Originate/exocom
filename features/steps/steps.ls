@@ -40,7 +40,7 @@ module.exports = ->
 
 
 
-  @When /^I send out a "([^"]*)" command:$/, (command-name, code, done) ->
+  @When /^I send out a "([^"]*)" command/, (command-name, code, done) ->
     eval livescript.compile "@#{code}"
 
 
@@ -66,7 +66,7 @@ module.exports = ->
       done!
 
 
-  @Then /^it sends out the requests:$/, (calls, done) ->
+  @Then /^it makes the requests:$/, (calls, done) ->
     changes = diff.diffJson @exo-messaging.calls, eval(calls)
     return done! if changes.length is 1
     console.log red '\nxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'

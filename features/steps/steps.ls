@@ -32,10 +32,9 @@ module.exports = ->
 
 
   @Given /^an ExoRelay instance with a handler for command "([^"]*)"$/, (command, done) ->
-    get-port N (port) ~>
-      @exo-relay = new ExoRelay!
-        ..register-handler command, ->
-        ..listen port, done
+    @exo-relay = new ExoRelay!
+      ..register-handler command, ->
+      ..listen done
 
 
   @Given /^I add a command listener:$/, (code) ->
@@ -60,6 +59,10 @@ module.exports = ->
 
 
   @When /^I take it online at port (\d+): "([^"]*)"$/, (port, code, done) ->
+    eval "this.#{code}"
+
+
+  @When /^I take it online at the default port: "([^"]*)"$/, (code, done) ->
     eval "this.#{code}"
 
 

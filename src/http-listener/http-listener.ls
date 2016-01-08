@@ -22,6 +22,8 @@ class HttpListener
 
 
   listen: (@port, done) ->
+    | typeof port is 'function'  =>  return @listen 4000, port
+
     @server = @app.listen port, ->
       debug "listening for Exosphere commands at port #{port}"
       done?!

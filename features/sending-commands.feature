@@ -1,16 +1,19 @@
 Feature: Sending outgoing commands
 
   As an Exoservice developer
-  I want my service to be able to send out Exosphere commands to the Exosphere environment
-  So that it can send replies to incoming commands.
+  I want my service to be able to send commands to other Exosphere services
+  So that it can interact with the rest of the application.
 
   Rules:
   - call "send" on your ExoRelay instance have it send out the given command
+  - provide payload through the named parameter "payload"
+  - refer to the command you are replying in the named "replying-to" parameter
 
 
   Background:
     Given the Exosphere messaging infrastructure runs at port 4000
     And an ExoRelay instance
+
 
   Scenario: sending a stand-alone command
     When I send out a stand-alone command:

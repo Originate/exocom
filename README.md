@@ -56,3 +56,5 @@ More details in the [spec](features/command-handlers.feature)
   ```javascript
   exoRelay.send({ command: "hello", "reply-to": "123", done);
   ```
+
+More details in the [spec](features/sending-commands.feature)

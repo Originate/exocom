@@ -7,7 +7,7 @@ debug = require('debug')('exorelay:command-sender')
 # Subsystem for sending commands out to Exosphere
 class CommandSender
 
-  ({@exo-messaging-port}) ->
+  ({@exo-messaging-port} = {}) ->
 
 
   send: (command, done) ->

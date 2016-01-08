@@ -1,8 +1,8 @@
 Feature: Listening
 
-  As a developer testing services that use ExoRelay locally
-  I want to be able to configure the port at which they listen to incoming commands
-  So that I run more than one service locally while testing.
+  As a developer building Exosphere applications
+  I want to be able to add an Exosphere communication relay to any code base
+  So that I can write Exosphere services without constraints on my code layout.
 
   Rules
   - call "listen" on an ExoRelay instance to take it online

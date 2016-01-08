@@ -11,19 +11,16 @@ class CommandSender
 
 
   send: (obj, done) ->
-    match typeof obj
-    | 'string'  =>  @_send obj, null, done
-    | 'object'  =>  @_send obj.command, obj.payload, done
-    | _         =>  throw new Error "Unknown thing to send: #{obj}"
+    | typeof obj is 'string'  =>  return @send command: obj, done
 
-
-  _send: (command, payload = {}, done) ->
-    debug "sending command '#{command}'"
+    debug "sending command '#{obj.command}'"
     options =
       method: 'POST'
-      url: "http://localhost:#{@exo-messaging-port}/send/#{command}"
+      url: "http://localhost:#{@exo-messaging-port}/send/#{obj.command}"
       json: yes
-      body: payload
+      body: {}
+    options.body.payload = obj.payload if obj.payload
+    options.body['replying-to'] = obj.replying-to if obj.replying-to
     request options, (err, @exo-messaging-response, body) ~>
       done!
 

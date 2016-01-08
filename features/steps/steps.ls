@@ -40,7 +40,7 @@ module.exports = ->
 
 
 
-  @When /^I send out a "([^"]*)" command: "([^"]*)"$/, (command-name, code, done) ->
+  @When /^I send out a "([^"]*)" command:$/, (command-name, code, done) ->
     eval livescript.compile "@#{code}"
 
 

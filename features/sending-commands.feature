@@ -11,7 +11,10 @@ Feature: Sending outgoing commands
   Scenario: sending a valid command
     Given the Exosphere messaging infrastructure runs at port 4000
     And an ExoRelay instance
-    When I send out a "yo" command: "exo-relay.send 'yo', done"
+    When I send out a "yo" command:
+      """
+      exo-relay.send 'yo', done
+      """
     Then it sends out the requests:
       """
       [

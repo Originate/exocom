@@ -22,7 +22,7 @@ Feature: Receiving incoming commands
     Then this command handler gets called
 
 
-  Scenario: registering a already for an already handled command
+  Scenario: registering an already handled command
     Given an ExoRelay instance with a handler for command "hello"
     When I try to add the same command listener
     Then the server crashes with the error "There is already a handler for command 'hello'"

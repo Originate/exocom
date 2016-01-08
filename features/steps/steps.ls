@@ -31,8 +31,23 @@ module.exports = ->
       ..listen port, done
 
 
+  @Given /^an ExoRelay instance with a handler for command "([^"]*)"$/, (command, done) ->
+    get-port N (port) ~>
+      @exo-relay = new ExoRelay!
+        ..register-handler command, ->
+        ..listen port, done
+
+
   @Given /^I add a command listener:$/, (code) ->
     eval livescript.compile "@#{code}"
+
+
+  @When /^I try to add the same command listener$/, ->
+    try
+      @exo-relay.register-handler 'hello', ->
+    catch
+      @crashed = yes
+      @crash-log = e.stack
 
 
   @Given /^the Exosphere messaging infrastructure runs at port (\d+)$/, (@exo-messaging-port, done) ->
@@ -81,5 +96,10 @@ module.exports = ->
     done 'Mismatching recorded calls, see above'
 
 
-  @Then /^this command handler gets called$/, ->
-    wait-until (~> @ran), 10
+  @Then /^the server crashes with the error "([^"]*)"$/, (expected-error) ->
+    expect(@crashed).to.be.true
+    expect(@crash-log).to.include expected-error
+
+
+  @Then /^this command handler gets called$/, (done) ->
+    wait-until (~> @ran), 10, done

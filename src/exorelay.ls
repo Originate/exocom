@@ -1,19 +1,22 @@
 require! {
   './command-manager' : HandlerManager
+  './command-sender' : CommandSender
   './http-listener' : HttpListener
-  'request'
 }
 debug = require('debug')('exorelay')
 
 
 class ExoRelay
 
-  ({@exo-messaging-port}) ->
+  ({exo-messaging-port}) ->
 
-    # manages the request handlers
+    # manages the request handlers for incoming commands
     @command-handler = new HandlerManager!
 
-    # listens to incoming commands
+    # sends outgoing commands to Exosphere
+    @command-sender = new CommandSender {exo-messaging-port}
+
+    # listens to incoming commands from Exosphere
     @http-listener = new HttpListener!
       ..on 'command', @_on-incoming-command
 
@@ -31,12 +34,7 @@ class ExoRelay
 
 
   send: (command, done) ->
-    debug "sending command '#{command}'"
-    options =
-      method: 'POST'
-      url: "http://localhost:#{@exo-messaging-port}/send/#{command}"
-    request options, (err, @exo-messaging-response, body) ~>
-      done!
+    @command-sender.send command, done
 
 
   _on-incoming-command: (command, payload) ~>

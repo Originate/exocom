@@ -2,6 +2,8 @@
 
 > Communication relay between JavaScript code bases and the Exosphere environment
 
+[![Circle CI](https://circleci.com/gh/Originate/exorelay-js.svg?style=shield)](https://circleci.com/gh/Originate/exorelay-js)
+
 
 ## Usage
 

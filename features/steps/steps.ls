@@ -1,7 +1,7 @@
 require! {
   '../..' : ExoRelay
   'chai' : {expect}
-  '../example-apps'
+  '../example-apps/example-apps'
   'livescript'
   'request'
 }

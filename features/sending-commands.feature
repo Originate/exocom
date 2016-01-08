@@ -62,7 +62,30 @@ Feature: Sending outgoing commands
   Scenario: sending a reply to another command
     When I send out a "yo" command with payload:
       """
-      exo-relay.send command: 'hello', replying-to: 123, done
+      exo-relay.send command: 'hello-world', replying-to: 123, done
+      """
+    Then it makes the requests:
+      """
+      [
+        {
+          url: "/send/hello-world",
+          method: "POST",
+          body: {
+            'replying-to': 123,
+          },
+          "headers": {
+            accept: "application/json",
+            "content-type": "application/json"
+          }
+        }
+      ]
+      """
+
+
+  Scenario: sending a reply to another command with payload
+    When I send out a "yo" command with payload:
+      """
+      exo-relay.send command: 'hello', payload: { name: 'world' }, replying-to: 123, done
       """
     Then it makes the requests:
       """
@@ -71,6 +94,9 @@ Feature: Sending outgoing commands
           url: "/send/hello",
           method: "POST",
           body: {
+            payload: {
+              name: 'world'
+            },
             'replying-to': 123,
           },
           "headers": {

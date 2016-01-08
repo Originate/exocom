@@ -9,7 +9,7 @@ require! {
   'portfinder' : {get-port}
   'record-http' : HttpRecorder
   'request'
-  'wait' : {wait, wait-until}
+  'wait' : {wait-until}
 }
 
 
@@ -40,7 +40,7 @@ module.exports = ->
 
 
 
-  @When /^I send out a "([^"]*)" command/, (command-name, code, done) ->
+  @When /^I send out a .* command/, (code, done) ->
     eval livescript.compile "@#{code}"
 
 

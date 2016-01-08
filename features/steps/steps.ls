@@ -14,7 +14,7 @@ module.exports = ->
     example-apps[app-name] done
 
 
-  @When /^making a POST request to "([^"]*)"$/, (url, done) ->
+  @When /^sending a POST request to "([^"]*)"$/, (url, done) ->
     options =
       method: 'POST'
       url: url

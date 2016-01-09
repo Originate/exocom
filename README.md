@@ -2,7 +2,7 @@
 
 > Communication relay between JavaScript code bases and the Exosphere environment
 
-[![Circle CI](https://circleci.com/gh/Originate/exorelay-js.svg?style=shield)](https://circleci.com/gh/Originate/exorelay-js)
+[![Circle CI](https://circleci.com/gh/Originate/exorelay-js.svg?style=shield&circle-token=012a2c6405c702e0a8271de804eed0c4c179772f)](https://circleci.com/gh/Originate/exorelay-js)
 
 
 ## Add an Exorelay to your application

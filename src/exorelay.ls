@@ -33,8 +33,8 @@ class ExoRelay
     @command-handler.register-handler command, handler
 
 
-  send: (command, done) ->
-    @command-sender.send command, done
+  send: (command) ->
+    @command-sender.send command
 
 
   _on-incoming-command: (command, payload) ~>

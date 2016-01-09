@@ -18,7 +18,7 @@ Feature: Sending outgoing commands
   Scenario: sending a stand-alone command
     When I send out a stand-alone command:
       """
-      exo-relay.send command: 'hello-world', done
+      exo-relay.send command: 'hello-world'
       """
     Then it makes the requests:
       """
@@ -39,7 +39,7 @@ Feature: Sending outgoing commands
   Scenario: sending a stand-alone command with data payload
     When I send out a stand-alone command with payload:
       """
-      exo-relay.send command: 'hello', payload: { name: 'world' }, done
+      exo-relay.send command: 'hello', payload: { name: 'world' }
       """
     Then it makes the requests:
       """
@@ -65,7 +65,7 @@ Feature: Sending outgoing commands
   Scenario: sending a reply to another command
     When I send out a command in response to command '123':
       """
-      exo-relay.send command: 'hello-world', replying-to: '123', done
+      exo-relay.send command: 'hello-world', replying-to: '123'
       """
     Then it makes the requests:
       """
@@ -88,7 +88,7 @@ Feature: Sending outgoing commands
   Scenario: sending a reply to another command with payload
     When I send out a command with payload in response to command '123':
       """
-      exo-relay.send command: 'hello', payload: { name: 'world' }, replying-to: 123, done
+      exo-relay.send command: 'hello', payload: { name: 'world' }, replying-to: 123
       """
     Then it makes the requests:
       """

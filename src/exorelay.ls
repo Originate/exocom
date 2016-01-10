@@ -33,12 +33,15 @@ class ExoRelay
     @command-handler.register-handler command, handler
 
 
-  send: (command) ->
-    @command-sender.send command
+  send: (command, reply-handler) ->
+    request-id = @command-sender.send command
+    if reply-handler
+      @command-handler.register-reply-handler request-id, reply-handler
+    request-id
 
 
-  _on-incoming-command: (command, payload) ~>
-    @command-handler.handle-request command, payload
+  _on-incoming-command: (request-data) ~>
+    @command-handler.handle-request request-data
 
 
 

@@ -37,12 +37,17 @@ class HttpListener
 
 
   _command-controller: (req, res) ~>
-    [command, payload] = @_parse-request req
-    debug "received command '#{command}'"
-    if @handle-command command, payload
+    [command, replying-to, payload] = @_parse-request req
+    @_log command, replying-to
+    if @handle-command {command, replying-to, payload}
       res.status(200).end!
     else
       res.status(404).end!
+
+
+  _log: (command, replying-to) ->
+    | replying-to  =>  debug "received command '#{command}' in reply to '#{replying-to}'"
+    | _            =>  debug "received command '#{command}'"
 
 
   _overview-controller: (req, res) ->
@@ -53,7 +58,8 @@ class HttpListener
   _parse-request: (req) ->
     command = req.params.command
     payload = req.body.payload
-    [command, payload]
+    replying-to = req.body['replying-to']
+    [command, replying-to, payload]
 
 
 

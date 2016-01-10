@@ -19,7 +19,7 @@ module.exports = ->
 
 
   @Given /^an ExoRelay instance listening at port (\d+)$/, (port, done) ->
-    @exo-relay = new ExoRelay!
+    @exo-relay = new ExoRelay exo-messaging-port: @exo-messaging-port
       ..listen port, done
 
 

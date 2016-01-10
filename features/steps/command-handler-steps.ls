@@ -1,4 +1,5 @@
 require! {
+  'chai' : {expect}
   'livescript'
   'wait' : {wait-until}
 }
@@ -21,3 +22,7 @@ module.exports = ->
 
   @Then /^this command handler gets called$/, (done) ->
     wait-until (~> @ran), 10, done
+
+
+  @Then /^the reply handler is called, meaning:$/, (code) ->
+    expect(eval livescript.compile(code, bare: yes)).to.be.true

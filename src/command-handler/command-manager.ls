@@ -10,22 +10,25 @@ debug = require('debug')('exorelay:command-manager')
 class HandlerManager
 
   ->
-    @command-handlers = new HandlerRegistry!
+    @command-handlers = new HandlerRegistry 'command-handler'
+    @reply-handlers = new HandlerRegistry 'reply-handler'
 
 
 
   # Handles the given command with the given payload.
   # Return whether the request was handled or not.
-  handle-request: (command, payload) ->
-    if result = @command-handlers.handle command, payload
-      debug "handled command '#{command}'"
-    else
-      debug "no handler found for command '#{command}'"
-    result
+  handle-request: ({command, replying-to, payload}) ->
+    | @reply-handlers.has-handler replying-to  =>  @reply-handlers.handle replying-to, payload
+    | @command-handlers.has-handler command    =>  @command-handlers.handle command, payload
+    | otherwise                                =>  debug "no handler found for command '#{command}' and request-id '#{replying-to}'"
 
 
   register-handler: (command, handler) ->
     @command-handlers.register-handler command, handler
+
+
+  register-reply-handler: (request-id, handler) ->
+    @reply-handlers.register-handler request-id, handler
 
 
   register-handlers: (handlers) ->

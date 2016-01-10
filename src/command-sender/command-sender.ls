@@ -20,8 +20,8 @@ class CommandSender
     options.body.payload = obj.payload if obj.payload
     options.body['replying-to'] = obj.replying-to if obj.replying-to
     request options, (err, response, body) ->
-      if err or response isnt 200
-        debug "Error sending command '#{obj.command}': #{err}"
+      if err or response.status-code isnt 200
+        debug "Error sending command '#{obj.command}': err = '#{err}', response = '#{response.status-code}'"
 
 
 

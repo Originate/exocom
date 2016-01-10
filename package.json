@@ -37,6 +37,7 @@
     "nitroglycerin": "^1.0.3",
     "portfinder": "^0.4.0",
     "record-http": "^0.2.1",
+    "sinon": "^1.17.2",
     "wait": "^0.1.0"
   }
 }

@@ -1,6 +1,8 @@
 require! {
   'chai' : {expect}
   'livescript'
+  'request'
+  'sinon'
   'wait' : {wait-until}
 }
 
@@ -15,6 +17,11 @@ module.exports = ->
     eval livescript.compile(code)
 
 
+  @Given /^I register a handler for the "([^"]*)" command$/, (command-name) ->
+    @hello-handler = sinon.stub!
+    @exo-relay.register-handler command-name, @hello-handler
+
+
 
   @When /^I try to add the same command listener$/, ->
     try
@@ -23,6 +30,15 @@ module.exports = ->
       @crashed = yes
       @crash-log = e.stack
 
+
+  @When /^receiving the request:$/, (request-data, done) ->
+    request-data = JSON.parse request-data
+    request-data.json = yes
+    request request-data, done
+
+
+  @Then /^it calls the registered "([^"]*)" handler$/, (arg1, done) ->
+    wait-until (~> @hello-handler.called is yes), done
 
 
   @Then /^the instance has a handler for the command "([^"]*)"$/, (handler1) ->

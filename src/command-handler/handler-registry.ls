@@ -41,7 +41,7 @@ class HandlerRegistry
 
   register-handlers: (handlers) ->
     for request-id, handler of handlers
-      @register request-id, handler
+      @register-handler request-id, handler
 
 
 

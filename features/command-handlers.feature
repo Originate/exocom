@@ -15,14 +15,25 @@ Feature: Receiving incoming commands
     Given an ExoRelay instance listening at port 4000
     And I add a command listener:
       """
-      exo-relay.register-handler 'hello', ~>
+      @exo-relay.register-handler 'hello', ~>
         @ran = yes
       """
-    When sending a POST request to "http://localhost:4000/run/hello"
-    Then this command handler gets called
+    Then the instance has a handler for the command "hello"
 
 
   Scenario: registering an already handled command
     Given an ExoRelay instance with a handler for command "hello"
     When I try to add the same command listener
     Then the server crashes with the error "There is already a handler for command 'hello'"
+
+
+  Scenario: registering many handlers
+    Given an ExoRelay instance listening at port 4000
+    And I add many listeners at once:
+      """
+      handlers =
+        command1: ->
+        command2: ->
+      @exo-relay.register-handlers handlers
+      """
+    Then the instance has handlers for the commands "command1" and "command2"

@@ -23,16 +23,20 @@ class HandlerManager
     | otherwise                                =>  debug "no handler found for command '#{command}' and request-id '#{replying-to}'"
 
 
+  has-handler: (command) ->
+    @command-handlers.has-handler command
+
+
   register-handler: (command, handler) ->
     @command-handlers.register-handler command, handler
 
 
-  register-reply-handler: (request-id, handler) ->
-    @reply-handlers.register-handler request-id, handler
-
-
   register-handlers: (handlers) ->
     @command-handlers.register-handlers handlers
+
+
+  register-reply-handler: (request-id, handler) ->
+    @reply-handlers.register-handler request-id, handler
 
 
 

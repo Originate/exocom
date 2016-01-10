@@ -25,12 +25,20 @@ class ExoRelay
     @http-listener.close!
 
 
+  has-handler: (command) ->
+    @command-handler.has-handler command
+
+
   listen: (port, done) ->
     @http-listener.listen port, done
 
 
   register-handler: (command, handler) ->
     @command-handler.register-handler command, handler
+
+
+  register-handlers: (handlers) ->
+    @command-handler.register-handlers handlers
 
 
   send: (command, reply-handler) ->

@@ -8,7 +8,12 @@ require! {
 module.exports = ->
 
   @Given /^I add a command listener:$/, (code) ->
-    eval livescript.compile "@#{code}"
+    eval livescript.compile(code)
+
+
+  @Given /^I add many listeners at once:$/, (code) ->
+    eval livescript.compile(code)
+
 
 
   @When /^I try to add the same command listener$/, ->
@@ -18,6 +23,15 @@ module.exports = ->
       @crashed = yes
       @crash-log = e.stack
 
+
+
+  @Then /^the instance has a handler for the command "([^"]*)"$/, (handler1) ->
+    expect(@exo-relay.has-handler handler1).to.be.true
+
+
+  @Then /^the instance has handlers for the commands "([^"]*)" and "([^"]*)"$/, (handler1, handler2) ->
+    expect(@exo-relay.has-handler handler1).to.be.true
+    expect(@exo-relay.has-handler handler2).to.be.true
 
 
   @Then /^this command handler gets called$/, (done) ->

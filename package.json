@@ -4,7 +4,11 @@
   "description": "Communication relay between JavaScript code bases and the Exosphere environment",
   "main": "lib/exorelay.js",
   "scripts": {
-    "test": "cucumber-js"
+    "postpublish": "git push && git push --tags",
+    "prepublish": "bin/build",
+    "preversion": "npm test && npm run update",
+    "test": "cucumber-js",
+    "update": "david update"
   },
   "repository": {
     "type": "git",

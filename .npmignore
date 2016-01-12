@@ -1,6 +1,5 @@
 bin/
 circle.yml
 cucumber.js
-cucumber/
 features/
 src/

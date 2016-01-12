@@ -11,7 +11,7 @@ please use [ExoService-JS](https://github.com/Originate/exoservice-js),
 which uses this library internally.
 
 
-## Add an Exorelay to your application
+## Add an ExoRelay to your application
 
 ```javascript
 ExoRelay = require("exorelay");
@@ -60,8 +60,8 @@ Each command has a unique _command-id_.
 Other commands can reference the id of another command
 to indicate that they are a reply to that command.
 
-As an example, let's send out a "users/create" command and handle
-the reply to it that the "users" service will send out:
+As an example, let's send out a "users/create" command,
+and handle the reply to it (which the "users" service will send out):
 
 ```javascript
 exoRelay.send({ command: "users/create", payload: { name: "Jean-Luc" } }, function(createdUser) {

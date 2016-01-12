@@ -1,4 +1,4 @@
-# Runtime for JavaScript Exoservices
+# JavaScript Exoservice Framework
 
 > opinionated framework for creating simple Exosphere back-end microservices in Node.js
 

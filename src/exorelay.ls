@@ -1,6 +1,7 @@
 require! {
   './command-manager' : HandlerManager
   './command-sender' : CommandSender
+  'rails-delegate' : delegate
   './http-listener' : HttpListener
 }
 debug = require('debug')('exorelay')
@@ -20,25 +21,8 @@ class ExoRelay
     @http-listener = new HttpListener!
       ..on 'command', @_on-incoming-command
 
-
-  close: ->
-    @http-listener.close!
-
-
-  has-handler: (command) ->
-    @command-handler.has-handler command
-
-
-  listen: (port, done) ->
-    @http-listener.listen port, done
-
-
-  register-handler: (command, handler) ->
-    @command-handler.register-handler command, handler
-
-
-  register-handlers: (handlers) ->
-    @command-handler.register-handlers handlers
+    delegate \close \listen from: @, to: @http-listener
+    delegate \hasHandler \registerHandler \registerHandlers from: @, to: @command-handler
 
 
   send: (command, reply-handler) ->

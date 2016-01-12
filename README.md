@@ -4,6 +4,11 @@
 
 [![Circle CI](https://circleci.com/gh/Originate/exorelay-js.svg?style=shield&circle-token=012a2c6405c702e0a8271de804eed0c4c179772f)](https://circleci.com/gh/Originate/exorelay-js)
 
+This library allows you to add Exosphere communication to any Node.js codebase.
+This is most useful for your web or API server.
+If you want to write a micro-service in Node,
+please use [ExoService-JS](https://github.com/Originate/exoservice-js).
+
 
 ## Add an Exorelay to your application
 
@@ -14,7 +19,7 @@ exoRelay = new ExoRelay();
 exoRelay.listen();
 ```
 
-More details in the [spec](features/listening.feature)
+More details and how to customize the port is described in the [spec](features/listen.feature)
 
 
 ## Handle incoming commands
@@ -22,39 +27,48 @@ More details in the [spec](features/listening.feature)
 Register a handler for incoming commands:
 
 ```javascript
-// register handlers for commands
-exoRelay.registerHandler("hello-world", function() {
-  // handle the command here ...
+exoRelay.registerHandler("hello", function(payload) {
+  console.log("Hello " + payload.name);
 });
 ```
 
 Test this setup:
 
-```
-curl -X POST -i http://localhost:4000/run/hello-world
+```bash
+$ curl -d '{"name": "Joe"}' http://localhost:4000/run/hello_name
 ```
 
-More details in the [spec](features/command-handlers.feature)
+More details in the [spec](features/receiving-commands.feature)
 
 
 ## Send outgoing commands
 
-* send an outgoing command:
+Send a command to Exosphere:
 
-  ```javascript
-  exoRelay.send({command: "hello-world"}, done);
-  ```
+```javascript
+exoRelay.send({ command: "hello", payload: { name: "world" }}, done);
+```
 
-* attach payload to the sent command:
+More details in the [spec](features/sending-commands.feature)
 
-  ```javascript
-  exoRelay.send({ command: "hello", payload: { name: "world" }}, done);
-  ```
 
-* mention that this command is a reply to a previously received command with id "123":
+## Replies to commands
 
-  ```javascript
-  exoRelay.send({ command: "hello", "reply-to": "123", done);
-  ```
+Commands can be replies to other commands.
+Each command has a unique _command-id_.
+Other commands can reference the id of another command
+to indicate that they are a reply to that command.
+
+As an example, let's send out a "users/create" command and handle
+the reply to it that the "users" service will send out:
+
+```javascript
+exoRelay.send({ command: "users/create", payload: { name: "Jean-Luc" } }, function(createdUser) {
+  console.log("user " + createdUser.id + " created");
+});
+```
+
+The "users" service would be implemented using the
+[ExoService-JS tool](https://github.com/Originate/exoservice-js).
 
 More details in the [spec](features/sending-commands.feature)

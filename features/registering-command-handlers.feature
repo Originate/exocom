@@ -12,11 +12,10 @@ Feature: Receiving incoming commands
 
 
   Scenario: registering a handler
-    Given an ExoRelay instance listening at port 4000
-    And I add a command listener:
+    Given an ExoRelay instance
+    When I add a command listener:
       """
-      @exo-relay.register-handler 'hello', ~>
-        @ran = yes
+      @exo-relay.register-handler 'hello', ->
       """
     Then the instance has a handler for the command "hello"
 
@@ -28,8 +27,8 @@ Feature: Receiving incoming commands
 
 
   Scenario: registering many handlers
-    Given an ExoRelay instance listening at port 4000
-    And I add many listeners at once:
+    Given an ExoRelay instance
+    When I add many listeners at once:
       """
       handlers =
         command1: ->

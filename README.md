@@ -17,7 +17,7 @@ npm install -g exoservice-js
 
 1. create an empty service scaffold
   * `yo exoservice <your service name>`
-  * or: `exoservice-js new <your service name>`
+  * later: `exo-js new <your service name>`
 
 1. TDD the service
   * end-to-end tests go into `features`
@@ -30,7 +30,7 @@ npm install -g exoservice-js
   * your command handlers are key-value pairs in the exported data structure,
     where the key is the command name and the value the handler function
 
-1. start your server through `exoservice-js run`
+1. start your server through `exo-js run`
 
 
 ## Development

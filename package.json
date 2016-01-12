@@ -4,8 +4,12 @@
   "description": "Opitionated framework to create Exosphere micro-services in Node.js",
   "main": "lib/exosphere-service.js",
   "scripts": {
+    "postpublish": "git push && git push --tags",
+    "prepublish": "bin/build",
+    "preversion": "npm test && npm run update",
     "build": "build",
-    "test": "cucumber-js"
+    "test": "cucumber-js",
+    "update": "david update"
   },
   "author": "Kevin Goslar",
   "license": "ISC",
@@ -21,6 +25,7 @@
   "devDependencies": {
     "chai": "^3.4.1",
     "cucumber": "^0.9.2",
+    "david": "^7.0.0",
     "express": "^4.13.3",
     "gulp": "^3.9.0",
     "gulp-lint-ls": "^0.1.0",

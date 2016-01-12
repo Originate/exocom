@@ -6,7 +6,7 @@ Feature: Defining the port at which the server listens
 
 
   Rules:
-  - call "exoservice-js run" in the directory of an Exosphere service
+  - call "exo-js run" in the directory of an Exosphere service
     to run the service at the default port 3000
   - the port can be customized via the "--port" command-line switch
 
@@ -20,11 +20,11 @@ Feature: Defining the port at which the server listens
 
 
   Scenario: Running with default options
-    When executing "exoservice-js run"
+    When executing "exo-js run"
     Then the service runs at port 3000
 
 
   Scenario: Running at a custom port
-    When executing "exoservice-js run --port 3001"
+    When executing "exo-js run --port 3001"
     Then the service runs at port 3001
 

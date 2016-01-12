@@ -9,7 +9,7 @@ require! {
 module.exports = ->
 
   @Given /^an instance of the "([^"]*)" service$/, (service-name, done) ->
-    @process = new ObservableProcess("bin/exoservice-js run",
+    @process = new ObservableProcess("bin/exo-js run",
                                      cwd: path.join(process.cwd!, 'features', 'example-apps', service-name),
                                      verbose: yes)
       ..wait 'online at port', done

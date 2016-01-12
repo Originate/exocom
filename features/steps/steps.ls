@@ -9,10 +9,10 @@ require! {
 module.exports = ->
 
   @Given /^an instance of the "([^"]*)" service$/, (service-name, done) ->
-    @process = new ObservableProcess("bin/exo-js run",
+    @process = new ObservableProcess("bin/exo-js run --port 4000",
                                      cwd: path.join(process.cwd!, 'features', 'example-apps', service-name),
                                      verbose: yes)
-      ..wait 'online at port', done
+      ..wait 'online at port 4000', done
 
 
   @Given /^I am in the "([^"]*)" service directory$/, (@service-name) ->
@@ -27,7 +27,7 @@ module.exports = ->
 
 
   @When /^sending a POST request to "([^"]*)"$/, (path, done) ->
-    request.post url: "http://localhost:3000#{path}", (err, @response, body) ~>
+    request.post url: "http://localhost:4000#{path}", (err, @response, body) ~>
       expect(err).to.be.falsy
       done!
 
@@ -35,7 +35,7 @@ module.exports = ->
   @When /^sending a POST request to "([^"]*)" with the payload$/, (path, payload, done) ->
     options =
       method: 'POST'
-      url: "http://localhost:3000#{path}"
+      url: "http://localhost:4000#{path}"
       headers:
         'content-type': 'application/json'
       body: payload.trim!
@@ -45,7 +45,7 @@ module.exports = ->
 
 
   @When /^making a GET request to "([^"]*)"$/, (path, done) ->
-    request "http://localhost:3000#{path}", (err, response, @response-body) ~>
+    request "http://localhost:4000#{path}", (err, response, @response-body) ~>
       expect(err).to.be.falsy
       done!
 

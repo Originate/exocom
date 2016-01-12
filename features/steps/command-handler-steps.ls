@@ -38,7 +38,17 @@ module.exports = ->
 
 
   @Then /^it calls the registered "([^"]*)" handler$/, (arg1, done) ->
-    wait-until (~> @hello-handler.called is yes), done
+    wait-until (~> @hello-handler.called is yes), ~>
+      expect(@hello-handler.calledOnce).to.be.true
+      done!
+
+
+  @Then /^it calls the registered "([^"]*)" handler with:$/, (command-name, table, done) ->
+    wait-until (~> @hello-handler.called is yes), ~>
+      expect(@hello-handler.calledOnce).to.be.true
+      eval livescript.compile("expected-args = {#{table.rows-hash!PAYLOAD}}", bare: yes, header: no)
+      expect(@hello-handler.first-call.args).to.eql [expected-args]
+      done!
 
 
   @Then /^the instance has a handler for the command "([^"]*)"$/, (handler1) ->

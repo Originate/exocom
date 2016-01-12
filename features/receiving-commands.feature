@@ -11,10 +11,10 @@ Feature: Receiving commands
 
   Background:
     Given an ExoRelay instance listening at port 4000
+    And I register a handler for the "hello" command
 
 
   Scenario: basic incoming command
-    Given I register a handler for the "hello" command
     When receiving the request:
       """
       {
@@ -30,16 +30,20 @@ Feature: Receiving commands
 
 
   Scenario: incoming command with a payload
-    Given I register a handler for the "hello" command
     When receiving the request:
       """
       {
         "url": "http://localhost:4000/run/hello",
         "method": "POST",
-        "body": {},
+        "body": {
+          "payload": {
+            "name": "ExoRelay"
+          }
+        },
         "headers": {
           "content-type": "application/json"
         }
       }
       """
-    Then it calls the registered "hello" handler
+      Then it calls the registered "hello" handler with:
+        | PAYLOAD | name: 'ExoRelay' |

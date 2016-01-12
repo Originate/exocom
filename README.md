@@ -5,9 +5,10 @@
 [![Circle CI](https://circleci.com/gh/Originate/exorelay-js.svg?style=shield&circle-token=012a2c6405c702e0a8271de804eed0c4c179772f)](https://circleci.com/gh/Originate/exorelay-js)
 
 This library allows you to add Exosphere communication to any Node.js codebase.
-This is most useful for your web or API server.
+It is intended to be used in your web or API server.
 If you want to write a micro-service in Node,
-please use [ExoService-JS](https://github.com/Originate/exoservice-js).
+please use [ExoService-JS](https://github.com/Originate/exoservice-js),
+which uses this library internally.
 
 
 ## Add an Exorelay to your application

@@ -28,8 +28,8 @@ Feature: Command handlers
       """
       {"name": "Exosphere"}
       """
-    And its console output contains "Hello Exosphere!"
     Then it returns a 200 response
+    Then its console output contains "Hello Exosphere!"
 
 
   Scenario: Sending a non-existing command

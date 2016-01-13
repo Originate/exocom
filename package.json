@@ -1,6 +1,6 @@
 {
   "name": "exoservice-js",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Opitionated framework to create Exosphere micro-services in Node.js",
   "main": "lib/exosphere-service.js",
   "scripts": {

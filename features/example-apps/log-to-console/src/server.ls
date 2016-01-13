@@ -1,8 +1,8 @@
 module.exports =
 
-  hello_world: ->
+  'hello-world': ->
     console.log "Hello world!"
 
 
-  hello_name: (req) ->
-    console.log "Hello #{req.body.name}!"
+  'hello-name': (payload) ->
+    console.log "Hello #{payload.name}!"

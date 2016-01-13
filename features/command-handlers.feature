@@ -14,22 +14,39 @@ Feature: Command handlers
 
 
   Background:
-    Given an instance of the "log-to-console" service
+    Given an instance of the "log-to-console" service listening on port 4000
 
 
-  Scenario: Sending a valid command
-    When sending a POST request to "/run/hello_world"
+  Scenario: Sending a command
+    When sending the request:
+      """
+      {
+        "url": "http://localhost:4000/run/hello-world",
+        "method": "POST"
+      }
+      """
     Then it returns a 200 response
     And its console output contains "Hello world!"
 
 
   Scenario: Sending a command with payload
-    When sending a POST request to "/run/hello_name" with the payload
+    When sending the request:
       """
-      {"name": "Exosphere"}
+      {
+        "url": "http://localhost:4000/run/hello-name",
+        "method": "POST",
+        "body": {
+          "payload": {
+            "name": "ExoRelay"
+          }
+        },
+        "headers": {
+          "content-type": "application/json"
+        }
+      }
       """
     Then it returns a 200 response
-    Then its console output contains "Hello Exosphere!"
+    And its console output contains "Hello ExoRelay!"
 
 
   Scenario: Sending a non-existing command

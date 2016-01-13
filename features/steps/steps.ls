@@ -8,10 +8,10 @@ require! {
 
 module.exports = ->
 
-  @Given /^an instance of the "([^"]*)" service$/, (service-name, done) ->
-    @process = new ObservableProcess("bin/exo-js run --port 4000",
+  @Given /^an instance of the "([^"]*)" service listening on port (\d+)$/, (service-name, port, done) ->
+    @process = new ObservableProcess("bin/exo-js run --port #{port}",
                                      cwd: path.join(process.cwd!, 'features', 'example-apps', service-name),
-                                     verbose: yes)
+                                     verbose: no)
       ..wait 'online at port 4000', done
 
 
@@ -32,21 +32,11 @@ module.exports = ->
       done!
 
 
-  @When /^sending a POST request to "([^"]*)" with the payload$/, (path, payload, done) ->
-    options =
-      method: 'POST'
-      url: "http://localhost:4000#{path}"
-      headers:
-        'content-type': 'application/json'
-      body: payload.trim!
+  @When /^sending the request:$/, (request-data, done) ->
+    options = JSON.parse request-data
+    options.json = yes
     request options, (err, @response, body) ~>
-      expect(err).to.be.falsy
-      done!
-
-
-  @When /^making a GET request to "([^"]*)"$/, (path, done) ->
-    request "http://localhost:4000#{path}", (err, response, @response-body) ~>
-      expect(err).to.be.falsy
+      expect(err).to.be.null
       done!
 
 
@@ -61,7 +51,3 @@ module.exports = ->
 
   @Then /^the service runs at port (\d+)$/, (port, done) ->
     request "http://localhost:#{port}", -> done!
-
-
-  @Then /^the service shows "([^"]*)"$/, (content) ->
-    expect(@response-body).to.contain content

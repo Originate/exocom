@@ -1,0 +1,19 @@
+{
+  "name": "exocomm-dev",
+  "version": "0.0.1",
+  "description": "Development version of the Exosphere communication platform",
+  "main": "lib/exocomm.js",
+  "scripts": {
+    "test": "cucumber-js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Originate/exocomm-dev.git"
+  },
+  "author": "Kevin Goslar",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Originate/exocomm-dev/issues"
+  },
+  "homepage": "https://github.com/Originate/exocomm-dev#readme"
+}

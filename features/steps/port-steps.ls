@@ -7,8 +7,8 @@ require! {
 
 module.exports = ->
 
-  @Given /^the Exosphere messaging infrastructure runs at port (\d+)$/, (@exo-messaging-port, done) ->
-    @exo-messaging = new HttpRecorder!listen @exo-messaging-port, done
+  @Given /^ExoComm runs at port (\d+)$/, (@exocomm-port, done) ->
+    @exo-messaging = new HttpRecorder!listen @exocomm-port, done
 
 
 

@@ -10,7 +10,7 @@ module.exports = ->
 
   @Given /^an ExoRelay instance$/, (done) ->
     get-port N (port) ~>
-      @exo-relay = new ExoRelay exo-messaging-port: @exo-messaging-port
+      @exo-relay = new ExoRelay exocomm-port: @exocomm-port
         ..listen port, done
 
 
@@ -19,7 +19,7 @@ module.exports = ->
 
 
   @Given /^an ExoRelay instance listening at port (\d+)$/, (port, done) ->
-    @exo-relay = new ExoRelay exo-messaging-port: @exo-messaging-port
+    @exo-relay = new ExoRelay exocomm-port: @exocomm-port
       ..listen port, done
 
 

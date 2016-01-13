@@ -11,7 +11,7 @@ Feature: Sending outgoing commands
 
 
   Background:
-    Given the Exosphere messaging infrastructure runs at port 4000
+    Given ExoComm runs at port 4000
     And an ExoRelay instance listening at port 4001
 
 

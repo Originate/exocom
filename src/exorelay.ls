@@ -9,13 +9,13 @@ debug = require('debug')('exorelay')
 
 class ExoRelay
 
-  ({exo-messaging-port} = {}) ->
+  ({exocomm-port} = {}) ->
 
     # manages the request handlers for incoming commands
     @command-handler = new HandlerManager!
 
     # sends outgoing commands to Exosphere
-    @command-sender = new CommandSender {exo-messaging-port}
+    @command-sender = new CommandSender {exocomm-port}
 
     # listens to incoming commands from Exosphere
     @http-listener = new HttpListener!

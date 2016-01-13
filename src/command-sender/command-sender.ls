@@ -8,14 +8,14 @@ debug = require('debug')('exorelay:command-sender')
 # Subsystem for sending commands out to Exosphere
 class CommandSender
 
-  ({@exo-messaging-port} = {}) ->
+  ({@exocomm-port} = {}) ->
 
 
   send: (obj) ->
     debug "sending command '#{obj.command}'"
     options =
       method: 'POST'
-      url: "http://localhost:#{@exo-messaging-port}/send/#{obj.command}"
+      url: "http://localhost:#{@exocomm-port}/send/#{obj.command}"
       json: yes
       body:
         'request-id': uuid.v1!

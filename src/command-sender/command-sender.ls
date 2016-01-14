@@ -25,6 +25,10 @@ class CommandSender
 
 
   send: (command, payload = {}, options = {}) ->
+    | !command                      =>  throw new Error 'ExoRelay cannot send empty commands'
+    | typeof command isnt 'string'  =>  throw new Error 'ExoRelay can only send string commands'
+    | typeof payload is 'function'  =>  throw new Error 'ExoRelay cannot send functions as payload'
+
     @_log command, options
     request-data =
       method: 'POST'

@@ -54,6 +54,13 @@ module.exports = ->
       done!
 
 
+  @When /^trying to send/, (code) ->
+    try
+      eval livescript.compile "@#{code}", bare: yes, header: no
+    catch
+      @error = e.message
+
+
 
   @Then /^ExoRelay makes the request:$/, (request-data, done) ->
     # Wait until we get some call data, then wait another 50ms to let all the request data fill in

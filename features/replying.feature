@@ -5,7 +5,7 @@ Feature: Replying to incoming commands
   So that I can write responsive ExoServices.
 
   Rules:
-  - if you send a command and want to handle any replies you receive for it,
+  - if you send a command and want to handle incoming replies for it,
     provide the reply handler as the second argument to "ExoRelay#send"
   - if you receive a command and want to send a reply for it,
     call the "reply" argument given to your command handler
@@ -37,6 +37,15 @@ Feature: Replying to incoming commands
         "content-type": "application/json"
       """
     Then the reply handler runs and in this example calls my "@print" method with "created user 456"
+
+
+  Scenario: providing a non-callable object as the reply handler
+    When trying to send a command with a non-callable reply handler:
+      """
+      exo-relay.send 'users.create', {name: 'Will Riker'}, 'zonk'
+      """
+    Then ExoRelay throws an exception with the message "The reply handler given to ExoRelay#send must be a function"
+
 
 
   Scenario: sending replies to incoming commands

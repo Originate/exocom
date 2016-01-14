@@ -26,6 +26,8 @@ class ExoRelay
 
 
   send: (command, payload, reply-handler) ->
+    | reply-handler and typeof reply-handler isnt 'function'  =>  throw new Error 'The reply handler given to ExoRelay#send must be a function'
+
     request-id = @command-sender.send command, payload
     if reply-handler
       @command-handler.register-reply-handler request-id, reply-handler

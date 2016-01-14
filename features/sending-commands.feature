@@ -6,8 +6,8 @@ Feature: Sending outgoing commands
 
   Rules:
   - call "send" on your ExoRelay instance have it send out the given command
-  - provide payload through the named parameter "payload"
-  - refer to the command you are replying in the named "replying-to" parameter
+  - provide the command to send as the first parameter
+  - provide payload for the command as the second parameter
 
 
   Background:
@@ -15,7 +15,24 @@ Feature: Sending outgoing commands
     And an ExoRelay instance called "exo-relay" listening at port 4001
 
 
-  Scenario: sending a command
+  Scenario: sending a command without payload
+    When sending the "hello" command:
+      """
+      exo-relay.send 'hello-world'
+      """
+    Then ExoRelay makes the request:
+      """
+      url: 'http://localhost:4000/send/hello-world'
+      method: 'POST'
+      body:
+        requestId: '<%= request_uuid %>'
+      headers:
+        accept: 'application/json'
+        'content-type': 'application/json'
+      """
+
+
+  Scenario: sending a command with payload
     When sending the "hello" command:
       """
       exo-relay.send 'hello', name: 'world'

@@ -1,4 +1,5 @@
 require! {
+  'lodash.isempty' : is-empty
   'node-uuid' : uuid
   'request'
 }
@@ -23,7 +24,7 @@ class CommandSender
       @send command, payload, response-to: request-id
 
 
-  send: (command, payload, options = {}) ->
+  send: (command, payload = {}, options = {}) ->
     @_log command, options
     request-data =
       method: 'POST'
@@ -31,7 +32,7 @@ class CommandSender
       json: yes
       body:
         requestId: uuid.v1!
-    request-data.body.payload = payload if payload
+    request-data.body.payload = payload unless is-empty payload
     request-data.body.response-to = options.response-to if options.response-to
     request request-data, (err, response, body) ->
       if err || (response?.status-code isnt 200)

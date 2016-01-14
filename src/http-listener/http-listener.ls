@@ -17,8 +17,9 @@ class HttpListener
 
 
   close: ->
-    debug "no longer listening at port #{@port}"
-    @server.close!
+    if @server
+      debug "no longer listening at port #{@port}"
+      @server.close!
 
 
   listen: (@port, done) ->
@@ -37,16 +38,16 @@ class HttpListener
 
 
   _command-controller: (req, res) ~>
-    [command, replying-to, payload] = @_parse-request req
-    @_log command, replying-to
-    if @handle-command {command, replying-to, payload}
+    request-data = @_parse-request req
+    @_log request-data.command, request-data.response-to
+    if @handle-command request-data
       res.status(200).end!
     else
       res.status(404).end!
 
 
-  _log: (command, replying-to) ->
-    | replying-to  =>  debug "received command '#{command}' in reply to '#{replying-to}'"
+  _log: (command, response-to) ->
+    | response-to  =>  debug "received command '#{command}' in response to '#{response-to}'"
     | _            =>  debug "received command '#{command}'"
 
 
@@ -58,8 +59,9 @@ class HttpListener
   _parse-request: (req) ->
     command = req.params.command
     payload = req.body.payload
-    replying-to = req.body['replying-to']
-    [command, replying-to, payload]
+    response-to = req.body.response-to
+    request-id = req.body.request-id
+    {command, response-to, payload, request-id}
 
 
 

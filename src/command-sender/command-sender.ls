@@ -10,24 +10,39 @@ class CommandSender
 
   ({@exocomm-port} = {}) ->
 
+    # Contains the request-id of the most recently sent request (for testing)
+    @last-sent-request-id = null
 
-  send: (obj) ->
-    debug "sending command '#{obj.command}'"
-    options =
+
+  # Returns a method that sends a reply to the command with the given request
+  #
+  reply-method-for: (request-id) ->
+    | !request-id  =>  throw new Error 'CommandSender.replyMethodFor needs a requestId'
+
+    (command, payload = {}) ~>
+      @send command, payload, response-to: request-id
+
+
+  send: (command, payload, options = {}) ->
+    @_log command, options
+    request-data =
       method: 'POST'
-      url: "http://localhost:#{@exocomm-port}/send/#{obj.command}"
+      url: "http://localhost:#{@exocomm-port}/send/#{command}"
       json: yes
       body:
-        'request-id': uuid.v1!
-    options.body.payload = obj.payload if obj.payload
-    options.body['replying-to'] = obj.replying-to if obj.replying-to
-    request options, (err, response, body) ->
+        requestId: uuid.v1!
+    request-data.body.payload = payload if payload
+    request-data.body.response-to = options.response-to if options.response-to
+    request request-data, (err, response, body) ->
       if err || (response?.status-code isnt 200)
-        debug "Error sending command '#{obj.command}'"
+        debug "Error sending command '#{command}'"
         debug "* err: #{err}"
         debug "* response: #{response?.status-code}"
-    options.body['request-id']
+    @last-sent-request-id = request-data.body.request-id
 
 
+  _log: (command, options) ->
+    | options.response-to  =>  debug "sending command '#{command}' in response to '#{options.response-to}'"
+    | _                    =>  debug "sending command '#{command}'"
 
 module.exports = CommandSender

@@ -19,10 +19,10 @@ class HandlerManager
 
   # Handles the given command with the given payload.
   # Return whether the request was handled or not.
-  handle-request: ({command, replying-to, payload}) ->
-    | @reply-handlers.has-handler replying-to  =>  @reply-handlers.handle replying-to, payload
-    | @command-handlers.has-handler command    =>  @command-handlers.handle command, payload
-    | otherwise                                =>  debug "no handler found for command '#{command}' and request-id '#{replying-to}'"
+  handle-request: ({command, response-to, payload}, methods) ->
+    | @reply-handlers.has-handler response-to  =>  @reply-handlers.handle response-to, payload
+    | @command-handlers.has-handler command    =>  @command-handlers.handle command, payload, methods
+    | otherwise                                =>  debug "no handler found for command '#{command}' and request-id '#{response-to}'"
 
 
   register-reply-handler: (request-id, handler) ->

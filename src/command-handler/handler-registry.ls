@@ -19,10 +19,10 @@ class HandlerRegistry
 
   # handlers the request with the given request-id.
   # returns whether the request was handled or not
-  handle: (request-id, request-data) ->
-    if handler = @get-handler(request-id)
+  handle: (request-id, request-data, methods) ->
+    if handler = @get-handler request-id
       @debug "handling command '#{request-id}'"
-      handler request-data
+      handler request-data, methods
     !!handler
 
 

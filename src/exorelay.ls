@@ -25,15 +25,16 @@ class ExoRelay
     delegate \hasHandler \registerHandler \registerHandlers from: @, to: @command-handler
 
 
-  send: (command, reply-handler) ->
-    request-id = @command-sender.send command
+  send: (command, payload, reply-handler) ->
+    request-id = @command-sender.send command, payload
     if reply-handler
       @command-handler.register-reply-handler request-id, reply-handler
     request-id
 
 
   _on-incoming-command: (request-data) ~>
-    @command-handler.handle-request request-data
+    @command-handler.handle-request request-data,
+                                    reply: @command-sender.reply-method-for request-data.request-id
 
 
 

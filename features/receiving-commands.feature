@@ -11,39 +11,22 @@ Feature: Receiving commands
 
   Background:
     Given an ExoRelay instance listening at port 4000
-    And I register a handler for the "hello" command
 
 
-  Scenario: basic incoming command
-    When receiving the request:
+  Scenario: receiving a command
+    Given a hypothetical "@print" command
+    And I register a handler for the "hello" command:
       """
-      {
-        "url": "http://localhost:4000/run/hello",
-        "method": "POST",
-        "body": {},
-        "headers": {
-          "content-type": "application/json"
-        }
-      }
+      exo-relay.register-handler 'hello', (payload) ~>
+        @print "Hello #{payload.name}!"
       """
-    Then it calls the registered "hello" handler
-
-
-  Scenario: incoming command with a payload
-    When receiving the request:
+    When receiving this command via the incoming request:
       """
-      {
-        "url": "http://localhost:4000/run/hello",
-        "method": "POST",
-        "body": {
-          "payload": {
-            "name": "ExoRelay"
-          }
-        },
-        "headers": {
-          "content-type": "application/json"
-        }
-      }
+      url: 'http://localhost:4000/run/hello',
+      method: 'POST'
+      body:
+        payload:
+          name: 'world'
+        requestId: '123'
       """
-      Then it calls the registered "hello" handler with:
-        | PAYLOAD | name: 'ExoRelay' |
+    Then ExoRelay runs the registered handler, in this example calling "@print" with "Hello world!"

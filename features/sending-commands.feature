@@ -12,146 +12,23 @@ Feature: Sending outgoing commands
 
   Background:
     Given ExoComm runs at port 4000
-    And an ExoRelay instance listening at port 4001
+    And an ExoRelay instance called "exo-relay" listening at port 4001
 
 
-  Scenario: sending a stand-alone command
-    When I send out a stand-alone command:
+  Scenario: sending a command
+    When sending the "hello" command:
       """
-      exo-relay.send command: 'hello-world'
+      exo-relay.send 'hello', name: 'world'
       """
-    Then it makes the requests:
+    Then ExoRelay makes the request:
       """
-      [
-        {
-          url: "/send/hello-world",
-          method: "POST",
-          body: {
-            "request-id": "<%= request_uuid %>"
-          },
-          headers: {
-            accept: "application/json",
-            'content-type': "application/json"
-          }
-        }
-      ]
-      """
-
-
-  Scenario: sending a stand-alone command with data payload
-    When I send out a stand-alone command with payload:
-      """
-      exo-relay.send command: 'hello', payload: { name: 'world' }
-      """
-    Then it makes the requests:
-      """
-      [
-        {
-          url: "/send/hello",
-          method: "POST",
-          body: {
-            payload: {
-              name: 'world'
-            },
-            "request-id": "<%= request_uuid %>"
-          },
-          "headers": {
-            accept: "application/json",
-            "content-type": "application/json"
-          }
-        }
-      ]
-      """
-
-
-
-  Scenario: sending a reply to another command
-    When I send out a command in response to command '123':
-      """
-      exo-relay.send command: 'hello-world', replying-to: '123'
-      """
-    Then it makes the requests:
-      """
-      [
-        {
-          url: "/send/hello-world",
-          method: "POST",
-          body: {
-            "replying-to": '123',
-            "request-id": "<%= request_uuid %>"
-          },
-          "headers": {
-            accept: "application/json",
-            "content-type": "application/json"
-          }
-        }
-      ]
-      """
-
-
-  Scenario: sending a reply to another command with payload
-    When I send out a command with payload in response to command '123':
-      """
-      exo-relay.send command: 'hello', payload: { name: 'world' }, replying-to: '123'
-      """
-    Then it makes the requests:
-      """
-      [
-        {
-          url: "/send/hello",
-          method: "POST",
-          body: {
-            payload: {
-              name: "world"
-            },
-            "request-id": "<%= request_uuid %>",
-            "replying-to": "123"
-          },
-          "headers": {
-            accept: "application/json",
-            "content-type": "application/json"
-          }
-        }
-      ]
-      """
-
-
-  Scenario: sending a command with a reply handler
-    When I send out a command with a reply handler
-      """
-      exo-relay.send command: 'ping', ~>
-        @reply-handled = yes
-      """
-    Then it makes the requests:
-      """
-      [
-        {
-          url: "/send/ping",
-          method: "POST",
-          body: {
-            "request-id": "<%= request_uuid %>"
-          },
-          "headers": {
-            accept: "application/json",
-            "content-type": "application/json"
-          }
-        }
-      ]
-      """
-    When the reply for this command arrives in the form of this incoming request:
-      """
-      {
-        "url": "http://localhost:4001/run/pong",
-        "method": "POST",
-        "body": {
-          "replying-to": "<%= request_uuid %>"
-        },
-        "headers": {
-          "content-type": "application/json"
-        }
-      }
-      """
-    Then the reply handler is called, meaning:
-      """
-      @reply-handled is yes
+      url: 'http://localhost:4000/send/hello'
+      method: 'POST'
+      body:
+        payload:
+          name: 'world'
+        requestId: '<%= request_uuid %>'
+      headers:
+        accept: 'application/json'
+        'content-type': 'application/json'
       """

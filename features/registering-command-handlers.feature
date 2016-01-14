@@ -1,4 +1,4 @@
-Feature: Receiving incoming commands
+Feature: Registering command handlers
 
   As a deveoper writing Exosphere applications
   I want my application to respond to incoming commands
@@ -11,28 +11,27 @@ Feature: Receiving incoming commands
   - commands are executed asynchronously, and can send other commands back to indicate responses
 
 
-  Scenario: registering a handler
-    Given an ExoRelay instance
-    When I add a command listener:
+  Background:
+    Given an ExoRelay instance called "exo-relay"
+
+
+  Scenario: registering a command handler
+    When I register a command handler:
       """
-      @exo-relay.register-handler 'hello', ->
+      exo-relay.register-handler 'command-1', ->
       """
-    Then the instance has a handler for the command "hello"
+    Then the instance has a handler for the command "command-1"
+
+
+  Scenario: registering several handlers
+    When I register the command handlers:
+      """
+      exo-relay.register-handlers command1: ->, command2: ->
+      """
+    Then the instance has handlers for the commands "command1" and "command2"
 
 
   Scenario: registering an already handled command
-    Given an ExoRelay instance with a handler for command "hello"
-    When I try to add the same command listener
-    Then the server crashes with the error "There is already a handler for command 'hello'"
-
-
-  Scenario: registering many handlers
-    Given an ExoRelay instance
-    When I add many listeners at once:
-      """
-      handlers =
-        command1: ->
-        command2: ->
-      @exo-relay.register-handlers handlers
-      """
-    Then the instance has handlers for the commands "command1" and "command2"
+    Given my ExoRelay instance already has a handler for the command "hello"
+    When I try to add another handler for that command
+    Then ExoRelay throws an exception with the message "There is already a handler for command 'hello'"

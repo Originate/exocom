@@ -33,7 +33,11 @@ class HandlerRegistry
 
 
   register-handler: (request-id, handler) ->
-    | @has-handler request-id  =>  throw new Error "There is already a handler for command '#{request-id}'"
+    | !request-id                      =>  throw new Error "No request id provided"
+    | typeof request-id isnt 'string'  =>  throw new Error "Request ids must be strings"
+    | !handler                         =>  throw new Error "No command handler provided"
+    | typeof handler isnt 'function'   =>  throw new Error "Command handler must be a function"
+    | @has-handler request-id          =>  throw new Error "There is already a handler for command '#{request-id}'"
 
     @debug "registering handler for request-id '#{request-id}'"
     @handlers[request-id] = handler

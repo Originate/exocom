@@ -35,6 +35,9 @@ Feature: Handling incoming replies to sent commands
     Then the reply handler runs and in this example calls my "@print" method with "created user 456"
 
 
+
+  # ERROR HANDLING
+
   Scenario: providing a non-callable object as the reply handler
     When trying to send a command with a non-callable reply handler:
       """

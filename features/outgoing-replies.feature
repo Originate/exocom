@@ -43,3 +43,23 @@ Feature: Sending outgoing replies to incoming commands
         accept: 'application/json'
         'content-type': 'application/json'
       """
+
+
+
+
+  # ERROR CHECKING
+
+  Scenario: trying to reply with an empty command
+    Given I try to set up this handler:
+      """
+      exo-relay.register-handler '', (user-attributes, {reply}) ->
+      """
+    Then ExoRelay throws an exception with the message "No request id provided"
+
+
+  Scenario: trying to reply with a non-string command
+    Given I try to set up this handler:
+      """
+      exo-relay.register-handler [], (user-attributes, {reply}) ->
+      """
+    Then ExoRelay throws an exception with the message "Request ids must be strings"

@@ -6,18 +6,18 @@ require! {
 
 module.exports = ->
 
-  @When /^I take it online at port (\d+): "([^"]*)"$/, (port, code, done) ->
-    eval "this.#{code}"
-
-
-  @When /^I take it online at the default port: "([^"]*)"$/, (code, done) ->
-    eval "this.#{code}"
-
+  @When /^I( try to)? take it online at.*: "([^"]*)"$/, (expect-error, code, done) ->
+    try
+      eval "this.#{code}"
+      return done 'Expected error' if expect-error
+    catch
+      @error = e.message
+      done!
 
 
   @Then /^it is online at port (\d+)$/, (port, done) ->
     request "http://localhost:#{port}/run", (err, response, body) ->
-      expect(err).to.be.falsy
+      expect(err).to.be.null
       expect(response.status-code).to.equal 200
       done!
 

@@ -22,8 +22,9 @@ class HttpListener
       @server.close!
 
 
-  listen: (@port, done) ->
+  listen: (+@port, done) ->
     | typeof port is 'function'  =>  return @listen 4000, port
+    | isNaN @port                =>  throw new Error 'Non-numerical port provided to ExoRelay#listen'
 
     @server = @app.listen port, ->
       debug "listening for Exosphere commands at port #{port}"

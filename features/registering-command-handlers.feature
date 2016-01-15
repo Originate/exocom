@@ -31,7 +31,51 @@ Feature: Registering command handlers
     Then the instance has handlers for the commands "command1" and "command2"
 
 
+
+
+  # ERROR CHECKING
+
   Scenario: registering an already handled command
     Given my ExoRelay instance already has a handler for the command "hello"
     When I try to add another handler for that command
     Then ExoRelay throws an exception with the message "There is already a handler for command 'hello'"
+
+
+  Scenario: forgetting to provide the command
+    When I try to register the command handler:
+      """
+      exo-relay.register-handler ->
+      """
+    Then ExoRelay throws an exception with the message "Request ids must be strings"
+
+
+  Scenario: providing an empty command
+    When I try to register the command handler:
+      """
+      exo-relay.register-handler '', ->
+      """
+    Then ExoRelay throws an exception with the message "No request id provided"
+
+
+  Scenario: providing a non-string command
+    When I try to register the command handler:
+      """
+      exo-relay.register-handler [], ->
+      """
+    Then ExoRelay throws an exception with the message "Request ids must be strings"
+
+
+  Scenario: forgetting to provide the handler
+    When I try to register the command handler:
+      """
+      exo-relay.register-handler 'command'
+      """
+    Then ExoRelay throws an exception with the message "No command handler provided"
+
+
+  Scenario: providing a non-functional handler
+    When I try to register the command handler:
+      """
+      exo-relay.register-handler 'command', 'zonk'
+      """
+    Then ExoRelay throws an exception with the message "Command handler must be a function"

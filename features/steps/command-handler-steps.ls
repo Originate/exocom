@@ -19,17 +19,9 @@ module.exports = ->
     eval livescript.compile(code)
 
 
-  @When /^I register (?:a|the) command handlers?:$/, (code) ->
-    eval livescript.compile("@#{code}", bare: yes, header: no)
-
-
   @Given /^I register a handler for the "([^"]*)" command$/, (command-name) ->
     @hello-handler = sinon.stub!
     @exo-relay.register-handler command-name, @hello-handler
-
-
-  @Given /^I register a handler for the "([^"]*)" command:$/, (command-name, code) ->
-    eval livescript.compile "@#{code}"
 
 
   @Given /^I register this handler for the "([^"]*)" command:$/, (command-name, code) ->
@@ -37,6 +29,12 @@ module.exports = ->
     eval livescript.compile code, bare: yes, header: no
     @exo-relay.register-handler command-name, handler
 
+
+  @Given /^I try to set up this handler:$/, (code) ->
+    try
+      eval livescript.compile "@#{code}", bare: yes, header: no
+    catch
+      @error = e.message
 
   @Given /^my ExoRelay instance already has a handler for the command "([^"]*)"$/, (command-name) ->
     @exo-relay.register-handler command-name, ->
@@ -60,6 +58,13 @@ module.exports = ->
     catch
       @crashed = yes
       @crash-log = e.stack
+
+
+  @Given /^I(?: try to)? register/, (code) ->
+    try
+      eval livescript.compile("@#{code}", bare: yes, header: no)
+    catch
+      @error = e.message
 
 
   @When /^receiving the request:$/, (request-data, done) ->

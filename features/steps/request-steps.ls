@@ -69,20 +69,7 @@ module.exports = ->
         rendered = ejs.render request-data, request_uuid: @request-id
         template = livescript.compile "compiled = {\n#{rendered}\n}", bare: yes, header: no
         eval template
-        changes = diff.diffJson @exocomm.calls, [compiled]
-        if changes.length is 1
-          done!
-        else
-          console.log red '\nxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
-          console.log red 'Mismatching call records!\n'
-          for part in changes
-            color = switch
-            | part.added    =>  green
-            | part.removed  =>  red
-            | _             =>  grey
-            process.stdout.write color part.value
-          console.log red '\n\nxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n'
-          done 'Mismatching recorded calls, see above'
+        diff-json @exocomm.calls, [compiled], done
 
 
   @Then /^ExoRelay sends the "([^"]*)" command with payload "([^"]*)"$/, (command-name, payload, done) ->
@@ -104,17 +91,22 @@ module.exports = ->
         template = "compiled = {\n#{rendered}\n}"
         compiled-template = livescript.compile template, bare: yes, header: no
         parsed = eval compiled-template
-        changes = diff.diffJson @exocomm.calls, [parsed]
-        if changes.length is 1
-          done!
-        else
-          console.log red '\nxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
-          console.log red 'Mismatching call records!\n'
-          for part in changes
-            color = switch
-            | part.added    =>  green
-            | part.removed  =>  red
-            | _             =>  grey
-            process.stdout.write color part.value
-          console.log red '\n\nxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n'
-          done 'Mismatching recorded calls, see above'
+        diff-json @exocomm.calls, [parsed], done
+
+
+
+diff-json = (expected, actual, done) ->
+  changes = diff.diffJson expected, actual
+  if changes.length is 1
+    done!
+  else
+    console.log red '\nxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+    console.log red 'Mismatching call records!\n'
+    for part in changes
+      color = switch
+      | part.added    =>  green
+      | part.removed  =>  red
+      | _             =>  grey
+      process.stdout.write color part.value
+    console.log red '\n\nxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n'
+    done 'Mismatching recorded calls, see above'

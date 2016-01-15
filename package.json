@@ -1,6 +1,6 @@
 {
   "name": "exorelay",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "Communication relay between JavaScript code bases and the Exosphere environment",
   "main": "lib/exorelay.js",
   "scripts": {

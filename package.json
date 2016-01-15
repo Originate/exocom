@@ -26,7 +26,7 @@
     "ejs": "^2.3.4",
     "express": "^4.13.3",
     "node-uuid": "^1.4.7",
-    "rails-delegate": "^0.1.0",
+    "rails-delegate": "^0.2.0",
     "request": "^2.67.0"
   },
   "devDependencies": {
@@ -41,7 +41,7 @@
     "mocha": "^2.3.4",
     "nitroglycerin": "^1.0.3",
     "portfinder": "^0.4.0",
-    "record-http": "^0.3.0",
+    "record-http": "^0.4.0",
     "sinon": "^1.17.2",
     "wait": "^0.1.0"
   }

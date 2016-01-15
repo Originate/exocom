@@ -9,6 +9,7 @@ Feature: Handling incoming replies to sent commands
 
 
   Background:
+    Given ExoComm runs at port 4010
     And an ExoRelay instance called "exo-relay" listening at port 4000
 
 
@@ -33,6 +34,20 @@ Feature: Handling incoming replies to sent commands
         "content-type": "application/json"
       """
     Then the reply handler runs and in this example calls my "@print" method with "created user 456"
+
+
+  Scenario: multi-level workflow
+    When running this multi-level request:
+      """
+      exo-relay.send 'users.create', 'users.create payload', (users-created-payload) ~>
+        exo-relay.send 'photos.store', 'photos.store payload', (photos-stored-payload) ->
+          done!
+      """
+    Then ExoRelay sends the "users.create" command with payload "users.create payload"
+    When receiving the "users.created" command with payload "users.created payload" as a reply to the "users.create" command
+    Then ExoRelay sends the "photos.store" command with payload "photos.store payload"
+    When receiving the "photos.stored" command with payload "photos.stored payload" as a reply to the "photos.store" command
+    Then my handler calls the "done" method
 
 
 

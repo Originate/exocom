@@ -5,6 +5,7 @@ require! {
   'ejs'
   'livescript'
   'request'
+  'sinon'
   'wait' : {wait, wait-until}
 }
 
@@ -25,10 +26,28 @@ module.exports = ->
     expect(@request-id).to.not.be.undefined
 
 
+  @When /^receiving the "([^"]*)" command with payload "([^"]*)" as a reply to the "([^"]*)" command$/, (command-name, payload, done) ->
+    data =
+      url: "http://localhost:4000/run/#{command-name}",
+      method: 'POST'
+      body:
+        payload: payload
+        requestId: '123'
+        responseTo: @exo-messaging.calls[0].body.request-id
+      json: yes
+    @exo-messaging.reset!
+    request data, done
+
+
   @When /^receiving this command via the incoming request:$/, (request-data, done) ->
     eval livescript.compile "data = {\n#{request-data}\n}", bare: yes, header: no
     data.json = yes
     request data, done
+
+
+  @When /^running this multi\-level request:$/, (code) ->
+    done = @done = sinon.stub!
+    eval livescript.compile code.replace(/\bexo-relay\b/g, '@exo-relay'), bare: yes, header: no
 
 
   @When /^sending the "([^"]*)" command:$/, (command-name, code) ->
@@ -64,6 +83,16 @@ module.exports = ->
             process.stdout.write color part.value
           console.log red '\n\nxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n'
           done 'Mismatching recorded calls, see above'
+
+
+  @Then /^ExoRelay sends the "([^"]*)" command with payload "([^"]*)"$/, (command-name, payload, done) ->
+    wait-until (~> @exo-messaging.calls?.length), 10, ~>
+      wait 50, ~>
+        expect(@exo-messaging.calls).to.have.length 1
+        call = @exo-messaging.calls[0]
+        expect(call.url).to.equal "http://localhost:4010/send/#{command-name}"
+        expect(call.body.payload).to.equal payload
+        done!
 
 
   @Then /^my command handler replies with a "([^"]*)" command sent via this outgoing request:$/, (command-name, request-data, done) ->

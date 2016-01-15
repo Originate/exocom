@@ -46,6 +46,5 @@ Feature: Sending outgoing replies to incoming commands
 
 
 
-
   # ERROR CHECKING
   # the "reply" method calls "ExoRelay#send", so it is tested there.

@@ -4,6 +4,7 @@ require! {
   'nitroglycerin' : N
   'portfinder' : {get-port}
   'record-http' : HttpRecorder
+  'wait' : {wait-until}
 }
 
 
@@ -35,3 +36,7 @@ module.exports = ->
 
   @Then /^ExoRelay throws an exception with the message "([^"]*)"$/, (expected-message) ->
     expect(@error).to.equal expected-message
+
+
+  @Then /^my handler calls the "done" method$/, (done) ->
+    wait-until (~> @done.called), 10, done

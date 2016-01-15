@@ -11,8 +11,8 @@ require! {
 module.exports = ->
 
 
-  @Given /^a hypothetical "@([^"]*)" command$/, (command-name) ->
-    @[command-name] = sinon.stub!
+  @Given /^a hypothetical "([^"]*)" command$/, (command-name) ->
+    global[command-name] = sinon.stub!
 
 
   @Given /^I register this handler for the "([^"]*)" command:$/, (command-name, code) ->
@@ -51,8 +51,8 @@ module.exports = ->
       @error = e.message
 
 
-  @Then /^ExoRelay runs the registered handler, in this example calling "@([^"]*)" with "([^"]*)"$/, (command-name, command-argument, done) ->
-    wait-until (~> @[command-name].called), 10, done
+  @Then /^ExoRelay runs the registered handler, in this example calling "([^"]*)" with "([^"]*)"$/, (command-name, command-argument, done) ->
+    wait-until (~> global[command-name].called), 10, done
 
 
   @Then /^the instance has a handler for the command "([^"]*)"$/, (handler1) ->
@@ -64,7 +64,7 @@ module.exports = ->
     expect(@exo-relay.has-handler handler2).to.be.true
 
 
-  @Then /^the reply handler runs and in this example calls my "@([^"]*)" method with "([^"]*)"$/, (command-name, command-args, done) ->
+  @Then /^the reply handler runs and in this example calls my "([^"]*)" method with "([^"]*)"$/, (command-name, command-args, done) ->
     condition = ~>
-      @[command-name].called and is-equal @print.first-call.args, [command-args]
+      global[command-name].called and is-equal global[command-name].first-call.args, [command-args]
     wait-until condition, 10, done

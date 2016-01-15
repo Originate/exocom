@@ -13,63 +13,56 @@ which uses this library internally.
 
 ## Add an ExoRelay to your application
 
-```javascript
-ExoRelay = require("exorelay");
+Each code base should have only one ExoRelay instance.
 
-exoRelay = new ExoRelay();
-exoRelay.listen();
+```coffeescript
+ExoRelay = require 'exorelay'
+
+exoRelay = new ExoRelay()
+exoRelay.listen()
 ```
 
-More details and how to customize the port is described in the [spec](features/listen.feature)
-
-
-## Handle incoming commands
-
-Register a handler for incoming commands:
-
-```javascript
-exoRelay.registerHandler("hello", function(payload) {
-  console.log("Hello " + payload.name);
-});
-```
-
-Test this setup:
-
-```bash
-$ curl -d '{"name": "Joe"}' http://localhost:4000/run/hello_name
-```
-
-More details in the [spec](features/receiving-commands.feature)
+More details and how to customize the port is described in the [spec](features/listen.feature).
 
 
 ## Send outgoing commands
 
 Send a command to Exosphere:
 
-```javascript
-exoRelay.send({ command: "hello", payload: { name: "world" }}, done);
+```coffeescript
+exoRelay.send 'hello', name: 'world'
 ```
 
-More details in the [spec](features/sending-commands.feature)
+Sending a command is fire-and-forget, i.e. you don't have to wait for the
+sending process to finish before you can do the next thing.
+More details on how to send various data are [here](features/sending.feature).
 
+You can handle the incoming replies to your outgoing commands:
 
-## Replies to commands
-
-Commands can be replies to other commands.
-Each command has a unique _command-id_.
-Other commands can reference the id of another command
-to indicate that they are a reply to that command.
-
-As an example, let's send out a "users/create" command,
-and handle the reply to it (which the "users" service will send out):
-
-```javascript
-exoRelay.send({ command: "users/create", payload: { name: "Jean-Luc" } }, function(createdUser) {
-  console.log("user " + createdUser.id + " created");
-});
+```coffeescript
+exo-relay.send 'users.create', name: 'Will Riker', (createdUser) ->
+  print "created user #{createdUser.id}"
 ```
 
-The "users" service would be implemented using the
-[ExoService-JS tool](https://github.com/Originate/exoservice-js).
+More examples for handling incoming replies are [here](features/incoming-replies.feature).
 
-More details in the [spec](features/sending-commands.feature)
+
+## Handle incoming commands
+
+Register a handler for incoming commands:
+
+```coffeescript
+exoRelay.registerHandler 'hello', (name) ->
+  console.log "Hello #{name}"
+```
+
+More details on how to define command listeners are [here](features/receiving-commands.feature).
+If you are implementing services, you want to send outgoing replies to incoming commands:
+
+```coffeescript
+exoRelay.registerHandler 'users.create', (userData, {reply}) ->
+  # on this line we would create a user database record with the attributes given in userData
+  reply 'users.created', id: 456, name: userData.name
+```
+
+More details and a working example of how to send replies is [here](features/outgoing-replies.feature).

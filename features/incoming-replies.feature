@@ -14,11 +14,11 @@ Feature: Handling incoming replies to sent commands
 
 
   Scenario: handling replies to outgoing commands
-    Given a hypothetical "@print" command
+    Given a hypothetical "print" command
     And I send a command with a reply handler:
       """
-      exo-relay.send 'users.create', name: 'Will Riker', (reply-payload) ~>
-        @print "created user #{reply-payload.id}"
+      exo-relay.send 'users.create', name: 'Will Riker', (reply-payload) ->
+        print "created user #{reply-payload.id}"
       """
     When a reply for the sent command arrives via this incoming request:
       """
@@ -33,7 +33,7 @@ Feature: Handling incoming replies to sent commands
       headers:
         "content-type": "application/json"
       """
-    Then the reply handler runs and in this example calls my "@print" method with "created user 456"
+    Then the reply handler runs and in this example calls my "print" method with "created user 456"
 
 
   Scenario: multi-level workflow

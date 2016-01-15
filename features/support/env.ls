@@ -5,7 +5,7 @@ module.exports = ->
 
   @After ->
     @exo-relay?.close!
-    @exo-messaging?.close!
+    @exocomm?.close!
 
 
   @Before ->

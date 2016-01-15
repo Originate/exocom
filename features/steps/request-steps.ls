@@ -33,9 +33,9 @@ module.exports = ->
       body:
         payload: payload
         requestId: '123'
-        responseTo: @exo-messaging.calls[0].body.request-id
+        responseTo: @exocomm.calls[0].body.request-id
       json: yes
-    @exo-messaging.reset!
+    @exocomm.reset!
     request data, done
 
 
@@ -64,12 +64,12 @@ module.exports = ->
 
   @Then /^ExoRelay makes the request:$/, (request-data, done) ->
     # Wait until we get some call data, then wait another 50ms to let all the request data fill in
-    wait-until (~> @exo-messaging.calls?.length), 10, ~>
+    wait-until (~> @exocomm.calls?.length), 10, ~>
       wait 50, ~>
         rendered = ejs.render request-data, request_uuid: @request-id
         template = livescript.compile "compiled = {\n#{rendered}\n}", bare: yes, header: no
         eval template
-        changes = diff.diffJson @exo-messaging.calls, [compiled]
+        changes = diff.diffJson @exocomm.calls, [compiled]
         if changes.length is 1
           done!
         else
@@ -86,10 +86,10 @@ module.exports = ->
 
 
   @Then /^ExoRelay sends the "([^"]*)" command with payload "([^"]*)"$/, (command-name, payload, done) ->
-    wait-until (~> @exo-messaging.calls?.length), 10, ~>
+    wait-until (~> @exocomm.calls?.length), 10, ~>
       wait 50, ~>
-        expect(@exo-messaging.calls).to.have.length 1
-        call = @exo-messaging.calls[0]
+        expect(@exocomm.calls).to.have.length 1
+        call = @exocomm.calls[0]
         expect(call.url).to.equal "http://localhost:4010/send/#{command-name}"
         expect(call.body.payload).to.equal payload
         done!
@@ -98,13 +98,13 @@ module.exports = ->
   @Then /^my command handler replies with a "([^"]*)" command sent via this outgoing request:$/, (command-name, request-data, done) ->
 
     # Wait until we get some call data, then wait another 50ms to let all the request data fill in
-    wait-until (~> @exo-messaging.calls?.length), 10, ~>
+    wait-until (~> @exocomm.calls?.length), 10, ~>
       wait 50, ~>
         rendered = ejs.render request-data, request_uuid: @exo-relay.command-sender.last-sent-request-id
         template = "compiled = {\n#{rendered}\n}"
         compiled-template = livescript.compile template, bare: yes, header: no
         parsed = eval compiled-template
-        changes = diff.diffJson @exo-messaging.calls, [parsed]
+        changes = diff.diffJson @exocomm.calls, [parsed]
         if changes.length is 1
           done!
         else

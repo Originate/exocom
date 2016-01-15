@@ -30,7 +30,7 @@ module.exports = ->
 
 
   @Given /^ExoComm runs at port (\d+)$/, (@exocomm-port, done) ->
-    @exo-messaging = new HttpRecorder!listen @exocomm-port, done
+    @exocomm = new HttpRecorder!listen @exocomm-port, done
 
 
 

@@ -52,7 +52,7 @@ module.exports = ->
 
 
   @Then /^ExoRelay runs the registered handler, in this example calling "@([^"]*)" with "([^"]*)"$/, (command-name, command-argument, done) ->
-    wait-until (~> @[command-name].called is yes), 10, done
+    wait-until (~> @[command-name].called), 10, done
 
 
   @Then /^the instance has a handler for the command "([^"]*)"$/, (handler1) ->

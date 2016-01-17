@@ -14,7 +14,11 @@ Feature: Command handlers
 
 
   Background:
-    Given an instance of the "log-to-console" service listening on port 4000
+    Given ExoComm is available at port 4010
+    And this instance of the "log-to-console" service:
+      """
+      exo-js run --port 4000 --exocomm-port=4010
+      """
 
 
   Scenario: Sending a command
@@ -43,6 +47,18 @@ Feature: Command handlers
       """
     Then it returns a 200 response
     And its console output contains "Hello ExoRelay!"
+
+
+  Scenario: A command replies
+    When sending the request:
+      """
+      url: 'http://localhost:4000/run/ping',
+      method: 'POST'
+      body:
+        requestId: '123'
+      """
+    Then my service returns a 200 response
+    And it sends the command "pong"
 
 
   Scenario: Sending a non-existing command

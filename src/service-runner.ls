@@ -16,7 +16,7 @@ get-port = (port, done) ->
 run-service = ({port, exocomm-port}, done) ->
   get-port port, N (port) ->
     service-loader (service) ->
-      exo-relay = new ExoRelay!
+      exo-relay = new ExoRelay {exocomm-port}
         ..register-handlers service.handlers
         ..listen port, ->
           done port

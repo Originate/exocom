@@ -19,7 +19,7 @@
     "debug": "^2.2.0",
     "defaults": "^1.0.3",
     "docopt": "^0.6.2",
-    "exorelay": "^0.5.3",
+    "exorelay": "^0.5.4",
     "nitroglycerin": "^1.0.3",
     "observable-process": "^0.4.0",
     "portfinder": "^0.4.0",
@@ -38,6 +38,8 @@
     "gulp-lint-ls": "^0.1.0",
     "livescript": "^1.4.0",
     "prelude-ls": "^1.1.2",
-    "request": "^2.67.0"
+    "record-http": "^0.4.0",
+    "request": "^2.67.0",
+    "wait": "^0.1.0"
   }
 }

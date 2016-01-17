@@ -4,14 +4,23 @@ require! {
   'livescript'
   'observable-process' : ObservableProcess
   'path'
+  'record-http' : HttpRecorder
   'request'
+  'wait' : {wait, wait-until}
 }
 
 
 module.exports = ->
 
+  @Given /^this instance of the "([^"]*)" service:$/, (service-name, code, done) ->
+    @process = new ObservableProcess("bin/#{code}",
+                                     cwd: path.join(process.cwd!, 'features', 'example-apps', service-name),
+                                     verbose: no)
+      ..wait 'online at port', done
+
+
   @Given /^an instance of the "([^"]*)" service listening on port (\d+)$/, (service-name, port, done) ->
-    @process = new ObservableProcess("bin/exo-js run --port #{port}",
+    @process = new ObservableProcess("bin/exo-js run --port #{port} --exocomm-port #{@exocomm-port}",
                                      cwd: path.join(process.cwd!, 'features', 'example-apps', service-name),
                                      verbose: no)
       ..wait 'online at port 4000', done
@@ -19,6 +28,9 @@ module.exports = ->
 
   @Given /^I am in the "([^"]*)" service directory$/, (@service-name) ->
 
+
+  @Given /^ExoComm is available at port (\d+)$/, (@exocomm-port, done) ->
+    @exocomm = new HttpRecorder().listen @exocomm-port, done
 
 
   @When /^executing "([^"]*)"$/, (command, done) ->
@@ -55,8 +67,12 @@ module.exports = ->
 
 
 
-  @Then /^it returns a (\d+) response$/, (expected-status) ->
-    expect(@response.status-code).to.equal parse-int(expected-status, 10)
+  @Then /^(?:my service|it) returns a (\d+) response$/, (+expected-status) ->
+    expect(@response.status-code).to.equal expected-status
+
+
+  @Then /^it sends the command "([^"]*)"$/, (reply-command-name, done) ->
+    wait-until (~> @exocomm.calls.length), done
 
 
   @Then /^its console output contains "([^"]*)"$/, (output, done) ->

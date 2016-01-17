@@ -16,7 +16,7 @@ Feature: Defining the port at which the server listens
 
 
   Background:
-    Given I am in the "hello-world" service directory
+    Given I am in the "log-to-console" service directory
 
 
   Scenario: Running with default options

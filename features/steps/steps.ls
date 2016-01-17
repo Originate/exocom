@@ -1,5 +1,6 @@
 require! {
   'chai' : {expect}
+  'http'
   'livescript'
   'observable-process' : ObservableProcess
   'path'

@@ -46,5 +46,11 @@ Feature: Command handlers
 
 
   Scenario: Sending a non-existing command
-    When sending a POST request to "/run/zonk"
+    When sending the request:
+      """
+      url: 'http://localhost:4000/run/zonk'
+      method: 'POST'
+      body:
+        requestId: '123'
+      """
     Then it returns a 404 response

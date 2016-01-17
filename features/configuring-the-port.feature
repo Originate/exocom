@@ -1,6 +1,6 @@
 Feature: Defining the port at which the server listens
 
-  As an Exosphere developer
+  As an ExoService developer
   I want to be able to run my service at a configurable port
   So that my services fit seamlessly into the networking setup of my infrastructure.
 
@@ -8,11 +8,8 @@ Feature: Defining the port at which the server listens
   Rules:
   - call "exo-js run" in the directory of an Exosphere service
     to run the service at the default port 3000
+  - if port 3000 is taken, it chooses the next available port above that
   - the port can be customized via the "--port" command-line switch
-
-  Notes:
-  - in production there might be other ways to subscribe to commands
-    and pull them down when the service has capacity to do so
 
 
   Background:
@@ -24,7 +21,12 @@ Feature: Defining the port at which the server listens
     Then the service runs at port 3000
 
 
+  Scenario: Finding the next available port if 3000 is taken
+    Given ports 3000 and 3001 are used
+    When executing "exo-js run"
+    Then the service runs at port 3002
+
+
   Scenario: Running at a custom port
     When executing "exo-js run --port 3001"
     Then the service runs at port 3001
-

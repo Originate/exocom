@@ -26,6 +26,13 @@ module.exports = ->
       ..wait 'online at port', done
 
 
+  @Given /^ports (\d+) and (\d+) are used$/, (port1, port2, done) ->
+    handler = (_, res) -> res.end 'existing server'
+    @server1 = http.create-server(handler).listen 3000, 'localhost', ~>
+      @server2 = http.create-server(handler).listen 3001, 'localhost', done
+
+
+
   @When /^sending a POST request to "([^"]*)"$/, (path, done) ->
     request.post url: "http://localhost:4000#{path}", (err, @response, body) ~>
       expect(err).to.be.falsy
@@ -50,4 +57,4 @@ module.exports = ->
 
 
   @Then /^the service runs at port (\d+)$/, (port, done) ->
-    request "http://localhost:#{port}", -> done!
+    request "http://localhost:#{port}", done

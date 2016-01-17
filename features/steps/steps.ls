@@ -33,9 +33,10 @@ module.exports = ->
     # So we have to let all remaining commands in the event queue be processed here
     # so that any code that releases ports has actually been executed.
     process.next-tick ~>
-      handler = (_, res) -> res.end 'existing server'
-      @server1 = http.create-server(handler).listen 3000, 'localhost', ~>
-        @server2 = http.create-server(handler).listen 3001, 'localhost', done
+      wait 100, ~>
+        handler = (_, res) -> res.end 'existing server'
+        @server1 = http.create-server(handler).listen 3000, 'localhost', ~>
+          @server2 = http.create-server(handler).listen 3001, 'localhost', done
 
 
 

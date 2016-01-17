@@ -74,6 +74,10 @@ module.exports = ->
         diff-json @exocomm.calls, [compiled], done
 
 
+  @Then /^ExoRelay returns a (\d+) response$/, (+expected-response-code) ->
+    expect(@response-code).to.equal expected-response-code
+
+
   @Then /^ExoRelay returns a (\d+) response with the text "([^"]*)"$/, (+expected-response-code, expected-response-body) ->
     expect(@response-code).to.equal expected-response-code
     expect(@response-body).to.equal expected-response-body

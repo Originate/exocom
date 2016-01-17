@@ -20,10 +20,10 @@ Feature: Command handlers
   Scenario: Sending a command
     When sending the request:
       """
-      {
-        "url": "http://localhost:4000/run/hello-world",
-        "method": "POST"
-      }
+      url: 'http://localhost:4000/run/hello-world'
+      method: 'POST'
+      body:
+        requestId: '123'
       """
     Then it returns a 200 response
     And its console output contains "Hello world!"
@@ -32,18 +32,14 @@ Feature: Command handlers
   Scenario: Sending a command with payload
     When sending the request:
       """
-      {
-        "url": "http://localhost:4000/run/hello-name",
-        "method": "POST",
-        "body": {
-          "payload": {
-            "name": "ExoRelay"
-          }
-        },
-        "headers": {
-          "content-type": "application/json"
-        }
-      }
+      url: 'http://localhost:4000/run/hello-name'
+      method: 'POST'
+      body:
+        payload:
+          name: 'ExoRelay'
+        requestId: '123'
+      headers:
+        'content-type': 'application/json'
       """
     Then it returns a 200 response
     And its console output contains "Hello ExoRelay!"

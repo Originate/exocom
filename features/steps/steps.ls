@@ -1,5 +1,6 @@
 require! {
   'chai' : {expect}
+  'livescript'
   'observable-process' : ObservableProcess
   'path'
   'request'
@@ -40,9 +41,9 @@ module.exports = ->
 
 
   @When /^sending the request:$/, (request-data, done) ->
-    options = JSON.parse request-data
-    options.json = yes
-    request options, (err, @response, body) ~>
+    eval livescript.compile "compiled = {\n#{request-data}\n}", bare: yes, header: no
+    compiled.json = yes
+    request compiled, (err, @response, body) ~>
       expect(err).to.be.null
       done!
 

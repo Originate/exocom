@@ -51,7 +51,7 @@ module.exports = ->
       @error = e.message
 
 
-  @Then /^ExoRelay runs the registered handler, in this example calling "([^"]*)" with "([^"]*)"$/, (command-name, command-argument, done) ->
+  @Then /^(?:ExoRelay|it) runs the registered handler, in this example calling "([^"]*)" with "([^"]*)"$/, (command-name, command-argument, done) ->
     wait-until (~> global[command-name].called), 10, done
 
 

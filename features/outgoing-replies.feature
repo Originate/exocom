@@ -29,7 +29,8 @@ Feature: Sending outgoing replies to incoming commands
           name: 'Will Riker'
         requestId: '123'
       """
-    Then my command handler replies with a "users.created" command sent via this outgoing request:
+    Then ExoRelay returns a 200 response
+    And my command handler replies with a "users.created" command sent via this outgoing request:
       """
       url: 'http://localhost:4010/send/users.created'
       method: 'POST'

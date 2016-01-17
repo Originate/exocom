@@ -17,7 +17,10 @@ module.exports = ->
     rendered = ejs.render request-data, request_uuid: @request-id
     eval livescript.compile "data = {\n#{rendered}\n}", bare: yes, header: no
     data.json = yes
-    request data, done
+    request data, (err, {status-code}) ->
+      expect(err).to.be.null
+      expect(status-code).to.equal 200
+      done!
 
 
   @When /^I send a .*command/, (code) ->
@@ -26,7 +29,7 @@ module.exports = ->
     expect(@request-id).to.not.be.undefined
 
 
-  @When /^receiving the "([^"]*)" command with payload "([^"]*)" as a reply to the "([^"]*)" command$/, (command-name, payload, done) ->
+  @When /^receiving the "([^"]*)" command with payload "([^"]*)" as a reply to the "(?:[^"]*)" command$/, (command-name, payload, done) ->
     data =
       url: "http://localhost:4000/run/#{command-name}",
       method: 'POST'
@@ -36,13 +39,17 @@ module.exports = ->
         responseTo: @exocomm.calls[0].body.request-id
       json: yes
     @exocomm.reset!
-    request data, done
+    request data, (err, {status-code}) ->
+      expect(err).to.be.null
+      expect(status-code).to.equal 200
+      done!
 
 
   @When /^receiving this command via the incoming request:$/, (request-data, done) ->
     eval livescript.compile "data = {\n#{request-data}\n}", bare: yes, header: no
     data.json = yes
     request data, (err, response, @response-body) ~>
+      expect(err).to.be.null
       @response-code = response.status-code
       done err
 

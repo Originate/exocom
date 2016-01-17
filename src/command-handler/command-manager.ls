@@ -21,8 +21,8 @@ class HandlerManager
   # Return whether the request was handled or not.
   handle-request: ({command, request-id, response-to, payload}, methods) ->
     | !request-id                              =>  'missing request id'
-    | @reply-handlers.has-handler response-to  =>  @reply-handlers.handle response-to, payload
-    | @command-handlers.has-handler command    =>  @command-handlers.handle command, payload, methods
+    | @reply-handlers.has-handler response-to  =>  @reply-handlers.handle(response-to, payload) && 'success'
+    | @command-handlers.has-handler command    =>  @command-handlers.handle(command, payload, methods) && 'success'
     | otherwise                                =>  'unknown command'
 
 

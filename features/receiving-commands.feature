@@ -27,7 +27,8 @@ Feature: Receiving commands
       body:
         requestId: '123'
       """
-    Then ExoRelay runs the registered handler, in this example calling "print" with "Hello world!"
+    Then ExoRelay returns a 200 response
+    And it runs the registered handler, in this example calling "print" with "Hello world!"
 
 
   Scenario: Receiving a command with string payload
@@ -44,7 +45,8 @@ Feature: Receiving commands
         payload: 'world'
         requestId: '123'
       """
-    Then ExoRelay runs the registered handler, in this example calling "print" with "Hello world!"
+    Then ExoRelay returns a 200 response
+    And ExoRelay runs the registered handler, in this example calling "print" with "Hello world!"
 
 
   Scenario: receiving a command with Hash payload
@@ -62,7 +64,8 @@ Feature: Receiving commands
           name: 'world'
         requestId: '123'
       """
-    Then ExoRelay runs the registered handler, in this example calling "print" with "Hello world!"
+    Then ExoRelay returns a 200 response
+    And ExoRelay runs the registered handler, in this example calling "print" with "Hello world!"
 
 
   Scenario: Receiving a command with array payload
@@ -79,7 +82,8 @@ Feature: Receiving commands
         payload: [1, 2]
         requestId: '123'
       """
-    Then ExoRelay runs the registered handler, in this example calling "print" with "3"
+    Then ExoRelay returns a 200 response
+    And ExoRelay runs the registered handler, in this example calling "print" with "3"
 
 
 

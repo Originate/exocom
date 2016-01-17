@@ -12,6 +12,13 @@ require! {
 
 module.exports = ->
 
+  @Given /^an instance of the "([^"]*)" service$/, (service-name, done) ->
+    @process = new ObservableProcess("bin/exo-js run --port 4000 --exocomm-port #{@exocomm-port}",
+                                     cwd: path.join(process.cwd!, 'features', 'example-apps', service-name),
+                                     verbose: no)
+      ..wait 'online at port', done
+
+
   @Given /^this instance of the "([^"]*)" service:$/, (service-name, code, done) ->
     @process = new ObservableProcess("bin/#{code}",
                                      cwd: path.join(process.cwd!, 'features', 'example-apps', service-name),
@@ -58,11 +65,30 @@ module.exports = ->
       done!
 
 
-  @When /^receiving the(?: unknown)? ".*" command via this incoming request:$/, (request-data, done) ->
-    eval livescript.compile "compiled = {\n#{request-data}\n}", bare: yes, header: no
-    compiled.json = yes
-    request compiled, (err, @response, body) ~>
+  @When /^receiving the( unknown)? "([^"]*)" command$/, (expect-error, command-name, done) ->
+    data =
+      url: "http://localhost:4000/run/#{command-name}",
+      method: 'POST'
+      body:
+        requestId: '123'
+      json: yes
+    request data, (err, @response, body) ~>
       expect(err).to.be.null
+      expect(@response.status-code).to.equal 200 unless expect-error
+      done!
+
+
+  @When /^receiving the(?: unknown)? "([^"]*)" command with the payload:$/, (command-name, payload, done) ->
+    data =
+      url: "http://localhost:4000/run/#{command-name}",
+      method: 'POST'
+      body:
+        requestId: '123'
+        payload: JSON.parse(payload)
+      json: yes
+    request data, (err, @response, body) ~>
+      expect(err).to.be.null
+      expect(response.status-code).to.equal 200
       done!
 
 
@@ -71,8 +97,11 @@ module.exports = ->
     expect(@response.status-code).to.equal expected-status
 
 
-  @Then /^it sends the command "([^"]*)"$/, (reply-command-name, done) ->
-    wait-until (~> @exocomm.calls.length), done
+  @Then /^it sends the "([^"]*)" command$/, (reply-command-name, done) ->
+    wait-until (~> @exocomm.calls.length), ~>
+      call = @exocomm.calls[0]
+      expect(call.url).to.equal "http://localhost:#{@exocomm-port}/send/pong"
+      done!
 
 
   @Then /^its console output contains "([^"]*)"$/, (output, done) ->

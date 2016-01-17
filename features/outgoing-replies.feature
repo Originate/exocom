@@ -18,12 +18,5 @@ Feature: Outgoing replies
 
 
   Scenario: A command replies
-    When receiving the "ping" command via this incoming request:
-      """
-      url: 'http://localhost:4000/run/ping',
-      method: 'POST'
-      body:
-        requestId: '123'
-      """
-    Then my service returns a 200 response
-    And it sends the command "pong"
+    When receiving the "ping" command
+    Then it sends the "pong" command

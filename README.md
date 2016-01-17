@@ -33,6 +33,15 @@ npm install -g exoservice-js
 1. start your server through `exo-js run`
 
 
+## Test your service
+
+Test a running service manually:
+
+```bash
+$ curl -d '{"requestId": "123" }' -H "Content-Type: application/json" -i http://localhost:3000/run/hello-world
+```
+
+
 ## Development
 
 See your [developer guidelines](CONTRIBUTING.md)

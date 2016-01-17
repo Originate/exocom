@@ -10,3 +10,7 @@ module.exports =
 
   ping: (_payload, {reply}) ->
     reply 'pong'
+
+
+  sender: (_payload, {send}) ->
+    send 'greetings', 'from the sender service'

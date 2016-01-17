@@ -104,6 +104,15 @@ module.exports = ->
       done!
 
 
+  @Then /^it sends the "([^"]*)" command with the payload "([^"]*)"$/, (reply-command-name, expected-payload, done) ->
+    wait-until (~> @exocomm.calls.length), ~>
+      wait 100, ~>
+        call = @exocomm.calls[0]
+        expect(call.url).to.equal "http://localhost:#{@exocomm-port}/send/#{reply-command-name}"
+        expect(call.body.payload).to.equal expected-payload
+        done!
+
+
   @Then /^its console output contains "([^"]*)"$/, (output, done) ->
     @process.wait output, done
 

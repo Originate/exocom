@@ -15,7 +15,7 @@ Feature: Command handlers
 
   Background:
     Given ExoComm is available at port 4010
-    And this instance of the "log-to-console" service:
+    And this instance of the "test" service:
       """
       exo-js run --port 4000 --exocomm-port=4010
       """

@@ -40,16 +40,16 @@ class HttpListener
 
   _command-controller: (req, res) ~>
     request-data = @_parse-request req
-    @_log request-data.command, request-data.response-to
+    @_log request-data
     if @handle-command request-data
       res.status(200).end!
     else
       res.status(404).end!
 
 
-  _log: (command, response-to) ->
-    | response-to  =>  debug "received command '#{command}' in response to '#{response-to}'"
-    | _            =>  debug "received command '#{command}'"
+  _log: ({command, request-id, response-to}) ->
+    | response-to  =>  debug "received command '#{command}' with id '#{request-id}' in response to '#{response-to}'"
+    | _            =>  debug "received command '#{command}' with id '#{request-id}'"
 
 
   _overview-controller: (req, res) ->

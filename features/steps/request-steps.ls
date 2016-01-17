@@ -42,7 +42,9 @@ module.exports = ->
   @When /^receiving this command via the incoming request:$/, (request-data, done) ->
     eval livescript.compile "data = {\n#{request-data}\n}", bare: yes, header: no
     data.json = yes
-    request data, done
+    request data, (err, response, @response-body) ~>
+      @response-code = response.status-code
+      done err
 
 
   @When /^running this multi\-level request:$/, (code) ->
@@ -70,6 +72,11 @@ module.exports = ->
         template = livescript.compile "compiled = {\n#{rendered}\n}", bare: yes, header: no
         eval template
         diff-json @exocomm.calls, [compiled], done
+
+
+  @Then /^ExoRelay returns a (\d+) response with the text "([^"]*)"$/, (+expected-response-code, expected-response-body) ->
+    expect(@response-code).to.equal expected-response-code
+    expect(@response-body).to.equal expected-response-body
 
 
   @Then /^ExoRelay sends the "([^"]*)" command with payload "([^"]*)"$/, (command-name, payload, done) ->

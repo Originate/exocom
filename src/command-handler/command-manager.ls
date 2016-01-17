@@ -22,7 +22,7 @@ class HandlerManager
   handle-request: ({command, response-to, payload}, methods) ->
     | @reply-handlers.has-handler response-to  =>  @reply-handlers.handle response-to, payload
     | @command-handlers.has-handler command    =>  @command-handlers.handle command, payload, methods
-    | otherwise                                =>  debug "no handler found for command '#{command}' and request-id '#{response-to}'"
+    | otherwise                                =>  'unknown command'
 
 
   register-reply-handler: (request-id, handler) ->

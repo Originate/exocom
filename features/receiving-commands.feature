@@ -85,3 +85,14 @@ Feature: Receiving commands
 
   # ERROR CHECKING
 
+  Scenario: the incoming command is not registered
+    When receiving this command via the incoming request:
+      """
+      url: 'http://localhost:4000/run/zonk',
+      method: 'POST'
+      body:
+        requestId: '123'
+      """
+    Then ExoRelay returns a 404 response with the text "unknown command: 'zonk'"
+
+

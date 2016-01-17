@@ -41,10 +41,10 @@ class HttpListener
   _command-controller: (req, res) ~>
     request-data = @_parse-request req
     @_log request-data
-    if @handle-command request-data
-      res.status(200).end!
-    else
-      res.status(404).end!
+    switch (result = @handle-command request-data)
+      | 'success'             =>  res.status(200).end!
+      | 'unknown command'     =>  res.status(404).end "unknown command: '#{request-data.command}'"
+      | _                     =>  throw new Error "unknown result code: '#{@result}'"
 
 
   _log: ({command, request-id, response-to}) ->

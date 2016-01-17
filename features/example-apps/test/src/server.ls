@@ -7,5 +7,6 @@ module.exports =
   'hello-name': (payload) ->
     console.log "Hello #{payload.name}!"
 
-  'ping': (_payload, {reply}) ->
+
+  ping: (_payload, {reply}) ->
     reply 'pong'

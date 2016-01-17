@@ -85,17 +85,3 @@ Feature: Receiving commands
 
   # ERROR CHECKING
 
-  Scenario: Trying to register a handler for an empty command name
-    Given I try to register an empty command handler:
-      """
-      exo-relay.register-handler '', ->
-      """
-    Then ExoRelay throws an exception with the message "No request id provided"
-
-
-  Scenario: Forgetting to provide the command name
-    When I try to register a handler while forgetting to provide the command name:
-      """
-      exo-relay.register-handler ->
-      """
-    Then ExoRelay throws an exception with the message "Request ids must be strings"

@@ -8,7 +8,7 @@ require! {
 }
 
 load-service = (done) ->
-  handlers = require path.join(process.cwd!, 'src' 'server.ls')
+  handlers = require path.join(process.cwd!, 'server.ls')
   done {handlers}
 
 

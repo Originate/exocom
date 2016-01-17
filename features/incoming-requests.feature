@@ -6,7 +6,7 @@ Feature: Command handlers
 
 
   Rules:
-  - all handlers are defined in a file "src/server.ls"
+  - the handlers are defined in a file "server.ls"
   - this file exports a hash in which the key is the command name and the value the handler function
   - commands can be sent to the service as a POST request to "/run/<command-name>"
     with the data payload as the request body

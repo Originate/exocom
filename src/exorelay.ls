@@ -25,7 +25,7 @@ class ExoRelay
     delegate \hasHandler \registerHandler \registerHandlers from: @, to: @command-handler
 
 
-  send: (command, payload, reply-handler) ->
+  send: (command, payload, reply-handler) ~>
     | reply-handler and typeof reply-handler isnt 'function'  =>  throw new Error 'The reply handler given to ExoRelay#send must be a function'
 
     request-id = @command-sender.send command, payload
@@ -38,6 +38,7 @@ class ExoRelay
     | !request-data.request-id  =>  return 'missing request id'
     @command-handler.handle-request request-data,
                                     reply: @command-sender.reply-method-for request-data.request-id
+                                    send: @send
 
 
 

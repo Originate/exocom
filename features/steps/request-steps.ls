@@ -100,8 +100,7 @@ module.exports = ->
         done!
 
 
-  @Then /^my command handler replies with a "([^"]*)" command sent via this outgoing request:$/, (command-name, request-data, done) ->
-
+  @Then /^my command handler (?:replies with|sends out)? a "([^"]*)" command(?: sent)? via this outgoing request:$/, (command-name, request-data, done) ->
     # Wait until we get some call data, then wait another 50ms to let all the request data fill in
     wait-until (~> @exocomm.calls?.length), 10, ~>
       wait 50, ~>

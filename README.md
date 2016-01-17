@@ -5,7 +5,6 @@
 [![Circle CI](https://circleci.com/gh/Originate/exoservice-js.svg?style=shield&circle-token=33fbf4fc2b0c128479443c5e8bff337815205ec7)](https://circleci.com/gh/Originate/exoservice-js)
 
 
-
 ## Installation
 
 ```bash
@@ -13,27 +12,18 @@ npm install -g exoservice-js
 ```
 
 
-## Create a micro-service
+## Creating a micro-service
+
+Let's create the simplest possible microservice:
+when receiving the command "ping", it replies with the command "pong".
 
 1. create an empty service scaffold
-  * `yo exoservice <your service name>`
-  * later: `exo-js new <your service name>`
+  * `yo exoservice ping`
 
-1. TDD the service
-  * end-to-end tests go into `features`
-  * tests are run with `cucumber-js`
-
-1. the application code lives in `src/<your service name>-service.ls`
-  * `before-all` runs at server startup
-  * `before-each` runs before each command handler
-  * `after-each` runs after each command handler
-  * your command handlers are key-value pairs in the exported data structure,
-    where the key is the command name and the value the handler function
-
-1. start your server through `exo-js run`
+1. start your server: `exo-js run`
 
 
-## Test your service
+## Testing
 
 Test a running service manually:
 

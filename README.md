@@ -25,6 +25,28 @@ exoRelay.listen()
 More details and how to customize the port is described in the [spec](features/listen.feature).
 
 
+## Handle incoming commands
+
+Register a handler for incoming commands:
+
+```coffeescript
+exoRelay.registerHandler 'hello', (name) ->
+  console.log "Hello #{name}"
+```
+
+More details on how to define command listeners are [here](features/receiving-commands.feature).
+If you are implementing services, you want to send outgoing replies to incoming commands:
+
+```coffeescript
+exoRelay.registerHandler 'users.create', (userData, {reply}) ->
+  # on this line we would create a user database record with the attributes given in userData
+  reply 'users.created', id: 456, name: userData.name
+```
+
+More details and a working example of how to send replies is [here](features/outgoing-replies.feature).
+
+
+
 ## Send outgoing commands
 
 Send a command to Exosphere:
@@ -45,24 +67,14 @@ exo-relay.send 'users.create', name: 'Will Riker', (createdUser) ->
 ```
 
 More examples for handling incoming replies are [here](features/incoming-replies.feature).
-
-
-## Handle incoming commands
-
-Register a handler for incoming commands:
+Command handlers also provide a shortcut to send commands:
 
 ```coffeescript
-exoRelay.registerHandler 'hello', (name) ->
-  console.log "Hello #{name}"
+exoRelay.registerHandler 'users.create', (userData, {send, reply}) ->
+  send 'passwords.encrypt' userData.password, (encryptedPassword) ->
+    userData.encryptedPassword = encryptedPassword
+    # on this line we would create a user database record with the attributes given in userData
+    reply 'users.created', id: 456, name: userData.name
 ```
 
-More details on how to define command listeners are [here](features/receiving-commands.feature).
-If you are implementing services, you want to send outgoing replies to incoming commands:
-
-```coffeescript
-exoRelay.registerHandler 'users.create', (userData, {reply}) ->
-  # on this line we would create a user database record with the attributes given in userData
-  reply 'users.created', id: 456, name: userData.name
-```
-
-More details and a working example of how to send replies is [here](features/outgoing-replies.feature).
+More details and a working example of how to send commands from within command handlers is [here](features/sending-from-commands.feature).

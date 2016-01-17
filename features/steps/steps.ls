@@ -58,7 +58,7 @@ module.exports = ->
       done!
 
 
-  @When /^sending the request:$/, (request-data, done) ->
+  @When /^receiving the(?: unknown)? ".*" command via this incoming request:$/, (request-data, done) ->
     eval livescript.compile "compiled = {\n#{request-data}\n}", bare: yes, header: no
     compiled.json = yes
     request compiled, (err, @response, body) ~>

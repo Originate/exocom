@@ -21,8 +21,8 @@ Feature: Command handlers
       """
 
 
-  Scenario: Sending a command
-    When sending the request:
+  Scenario: receiving a command
+    When receiving the "hello-world" command via this incoming request:
       """
       url: 'http://localhost:4000/run/hello-world'
       method: 'POST'
@@ -33,8 +33,8 @@ Feature: Command handlers
     And its console output contains "Hello world!"
 
 
-  Scenario: Sending a command with payload
-    When sending the request:
+  Scenario: receiving a command with payload
+    When receiving the "hello-name" command via this incoming request:
       """
       url: 'http://localhost:4000/run/hello-name'
       method: 'POST'
@@ -49,20 +49,8 @@ Feature: Command handlers
     And its console output contains "Hello ExoRelay!"
 
 
-  Scenario: A command replies
-    When sending the request:
-      """
-      url: 'http://localhost:4000/run/ping',
-      method: 'POST'
-      body:
-        requestId: '123'
-      """
-    Then my service returns a 200 response
-    And it sends the command "pong"
-
-
-  Scenario: Sending a non-existing command
-    When sending the request:
+  Scenario: receiving a non-existing command
+    When receiving the unknown "zonk" command via this incoming request:
       """
       url: 'http://localhost:4000/run/zonk'
       method: 'POST'

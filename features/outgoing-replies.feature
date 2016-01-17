@@ -13,7 +13,7 @@ Feature: Sending outgoing replies to incoming commands
     Given ExoComm runs at port 4010
     And an ExoRelay instance called "exo-relay" listening at port 4000
 
-  Scenario: sending replies to incoming commands
+  Scenario: sending a reply with JSON data
     Given the "users.create" command has this handler:
       """
       exo-relay.register-handler 'users.create', (user-attributes, {reply}) ->
@@ -38,6 +38,34 @@ Feature: Sending outgoing replies to incoming commands
         payload:
           id: 456
           name: 'Will Riker'
+        requestId: '<%= request_uuid %>'
+        responseTo: '123'
+      headers:
+        accept: 'application/json'
+        'content-type': 'application/json'
+      """
+
+
+  Scenario: sending a reply with string payload
+    Given the "users.create" command has this handler:
+      """
+      exo-relay.register-handler 'ping', (_payload, {reply}) ->
+        reply 'pong', 'from the test'
+      """
+    When receiving this command via the incoming request:
+      """
+      url: 'http://localhost:4000/run/ping'
+      method: 'POST'
+      body:
+        requestId: '123'
+      """
+    Then ExoRelay returns a 200 response
+    And my command handler replies with a "users.created" command sent via this outgoing request:
+      """
+      url: 'http://localhost:4010/send/pong'
+      method: 'POST'
+      body:
+        payload: 'from the test'
         requestId: '<%= request_uuid %>'
         responseTo: '123'
       headers:

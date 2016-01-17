@@ -9,7 +9,7 @@ debug = require('debug')('exorelay')
 
 class ExoRelay
 
-  ({exocomm-port} = {}) ->
+  ({exocomm-port} = {exocomm-port: 3010}) ->
 
     # manages the request handlers for incoming commands
     @command-handler = new HandlerManager!

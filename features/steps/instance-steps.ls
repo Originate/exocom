@@ -1,6 +1,7 @@
 require! {
   '../..' : ExoRelay
   'chai' : {expect}
+  'livescript'
   'nitroglycerin' : N
   'portfinder' : {get-port}
   'record-http' : HttpRecorder
@@ -34,9 +35,18 @@ module.exports = ->
 
 
 
+  @When /^I create an ExoRelay instance .*: "([^"]*)"$/, (code) ->
+    eval livescript.compile("@exo-relay = #{code}", bare: yes, header: no)
+
+
+
   @Then /^ExoRelay throws an exception with the message "([^"]*)"$/, (expected-message) ->
     expect(@error).to.equal expected-message
 
 
   @Then /^my handler calls the "done" method$/, (done) ->
     wait-until (~> @done.called), 10, done
+
+
+  @Then /^this instance uses the ExoComm port (\d+)$/, (+port) ->
+    expect(@exo-relay.command-sender.exocomm-port).to.equal port

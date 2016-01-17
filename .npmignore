@@ -1,2 +1,6 @@
+features/
 gulpfile.ls
 src/
+circle.yml
+cucumber.js
+gulpfile.ls

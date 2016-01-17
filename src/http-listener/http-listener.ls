@@ -43,6 +43,7 @@ class HttpListener
     @_log request-data
     switch (result = @handle-command request-data)
       | 'success'             =>  res.status(200).end!
+      | 'missing request id'  =>  res.status(400).end 'missing request id'
       | 'unknown command'     =>  res.status(404).end "unknown command: '#{request-data.command}'"
       | _                     =>  throw new Error "unknown result code: '#{@result}'"
 

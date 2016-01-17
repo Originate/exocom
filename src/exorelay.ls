@@ -35,6 +35,7 @@ class ExoRelay
 
 
   _on-incoming-command: (request-data) ~>
+    | !request-data.request-id  =>  return 'missing request id'
     @command-handler.handle-request request-data,
                                     reply: @command-sender.reply-method-for request-data.request-id
 

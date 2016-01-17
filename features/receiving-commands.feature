@@ -66,7 +66,7 @@ Feature: Receiving commands
 
 
   Scenario: Receiving a command with array payload
-    Given I register a handler for the "hello" command:
+    Given I register a handler for the "sum" command:
       """
       exo-relay.register-handler 'sum', (numbers) ->
         print numbers[0] + numbers[1]

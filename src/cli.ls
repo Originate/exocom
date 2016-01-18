@@ -1,11 +1,16 @@
 require! {
-  \chalk : {cyan, dim}
+  \chalk : {cyan, dim, green}
   'docopt' : {docopt}
   '../package.json' : {name, version}
+  'path'
   './service-runner'
 }
 
 console.log dim "Exosphere Node.js service runner #{version}\n"
+
+service-data = require path.resolve('./package.json')
+console.log "Running #{green service-data.name} #{green service-data.version}\n"
+
 
 doc = """
 Runs Exosphere services written in Node.js.

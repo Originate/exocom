@@ -3,7 +3,7 @@ require! {
   'docopt' : {docopt}
   '../package.json' : {name, version}
   'path'
-  './server'
+  './exocomm' : ExoComm
 }
 
 console.log dim "Exosphere Development Communications server #{version}\n"
@@ -21,7 +21,7 @@ options = docopt doc, help: no
 switch
 | options['-h'] or options['--help']     =>  console.log doc
 | options['-v'] or options['--version']  =>
-| options.run                            =>  server port: options['--port'], (port) ->
+| options.run                            =>  new ExoComm!.listen options['--port'], (port) ->
                                                console.log dim "Ctrl-C to stop"
                                                console.log "online at port #{cyan port}"
 | otherwise                              =>  console.err 'unhandled option'

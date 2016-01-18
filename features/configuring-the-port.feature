@@ -16,10 +16,10 @@ Feature: configuring the port
 
   Scenario: the default port is already used
     Given another service already uses port 3100
-    When I run "bin/run"
+    When I run "bin/exocomm"
     Then it aborts with the error message "port 3100 is already taken"
 
 
   Scenario: booting up at a custom port
-    When I run "bin/run --port 3200"
+    When I run "bin/exocomm --port 3200"
     Then this service runs at port 3200

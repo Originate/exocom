@@ -21,5 +21,5 @@ Feature: configuring the port
 
 
   Scenario: booting up at a custom port
-    When I run "bin/exocomm --port 3200"
+    When I run "bin/exocomm run --port 3200"
     Then this service runs at port 3200

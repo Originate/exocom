@@ -3,7 +3,7 @@
   "version": "0.3.2",
   "author": "Kevin Goslar",
   "bin": {
-    "mocha": "./bin/mocha"
+    "exo-js": "./bin/exo-js"
   },
   "dependencies": {
     "body-parser": "^1.14.2",

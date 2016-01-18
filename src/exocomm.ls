@@ -1,11 +1,18 @@
-
+require! {
+  './http-listener' : HttpListener
+}
 
 
 class ExoComm
 
+  ->
+    @http-listener = new HttpListener
+
+
   listen: (port, done) ->
     port or= 3100
-    done port
+    @http-listener.listen port, ->
+      done port
 
 
 

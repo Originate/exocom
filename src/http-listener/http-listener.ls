@@ -11,6 +11,8 @@ class HttpListener
   ->
     @app = express!
       ..use body-parser.json!
+      ..get  '/status.json', @_status-controller
+      ..post '/register-service', @_register-service-controller
       ..post '/send/:command', @_send-controller
 
 
@@ -29,10 +31,19 @@ class HttpListener
 
 
   on: (event-name, handler) ->
-    | !event-name              =>  throw new Error 'no event name provided'
-    | !handler                 =>  throw new Error 'no handler provided'
-    | event-name is 'command'  =>  @handle-command = handler
-    | _                        =>  throw new Error "unknown event: '#{event-name}'"
+    | !event-name                       =>  throw new Error 'no event name provided'
+    | !handler                          =>  throw new Error 'no handler provided'
+    | event-name is 'register-service'  =>  @handle-registration = handler
+    | event-name is 'get-config'        =>  @get-config = handler
+    | _                                 =>  throw new Error "unknown event: '#{event-name}'"
+    debug "registering handler for event '#{event-name}'"
+
+
+  _register-service-controller: (req, res) ~>
+    request-data = req.body.payload
+    debug "service '#{request-data.name}' requesting to register"
+    switch (result = @handle-registration request-data)
+      | 'success'  =>  res.status(200).end!
 
 
   _send-controller: (req, res) ~>
@@ -43,6 +54,12 @@ class HttpListener
       | 'missing request id'  =>  res.status(400).end 'missing request id'
       | 'unknown command'     =>  res.status(404).end "unknown command: '#{request-data.command}'"
       | _                     =>  throw new Error "unknown result code: '#{@result}'"
+
+
+  # returns data about the current status of ExoComm
+  _status-controller: (req, res) ~>
+    @get-config (config) ->
+      res.send JSON.stringify config
 
 
   _log: ({command, request-id, response-to}) ->

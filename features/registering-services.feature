@@ -21,22 +21,26 @@ Feature: Registering services
       body:
         payload:
           name: 'example service'
+          host: 'localhost'
+          port: 3001
           sends:
-            * 'send command 1'
-            * 'send command 2'
+            * 'command 1'
+            * 'command 2'
           receives:
-            * 'receive command 1'
-            * 'receive command 2'
+            * 'command 3'
+            * 'command 4'
       """
     Then it knows about these services:
       """
       * name: 'example service'
+        host: 'localhost'
+        port: 3001
         sends:
-          * 'send command 1'
-          * 'send command 2'
+          * 'command 1'
+          * 'command 2'
         receives:
-          * 'receive command 1'
-          * 'receive command 2'
+          * 'command 3'
+          * 'command 4'
       """
 
 
@@ -45,12 +49,12 @@ Feature: Registering services
     And it knows about this service:
       """
       name: 'example service'
+      host: 'localhost'
+      port: 3001
       sends:
-        * 'send command 1'
-        * 'send command 2'
+        * 'command 1'
       receives:
-        * 'receive command 1'
-        * 'receive command 2'
+        * 'command 2'
       """
     When receiving a service registration via this request:
       """
@@ -59,17 +63,21 @@ Feature: Registering services
       body:
         payload:
           name: 'example service'
+          host: 'localhost'
+          port: 3002
           sends:
-            * 'send command 3'
+            * 'command 6'
           receives:
-            * 'receive command 3'
+            * 'command 7'
         requestId: '123'
       """
     Then it knows about these services:
       """
       * name: 'example service'
+        host: 'localhost'
+        port: 3002
         sends:
-          * 'send command 3'
+          * 'command 6'
         receives:
-          * 'receive command 3'
+          * 'command 7'
       """

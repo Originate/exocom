@@ -41,7 +41,7 @@ module.exports = ->
     @process = new ObservableProcess code, verbose: no
 
 
-  @When /^receiving a service registration via this command:$/, (request-data, done) ->
+  @When /^receiving a service registration via this request:$/, (request-data, done) ->
     eval livescript.compile "data = {\n#{request-data}\n}", bare: yes, header: no
     data.json = yes
     request data, (err, {status-code}) ->

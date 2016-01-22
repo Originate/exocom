@@ -14,7 +14,7 @@ Feature: Registering services
 
   Scenario: a service registers itself with ExoComm
     Given an ExoComm instance at port 4100
-    When receiving a service registration via this command:
+    When receiving a service registration via this request:
       """
       url: "http://localhost:4100/register-service",
       method: 'POST'
@@ -52,7 +52,7 @@ Feature: Registering services
         * 'receive command 1'
         * 'receive command 2'
       """
-    When receiving a service registration via this command:
+    When receiving a service registration via this request:
       """
       url: "http://localhost:4100/register-service",
       method: 'POST'

@@ -4,7 +4,7 @@
   "description": "Development version of the Exosphere communication platform",
   "main": "lib/exocomm.js",
   "scripts": {
-    "test": "cucumber-js"
+    "test": "bin/spec"
   },
   "repository": {
     "type": "git",

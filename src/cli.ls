@@ -1,5 +1,5 @@
 require! {
-  \chalk : {cyan, dim, green}
+  'chalk' : {cyan, dim, green}
   'docopt' : {docopt}
   'nitroglycerin' : N
   '../package.json' : {name, version}

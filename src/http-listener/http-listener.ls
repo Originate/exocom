@@ -18,9 +18,9 @@ class HttpListener
 
 
   close: ->
-    if @server
-      debug "no longer listening at port #{@port}"
-      @server.close!
+    | !@server  =>  return
+    debug "no longer listening at port #{@port}"
+    @server.close!
 
 
   listen: (+@port, done) ->

@@ -30,6 +30,8 @@
   },
   "dependencies": {
     "body-parser": "^1.14.2",
+    "chalk": "^1.1.1",
+    "debug": "^2.2.0",
     "docopt": "^0.6.2",
     "express": "^4.13.3",
     "rails-delegate": "^0.3.0"

@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 
-cuc_api "$@"
-cuc_e2e "$@"
+bin/cuc_api "$@"
+bin/cuc_e2e "$@"

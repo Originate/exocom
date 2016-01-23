@@ -16,7 +16,7 @@ module.exports = ->
 
 
   @Given /^another service already uses port (\d+)$/, (+port, done) ->
-    wait 0, ~>   # to let the previous server shut down
+    wait 100, ~>   # to let the previous server shut down
       handler = (_, res) -> res.end 'existing server'
       @existing-server = http.create-server(handler).listen port, done
 

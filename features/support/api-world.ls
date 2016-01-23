@@ -15,7 +15,7 @@ ApiWorld = !->
 
 
   @register-service = (service-data, done) ->
-    result = @exocomm.register-service service-data[0]
+    result = @exocomm.on-http-listener-register-service service-data[0]
     expect(result).to.equal 'success'
     done!
 
@@ -45,7 +45,7 @@ ApiWorld = !->
 
 
   @verify-knows-about-services = (service-data, done) ->
-    @exocomm.get-config ({clients}) ->
+    @exocomm.on-http-listener-get-config ({clients}) ->
       jsdiff-console clients, service-data, done
 
 

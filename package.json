@@ -33,6 +33,7 @@
     "chalk": "^1.1.1",
     "debug": "^2.2.0",
     "docopt": "^0.6.2",
+    "eventualize": "^0.1.0",
     "express": "^4.13.3",
     "rails-delegate": "^0.4.1"
   }

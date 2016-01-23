@@ -1,30 +1,30 @@
 require! {
+  'events' : {EventEmitter}
   './http-listener' : HttpListener
   './client-registry' : ClientRegistry
-  'rails-delegate' : delegate
+  'rails-delegate' : {delegate, delegate-event}
 }
 
 
-class ExoComm
+class ExoComm extends EventEmitter
 
   ->
     @http-listener = new HttpListener
-    @http-listener.on 'register-service', @register-service
-    @http-listener.on 'get-config', @get-config
+      ..on 'register-service', @register-service
+      ..on 'get-config', @get-config
+    delegate 'close' 'port', from: @, to: @http-listener
+    delegate-event 'listening' 'error', from: @http-listener, to: @
 
     @client-registry = new ClientRegistry
-
-    delegate 'close' 'port', from: @, to: @http-listener
 
 
   get-config: (done) ~>
     done clients: @client-registry.clients!
 
 
-  listen: (port, done) ->
-    port or= 3100
-    @http-listener.listen port, (err) ->
-      done err, port
+  listen: (port) ->
+    @http-listener.listen port || 3100
+
 
 
   # registers the service with the given data

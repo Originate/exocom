@@ -10,7 +10,8 @@ ApiWorld = !->
 
   @create-exocomm-instance = ({port}, done) ->
     @exocomm = new ExoComm
-      ..listen port, done
+      ..listen port
+      ..on 'listening', -> done!
 
 
   @register-service = (service-data, done) ->
@@ -19,21 +20,27 @@ ApiWorld = !->
     done!
 
 
-  @run-exocomm = (done) ->
+  @run-exocomm = (expect-error, done) ->
     @exocomm = new ExoComm
-      ..listen null, (@listen-error) ~>
-        done!
+      ..listen null
+    if expect-error
+      @exocomm.on 'error', (@err) ~> done!
+    else
+      @exocomm.on 'listening', -> done!
 
 
-  @run-exocomm-at-port = (port, done) ->
+  @run-exocomm-at-port = (port, expect-error, done) ->
     @exocomm = new ExoComm
-      ..listen port, (@listen-error) ~>
-        done!
+      ..listen port
+    if expect-error
+      @exocomm.on 'error', (@err) ~> done!
+    else
+      @exocomm.on 'listening', -> done!
 
 
   @verify-abort-with-message = (message, done) ->
     process.next-tick ~>
-      expect(@listen-error).to.equal message
+      expect(@err).to.equal message
       done!
 
 

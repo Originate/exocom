@@ -16,8 +16,8 @@ Feature: configuring the port
 
   Scenario: trying to run at the default port when it is already used
     Given another service already uses port 3100
-    When I run ExoComm at the default port
-    Then it aborts with the message "EADDRINUSE"
+    When I try to run ExoComm at the default port
+    Then it aborts with the message "port 3100 is already in use"
 
 
   Scenario: running at a custom port
@@ -27,5 +27,5 @@ Feature: configuring the port
 
   Scenario: trying to run at an already used port
     Given another service already uses port 3200
-    When I run ExoComm at port 3200
-    Then it aborts with the message "EADDRINUSE"
+    When I try to run ExoComm at port 3200
+    Then it aborts with the message "port 3200 is already in use"

@@ -26,12 +26,12 @@ module.exports = ->
 
 
 
-  @When /^I run ExoComm at port (\d+)$/, (+port, done) ->
-    @run-exocomm-at-port port, done
+  @When /^I( try to)? run ExoComm at port (\d+)$/, (!!expect-error, +port, done) ->
+    @run-exocomm-at-port port, expect-error, done
 
 
-  @When /^I run ExoComm at the default port$/, (done) ->
-    @run-exocomm done
+  @When /^I( try to)? run ExoComm at the default port$/, (!!expect-error, done) ->
+    @run-exocomm expect-error, done
 
 
   @When /^receiving a registration for this service:$/, (table, done) ->

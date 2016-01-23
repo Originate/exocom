@@ -11,7 +11,7 @@ require! {
 E2EWorld = !->
 
   @create-exocomm-instance = ({port}, done) ->
-    @process = new ObservableProcess "bin/exocomm run --port #{@exocomm-port}", verbose: no
+    @process = new ObservableProcess "bin/exocomm run --port #{@exocomm-port}", verbose: yes
       ..wait "online at port #{port}", done
 
 
@@ -25,13 +25,13 @@ E2EWorld = !->
     request request-data, done
 
 
-  @run-exocomm = (done) ->
-    @process = new ObservableProcess 'bin/exocomm run', verbose: no
+  @run-exocomm = (_expect-error, done) ->
+    @process = new ObservableProcess 'bin/exocomm run', verbose: yes
     done!
 
 
-  @run-exocomm-at-port = (port, done) ->
-    @process = new ObservableProcess "bin/exocomm run --port #{port}", verbose: no
+  @run-exocomm-at-port = (port, _expect-error, done) ->
+    @process = new ObservableProcess "bin/exocomm run --port #{port}", verbose: yes
     done!
 
 

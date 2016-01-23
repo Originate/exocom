@@ -1,12 +1,17 @@
 require! {
   'body-parser'
+  'events' : {EventEmitter}
   'express'
 }
 debug = require('debug')('exorelay:http-listener')
 
 
 # The HTTP endpoint that listens for commands that services want to send
-class HttpListener
+#
+# Emits these events:
+# - error: when it cannot bind to the given port
+# - listening: when it listens at the given port
+class HttpListener extends EventEmitter
 
   ->
     @app = express!
@@ -23,28 +28,19 @@ class HttpListener
     @server.close!
 
 
-  listen: (+@port, done) ->
-    | isNaN @port                =>  throw new Error 'Non-numerical port provided to ExoRelay#listen'
+  listen: (+@port) ->
+    | isNaN @port =>  emit 'error', 'Non-numerical port provided to ExoRelay#listen'
     @server = @app.listen @port
-      ..on 'error', (err) -> done err.code
-      ..on 'listening', ~>
-        debug "listening at port #{@port}"
-        done!
-
-
-  on: (event-name, handler) ->
-    | !event-name                       =>  throw new Error 'no event name provided'
-    | !handler                          =>  throw new Error 'no handler provided'
-    | event-name is 'register-service'  =>  @handle-registration = handler
-    | event-name is 'get-config'        =>  @get-config = handler
-    | _                                 =>  throw new Error "unknown event: '#{event-name}'"
-    debug "registering handler for event '#{event-name}'"
+      ..on 'error', (err) ~>
+        err = "port #{err.port} is already in use" if err.code is 'EADDRINUSE'
+        @emit 'error', err
+      ..on 'listening', ~> @emit 'listening', @port
 
 
   _register-service-controller: (req, res) ~>
     request-data = req.body.payload
     debug "service '#{request-data.name}' requesting to register"
-    switch (result = @handle-registration request-data)
+    switch (result = @listeners('register-service')[0] request-data)
       | 'success'  =>  res.status(200).end!
 
 
@@ -60,7 +56,7 @@ class HttpListener
 
   # returns data about the current status of ExoComm
   _status-controller: (req, res) ~>
-    @get-config (config) ->
+    @listeners('get-config')[0] (config) ->
       res.send JSON.stringify config
 
 

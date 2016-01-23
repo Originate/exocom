@@ -1,6 +1,7 @@
 require! {
   './http-listener' : HttpListener
   './client-registry' : ClientRegistry
+  'rails-delegate' : delegate
 }
 
 
@@ -13,6 +14,8 @@ class ExoComm
 
     @client-registry = new ClientRegistry
 
+    delegate 'close' 'port', from: @, to: @http-listener
+
 
   get-config: (done) ~>
     done clients: @client-registry.clients!
@@ -20,8 +23,8 @@ class ExoComm
 
   listen: (port, done) ->
     port or= 3100
-    @http-listener.listen port, ->
-      done port
+    @http-listener.listen port, (err) ->
+      done err, port
 
 
   # registers the service with the given data

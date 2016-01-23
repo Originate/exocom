@@ -5,4 +5,5 @@ module.exports = ->
 
   @After ->
     @existing-server?.close!
+    @exocomm?.close!
     @process?.kill!

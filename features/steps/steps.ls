@@ -1,67 +1,61 @@
 require! {
   'chai' : {expect}
-  'jsdiff-console'
   'http'
-  'livescript'
-  'observable-process' : ObservableProcess
+  'nitroglycerin' : N
+  'portfinder'
   'request'
-  'wait' : {wait-until}
+  'wait' : {wait}
 }
 
 
 module.exports = ->
 
-  @Given /^an ExoComm instance at port (\d+)$/, (@exocomm-port, done) ->
-    @process = new ObservableProcess "bin/exocomm run --port #{@exocomm-port}", verbose: yes
-      ..wait "online at port #{@exocomm-port}", done
+  @Given /^an ExoComm instance$/, (done) ->
+    portfinder.get-port N (@exocomm-port) ~>
+      @create-exocomm-instance port: @exocomm-port, done
 
 
-  @Given /^another service already uses port (\d+)$/, (port, done) ->
-    handler = (_, res) -> res.end 'existing server'
-    @existing-server = http.create-server(handler).listen port, ->
-      request "http://localhost:3100", (err, _, body) ->
-        expect(err).to.be.null
-        expect(body).to.equal 'existing server'
-        done!
+  @Given /^another service already uses port (\d+)$/, (+port, done) ->
+    wait 0, ~>   # to let the previous server shut down
+      handler = (_, res) -> res.end 'existing server'
+      @existing-server = http.create-server(handler).listen port, done
 
 
-  @Given /^it knows about this service:$/, (service-data, done) ->
-    eval livescript.compile "payload = {\n#{service-data}\n}", bare: yes, header: no
-    request-data =
-      url: "http://localhost:4100/register-service",
-      method: 'POST'
-      body:
-        payload: payload
-      json: yes
-    request request-data, done
+  @Given /^(?:ExoComm|it) knows about these services:$/, (table, done) ->
+    @register-service parse-service-data-table(table), done
 
 
 
-  @When /^I run "([^"]*)"$/, (code) ->
-    @process = new ObservableProcess code, verbose: no
+  @When /^I run ExoComm at port (\d+)$/, (+port, done) ->
+    @run-exocomm-at-port port, done
 
 
-  @When /^receiving a service registration via this request:$/, (request-data, done) ->
-    eval livescript.compile "data = {\n#{request-data}\n}", bare: yes, header: no
-    data.json = yes
-    request data, (err, {status-code}) ->
-      expect(err).to.be.null
-      expect(status-code).to.equal 200
-      done!
+  @When /^I run ExoComm at the default port$/, (done) ->
+    @run-exocomm done
 
 
-  @Then /^it aborts$/, (done) ->
-    wait-until (~> @process.crashed), done
+  @When /^receiving a registration for this service:$/, (table, done) ->
+    @register-service parse-service-data-table(table), done
 
 
-  @Then /^it knows about these services:$/, (service-data, done) ->
-    eval livescript.compile "expected-services = [\n#{service-data}\n]", bare: yes, header: no
-    request "http://localhost:#{@exocomm-port}/status.json", (err, result, body) ->
-      expect(err).to.be.null
-      expect(result.status-code).to.equal 200
-      parsed-body = JSON.parse body
-      jsdiff-console parsed-body.clients, expected-services, done
+
+  @Then /^it aborts with the message "([^"]*)"$/, (message, done) ->
+    @verify-abort-with-message message, done
 
 
-  @Then /^this service runs at port (\d+)$/, (port, done) ->
-    @process.wait "online at port #{port}", done
+  @Then /^it knows about these services now:$/, (table, done) ->
+    @verify-knows-about-services parse-service-data-table(table), done
+
+
+  @Then /^it runs at port (\d+)$/, (+port, done) ->
+    @verify-runs-at-port port, done
+
+
+
+
+parse-service-data-table = (table) ->
+  result = [{[key.to-lower-case!, value] for key, value of row} for row in table.hashes!]
+  for row in result
+    row.sends = row.sends.split ', '
+    row.receives = row.receives.split ', '
+  result

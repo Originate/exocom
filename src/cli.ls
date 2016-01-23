@@ -1,6 +1,7 @@
 require! {
   \chalk : {cyan, dim, green}
   'docopt' : {docopt}
+  'nitroglycerin' : N
   '../package.json' : {name, version}
   'path'
   './exocomm' : ExoComm
@@ -21,7 +22,7 @@ options = docopt doc, help: no
 switch
 | options['-h'] or options['--help']     =>  console.log doc
 | options['-v'] or options['--version']  =>
-| options.run                            =>  new ExoComm!.listen options['--port'], (port) ->
+| options.run                            =>  new ExoComm!.listen options['--port'], N (port) ->
                                                console.log dim "Ctrl-C to stop"
                                                console.log "online at port #{cyan port}"
 | otherwise                              =>  console.err 'unhandled option'

@@ -14,6 +14,7 @@ class HttpListener
       ..get  '/status.json', @_status-controller
       ..post '/register-service', @_register-service-controller
       ..post '/send/:command', @_send-controller
+    @port = null
 
 
   close: ->
@@ -24,10 +25,11 @@ class HttpListener
 
   listen: (+@port, done) ->
     | isNaN @port                =>  throw new Error 'Non-numerical port provided to ExoRelay#listen'
-
-    @server = @app.listen port, ->
-      debug "listening at port #{port}"
-      done?!
+    @server = @app.listen @port
+      ..on 'error', (err) -> done err.code
+      ..on 'listening', ~>
+        debug "listening at port #{@port}"
+        done!
 
 
   on: (event-name, handler) ->

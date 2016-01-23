@@ -12,72 +12,26 @@ Feature: Registering services
     - the list of commands this service wants to send and receive
 
 
+  Background:
+    Given an ExoComm instance
+
+
   Scenario: a service registers itself with ExoComm
-    Given an ExoComm instance at port 4100
-    When receiving a service registration via this request:
-      """
-      url: "http://localhost:4100/register-service",
-      method: 'POST'
-      body:
-        payload:
-          name: 'example service'
-          host: 'localhost'
-          port: 3001
-          sends:
-            * 'command 1'
-            * 'command 2'
-          receives:
-            * 'command 3'
-            * 'command 4'
-      """
-    Then it knows about these services:
-      """
-      * name: 'example service'
-        host: 'localhost'
-        port: 3001
-        sends:
-          * 'command 1'
-          * 'command 2'
-        receives:
-          * 'command 3'
-          * 'command 4'
-      """
+    When receiving a registration for this service:
+      | NAME            | HOST      | PORT | SENDS     | RECEIVES  |
+      | example service | localhost | 3001 | command 1 | command 2 |
+    Then it knows about these services now:
+      | NAME            | HOST      | PORT | SENDS     | RECEIVES  |
+      | example service | localhost | 3001 | command 1 | command 2 |
 
 
   Scenario: a service updates its registration
-    Given an ExoComm instance at port 4100
-    And it knows about this service:
-      """
-      name: 'example service'
-      host: 'localhost'
-      port: 3001
-      sends:
-        * 'command 1'
-      receives:
-        * 'command 2'
-      """
-    When receiving a service registration via this request:
-      """
-      url: "http://localhost:4100/register-service",
-      method: 'POST'
-      body:
-        payload:
-          name: 'example service'
-          host: 'localhost'
-          port: 3002
-          sends:
-            * 'command 6'
-          receives:
-            * 'command 7'
-        requestId: '123'
-      """
-    Then it knows about these services:
-      """
-      * name: 'example service'
-        host: 'localhost'
-        port: 3002
-        sends:
-          * 'command 6'
-        receives:
-          * 'command 7'
-      """
+    Given ExoComm knows about these services:
+      | NAME            | HOST      | PORT | SENDS     | RECEIVES  |
+      | example service | localhost | 3001 | command 1 | command 2 |
+    When receiving a registration for this service:
+      | NAME            | HOST      | PORT | SENDS     | RECEIVES  |
+      | example service | localhost | 3002 | command 3 | command 4 |
+    Then it knows about these services now:
+      | NAME            | HOST      | PORT | SENDS     | RECEIVES  |
+      | example service | localhost | 3002 | command 3 | command 4 |

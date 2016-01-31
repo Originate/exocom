@@ -2,8 +2,10 @@ require! {
   'chai' : {expect}
   'jsdiff-console'
   'observable-process' : ObservableProcess
+  'record-http' : HttpRecorder
   'request'
-  'wait' : {wait-until}
+  './text-tools' : {ascii}
+  'wait' : {wait, wait-until}
 }
 
 
@@ -13,6 +15,38 @@ E2EWorld = !->
   @create-exocomm-instance = ({port}, done) ->
     @process = new ObservableProcess "bin/exocomm run --port #{@exocomm-port}", verbose: yes
       ..wait "online at port #{port}", done
+
+
+  @instance-for-receiving = ({name, command}, done) ->
+    @receivers or= {}
+    @receivers[name] = new HttpRecorder
+      ..listen 3000 + ascii(name), done
+    request-data =
+      url: "http://localhost:#{@exocomm-port}/register-service",
+      method: 'POST'
+      body:
+        payload:
+          name: name
+          port: 3000 + ascii(name)
+          sends: []
+          receives: [command]
+      json: yes
+    request request-data, done
+
+
+  @instance-for-sending = ({name, command}, done) ->
+    request-data =
+      url: "http://localhost:#{@exocomm-port}/register-service",
+      method: 'POST'
+      body:
+        payload:
+          name: name
+          port: 3000 + ascii(name)
+          sends: [command]
+          receives: []
+      json: yes
+    request request-data, done
+
 
 
   @register-service = (service-data, done) ->
@@ -35,6 +69,17 @@ E2EWorld = !->
     done!
 
 
+  @service-sends-command = (service, command, done) ->
+    request-data =
+      url: "http://localhost:#{@exocomm-port}/send/#{command}",
+      method: 'POST'
+      body:
+        payload: ''
+        request-id: '123'
+      json: yes
+    request request-data, done
+
+
   @verify-abort-with-message = (message, done) ->
     @process.wait message, ~>
       wait-until (~> @process.crashed), done
@@ -51,6 +96,21 @@ E2EWorld = !->
   @verify-runs-at-port = (port, done) ->
     @process.wait "online at port #{port}", done
 
+
+  @verify-sent-calls = ({service-name, message}, done) ->
+    service-receiver = @receivers[service-name]
+    condition = -> service-receiver.calls.length is 1
+    wait-until condition, 10, ->
+      expected = [
+        url: "http://localhost:4347/run/#{message}"
+        method: 'POST'
+        body:
+          payload: ''
+        headers:
+          accept: 'application/json'
+          'content-type': 'application/json'
+      ]
+      jsdiff-console service-receiver.calls, expected, done
 
 
 module.exports = ->

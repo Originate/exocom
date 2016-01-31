@@ -25,6 +25,8 @@
     "nitroglycerin": "^1.0.3",
     "observable-process": "^0.5.1",
     "portfinder": "^0.4.0",
+    "prelude-ls": "^1.1.2",
+    "record-http": "^0.4.0",
     "request": "^2.67.0",
     "wait": "^0.1.0"
   },
@@ -33,8 +35,8 @@
     "chalk": "^1.1.1",
     "debug": "^2.2.0",
     "docopt": "^0.6.2",
-    "eventualize": "^0.1.0",
     "express": "^4.13.3",
-    "rails-delegate": "^0.4.1"
+    "rails-delegate": "^0.4.1",
+    "remove-value": "^1.0.0"
   }
 }

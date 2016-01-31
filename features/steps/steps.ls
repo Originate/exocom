@@ -4,11 +4,20 @@ require! {
   'nitroglycerin' : N
   'portfinder'
   'request'
+  '../support/text-tools' : {ascii}
   'wait' : {wait}
 }
 
 
 module.exports = ->
+
+  @Given /^a (.*?) instance registered to send "([^"]*)"$/, (name, command, done) ->
+    @instance-for-sending {name, command}, done
+
+
+  @Given /^a (.*?) instance registered to receive "([^"]*)"$/, (name, command, done) ->
+    @instance-for-receiving {name, command}, done
+
 
   @Given /^an ExoComm instance$/, (done) ->
     portfinder.get-port N (@exocomm-port) ~>
@@ -38,6 +47,16 @@ module.exports = ->
     @register-service parse-service-data-table(table), done
 
 
+  @When /^the (.*?) sends "([^"]*)"$/, (service, command, done) ->
+    wait 0, ~>
+      @last-sent-message = command
+      @service-sends-command service, command, done
+
+
+
+  @Then /^ExoComm broadcasts this message to the (.*?)$/, (service-name, done) ->
+    @verify-sent-calls {service-name, message: @last-sent-message}, done
+
 
   @Then /^it aborts with the message "([^"]*)"$/, (message, done) ->
     @verify-abort-with-message message, done
@@ -49,7 +68,6 @@ module.exports = ->
 
   @Then /^it runs at port (\d+)$/, (+port, done) ->
     @verify-runs-at-port port, done
-
 
 
 

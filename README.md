@@ -11,8 +11,14 @@ This is the development version of the ExoSphere Communication Server.
 $ npm i -g exocomm-dev
 ```
 
+## APIs
 
-## Start
+ExoComm can be used via 2 separate APIs.
+
+
+### Command-line API
+
+This is the main way to use ExoCommDev by end users (ExoSphere developers).
 
 ```
 $ exocomm run
@@ -25,6 +31,19 @@ $ exocomm run --port <port number>
 ```
 
 More details around configuring the port [here](features/configuring-the-port.feature).
+
+
+### JavaScript API
+
+You can integrate ExoComm into your own NodeJS application through its JavaScript API.
+The [CLI](src/cli.ls) is implemented using the JavaScript API.
+
+
+## Functionality
+
+ExoComm [broadcasts](features/broadcasting-messages.feature) commands to other services.
+Services have to [register](features/registering-services.feature) with it first
+to tell it which messages they want to send and receive.
 
 
 ## Development

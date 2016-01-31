@@ -2,4 +2,4 @@
 
 mocha --compilers ls:LiveScript "**/*spec.ls"
 bin/cuc_api "$@"
-bin/cuc_e2e "$@"
+bin/cuc_cli "$@"

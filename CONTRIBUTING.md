@@ -1,30 +1,9 @@
 # ExoComm Guidelines
 
 
-## APIs
+## Architecture
 
-This application has 2 APIs:
-
-
-### Command-line API
-
-This is the main way to use ExoCommDev by end users (ExoSphere developers).
-Specified by the [end-to-end tests](features/support/e2e-world.ls).
-Implemented by [cli.ls](src/cli.ls).
-
-
-### JavaScript API
-
-It is possible to integrate ExoComm into your own NodeJS application through its JavaScript API.
-Specified by the [api tests](features/support/api-world.ls).
-Implemented by [exocomm.ls](src/exocomm.ls).
-
-The [CLI](#) is an example app that includes the JavaScript API.
-
-
-## Subsystems
-
-ExoComm is implemented using the micro-kernel pattern,
+ExoComm is implemented using the _micro-kernel_ pattern,
 i.e. as a number of relatively independent subsystems that are integrated through
 a relatively small and lightweight core that only provides
 communication between the subsystems.
@@ -35,6 +14,16 @@ as a set of one or more classes.
 - [HttpListener](src/http-listener): implements the HTTP endpoint that services talk to
                                      in order to make requests to ExoComm
 - [ClientRegistry](src/client-registry): keeps track of which service is allowed
-                                         to send and received what commands
+                                         to send and receive what commands
 - [CommandSender](src/command-sender): sends commands to external services
-- [Kernel](src/exocomm.ls): integrates all the above subsystems and provides the programmatic API
+- [Kernel](src/exocomm.ls): integrates all the above subsystems and provides the [programmatic API](#javascript-api)
+
+
+## Testing
+
+The tests run against the compiled output, so you need to run `watch` before executing them.
+
+- run all tests: `spec`
+- run unit tests: `tests`
+- run JS-API tests: `cuc_api`
+- run CLI tests: `cuc_cli`

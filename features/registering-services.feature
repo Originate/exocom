@@ -5,7 +5,7 @@ Feature: Registering services
   So that it can send them commands
 
   Rules:
-  - services can register with ExoComm by sending an "exosphere.register-service" command to it
+  - services can register with ExoComm via a POST request to /register-service
   - the payload for this command contains:
     - the name of the service
     - the IP address and port of the service

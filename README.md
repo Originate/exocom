@@ -26,3 +26,7 @@ $ exocomm run --port <port number>
 
 More details around configuring the port [here](features/configuring-the-port.feature).
 
+
+## Development
+
+See our [developer guidelines](CONTRIBUTING.md)

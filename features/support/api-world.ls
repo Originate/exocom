@@ -4,7 +4,7 @@ require! {
   'chai' : {expect}
   'jsdiff-console'
   'record-http' : HttpRecorder
-  'wait' : {wait, wait-until}
+  'wait' : {wait-until}
 }
 
 

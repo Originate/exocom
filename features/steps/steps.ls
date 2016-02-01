@@ -48,7 +48,7 @@ module.exports = ->
 
 
   @When /^the (.*?) sends "([^"]*)"$/, (service, command, done) ->
-    wait 0, ~>
+    set-immediate ~>
       @last-sent-message = command
       @service-sends-command service, command, done
 

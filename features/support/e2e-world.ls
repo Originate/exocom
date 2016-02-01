@@ -5,7 +5,7 @@ require! {
   'record-http' : HttpRecorder
   'request'
   './text-tools' : {ascii}
-  'wait' : {wait, wait-until}
+  'wait' : {wait-until}
 }
 
 

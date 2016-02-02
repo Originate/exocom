@@ -62,7 +62,7 @@ More details on how to send various data are [here](features/sending.feature).
 You can handle the incoming replies to your outgoing commands:
 
 ```coffeescript
-exo-relay.send 'users.create', name: 'Will Riker', (createdUser) ->
+exoRelay.send 'users.create', name: 'Will Riker', (createdUser) ->
   print "created user #{createdUser.id}"
 ```
 
@@ -78,3 +78,13 @@ exoRelay.registerHandler 'users.create', (userData, {send, reply}) ->
 ```
 
 More details and a working example of how to send commands from within command handlers is [here](features/sending-from-commands.feature).
+
+
+## Error handling
+
+ExoRelay emits `error` events when issues arise.
+Subscribe to them!
+
+```coffeescript
+exoRelay.on 'error', (err) -> # examine, print, or log the error here
+```

@@ -11,26 +11,21 @@ Feature: Listening
 
 
   Background:
-    Given an ExoRelay instance: "exoRelay = new ExoRelay()"
+    Given an ExoRelay instance
 
 
   Scenario: Setting up on the default port
-    When I take it online at the default port: "exoRelay.listen(done);"
+    When I take it online at the default port
     Then it is online at port 4000
 
 
   Scenario: Setting up on a custom port
-    When I take it online at port 4001: "exoRelay.listen(4001, done);"
-    Then it is online at port 4001
-
-
-  Scenario: providing a numerical string as the port
-    When I take it online at a string port: "exoRelay.listen('4001', done);"
+    When I take it online at port 4001
     Then it is online at port 4001
 
 
   # ERROR HANDLING
 
   Scenario: providing a non-number as the port
-    When I try to take it online at a non-numerical port: "exoRelay.listen('zonk', done);"
+    When I try to take it online at port "zonk"
     Then ExoRelay emits an "error" event with the message "Non-numerical port provided to ExoRelay#listen"

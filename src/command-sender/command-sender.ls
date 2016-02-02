@@ -12,6 +12,8 @@ class CommandSender extends EventEmitter
 
   ({@exocomm-port} = {}) ->
 
+    @exocomm-port = +@exocomm-port
+
     # Contains the request-id of the most recently sent request (for testing)
     @last-sent-request-id = null
 

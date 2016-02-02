@@ -8,6 +8,11 @@ debug = require('debug')('exorelay:http-listener')
 
 # The HTTP endpoint into which the Exosphere environment can
 # POST new commands.
+#
+# Emits these events:
+# - online
+# - offline
+# - error
 class HttpListener extends EventEmitter
 
   ->
@@ -18,18 +23,20 @@ class HttpListener extends EventEmitter
 
 
   close: ->
-    if @server
-      debug "no longer listening at port #{@port}"
-      @server.close!
+    return unless @server
+    @server.close!
+    @server = null
+    @port = null
+    debug "no longer listening at port #{@port}"
+    @emit 'offline'
 
 
-  listen: (+@port, done) ->
-    | typeof port is 'function'  =>  return @listen 4000, port
-    | isNaN @port                =>  return @emit 'error', Error 'Non-numerical port provided to ExoRelay#listen'
+  listen: (@port = 4000) ->
+    | isNaN @port  =>  return @emit 'error', Error 'Non-numerical port provided to ExoRelay#listen'
 
-    @server = @app.listen port, ->
+    @server = @app.listen @port, ~>
       debug "listening for Exosphere commands at port #{port}"
-      done?!
+      @emit 'online', @port
 
 
   _command-controller: (req, res) ~>

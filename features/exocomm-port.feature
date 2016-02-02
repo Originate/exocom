@@ -10,10 +10,10 @@ Feature: Configuring the ExoComm port
 
 
   Scenario: the user does not provide the ExoComm port
-    When I create an ExoRelay instance that uses the default ExoComm port: "new ExoRelay()"
+    When I create an ExoRelay instance that uses the default ExoComm port
     Then this instance uses the ExoComm port 3010
 
 
   Scenario: the user provides an available ExoComm port
-    When I create an ExoRelay instance that uses a custom ExoComm port: "new ExoRelay exocommPort: 3011"
+    When I create an ExoRelay instance that uses ExoComm port 3011
     Then this instance uses the ExoComm port 3011

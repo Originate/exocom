@@ -14,11 +14,18 @@ which uses this library internally.
 ## Add an ExoRelay to your application
 
 Each code base should have only one ExoRelay instance.
+ExoRelay instances emit events to signal state changes:
+* __online__: the instance is completely online now. Provides the port it listens on.
+* __offline__: the instance is offline now
+* __error__: an error has occurred. The instance is in an invalid state,
+             your application should crash.
 
 ```coffeescript
 ExoRelay = require 'exorelay'
 
 exoRelay = new ExoRelay()
+exoRelay.on 'online', (port) ->  # yay, we are online!
+exoRelay.on 'error', (err) ->    # examine, print, or log the error here
 exoRelay.listen()
 ```
 
@@ -78,13 +85,3 @@ exoRelay.registerHandler 'users.create', (userData, {send, reply}) ->
 ```
 
 More details and a working example of how to send commands from within command handlers is [here](features/sending-from-commands.feature).
-
-
-## Error handling
-
-ExoRelay emits `error` events when issues arise.
-Subscribe to them!
-
-```coffeescript
-exoRelay.on 'error', (err) -> # examine, print, or log the error here
-```

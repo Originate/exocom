@@ -2,9 +2,6 @@ require! {
   '../..' : ExoRelay
   'chai' : {expect}
   'livescript'
-  'nitroglycerin' : N
-  'portfinder' : {get-port}
-  'record-http' : HttpRecorder
   'wait' : {wait-until}
 }
 
@@ -19,23 +16,20 @@ module.exports = ->
 
   @Given /^an ExoRelay instance called "([^"]*)" listening at port (\d+)$/, (instance-name, port, done) ->
     @exo-relay = new ExoRelay exocomm-port: @exocomm-port
+      ..on 'online', -> done!
       ..on 'error', (@error) ~>
-      ..listen port, done
+      ..listen port
 
 
-  @Given /^an ExoRelay instance: "([^"]*)"$/, (code) ->
-    eval "this.#{code}"
-    @exo-relay.on 'error', (@error) ~>
+  @Given /^an ExoRelay instance$/, ->
+    @exo-relay = new ExoRelay
 
 
   @Given /^an ExoRelay instance listening at port (\d+)$/, (port, done) ->
     @exo-relay = new ExoRelay exocomm-port: @exocomm-port
+      ..on 'online', -> done!
       ..on 'error', (@error) ~>
-      ..listen port, done
-
-
-  @Given /^ExoComm runs at port (\d+)$/, (@exocomm-port, done) ->
-    @exocomm = new HttpRecorder!listen @exocomm-port, done
+      ..listen port
 
 
 
@@ -52,7 +46,3 @@ module.exports = ->
 
   @Then /^my handler calls the "done" method$/, (done) ->
     wait-until (~> @done.called), 10, done
-
-
-  @Then /^this instance uses the ExoComm port (\d+)$/, (+port) ->
-    expect(@exo-relay.command-sender.exocomm-port).to.equal port

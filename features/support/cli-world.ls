@@ -1,6 +1,7 @@
 require! {
   'chai' : {expect}
   'jsdiff-console'
+  './my-console'
   'observable-process' : ObservableProcess
   'record-http' : HttpRecorder
   'request'
@@ -13,7 +14,7 @@ require! {
 CliWorld = !->
 
   @create-exocomm-instance = ({port}, done) ->
-    @process = new ObservableProcess "bin/exocomm run --port #{@exocomm-port}", verbose: yes
+    @process = new ObservableProcess "bin/exocomm run --port #{@exocomm-port}", verbose: yes, console: my-console
       ..wait "online at port #{port}", done
 
 
@@ -60,12 +61,12 @@ CliWorld = !->
 
 
   @run-exocomm = (_expect-error, done) ->
-    @process = new ObservableProcess 'bin/exocomm run', verbose: yes
+    @process = new ObservableProcess 'bin/exocomm run', verbose: yes, console: my-console
     done!
 
 
   @run-exocomm-at-port = (port, _expect-error, done) ->
-    @process = new ObservableProcess "bin/exocomm run --port #{port}", verbose: yes
+    @process = new ObservableProcess "bin/exocomm run --port #{port}", verbose: yes, console: my-console
     done!
 
 

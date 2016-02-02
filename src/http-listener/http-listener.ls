@@ -1,5 +1,6 @@
 require! {
   'body-parser'
+  'events' : {EventEmitter}
   'express'
 }
 debug = require('debug')('exorelay:http-listener')
@@ -7,7 +8,7 @@ debug = require('debug')('exorelay:http-listener')
 
 # The HTTP endpoint into which the Exosphere environment can
 # POST new commands.
-class HttpListener
+class HttpListener extends EventEmitter
 
   ->
     @app = express!
@@ -24,28 +25,21 @@ class HttpListener
 
   listen: (+@port, done) ->
     | typeof port is 'function'  =>  return @listen 4000, port
-    | isNaN @port                =>  throw new Error 'Non-numerical port provided to ExoRelay#listen'
+    | isNaN @port                =>  return @emit 'error', Error 'Non-numerical port provided to ExoRelay#listen'
 
     @server = @app.listen port, ->
       debug "listening for Exosphere commands at port #{port}"
       done?!
 
 
-  on: (event-name, handler) ->
-    | !event-name              =>  throw new Error 'no event name provided'
-    | !handler                 =>  throw new Error 'no handler provided'
-    | event-name is 'command'  =>  @handle-command = handler
-    | _                        =>  throw new Error "unknown event: '#{event-name}'"
-
-
   _command-controller: (req, res) ~>
     request-data = @_parse-request req
     @_log request-data
-    switch (result = @handle-command request-data)
+    switch (result = @listeners('command')[0] request-data)
       | 'success'             =>  res.status(200).end!
       | 'missing request id'  =>  res.status(400).end 'missing request id'
       | 'unknown command'     =>  res.status(404).end "unknown command: '#{request-data.command}'"
-      | _                     =>  throw new Error "unknown result code: '#{@result}'"
+      | _                     =>  return @emit 'error', Error "unknown result code: '#{@result}'"
 
 
   _log: ({command, request-id, response-to}) ->

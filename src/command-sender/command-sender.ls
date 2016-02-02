@@ -1,4 +1,5 @@
 require! {
+  'events' : {EventEmitter}
   'lodash.isempty' : is-empty
   'node-uuid' : uuid
   'request'
@@ -7,7 +8,7 @@ debug = require('debug')('exorelay:command-sender')
 
 
 # Subsystem for sending commands out to Exosphere
-class CommandSender
+class CommandSender extends EventEmitter
 
   ({@exocomm-port} = {}) ->
 
@@ -18,16 +19,16 @@ class CommandSender
   # Returns a method that sends a reply to the command with the given request
   #
   reply-method-for: (request-id) ->
-    | !request-id  =>  throw new Error 'CommandSender.replyMethodFor needs a requestId'
+    | !request-id  =>  return @emit 'error', new Error 'CommandSender.replyMethodFor needs a requestId'
 
     (command, payload = {}) ~>
       @send command, payload, response-to: request-id
 
 
   send: (command, payload = {}, options = {}) ->
-    | !command                      =>  throw new Error 'ExoRelay#send cannot send empty commands'
-    | typeof command isnt 'string'  =>  throw new Error 'ExoRelay#send can only send string commands'
-    | typeof payload is 'function'  =>  throw new Error 'ExoRelay#send cannot send functions as payload'
+    | !command                      =>  return @emit 'error', new Error 'ExoRelay#send cannot send empty commands'
+    | typeof command isnt 'string'  =>  return @emit 'error', new Error 'ExoRelay#send can only send string commands'
+    | typeof payload is 'function'  =>  return @emit 'error', new Error 'ExoRelay#send cannot send functions as payload'
 
     @_log command, options
     request-data =

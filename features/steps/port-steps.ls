@@ -6,13 +6,9 @@ require! {
 
 module.exports = ->
 
-  @When /^I( try to)? take it online at.*: "([^"]*)"$/, (expect-error, code, done) ->
-    try
-      eval "this.#{code}"
-      return done 'Expected error' if expect-error
-    catch
-      @error = e.message
-      done!
+  @When /^I( try to)? take it online at.*: "([^"]*)"$/, (expect-error, code) ->
+    done = ->
+    eval "this.#{code}"
 
 
 

@@ -58,4 +58,4 @@ Feature: Handling incoming replies to sent commands
       """
       exo-relay.send 'users.create', {name: 'Will Riker'}, 'zonk'
       """
-    Then ExoRelay throws an exception with the message "The reply handler given to ExoRelay#send must be a function"
+    Then ExoRelay emits an "error" event with the message "The reply handler given to ExoRelay#send must be a function"

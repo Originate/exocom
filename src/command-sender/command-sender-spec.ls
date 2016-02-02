@@ -1,5 +1,5 @@
 require! {
-  '../../src/command-sender/command-sender' : CommandSender
+  './command-sender' : CommandSender
   'chai' : {expect}
   'sinon'
 }
@@ -8,6 +8,7 @@ describe 'CommandSender', ->
 
   before-each ->
     @command-sender = new CommandSender!
+      ..on 'error', (@error) ~>
 
 
   describe 'reply-method-for', (...) ->
@@ -30,10 +31,9 @@ describe 'CommandSender', ->
 
     context 'missing request-id', (...) ->
 
-      it 'throws an error', (done) ->
-        try
-          @command-sender.reply-method-for null
-          done new Error 'Expected exception'
-        catch
-          expect(e.message).to.eql 'CommandSender.replyMethodFor needs a requestId'
-          done!
+      before-each ->
+        @command-sender.reply-method-for null
+
+      it 'emits an error', (done) ->
+        expect(@error.message).to.eql 'CommandSender.replyMethodFor needs a requestId'
+        done!

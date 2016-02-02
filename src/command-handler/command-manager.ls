@@ -1,6 +1,7 @@
 require! {
+  'events' : {EventEmitter}
   './handler-registry' : HandlerRegistry
-  'rails-delegate' : delegate
+  'rails-delegate' : {delegate, delegate-event}
 }
 debug = require('debug')('exorelay:command-manager')
 
@@ -8,13 +9,14 @@ debug = require('debug')('exorelay:command-manager')
 # The command handling subsystem.
 #
 # Handles all types of commands
-class HandlerManager
+class HandlerManager extends EventEmitter
 
   ->
     @command-handlers = new HandlerRegistry 'command-handler'
     @reply-handlers = new HandlerRegistry 'reply-handler'
 
     delegate \hasHandler \registerHandler \registerHandlers from: @, to: @command-handlers
+    delegate-event 'error', from: [@command-handlers, @reply-handlers], to: @
 
 
   # Handles the given command with the given payload.

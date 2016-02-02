@@ -14,19 +14,23 @@ module.exports = ->
 
   @Given /^an ExoRelay instance called "([^"]*)"$/, (instance-name) ->
     @exo-relay = new ExoRelay exocomm-port: @exocomm-port
+      ..on 'error', (@error) ~>
 
 
   @Given /^an ExoRelay instance called "([^"]*)" listening at port (\d+)$/, (instance-name, port, done) ->
     @exo-relay = new ExoRelay exocomm-port: @exocomm-port
+      ..on 'error', (@error) ~>
       ..listen port, done
 
 
   @Given /^an ExoRelay instance: "([^"]*)"$/, (code) ->
     eval "this.#{code}"
+    @exo-relay.on 'error', (@error) ~>
 
 
   @Given /^an ExoRelay instance listening at port (\d+)$/, (port, done) ->
     @exo-relay = new ExoRelay exocomm-port: @exocomm-port
+      ..on 'error', (@error) ~>
       ..listen port, done
 
 
@@ -40,8 +44,10 @@ module.exports = ->
 
 
 
-  @Then /^ExoRelay throws an exception with the message "([^"]*)"$/, (expected-message) ->
-    expect(@error).to.equal expected-message
+  @Then /^ExoRelay emits an "error" event with the message "([^"]*)"$/, (message) ->
+    expect(@error).to.not.be.null
+    expect(@error.message).to.equal message
+    @error = null
 
 
   @Then /^my handler calls the "done" method$/, (done) ->

@@ -1,8 +1,11 @@
-require! 'debug'
+require! {
+  'debug'
+  'events' : {EventEmitter}
+}
 
 
 # A registry for command handlers of a particular type
-class HandlerRegistry
+class HandlerRegistry extends EventEmitter
 
   (debug-name) ->
 
@@ -33,11 +36,11 @@ class HandlerRegistry
 
 
   register-handler: (request-id, handler) ->
-    | !request-id                      =>  throw new Error "No request id provided"
-    | typeof request-id isnt 'string'  =>  throw new Error "Request ids must be strings"
-    | !handler                         =>  throw new Error "No command handler provided"
-    | typeof handler isnt 'function'   =>  throw new Error "Command handler must be a function"
-    | @has-handler request-id          =>  throw new Error "There is already a handler for command '#{request-id}'"
+    | !request-id                      =>  return @emit 'error', new Error 'No request id provided'
+    | typeof request-id isnt 'string'  =>  return @emit 'error', new Error 'Request ids must be strings'
+    | !handler                         =>  return @emit 'error', new Error 'No command handler provided'
+    | typeof handler isnt 'function'   =>  return @emit 'error', new Error 'Command handler must be a function'
+    | @has-handler request-id          =>  return @emit 'error', new Error "There is already a handler for command '#{request-id}'"
 
     @debug "registering handler for request-id '#{request-id}'"
     @handlers[request-id] = handler

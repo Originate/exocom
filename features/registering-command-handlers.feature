@@ -38,7 +38,7 @@ Feature: Registering command handlers
   Scenario: registering an already handled command
     Given my ExoRelay instance already has a handler for the command "hello"
     When I try to add another handler for that command
-    Then ExoRelay throws an exception with the message "There is already a handler for command 'hello'"
+    Then ExoRelay emits an "error" event with the message "There is already a handler for command 'hello'"
 
 
   Scenario: forgetting to provide the command
@@ -46,7 +46,7 @@ Feature: Registering command handlers
       """
       exo-relay.register-handler ->
       """
-    Then ExoRelay throws an exception with the message "Request ids must be strings"
+    Then ExoRelay emits an "error" event with the message "Request ids must be strings"
 
 
   Scenario: providing an empty command
@@ -54,7 +54,7 @@ Feature: Registering command handlers
       """
       exo-relay.register-handler '', ->
       """
-    Then ExoRelay throws an exception with the message "No request id provided"
+    Then ExoRelay emits an "error" event with the message "No request id provided"
 
 
   Scenario: providing a non-string command
@@ -62,7 +62,7 @@ Feature: Registering command handlers
       """
       exo-relay.register-handler [], ->
       """
-    Then ExoRelay throws an exception with the message "Request ids must be strings"
+    Then ExoRelay emits an "error" event with the message "Request ids must be strings"
 
 
   Scenario: forgetting to provide the handler
@@ -70,7 +70,7 @@ Feature: Registering command handlers
       """
       exo-relay.register-handler 'command'
       """
-    Then ExoRelay throws an exception with the message "No command handler provided"
+    Then ExoRelay emits an "error" event with the message "No command handler provided"
 
 
   Scenario: providing a non-functional handler
@@ -78,4 +78,4 @@ Feature: Registering command handlers
       """
       exo-relay.register-handler 'command', 'zonk'
       """
-    Then ExoRelay throws an exception with the message "Command handler must be a function"
+    Then ExoRelay emits an "error" event with the message "Command handler must be a function"

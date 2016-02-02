@@ -93,7 +93,7 @@ Feature: Sending outgoing commands
       """
       exo-relay.send ''
       """
-    Then ExoRelay throws an exception with the message "ExoRelay#send cannot send empty commands"
+    Then ExoRelay emits an "error" event with the message "ExoRelay#send cannot send empty commands"
 
 
   Scenario: trying to send a non-string command
@@ -101,7 +101,7 @@ Feature: Sending outgoing commands
       """
       exo-relay.send []
       """
-    Then ExoRelay throws an exception with the message "ExoRelay#send can only send string commands"
+    Then ExoRelay emits an "error" event with the message "ExoRelay#send can only send string commands"
 
 
   Scenario: forgetting to provide the payload when providing a reply handler
@@ -109,4 +109,4 @@ Feature: Sending outgoing commands
       """
       exo-relay.send 'test', ->
       """
-    Then ExoRelay throws an exception with the message "ExoRelay#send cannot send functions as payload"
+    Then ExoRelay emits an "error" event with the message "ExoRelay#send cannot send functions as payload"

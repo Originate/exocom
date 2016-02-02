@@ -1,13 +1,14 @@
 require! {
   './command-manager' : HandlerManager
   './command-sender' : CommandSender
-  'rails-delegate' : delegate
+  'events' : {EventEmitter}
   './http-listener' : HttpListener
+  'rails-delegate' : {delegate, delegate-event}
 }
 debug = require('debug')('exorelay')
 
 
-class ExoRelay
+class ExoRelay extends EventEmitter
 
   ({exocomm-port} = {exocomm-port: 3010}) ->
 
@@ -23,10 +24,11 @@ class ExoRelay
 
     delegate \close \listen from: @, to: @http-listener
     delegate \hasHandler \registerHandler \registerHandlers from: @, to: @command-handler
+    delegate-event 'error', from: [@http-listener, @command-handler, @command-sender], to: @
 
 
   send: (command, payload, reply-handler) ~>
-    | reply-handler and typeof reply-handler isnt 'function'  =>  throw new Error 'The reply handler given to ExoRelay#send must be a function'
+    | reply-handler and typeof reply-handler isnt 'function'  =>  return @emit 'error', Error 'The reply handler given to ExoRelay#send must be a function'
 
     request-id = @command-sender.send command, payload
     if reply-handler

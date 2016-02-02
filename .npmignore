@@ -1,3 +1,6 @@
+bin/build
+bin/spec
+bin/watch
 features/
 gulpfile.ls
 src/

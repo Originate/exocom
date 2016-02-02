@@ -1,5 +1,6 @@
 require! {
   'chai' : {expect}
+  '../support/dim-console'
   'http'
   'livescript'
   'observable-process' : ObservableProcess
@@ -43,7 +44,8 @@ module.exports = ->
   @When /^executing "([^"]*)"$/, (command, done) ->
     @process = new ObservableProcess("bin/#{command}",
                                      cwd: path.join(process.cwd!, 'features', 'example-apps', @service-name),
-                                     verbose: no)
+                                     console: dim-console
+                                     verbose: yes)
       ..wait 'online at port', done
 
 

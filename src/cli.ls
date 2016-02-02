@@ -1,9 +1,9 @@
 require! {
-  \chalk : {cyan, dim, green}
+  \chalk : {cyan, dim, green, red}
   'docopt' : {docopt}
   '../package.json' : {name, version}
   'path'
-  './service-runner'
+  './service-runner' : ServiceRunner
 }
 
 console.log dim "Exosphere Node.js service runner #{version}\n"
@@ -21,11 +21,19 @@ Usage:
   #{name} -v | --version
 """
 
+run = (options) ->
+  new ServiceRunner exocomm-port: options['--exocomm-port']
+    ..on 'online', (port) ->
+      console.log dim "Ctrl-C to stop"
+      console.log "online at port #{cyan port}"
+    ..on 'error', (err) -> console.log red err
+    ..on 'offline', -> console.log red 'SERVER CLOSED'
+    ..listen port: options['--port']
+
+
 options = docopt doc, help: no
 switch
 | options['-h'] or options['--help']     =>  console.log doc
 | options['-v'] or options['--version']  =>
-| options.run                            =>  service-runner port: options['--port'], exocomm-port: options['--exocomm-port'], (port) ->
-                                               console.log dim "Ctrl-C to stop"
-                                               console.log "online at port #{cyan port}"
+| options.run                            =>  run options
 | otherwise                              =>  console.err 'unhandled option'

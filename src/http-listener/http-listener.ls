@@ -29,7 +29,7 @@ class HttpListener extends EventEmitter
 
 
   listen: (+@port) ->
-    | isNaN @port =>  emit 'error', 'Non-numerical port provided to ExoRelay#listen'
+    | isNaN @port =>  @emit 'error', 'Non-numerical port provided to ExoRelay#listen'
     @server = @app.listen @port
       ..on 'error', (err) ~>
         err = "port #{err.port} is already in use" if err.code is 'EADDRINUSE'

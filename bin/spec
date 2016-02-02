@@ -2,4 +2,4 @@
 set -e
 
 bin/tests
-DEBUG='*,-express:*,-body-parser:*,-finalhandler' cucumber-js "$@"
+DEBUG='*,-express:*,-body-parser:*,-finalhandler,-rails-delegate' cucumber-js "$@"

@@ -10,7 +10,7 @@ require! {
 
 
 # Provides steps for end-to-end testing of the service as a stand-alone binary
-E2EWorld = !->
+CliWorld = !->
 
   @create-exocomm-instance = ({port}, done) ->
     @process = new ObservableProcess "bin/exocomm run --port #{@exocomm-port}", verbose: yes
@@ -114,4 +114,4 @@ E2EWorld = !->
 
 
 module.exports = ->
-  @World = E2EWorld if process.env.EXOCOMM_TEST_DEPTH is 'E2E'
+  @World = CliWorld if process.env.EXOCOMM_TEST_DEPTH is 'CLI'

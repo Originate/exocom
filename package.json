@@ -7,7 +7,7 @@
     "postpublish": "git push && git push --tags",
     "prepublish": "bin/build",
     "preversion": "npm test && npm run update",
-    "test": "cucumber-js",
+    "test": "bin/spec",
     "update": "david update"
   },
   "repository": {

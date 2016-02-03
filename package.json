@@ -1,6 +1,6 @@
 {
   "name": "exoservice-js",
-  "version": "0.4.1",
+  "version": "0.5.0",
   "author": "Kevin Goslar",
   "bin": {
     "exo-js": "./bin/exo-js"
@@ -14,7 +14,7 @@
     "exorelay": "^0.8.0",
     "nitroglycerin": "^1.0.3",
     "observable-process": "^0.5.2",
-    "portfinder": "^0.4.0",
+    "portfinder": "^1.0.0",
     "rails-delegate": "^0.5.0",
     "robust-callbacks": "^1.0.1"
   },

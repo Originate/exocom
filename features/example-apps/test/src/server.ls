@@ -1,5 +1,10 @@
 module.exports =
 
+  before-all: (done) ->
+    console.log 'Running before-all hook'
+    done!
+
+
   'hello-world': ->
     console.log "Hello world!"
 

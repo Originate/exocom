@@ -19,10 +19,11 @@ class ServiceRunner extends EventEmitter
   listen: ({port}) ->
     @get-port port, (@port) ~>
       service-loader (service) ~>
-        debug "listening at port #{port}"
-        @exo-relay
-          ..register-handlers service.handlers
-          ..listen port
+        service.handlers.before-all ~>
+          debug "listening at port #{port}"
+          @exo-relay
+            ..register-handlers service.handlers
+            ..listen port
 
 
   get-port: (port, done) ->
@@ -34,8 +35,6 @@ class ServiceRunner extends EventEmitter
         return @emit 'error', err
       done @port
 
-
-# Runs the service in the given directory
 
 
 module.exports = ServiceRunner

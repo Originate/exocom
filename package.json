@@ -1,19 +1,17 @@
 {
   "name": "exocomm-mock",
   "version": "0.0.1",
+  "author": "Kevin Goslar",
   "description": "A mock implementation of the ExoComm development server in JavaScript, for testing",
-  "main": "lib/exocomm-mock.js",
-  "scripts": {
-    "test": "spec"
   },
+  "homepage": "https://github.com/Originate/exocomm-mock-js#readme",
+  "license": "ISC",
+  "main": "lib/mock-exo-comm.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Originate/exocomm-mock-js.git"
   },
-  "author": "Kevin Goslar",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/Originate/exocomm-mock-js/issues"
-  },
-  "homepage": "https://github.com/Originate/exocomm-mock-js#readme"
+  "scripts": {
+    "test": "spec"
+  }
 }

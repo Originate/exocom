@@ -25,6 +25,8 @@ describe 'MockExoComm', ->
         method: 'POST'
         body:
           payload: 'my payload'
+        headers:
+          accept: 'application/json'
       expected =
         name: 'users.create'
         payload: 'my payload'

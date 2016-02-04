@@ -11,7 +11,7 @@ Feature: Receiving commands
 
   Scenario: no calls received
     Given a ExoCommMock instance
-    Then it has received no calls
+    Then it has received no commands
 
 
   Scenario: calls received
@@ -25,3 +25,7 @@ Feature: Receiving commands
 
 
   Scenario: resetting the calls list after calls have been received
+    Given an ExoCommMock instance listening at port 4100
+    And somebody sends it a command
+    When resetting the ExoCommMock instance
+    Then it has received no commands

@@ -1,4 +1,5 @@
 require! {
+  'rails-delegate' : {delegate}
   'record-http' : HttpRecorder
   'request'
 }
@@ -9,14 +10,9 @@ class MockExoComm
 
   ->
     @service-ports = {}
-
-
-  close: ->
-
-
-  listen: (@port, done) ->
     @receiver = new HttpRecorder
-      ..listen @port, done
+
+    delegate \listen \port \reset \close, from: @, to: @receiver
 
 
   received-commands: ->

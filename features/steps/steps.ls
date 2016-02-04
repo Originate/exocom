@@ -24,6 +24,17 @@ module.exports = ->
     @service = new HttpRecorder().listen port, done
 
 
+  @Given /^somebody sends it a command$/, (done) ->
+    request-data =
+      url: "http://localhost:#{@exocomm.port}/send/foo"
+      method: "POST"
+      body:
+        payload: ''
+        request-id: '123'
+      json: yes
+    request request-data, done
+
+
   @Given /^somebody sends it a "([^"]*)" command with payload "([^"]*)"$/, (command, payload, done) ->
     request-data =
       url: "http://localhost:#{@exocomm.port}/send/#{command}"
@@ -39,6 +50,10 @@ module.exports = ->
   @When /^trying to send a "([^"]*)" command to the "([^"]*)" service$/, (command, service, done) ->
     @exocomm.send {service, command}, (@error) ~>
       done!
+
+
+  @When /^resetting the ExoCommMock instance$/, ->
+    @exocomm.reset!
 
 
   @When /^sending a "([^"]*)" command to the "([^"]*)" service with the payload:$/, (command, service, payload, done) ->
@@ -60,7 +75,7 @@ module.exports = ->
     expect(@error.message).to.equal expected-error
 
 
-  @Then /^it has received no calls$/, ->
+  @Then /^it has received no commands/, ->
     expect(@exocomm.calls).to.be.empty
 
 

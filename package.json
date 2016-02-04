@@ -4,7 +4,8 @@
   "author": "Kevin Goslar",
   "description": "A mock implementation of the ExoComm development server in JavaScript, for testing",
   "dependencies": {
-    "record-http": "^0.4.0",
+    "rails-delegate": "^0.5.0",
+    "record-http": "^0.4.3",
     "request": "^2.69.0"
   },
   "devDependencies": {

@@ -51,8 +51,8 @@ module.exports = ->
     @exocomm.close!
 
 
-  @When /^trying to send a "([^"]*)" command to the "([^"]*)" service$/, (command, service, done) ->
-    @exocomm.send {service, command}, (@error) ~>
+  @When /^trying to send a "([^"]*)" command to the "([^"]*)" service$/, (command-name, service-name, done) ->
+    @exocomm.send-command service: service-name, name: command-name, (@error) ~>
       done!
 
 
@@ -61,7 +61,7 @@ module.exports = ->
 
 
   @When /^sending a "([^"]*)" command to the "([^"]*)" service with the payload:$/, (command, service, payload, done) ->
-    @exocomm.send {service, command, payload}, done
+    @exocomm.send-command service: service, name: command, payload: payload, done
 
 
 

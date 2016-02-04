@@ -31,7 +31,7 @@ $ npm i --save-dev exocomm-mock
 * send a command to the service
 
   ```coffeescript
-  exocomm.send service: 'users', command: 'users.create', payload: { name: 'Jean-Luc Picard' }
+  exocomm.send service: 'users', name: 'users.create', payload: { name: 'Jean-Luc Picard' }
   ```
 
 * verifying commands sent out by the service under test

@@ -7,7 +7,8 @@ Feature: Sending requests to services
 
   Rules:
   - you must register services with the mock exocomm instance before you can send commands to them
-  - call "exocomm.send <service-name>, <command>, <payload>" to
+  - call "exocomm.sendCommand service: <service-name>, name: <command name>, payload: <payload>"
+    to send the given command to the given service
 
 
   Scenario: sending a command to a registered service

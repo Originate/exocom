@@ -1,0 +1,122 @@
+0 info it worked if it ends with ok
+1 verbose cli [ '/usr/local/Cellar/node/5.3.0/bin/node',
+1 verbose cli   '/Users/kevin/exocomm-mock-js/node_modules/.bin/npm',
+1 verbose cli   'publish' ]
+2 info using npm@3.6.0
+3 info using node@v5.3.0
+4 verbose publish [ '.' ]
+5 silly cache add args [ '.', null ]
+6 verbose cache add spec .
+7 silly cache add parsed spec Result {
+7 silly cache add   raw: '.',
+7 silly cache add   scope: null,
+7 silly cache add   name: null,
+7 silly cache add   rawSpec: '.',
+7 silly cache add   spec: '/Users/kevin/exocomm-mock-js',
+7 silly cache add   type: 'directory' }
+8 verbose addLocalDirectory /Users/kevin/.npm/exocomm-mock/0.2.2/package.tgz not in flight; packing
+9 verbose correctMkdir /Users/kevin/.npm correctMkdir not in flight; initializing
+10 info lifecycle exocomm-mock@0.2.2~prepublish: exocomm-mock@0.2.2
+11 verbose lifecycle exocomm-mock@0.2.2~prepublish: unsafe-perm in lifecycle true
+12 verbose lifecycle exocomm-mock@0.2.2~prepublish: PATH: /Users/kevin/exocomm-mock-js/node_modules/npm/bin/node-gyp-bin:/Users/kevin/exocomm-mock-js/node_modules/.bin:./bin:./node_modules/.bin:/Users/kevin/.rbenv/shims:/Users/kevin/Dropbox/bin:/Users/kevin/git-town/src:/usr/local/bin:/usr/local/sbin:/usr/local/share/npm/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
+13 verbose lifecycle exocomm-mock@0.2.2~prepublish: CWD: /Users/kevin/exocomm-mock-js
+14 silly lifecycle exocomm-mock@0.2.2~prepublish: Args: [ '-c', 'bin/build' ]
+15 silly lifecycle exocomm-mock@0.2.2~prepublish: Returned: code: 0  signal: null
+16 verbose tar pack [ '/Users/kevin/.npm/exocomm-mock/0.2.2/package.tgz',
+16 verbose tar pack   '/Users/kevin/exocomm-mock-js' ]
+17 verbose tarball /Users/kevin/.npm/exocomm-mock/0.2.2/package.tgz
+18 verbose folder /Users/kevin/exocomm-mock-js
+19 verbose addLocalTarball adding from inside cache /Users/kevin/.npm/exocomm-mock/0.2.2/package.tgz
+20 verbose correctMkdir /Users/kevin/.npm correctMkdir not in flight; initializing
+21 silly cache afterAdd exocomm-mock@0.2.2
+22 verbose afterAdd /Users/kevin/.npm/exocomm-mock/0.2.2/package/package.json not in flight; writing
+23 verbose correctMkdir /Users/kevin/.npm correctMkdir not in flight; initializing
+24 verbose afterAdd /Users/kevin/.npm/exocomm-mock/0.2.2/package/package.json written
+25 silly publish { name: 'exocomm-mock',
+25 silly publish   version: '0.2.2',
+25 silly publish   author: { name: 'Kevin Goslar' },
+25 silly publish   description: 'A mock implementation of the ExoComm development server in JavaScript, for testing',
+25 silly publish   dependencies:
+25 silly publish    { debug: '^2.2.0',
+25 silly publish      'rails-delegate': '^0.5.0',
+25 silly publish      'record-http': '^0.5.1',
+25 silly publish      request: '^2.69.0' },
+25 silly publish   devDependencies:
+25 silly publish    { chai: '^3.5.0',
+25 silly publish      cucumber: '^0.9.4',
+25 silly publish      david: '^7.0.0',
+25 silly publish      'jsdiff-console': '^1.1.3',
+25 silly publish      livescript: '^1.4.0',
+25 silly publish      mocha: '^2.4.5',
+25 silly publish      sinon: '^1.17.3',
+25 silly publish      'sinon-chai': '^2.8.0',
+25 silly publish      wait: '^0.1.0' },
+25 silly publish   files: [ 'lib/' ],
+25 silly publish   homepage: 'https://github.com/Originate/exocomm-mock-js#readme',
+25 silly publish   license: 'ISC',
+25 silly publish   main: 'lib/mock-exo-comm.js',
+25 silly publish   repository:
+25 silly publish    { type: 'git',
+25 silly publish      url: 'git+https://github.com/Originate/exocomm-mock-js.git' },
+25 silly publish   scripts:
+25 silly publish    { postpublish: 'git push && git push --tags',
+25 silly publish      prepublish: 'bin/build',
+25 silly publish      preversion: 'npm test && david',
+25 silly publish      test: 'bin/spec' },
+25 silly publish   readme: '# Mock implementation of ExoComm in JavaScript\n\n[![Circle CI](https://circleci.com/gh/Originate/exocomm-mock-js.svg?style=shield&circle-token=4f522d83e80f98f58b30cd1c9ad7f2e24f8e0b58)](https://circleci.com/gh/Originate/exocomm-mock-js)\n\n> a mock implementation of [ExoComm-Dev](https://github.com/Originate/exocomm-dev)\nfor sending and receiving commands to your ExoServices in test\n\n\n## Installation\n\n```\n$ npm i --save-dev exocomm-mock\n```\n\n\n## Usage\n\n* create an instance\n\n  ```coffeescript\n  ExoCommMock = require(\'exocomm-mock\')\n  exocomm = new ExoCommMock\n  ```\n\n* register a service to send commands to\n\n  ```coffeescript\n  exocomm.registerService name: \'users\', port: 4001\n  ```\n\n* send a command to the service\n\n  ```coffeescript\n  exocomm.send service: \'users\', name: \'users.create\', payload: { name: \'Jean-Luc Picard\' }\n  ```\n\n* verifying commands sent out by the service under test\n\n  ```coffeescript\n  # ... make your service sent out a request here\n\n  expect(exocomm.receivedCommands()).to.eql [\n    {\n      name: \'users.created\'\n      payload:\n        name: \'Jean-Luc Picard\'\n    }\n  ]\n  ```\n\n* if you want to verify more received commands later, you can reset the register of received commands so far\n\n  ```coffeescript\n  exocomm.reset()\n  ```\n\n* finally, close your instance when you are done, so that you can create a fresh one for your next test\n\n  ```coffeescript\n  exocomm.close()\n  ```\n\n\n## Development\n\nSee our [developer documentation](CONTRIBUTING.md)\n',
+25 silly publish   readmeFilename: 'README.md',
+25 silly publish   gitHead: '89f1745d08b78614d8584c8cbf928b1e7fc35d25',
+25 silly publish   bugs: { url: 'https://github.com/Originate/exocomm-mock-js/issues' },
+25 silly publish   _id: 'exocomm-mock@0.2.2',
+25 silly publish   _shasum: 'b6f2cdad73559cd4d008e52f4c586abece4900f5',
+25 silly publish   _from: '.' }
+26 verbose getPublishConfig undefined
+27 silly mapToRegistry name exocomm-mock
+28 silly mapToRegistry using default registry
+29 silly mapToRegistry registry https://registry.npmjs.org/
+30 silly mapToRegistry uri https://registry.npmjs.org/exocomm-mock
+31 verbose publish registryBase https://registry.npmjs.org/
+32 silly publish uploading /Users/kevin/.npm/exocomm-mock/0.2.2/package.tgz
+33 verbose request uri https://registry.npmjs.org/exocomm-mock
+34 verbose request sending authorization for write operation
+35 info attempt registry request try #1 at 9:26:26 AM
+36 verbose request using bearer token for auth
+37 verbose request id 6a2aef5f64f5dc3d
+38 http request PUT https://registry.npmjs.org/exocomm-mock
+39 http 403 https://registry.npmjs.org/exocomm-mock
+40 verbose headers { 'content-type': 'application/json',
+40 verbose headers   'cache-control': 'max-age=300',
+40 verbose headers   'content-length': '95',
+40 verbose headers   'accept-ranges': 'bytes',
+40 verbose headers   date: 'Thu, 04 Feb 2016 17:26:27 GMT',
+40 verbose headers   via: '1.1 varnish',
+40 verbose headers   connection: 'keep-alive',
+40 verbose headers   'x-served-by': 'cache-lax1424-LAX',
+40 verbose headers   'x-cache': 'MISS',
+40 verbose headers   'x-cache-hits': '0',
+40 verbose headers   'x-timer': 'S1454606787.034986,VS0,VE78' }
+41 verbose request invalidating /Users/kevin/.npm/registry.npmjs.org/exocomm-mock on PUT
+42 error publish Failed PUT 403
+43 verbose stack Error: "You cannot publish over the previously published version 0.2.2." : exocomm-mock
+43 verbose stack     at makeError (/Users/kevin/exocomm-mock-js/node_modules/npm/node_modules/npm-registry-client/lib/request.js:264:12)
+43 verbose stack     at CachingRegistryClient.<anonymous> (/Users/kevin/exocomm-mock-js/node_modules/npm/node_modules/npm-registry-client/lib/request.js:252:14)
+43 verbose stack     at Request._callback (/Users/kevin/exocomm-mock-js/node_modules/npm/node_modules/npm-registry-client/lib/request.js:172:14)
+43 verbose stack     at Request.self.callback (/Users/kevin/exocomm-mock-js/node_modules/npm/node_modules/request/request.js:198:22)
+43 verbose stack     at emitTwo (events.js:87:13)
+43 verbose stack     at Request.emit (events.js:172:7)
+43 verbose stack     at Request.<anonymous> (/Users/kevin/exocomm-mock-js/node_modules/npm/node_modules/request/request.js:1035:10)
+43 verbose stack     at emitOne (events.js:82:20)
+43 verbose stack     at Request.emit (events.js:169:7)
+43 verbose stack     at IncomingMessage.<anonymous> (/Users/kevin/exocomm-mock-js/node_modules/npm/node_modules/request/request.js:962:12)
+44 verbose statusCode 403
+45 verbose pkgid exocomm-mock
+46 verbose cwd /Users/kevin/exocomm-mock-js
+47 error Darwin 15.3.0
+48 error argv "/usr/local/Cellar/node/5.3.0/bin/node" "/Users/kevin/exocomm-mock-js/node_modules/.bin/npm" "publish"
+49 error node v5.3.0
+50 error npm  v3.6.0
+51 error code E403
+52 error "You cannot publish over the previously published version 0.2.2." : exocomm-mock
+53 error If you need help, you may report this error at:
+53 error     <https://github.com/npm/npm/issues>
+54 verbose exit [ 1, true ]

@@ -19,7 +19,7 @@ class MockExoComm
     [@_parse-call(call) for call in @receiver.calls]
 
 
-  register-service: (name, port) ->
+  register-service: ({name, port}) ->
     @service-ports[name] = port
 
 

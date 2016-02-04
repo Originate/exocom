@@ -19,8 +19,8 @@ module.exports = ->
       ..listen port, done
 
 
-  @Given /^a known "([^"]*)" service listening at port (\d+)$/, (service-name, port, done) ->
-    @exocomm.register-service service-name, port
+  @Given /^a known "([^"]*)" service listening at port (\d+)$/, (name, port, done) ->
+    @exocomm.register-service {name, port}
     @service = new HttpRecorder().listen port, done
 
 

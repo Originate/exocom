@@ -25,5 +25,5 @@ Feature: Sending requests to services
 
   Scenario: trying to send a command to an unknown service
     Given a ExoCommMock instance
-    When sending a "users.create" command to the "users" service
+    When trying to send a "users.create" command to the "users" service
     Then I get the error "unknown service: 'users'"

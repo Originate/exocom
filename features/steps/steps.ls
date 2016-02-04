@@ -18,6 +18,11 @@ module.exports = ->
 
 
 
+  @When /^trying to send a "([^"]*)" command to the "([^"]*)" service$/, (command, service, done) ->
+    @exocomm.send {service, command}, (@error) ~>
+      done!
+
+
   @When /^sending a "([^"]*)" command to the "([^"]*)" service with the payload:$/, (command, service, payload, done) ->
     @exocomm.send {service, command, payload}, done
 
@@ -31,3 +36,7 @@ module.exports = ->
       expect(actual-request.method).to.equal expected-request.METHOD
       expect(actual-request.body.payload).to.equal expected-request.PAYLOAD
       done!
+
+
+  @Then /^I get the error "([^"]*)"$/, (expected-error) ->
+    expect(@error.message).to.equal expected-error

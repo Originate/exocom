@@ -26,7 +26,7 @@ class MockExoComm
 
 
   send-command: ({service, name, payload}) ->
-    | !@service-ports[service]  =>  return done new Error "unknown service: '#{service}'"
+    | !@service-ports[service]  =>  throw new Error "unknown service: '#{service}'"
 
     request-data =
       url: "http://localhost:#{@service-ports[service]}/run/#{name}"

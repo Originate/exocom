@@ -1,4 +1,5 @@
 require! {
+  'node-uuid' : uuid
   'rails-delegate' : {delegate}
   'record-http' : HttpRecorder
   'request'
@@ -32,6 +33,7 @@ class MockExoComm
       method: 'POST'
       body:
         payload: payload
+        request-id: uuid.v1!
       json: yes
     request request-data, done
 

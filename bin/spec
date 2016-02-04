@@ -1,3 +1,4 @@
 #!/usr/bin/env bash
 
+bin/tests
 DEBUG='*,-express:*,-body-parser:*,-finalhandler,-rails-delegate' cucumber-js "$@"

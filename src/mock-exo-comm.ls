@@ -25,7 +25,7 @@ class MockExoComm
     @service-ports[name] = port
 
 
-  send-command: ({service, name, payload}, done) ->
+  send-command: ({service, name, payload}) ->
     | !@service-ports[service]  =>  return done new Error "unknown service: '#{service}'"
 
     request-data =
@@ -35,7 +35,7 @@ class MockExoComm
         payload: payload
         request-id: uuid.v1!
       json: yes
-    request request-data, done
+    request request-data
 
 
   wait-until-receive: (@receive-callback) ->

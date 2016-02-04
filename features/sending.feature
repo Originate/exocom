@@ -11,7 +11,7 @@ Feature: Sending requests to services
 
 
   Scenario: sending a command to a registered service
-    Given a ExoCommMock instance
+    Given an ExoCommMock instance
     And a known "users" service listening at port 3010
     When sending a "users.create" command to the "users" service with the payload:
       """
@@ -24,6 +24,6 @@ Feature: Sending requests to services
 
 
   Scenario: trying to send a command to an unknown service
-    Given a ExoCommMock instance
+    Given an ExoCommMock instance
     When trying to send a "users.create" command to the "users" service
     Then I get the error "unknown service: 'users'"

@@ -15,4 +15,5 @@ Feature: Closing the instance
 
 
   Scenario: closing an inactive instance
-    Given a ExoCommMock instance
+    Given an ExoCommMock instance
+    Then I can close it without errors

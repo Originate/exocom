@@ -10,7 +10,7 @@ Feature: Receiving commands
 
 
   Scenario: no calls received
-    Given a ExoCommMock instance
+    Given an ExoCommMock instance
     Then it has received no commands
 
 

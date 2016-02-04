@@ -10,7 +10,7 @@ require! {
 
 module.exports = ->
 
-  @Given /^a ExoCommMock instance$/, ->
+  @Given /^an ExoCommMock instance$/, ->
     @exocomm = new MockExoComm
 
 
@@ -73,6 +73,10 @@ module.exports = ->
       expect(actual-request.method).to.equal expected-request.METHOD
       expect(actual-request.body.payload).to.equal expected-request.PAYLOAD
       done!
+
+
+  @Then /^I can close it without errors$/, ->
+    @exocomm.close!
 
 
   @Then /^I get the error "([^"]*)"$/, (expected-error) ->

@@ -23,3 +23,10 @@ Feature: Waiting until a command is received
     Given a call comes in
     When I tell it to wait for a call
     Then it calls the given callback right away
+
+
+  Scenario: a reset instance
+    Given a call comes in
+    And resetting the ExoCommMock instance
+    When I tell it to wait for a call
+    Then it doesn't call the given callback right away

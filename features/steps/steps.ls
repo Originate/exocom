@@ -47,6 +47,10 @@ module.exports = ->
 
 
 
+  @When /^closing it$/, ->
+    @exocomm.close!
+
+
   @When /^trying to send a "([^"]*)" command to the "([^"]*)" service$/, (command, service, done) ->
     @exocomm.send {service, command}, (@error) ~>
       done!
@@ -83,3 +87,16 @@ module.exports = ->
     expected-commands = [{[key.to-lower-case!, value] for key, value of command} for command in table.hashes!]
     actual-commands = @exocomm.received-commands!
     jsdiff-console actual-commands, expected-commands, done
+
+
+  @Then /^it is no longer listening at port (\d+)$/, (port, done) ->
+    request-data =
+      url: "http://localhost:#{port}/send/foo"
+      method: 'POST'
+      body:
+        payload: ''
+      json: yes
+    request request-data, (err) ->
+      expect(err).to.not.be.undefined
+      expect(err.message).to.equal "connect ECONNREFUSED 127.0.0.1:#{port}"
+      done!

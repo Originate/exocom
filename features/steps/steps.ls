@@ -1,7 +1,9 @@
 require! {
-  'chai' : {expect}
   '../..' : MockExoComm
+  'chai' : {expect}
+  'jsdiff-console'
   'record-http' : HttpRecorder
+  'request'
   'wait' : {wait-until}
 }
 
@@ -12,9 +14,25 @@ module.exports = ->
     @exocomm = new MockExoComm
 
 
+  @Given /^an ExoCommMock instance listening at port (\d+)$/, (port, done) ->
+    @exocomm = new MockExoComm
+      ..listen port, done
+
+
   @Given /^a known "([^"]*)" service listening at port (\d+)$/, (service-name, port, done) ->
     @exocomm.register-service service-name, port
     @service = new HttpRecorder().listen port, done
+
+
+  @Given /^somebody sends it a "([^"]*)" command with payload "([^"]*)"$/, (command, payload, done) ->
+    request-data =
+      url: "http://localhost:#{@exocomm.port}/send/#{command}"
+      method: "POST"
+      body:
+        payload: payload
+        request-id: '123'
+      json: yes
+    request request-data, done
 
 
 
@@ -40,3 +58,13 @@ module.exports = ->
 
   @Then /^I get the error "([^"]*)"$/, (expected-error) ->
     expect(@error.message).to.equal expected-error
+
+
+  @Then /^it has received no calls$/, ->
+    expect(@exocomm.calls).to.be.empty
+
+
+  @Then /^it has received the commands/, (table, done) ->
+    expected-commands = [{[key.to-lower-case!, value] for key, value of command} for command in table.hashes!]
+    actual-commands = @exocomm.received-commands!
+    jsdiff-console actual-commands, expected-commands, done

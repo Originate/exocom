@@ -1,4 +1,5 @@
 require! {
+  'record-http' : HttpRecorder
   'request'
 }
 
@@ -11,6 +12,15 @@ class MockExoComm
 
 
   close: ->
+
+
+  listen: (@port, done) ->
+    @receiver = new HttpRecorder
+      ..listen @port, done
+
+
+  received-commands: ->
+    [@_parse-call(call) for call in @receiver.calls]
 
 
   register-service: (name, port) ->
@@ -28,6 +38,21 @@ class MockExoComm
       json: yes
     request request-data, done
 
+
+
+  _parse-call: (call) ->
+    | call.method isnt 'POST'  =>  return
+
+    {
+      name: @_get-command-name(call.url)
+      payload: call.body.payload
+    }
+
+
+
+  _get-command-name: (url) ->
+    segments = url.split '/'
+    segments[segments.length-1]
 
 
 module.exports = MockExoComm

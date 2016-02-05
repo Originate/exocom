@@ -3,7 +3,7 @@ require! {
   'docopt' : {docopt}
   '../package.json' : {name, version}
   'path'
-  './service-runner' : ServiceRunner
+  './exo-service' : ExoService
 }
 
 console.log dim "Exosphere Node.js service runner #{version}\n"
@@ -22,7 +22,7 @@ Usage:
 """
 
 run = (options) ->
-  new ServiceRunner exocomm-port: options['--exocomm-port']
+  new ExoService exocomm-port: options['--exocomm-port']
     ..on 'online', (port) ->
       console.log dim "Ctrl-C to stop"
       console.log "online at port #{cyan port}"

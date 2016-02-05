@@ -8,3 +8,4 @@ module.exports = ->
     @server2?.close!
     @process?.kill!
     @exocomm?.close!
+    @exoservice?.close!

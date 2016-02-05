@@ -13,20 +13,20 @@ Feature: Defining the port at which the server listens
 
 
   Background:
-    Given I am in the "test" service directory
+    Given an ExoComm instance
 
 
   Scenario: Running with default options
-    When executing "exo-js run"
+    When starting a service
     Then the service runs at port 3000
 
 
   Scenario: Finding the next available port if 3000 is taken
     Given ports 3000 and 3001 are used
-    When executing "exo-js run"
+    When starting a service
     Then the service runs at port 3002
 
 
   Scenario: Running at a custom port
-    When executing "exo-js run --port 3001"
+    When starting a service at port 3001
     Then the service runs at port 3001

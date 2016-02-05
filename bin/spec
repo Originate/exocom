@@ -1,3 +1,5 @@
 #!/usr/bin/env bash
+set -e
 
-DEBUG='*,-express:*,-body-parser:*,-finalhandler,-text-stream-search,-rails-delegate' cucumber-js "$@"
+bin/cuc-api "$@"
+bin/cuc-cli "$@"

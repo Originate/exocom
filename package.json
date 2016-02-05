@@ -11,7 +11,7 @@
     "debug": "^2.2.0",
     "defaults": "^1.0.3",
     "docopt": "^0.6.2",
-    "exocomm-mock": "^0.3.0",
+    "exocomm-mock": "^0.3.2",
     "exorelay": "^0.8.0",
     "nitroglycerin": "^1.0.3",
     "observable-process": "^0.5.2",
@@ -29,12 +29,12 @@
     "gulp-lint-ls": "^0.1.0",
     "livescript": "^1.4.0",
     "prelude-ls": "^1.1.2",
-    "record-http": "^0.4.0",
+    "record-http": "^0.5.1",
     "request": "^2.67.0",
     "wait": "^0.1.0"
   },
   "license": "ISC",
-  "main": "lib/exosphere-service.js",
+  "main": "lib/exo-service.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Originate/exoservice-js.git"
@@ -44,7 +44,7 @@
     "prepublish": "bin/build",
     "preversion": "npm test && npm run update",
     "build": "build",
-    "test": "cucumber-js",
+    "test": "bin/spec",
     "update": "david update"
   }
 }

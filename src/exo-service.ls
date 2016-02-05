@@ -9,16 +9,17 @@ require! {
 debug = require('debug')('exocomm:cli')
 
 
-class ServiceRunner extends EventEmitter
+class ExoService extends EventEmitter
 
-  ({@exocomm-port}) ->
+  ({@root, @exocomm-port}) ->
     @exo-relay = new ExoRelay {@exocomm-port}
+    delegate \close, from: @, to: @exo-relay
     delegate-event \online \offline \error, from: @exo-relay, to: @
 
 
   listen: ({port}) ->
     @get-port port, (@port) ~>
-      service-loader (service) ~>
+      service-loader @root, (service) ~>
         service.handlers.before-all ~>
           debug "listening at port #{port}"
           @exo-relay
@@ -37,4 +38,4 @@ class ServiceRunner extends EventEmitter
 
 
 
-module.exports = ServiceRunner
+module.exports = ExoService

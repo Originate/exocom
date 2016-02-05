@@ -9,11 +9,8 @@ Feature: Sending outgoing requests
 
 
   Background:
-    Given ExoComm is available at port 4010
-    And this instance of the "test" service:
-      """
-      exo-js run --port 4000 --exocomm-port=4010
-      """
+    Given an ExoComm instance
+    And an instance of the "test" service
 
 
   Scenario: a service sends out a command

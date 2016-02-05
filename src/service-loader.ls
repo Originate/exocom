@@ -7,8 +7,8 @@ require! {
   'path'
 }
 
-load-service = (done) ->
-  handlers = require path.join(process.cwd!, 'src', 'server.ls')
+load-service = (root = '', done) ->
+  handlers = require path.join(process.cwd!, root, 'src', 'server.ls')
   if not handlers.before-all? then handlers.before-all = (done) -> done!
   done {handlers}
 

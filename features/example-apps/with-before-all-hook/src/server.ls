@@ -1,8 +1,12 @@
+hooks-ran = []
+
+
 module.exports =
 
   before-all: (done) ->
-    console.log 'running beforeAll hook'
+    hooks-ran.push 'before-all'
     done!
 
 
-  hello: ->
+  'which-hooks-ran': (_, {reply}) ->
+    reply 'these-hooks-ran', hooks-ran

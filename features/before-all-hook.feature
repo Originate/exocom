@@ -8,14 +8,10 @@ Feature: Before-All hook
   - put initializiation code into a "beforeAll" command handler
 
 
+  Background:
+    Given an ExoComm instance
+
+
   Scenario: code with beforeAll hook
-    Given I am in the "with-before-all-hook" service directory
-    When executing "exo-js run"
-    Then its console output contains "running beforeAll hook"
-    And its console output contains "online at port"
-
-
-  Scenario: code without a beforeAll hook
-    Given I am in the "without-before-all-hook" service directory
-    When executing "exo-js run"
-    Then its console output contains "online at port"
+    When starting the "with-before-all-hook" service
+    Then it runs the "before-all" hook

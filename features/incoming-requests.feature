@@ -1,4 +1,4 @@
-Feature: Command handlers
+Feature: Handling incoming commands
 
   As a service developer
   I want to have an easy way to define code that handles incoming commands
@@ -14,11 +14,8 @@ Feature: Command handlers
 
 
   Background:
-    Given ExoComm is available at port 4010
-    And this instance of the "test" service:
-      """
-      exo-js run --port 4000 --exocomm-port=4010
-      """
+    Given an ExoComm instance
+    And an instance of the "test" service
 
 
   Scenario: receiving a command

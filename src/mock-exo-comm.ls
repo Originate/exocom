@@ -38,9 +38,8 @@ class MockExoComm
 
 
 
-  _parse-call: (call) ->
-    | call.method isnt 'POST'  =>  return
 
+  _parse-call: (call) ->
     {
       name: @_get-command-name(call.url)
       payload: call.body.payload

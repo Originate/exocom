@@ -11,9 +11,12 @@ Feature: Sending requests to services
     to send the given command to the given service
 
 
-  Scenario: sending a command to a registered service
+  Background:
     Given an ExoCommMock instance
-    And a known "users" service listening at port 3010
+
+
+  Scenario: sending a command to a registered service
+    Given a known "users" service listening at port 3010
     When sending a "users.create" command to the "users" service with the payload:
       """
       name: 'Jean-Luc Picard'
@@ -24,7 +27,6 @@ Feature: Sending requests to services
       | PAYLOAD | name: 'Jean-Luc Picard'                |
 
 
-  Scenario: trying to send a command to an unknown service
-    Given an ExoCommMock instance
+  Scenario: sending a command to an unknown service
     When trying to send a "users.create" command to the "users" service
     Then I get the error "unknown service: 'users'"

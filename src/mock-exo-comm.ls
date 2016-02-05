@@ -41,6 +41,8 @@ class MockExoComm
         request-id: uuid.v1!
       json: yes
     request request-data, (err, response) ~>
+      if err
+        return debug "error sending command '#{name}' to service '#{service}' at port #{@service-ports[service]}: #{err.message}"
       debug "received HTTP response #{response.status-code}"
       @last-send-response-code = response.status-code
 

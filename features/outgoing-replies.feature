@@ -19,4 +19,4 @@ Feature: Outgoing replies
 
   Scenario: A command replies
     When receiving the "ping" command
-    Then it sends the "pong" command
+    Then after a while it sends the "pong" command

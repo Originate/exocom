@@ -1,6 +1,7 @@
 require! {
   'chai' : {expect}
   '../support/dim-console'
+  'exocomm-mock' : ExoCommMock
   'http'
   'livescript'
   'observable-process' : ObservableProcess
@@ -13,21 +14,24 @@ require! {
 
 module.exports = ->
 
-  @Given /^an instance of the "([^"]*)" service$/, (service-name, done) ->
+  @Given /^an instance of the "([^"]*)" service$/, (@service-name, done) ->
+    @exocomm.register-service name: @service-name, port: 4000
     @process = new ObservableProcess("bin/exo-js run --port 4000 --exocomm-port #{@exocomm-port}",
                                      cwd: path.join(process.cwd!, 'features', 'example-apps', service-name),
                                      verbose: no)
       ..wait 'online at port', done
 
 
-  @Given /^this instance of the "([^"]*)" service:$/, (service-name, code, done) ->
+  @Given /^this instance of the "([^"]*)" service:$/, (@service-name, code, done) ->
+    @exocomm.register-service name: @service-name, port: 4000
     @process = new ObservableProcess("bin/#{code}",
                                      cwd: path.join(process.cwd!, 'features', 'example-apps', service-name),
-                                     verbose: no)
+                                     verbose: yes)
       ..wait 'online at port', done
 
 
-  @Given /^an instance of the "([^"]*)" service listening on port (\d+)$/, (service-name, port, done) ->
+  @Given /^an instance of the "([^"]*)" service listening on port (\d+)$/, (@service-name, port, done) ->
+    @exocomm.register-service name: @service-name, {port}
     @process = new ObservableProcess("bin/exo-js run --port #{port} --exocomm-port #{@exocomm-port}",
                                      cwd: path.join(process.cwd!, 'features', 'example-apps', service-name),
                                      verbose: no)
@@ -38,7 +42,8 @@ module.exports = ->
 
 
   @Given /^ExoComm is available at port (\d+)$/, (@exocomm-port, done) ->
-    @exocomm = new HttpRecorder().listen @exocomm-port, done
+    @exocomm = new ExoCommMock
+      ..listen @exocomm-port, done
 
 
   @When /^executing "([^"]*)"$/, (command, done) ->
@@ -67,56 +72,57 @@ module.exports = ->
       done!
 
 
-  @When /^receiving the( unknown)? "([^"]*)" command$/, (expect-error, command-name, done) ->
-    data =
-      url: "http://localhost:4000/run/#{command-name}",
-      method: 'POST'
-      body:
-        requestId: '123'
-      json: yes
-    request data, (err, @response, body) ~>
-      expect(err).to.be.null
-      expect(@response.status-code).to.equal 200 unless expect-error
+  @When /^receiving the( unknown)? "([^"]*)" command$/, (expect-error, command-name) ->
+    @exocomm
+      ..reset!
+      ..send-command {service: @service-name, name: command-name, expect-error}
+
+
+  @When /^receiving the( unknown)? "([^"]*)" command with the payload:$/, (expect-error, command-name, payload) ->
+    eval livescript.compile "json-payload = {\n#{payload}\n}", bare: yes, header: no
+    @exocomm
+      ..reset!
+      ..send-command {service: @service-name, name: command-name, payload: json-payload, expect-error}
+
+
+
+  @Then /^it acknowledges the received command$/, (done) ->
+    wait-until (~> @exocomm.last-send-response-code), ~>
+      expect(@exocomm.last-send-response-code).to.equal 200
       done!
 
 
-  @When /^receiving the(?: unknown)? "([^"]*)" command with the payload:$/, (command-name, payload, done) ->
-    data =
-      url: "http://localhost:4000/run/#{command-name}",
-      method: 'POST'
-      body:
-        requestId: '123'
-        payload: JSON.parse(payload)
-      json: yes
-    request data, (err, @response, body) ~>
-      expect(err).to.be.null
-      expect(response.status-code).to.equal 200
+  @Then /^after a while it sends the "([^"]*)" command$/, (reply-command-name, done) ->
+    @exocomm.wait-until-receive ~>
+      received-commands = @exocomm.received-commands!
+      expect(received-commands).to.have.length 1
+      expect(received-commands[0].name).to.equal reply-command-name
       done!
 
 
-
-  @Then /^(?:my service|it) returns a (\d+) response$/, (+expected-status) ->
-    expect(@response.status-code).to.equal expected-status
-
-
-  @Then /^it sends the "([^"]*)" command$/, (reply-command-name, done) ->
-    wait-until (~> @exocomm.calls.length), ~>
-      call = @exocomm.calls[0]
-      expect(call.url).to.equal "http://localhost:#{@exocomm-port}/send/pong"
+  @Then /^after a while it sends the "([^"]*)" command with the textual payload:$/, (reply-command-name, payload-text, done) ->
+    @exocomm.wait-until-receive ~>
+      received-commands = @exocomm.received-commands!
+      expect(received-commands).to.have.length 1
+      expect(received-commands[0].name).to.equal reply-command-name
+      expect(received-commands[0].payload).to.equal payload-text
       done!
 
 
-  @Then /^it sends the "([^"]*)" command with the payload "([^"]*)"$/, (reply-command-name, expected-payload, done) ->
-    wait-until (~> @exocomm.calls.length), ~>
-      wait 300, ~>
-        call = @exocomm.calls[0]
-        expect(call.url).to.equal "http://localhost:#{@exocomm-port}/send/#{reply-command-name}"
-        expect(call.body.payload).to.equal expected-payload
-        done!
+  @Then /^it signals an unknown command$/, (done) ->
+    wait-until (~> @exocomm.last-send-response-code), ~>
+      expect(@exocomm.last-send-response-code).to.equal 404
+      done!
 
 
   @Then /^its console output contains "([^"]*)"$/, (output, done) ->
     @process.wait output, done
+
+
+  @Then /^(?:my service|it) returns a (\d+) response$/, (+expected-status, done) ->
+    @exocomm.wait-until-receive ~>
+      expect(@exocomm.calls[0].status-code).to.equal expected-status
+      done!
 
 
   @Then /^the service runs at port (\d+)$/, (port, done) ->

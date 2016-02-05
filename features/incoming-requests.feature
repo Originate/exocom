@@ -22,18 +22,23 @@ Feature: Command handlers
 
 
   Scenario: receiving a command
-    When receiving the "hello-world" command
-    Then its console output contains "Hello world!"
+    When receiving the "ping" command
+    Then it acknowledges the received command
+    And after a while it sends the "pong" command
 
 
   Scenario: receiving a command with payload
-    When receiving the "hello-name" command with the payload:
+    When receiving the "greet" command with the payload:
       """
-      {"name": "ExoRelay"}
+      name: 'world'
       """
-    Then its console output contains "Hello ExoRelay!"
+    Then it acknowledges the received command
+    And after a while it sends the "greeting" command with the textual payload:
+      """
+      Hello world
+      """
 
 
   Scenario: receiving a non-existing command
     When receiving the unknown "zonk" command
-    Then it returns a 404 response
+    Then it signals an unknown command

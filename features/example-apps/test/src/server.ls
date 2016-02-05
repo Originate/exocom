@@ -5,16 +5,12 @@ module.exports =
     done!
 
 
-  'hello-world': ->
-    console.log "Hello world!"
-
-
-  'hello-name': (payload) ->
-    console.log "Hello #{payload.name}!"
-
-
-  ping: (_payload, {reply}) ->
+  ping: (_, {reply}) ->
     reply 'pong'
+
+
+  greet: (payload, {reply}) ->
+    reply 'greeting', "Hello #{payload.name}"
 
 
   sender: (_payload, {send}) ->

@@ -18,4 +18,7 @@ Feature: Sending outgoing requests
 
   Scenario: a service sends out a command
     When receiving the "sender" command
-    Then it sends the "greetings" command with the payload "from the sender service"
+    Then after a while it sends the "greetings" command with the textual payload:
+      """
+      from the sender service
+      """

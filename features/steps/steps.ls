@@ -1,14 +1,23 @@
 require! {
   '../..' : MockExoComm
-  'chai' : {expect}
+  'chai'
   'jsdiff-console'
   'record-http' : HttpRecorder
   'request'
+  'sinon'
+  'sinon-chai'
   'wait' : {wait-until}
 }
+expect = chai.expect
+chai.use sinon-chai
 
 
 module.exports = ->
+
+  @Given /^a listening ExoCommMock instance$/, (done) ->
+    @exocomm = new MockExoComm
+      ..listen 4111, done
+
 
   @Given /^an ExoCommMock instance$/, ->
     @exocomm = new MockExoComm
@@ -51,6 +60,19 @@ module.exports = ->
     @exocomm.close!
 
 
+  @When /^I tell it to wait for a call$/, ->
+    @call-received = sinon.spy!
+    @exocomm.wait-until-receive @call-received
+
+
+  @When /^a call comes in$/, (done) ->
+    request-data =
+      url: "http://localhost:#{@exocomm.port}/send/foo"
+      method: "POST"
+      json: yes
+    request request-data, done
+
+
   @When /^trying to send a "([^"]*)" command to the "([^"]*)" service$/, (command-name, service-name) ->
     try
       @exocomm.send-command service: service-name, name: command-name, (@error)
@@ -83,6 +105,18 @@ module.exports = ->
 
   @Then /^I get the error "([^"]*)"$/, (expected-error) ->
     expect(@error.message).to.equal expected-error
+
+
+  @Then /^it calls the given callback$/, (done) ->
+    wait-until (~> @call-received.called), done
+
+
+  @Then /^it calls the given callback right away$/, ->
+    expect(@call-received).to.have.been.called
+
+
+  @Then /^it doesn't call the given callback right away$/, ->
+    expect(@call-received).to.not.have.been.called
 
 
   @Then /^it has received no commands/, ->

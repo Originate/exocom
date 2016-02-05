@@ -12,6 +12,7 @@ class MockExoComm
   ->
     @service-ports = {}
     @receiver = new HttpRecorder
+      ..on 'receive', ~> @receive-callback?!
 
     delegate \listen \port \reset \close, from: @, to: @receiver
 
@@ -37,6 +38,9 @@ class MockExoComm
     request request-data
 
 
+  wait-until-receive: (@receive-callback) ->
+    if @receiver.calls.length
+      @receive-callback!
 
 
   _parse-call: (call) ->

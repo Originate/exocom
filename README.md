@@ -39,13 +39,17 @@ $ npm i --save-dev exocomm-mock
   ```coffeescript
   # ... make your service sent out a request here
 
-  expect(exocomm.receivedCommands()).to.eql [
-    {
-      name: 'users.created'
-      payload:
-        name: 'Jean-Luc Picard'
-    }
-  ]
+  # optionally wait for the command to arrive
+  exocomm.waitUntilReceive =>
+
+    # verify the received command
+    expect(exocomm.receivedCommands()).to.eql [
+      {
+        name: 'users.created'
+        payload:
+          name: 'Jean-Luc Picard'
+      }
+    ]
   ```
 
 * if you want to verify more received commands later, you can reset the register of received commands so far

@@ -1,15 +1,15 @@
-Feature: Receiving commands
+Feature: Listing receiving commands
 
   As a developer TDD-ing an ExoService
-  I want to be able to verify commands they send out
-  So that I know they behave correctly.
+  I want to be able to verify commands it sends out
+  So that I know it behaves correctly.
 
   Rules:
   - call "exocomm.receivedCommands" to get an array of received commands
   - call "exocomm.reset-calls" to reset the received calls list
 
 
-  Scenario: no calls received
+  Scenario: no calls received yet
     Given an ExoCommMock instance
     Then it has received no commands
 

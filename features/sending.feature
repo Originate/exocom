@@ -25,6 +25,7 @@ Feature: Sending requests to services
       | URL     | http://localhost:3010/run/users.create |
       | METHOD  | POST                                   |
       | PAYLOAD | name: 'Jean-Luc Picard'                |
+    And ExoCommMock lists the last send response code as 200
 
 
   Scenario: sending a command to an unknown service

@@ -89,6 +89,12 @@ module.exports = ->
 
 
 
+  @Then /^ExoCommMock lists the last send response code as (\d+)$/, (+expected-response-code, done) ->
+    wait-until (~> @exocomm.last-send-response-code), ~>
+      expect(@exocomm.last-send-response-code).to.equal expected-response-code
+      done!
+
+
   @Then /^ExoCommMock makes the request:$/, (table, done) ->
     expected-request = table.rows-hash!
     wait-until (~> @service.calls.length is 1), 10, ~>

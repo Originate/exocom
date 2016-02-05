@@ -35,7 +35,8 @@ class MockExoComm
         payload: payload
         request-id: uuid.v1!
       json: yes
-    request request-data
+    request request-data, (err, response) ~>
+      @last-send-response-code = response.status-code
 
 
   wait-until-receive: (@receive-callback) ->

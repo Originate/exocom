@@ -11,9 +11,12 @@ Feature: Sending requests to services
     to send the given command to the given service
 
 
-  Scenario: sending a command to a registered service
+  Background:
     Given an ExoCommMock instance
-    And a known "users" service listening at port 3010
+
+
+  Scenario: sending a command to a registered service
+    Given a known "users" service listening at port 3010
     When sending a "users.create" command to the "users" service with the payload:
       """
       name: 'Jean-Luc Picard'
@@ -22,9 +25,9 @@ Feature: Sending requests to services
       | URL     | http://localhost:3010/run/users.create |
       | METHOD  | POST                                   |
       | PAYLOAD | name: 'Jean-Luc Picard'                |
+    And ExoCommMock lists the last send response code as 200
 
 
-  Scenario: trying to send a command to an unknown service
-    Given an ExoCommMock instance
+  Scenario: sending a command to an unknown service
     When trying to send a "users.create" command to the "users" service
     Then I get the error "unknown service: 'users'"

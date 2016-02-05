@@ -51,17 +51,19 @@ module.exports = ->
     @exocomm.close!
 
 
-  @When /^trying to send a "([^"]*)" command to the "([^"]*)" service$/, (command, service, done) ->
-    @exocomm.send {service, command}, (@error) ~>
-      done!
+  @When /^trying to send a "([^"]*)" command to the "([^"]*)" service$/, (command-name, service-name) ->
+    try
+      @exocomm.send-command service: service-name, name: command-name, (@error)
+    catch
+      @error = e
 
 
   @When /^resetting the ExoCommMock instance$/, ->
     @exocomm.reset!
 
 
-  @When /^sending a "([^"]*)" command to the "([^"]*)" service with the payload:$/, (command, service, payload, done) ->
-    @exocomm.send {service, command, payload}, done
+  @When /^sending a "([^"]*)" command to the "([^"]*)" service with the payload:$/, (command, service, payload) ->
+    @exocomm.send-command service: service, name: command, payload: payload
 
 
 

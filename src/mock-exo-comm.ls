@@ -24,17 +24,17 @@ class MockExoComm
     @service-ports[name] = port
 
 
-  send: ({service, command, payload}, done) ->
-    | !@service-ports[service]  =>  return done new Error "unknown service: '#{service}'"
+  send-command: ({service, name, payload}) ->
+    | !@service-ports[service]  =>  throw new Error "unknown service: '#{service}'"
 
     request-data =
-      url: "http://localhost:#{@service-ports[service]}/run/#{command}"
+      url: "http://localhost:#{@service-ports[service]}/run/#{name}"
       method: 'POST'
       body:
         payload: payload
         request-id: uuid.v1!
       json: yes
-    request request-data, done
+    request request-data
 
 
 

@@ -1,21 +1,17 @@
 {
   "name": "exocomm-dev",
   "version": "0.0.1",
-  "description": "Development version of the Exosphere communication platform",
-  "main": "lib/exocomm.js",
-  "scripts": {
-    "test": "bin/spec"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Originate/exocomm-dev.git"
-  },
   "author": "Kevin Goslar",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/Originate/exocomm-dev/issues"
+  "dependencies": {
+    "body-parser": "^1.14.2",
+    "chalk": "^1.1.1",
+    "debug": "^2.2.0",
+    "docopt": "^0.6.2",
+    "express": "^4.13.3",
+    "rails-delegate": "^0.4.1",
+    "remove-value": "^1.0.0"
   },
-  "homepage": "https://github.com/Originate/exocomm-dev#readme",
+  "description": "Development version of the Exosphere communication platform",
   "devDependencies": {
     "chai": "^3.4.1",
     "cucumber": "^0.9.2",
@@ -30,13 +26,14 @@
     "request": "^2.67.0",
     "wait": "^0.1.0"
   },
-  "dependencies": {
-    "body-parser": "^1.14.2",
-    "chalk": "^1.1.1",
-    "debug": "^2.2.0",
-    "docopt": "^0.6.2",
-    "express": "^4.13.3",
-    "rails-delegate": "^0.4.1",
-    "remove-value": "^1.0.0"
+  "homepage": "https://github.com/Originate/exocomm-dev",
+  "license": "ISC",
+  "main": "lib/exocomm.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Originate/exocomm-dev.git"
+  },
+  "scripts": {
+    "test": "bin/spec"
   }
 }

@@ -21,13 +21,13 @@ ExoComm can be used via 2 separate APIs.
 This is the main way to use ExoCommDev by end users (ExoSphere developers).
 
 ```
-$ exocomm run
+$ exocomm
 ```
 
 The default port is 3100. To run it at another port:
 
 ```
-$ exocomm run --port <port number>
+$ exocomm --port <port number>
 ```
 
 More details around configuring the port [here](features/configuring-the-port.feature).

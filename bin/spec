@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 
 mocha --compilers ls:LiveScript "**/*spec.ls"
-bin/cuc_api "$@"
-bin/cuc_cli "$@"
+bin/cuc-api "$@"
+bin/cuc-cli "$@"

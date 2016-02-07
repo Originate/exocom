@@ -14,7 +14,7 @@ doc = """
 Provides Exosphere communication infrastructure services in development mode.
 
 Usage:
-  #{name} run [--port=<port>]
+  #{name} [--port=<port>]
   #{name} -h | --help
   #{name} -v | --version
 """
@@ -39,5 +39,4 @@ options = docopt doc, help: no
 switch
 | options['-h'] or options['--help']     =>  console.log doc
 | options['-v'] or options['--version']  =>
-| options.run                            =>  run!
-| otherwise                              =>  console.err 'unhandled option'
+| otherwise                              =>  run!

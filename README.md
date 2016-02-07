@@ -31,15 +31,15 @@ $ npm i --save-dev exocomm-mock
 * send a command to the service
 
   ```coffeescript
-  exocomm.send-command service: 'users', name: 'users.create', payload: { name: 'Jean-Luc Picard' }
+  exocomm.sendCommand service: 'users', name: 'users.create', payload: { name: 'Jean-Luc Picard' }
   ```
 
 * verifying commands sent out by the service under test
 
   ```coffeescript
-  # ... make your service sent out a request here
+  # ... make your service sent out a request here via exocomm.sendCommand...
 
-  # optionally wait for the command to arrive
+  # wait for the command to arrive
   exocomm.waitUntilReceive =>
 
     # verify the received command

@@ -29,7 +29,7 @@
   "files": ["dist"],
   "homepage": "https://github.com/Originate/exocomm-dev",
   "license": "ISC",
-  "main": "lib/exocomm.js",
+  "main": "dist/exocomm.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Originate/exocomm-dev.git"

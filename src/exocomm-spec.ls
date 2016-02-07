@@ -1,5 +1,5 @@
 require! {
-  '../lib/exocomm' : ExoComm
+  '../dist/exocomm' : ExoComm
 }
 
 

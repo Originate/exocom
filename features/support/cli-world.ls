@@ -14,7 +14,7 @@ require! {
 CliWorld = !->
 
   @create-exocomm-instance = ({port}, done) ->
-    @process = new ObservableProcess "bin/exocomm run --port #{@exocomm-port}", verbose: yes, console: my-console
+    @process = new ObservableProcess "bin/exocomm --port #{@exocomm-port}", verbose: yes, console: my-console
       ..wait "online at port #{port}", done
 
 
@@ -61,12 +61,12 @@ CliWorld = !->
 
 
   @run-exocomm = (_expect-error, done) ->
-    @process = new ObservableProcess 'bin/exocomm run', verbose: yes, console: my-console
+    @process = new ObservableProcess 'bin/exocomm', verbose: yes, console: my-console
     done!
 
 
   @run-exocomm-at-port = (port, _expect-error, done) ->
-    @process = new ObservableProcess "bin/exocomm run --port #{port}", verbose: yes, console: my-console
+    @process = new ObservableProcess "bin/exocomm --port #{port}", verbose: yes, console: my-console
     done!
 
 

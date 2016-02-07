@@ -1,6 +1,6 @@
 {
   "name": "exocomm-dev",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "author": "Kevin Goslar",
   "dependencies": {
     "body-parser": "^1.14.2",

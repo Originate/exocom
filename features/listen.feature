@@ -11,7 +11,8 @@ Feature: Listening
 
 
   Background:
-    Given an ExoRelay instance
+    Given ExoComm runs at port 4100
+    And an ExoRelay instance
 
 
   Scenario: Setting up on the default port

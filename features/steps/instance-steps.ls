@@ -10,19 +10,19 @@ module.exports = ->
 
 
   @Given /^an ExoRelay instance called "([^"]*)"$/, (instance-name) ->
-    @exo-relay = new ExoRelay exocomm-port: @exocomm-port
+    @exo-relay = new ExoRelay {@exocomm-port}
       ..on 'error', (@error) ~>
 
 
   @Given /^an ExoRelay instance called "([^"]*)" listening at port (\d+)$/, (instance-name, port, done) ->
-    @exo-relay = new ExoRelay exocomm-port: @exocomm-port
+    @exo-relay = new ExoRelay {@exocomm-port}
       ..on 'online', -> done!
       ..on 'error', (@error) ~>
       ..listen port
 
 
   @Given /^an ExoRelay instance$/, ->
-    @exo-relay = new ExoRelay
+    @exo-relay = new ExoRelay {@exocomm-port}
 
 
   @Given /^an ExoRelay instance listening at port (\d+)$/, (port, done) ->

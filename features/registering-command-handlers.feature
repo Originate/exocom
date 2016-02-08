@@ -12,7 +12,8 @@ Feature: Registering command handlers
 
 
   Background:
-    Given an ExoRelay instance called "exo-relay"
+    Given ExoComm runs at port 4100
+    And an ExoRelay instance called "exo-relay"
 
 
   Scenario: registering a command handler

@@ -10,7 +10,8 @@ Feature: Receiving commands
 
 
   Background:
-    Given an ExoRelay instance listening at port 4000
+    Given ExoComm runs at port 4100
+    And an ExoRelay instance listening at port 4000
     And a hypothetical "print" command
 
 

@@ -44,5 +44,9 @@ module.exports = ->
     @error = null
 
 
+  @Then /^it throws the error "([^"]*)"$/, (expected-error) ->
+    expect(@error).to.equal expected-error
+
+
   @Then /^my handler calls the "done" method$/, (done) ->
     wait-until (~> @done.called), 10, done

@@ -10,8 +10,8 @@ Feature: Configuring the ExoComm port
 
 
   Scenario: the user does not provide the ExoComm port
-    When I create an ExoRelay instance that uses the default ExoComm port
-    Then this instance uses the ExoComm port 3010
+    When I try to create an ExoRelay without providing the ExoComm port
+    Then it throws the error "exocommPort not provided"
 
 
   Scenario: the user provides an available ExoComm port

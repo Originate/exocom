@@ -10,7 +10,8 @@ debug = require('debug')('exorelay')
 
 class ExoRelay extends EventEmitter
 
-  ({exocomm-port} = {exocomm-port: 3010}) ->
+  ({exocomm-port} = {}) ->
+    exocomm-port or throw new Error 'exocommPort not provided'
 
     # manages the request handlers for incoming commands
     @command-handler = new HandlerManager!

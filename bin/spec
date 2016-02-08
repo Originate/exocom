@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-bin/tests
+if [ "$#" != "1" ]; then
+  bin/tests
+fi
 DEBUG='*,-express:*,-body-parser:*,-finalhandler,-rails-delegate' cucumber-js "$@"

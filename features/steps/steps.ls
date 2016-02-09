@@ -4,7 +4,6 @@ require! {
   'exocomm-mock' : ExoCommMock
   'http'
   'livescript'
-  'observable-process' : ObservableProcess
   'record-http' : HttpRecorder
   'request'
   'wait' : {wait, wait-until}

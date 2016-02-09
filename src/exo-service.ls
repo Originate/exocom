@@ -2,7 +2,6 @@ require! {
   'events' : {EventEmitter}
   'exorelay' : ExoRelay
   'nitroglycerin' : N
-  'portfinder'
   'rails-delegate' : {delegate, delegate-event}
   './service-loader'
 }
@@ -23,16 +22,6 @@ class ExoService extends EventEmitter
         @exo-relay
           ..register-handlers service.handlers
           ..listen @exorelay-port
-
-
-  get-port: (port, done) ->
-    | port  =>  return done port
-    portfinder.base-port = 3000
-    portfinder.get-port host: 'localhost', (err, @port) ~>
-      if err
-        debug "Error getting port: #{err.message}"
-        return @emit 'error', err
-      done @port
 
 
 

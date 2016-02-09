@@ -38,6 +38,13 @@ More details around configuring the port [here](features/configuring-the-port.fe
 You can integrate ExoComm into your own NodeJS application through its JavaScript API.
 The [CLI](src/cli.ls) is implemented using the JavaScript API.
 
+```livescript
+@exocomm = new ExoComm
+  ..on 'error', (err) -> # boo!
+  ..on 'listening', (port) -> # woohoo!
+  ..listen 3100
+```
+
 
 ## Functionality
 

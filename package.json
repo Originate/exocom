@@ -32,8 +32,12 @@
     "request": "^2.67.0",
     "wait": "^0.1.0"
   },
+  "files": [
+    "dist",
+    "bin/exo-js"
+  ],
   "license": "ISC",
-  "main": "lib/exo-service.js",
+  "main": "dist/exo-service.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Originate/exoservice-js.git"

@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-find ./src -name '*.ls' -not -name '*_spec.ls' | xargs lsc --compile --output lib/ --watch
+find ./src -name '*.ls' -not -name '*_spec.ls' -print0 | xargs -0 lsc --compile --output lib/ --watch

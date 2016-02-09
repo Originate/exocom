@@ -11,20 +11,18 @@ debug = require('debug')('exocomm:cli')
 
 class ExoService extends EventEmitter
 
-  ({@root, @exocomm-port}) ->
+  ({@root, @exocomm-port, @exorelay-port}) ->
     @exo-relay = new ExoRelay {@exocomm-port}
     delegate \close, from: @, to: @exo-relay
     delegate-event \online \offline \error, from: @exo-relay, to: @
 
 
-  listen: ({port}) ->
-    @get-port port, (@port) ~>
-      service-loader @root, (service) ~>
-        service.handlers.before-all ~>
-          debug "listening at port #{port}"
-          @exo-relay
-            ..register-handlers service.handlers
-            ..listen port
+  listen: ->
+    service-loader @root, (service) ~>
+      service.handlers.before-all ~>
+        @exo-relay
+          ..register-handlers service.handlers
+          ..listen @exorelay-port
 
 
   get-port: (port, done) ->

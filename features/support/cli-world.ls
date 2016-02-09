@@ -7,11 +7,8 @@ require! {
 # Provides steps for end-to-end testing of the service as a stand-alone binary
 CliWorld = !->
 
-  @create-exoservice-instance = ({service-name, port, exocomm-port}, done) ->
-    command-line = 'bin/exo-js run'
-    if port then command-line += " --port #{port}"
-    if exocomm-port then command-line += " --exocomm-port #{exocomm-port}"
-    @process = new ObservableProcess(command-line,
+  @create-exoservice-instance = ({service-name, exorelay-port, exocomm-port}, done) ->
+    @process = new ObservableProcess("bin/exo-js run --exorelay-port #{exorelay-port} --exocomm-port #{exocomm-port}",
                                      cwd: path.join(process.cwd!, 'features', 'example-apps', service-name),
                                      verbose: no)
       ..wait 'online at port', done

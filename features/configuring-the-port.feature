@@ -16,17 +16,6 @@ Feature: Defining the port at which the server listens
     Given an ExoComm instance
 
 
-  Scenario: Running with default options
-    When starting a service
-    Then the service runs at port 3000
-
-
-  Scenario: Finding the next available port if 3000 is taken
-    Given ports 3000 and 3001 are used
-    When starting a service
-    Then the service runs at port 3002
-
-
   Scenario: Running at a custom port
     When starting a service at port 3001
     Then the service runs at port 3001

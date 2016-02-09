@@ -16,19 +16,19 @@ doc = """
 Runs Exosphere services written in Node.js.
 
 Usage:
-  exo-js run [--port=<port>] [--exocomm-port=<exocomm-port>]
+  exo-js run --exorelay-port=<exorelay-port> --exocomm-port=<exocomm-port>
   exo-js -h | --help
   exo-js -v | --version
 """
 
 run = (options) ->
-  new ExoService exocomm-port: options['--exocomm-port']
+  new ExoService exocomm-port: options['--exocomm-port'], exorelay-port: options['--exorelay-port']
     ..on 'online', (port) ->
       console.log dim "Ctrl-C to stop"
       console.log "online at port #{cyan port}"
     ..on 'error', (err) -> console.log red err
     ..on 'offline', -> console.log red 'SERVER CLOSED'
-    ..listen port: options['--port']
+    ..listen!
 
 
 options = docopt doc, help: no

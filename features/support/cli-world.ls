@@ -1,4 +1,5 @@
 require! {
+  '../support/dim-console'
   'observable-process' : ObservableProcess
   'path'
 }
@@ -10,7 +11,8 @@ CliWorld = !->
   @create-exoservice-instance = ({service-name, exorelay-port, exocomm-port}, done) ->
     @process = new ObservableProcess("bin/exo-js run --exorelay-port #{exorelay-port} --exocomm-port #{exocomm-port}",
                                      cwd: path.join(process.cwd!, 'features', 'example-apps', service-name),
-                                     verbose: no)
+                                     verbose: yes,
+                                     console: dim-console)
       ..wait 'online at port', done
 
 

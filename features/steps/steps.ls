@@ -72,6 +72,10 @@ module.exports = ->
       done!
 
 
+  @Then /^it can run the "([^"]*)" service$/, (@service-name, done) ->
+    @create-exoservice-instance {@service-name, port: 4000, @exocomm-port}, done
+
+
   @Then /^it runs the "([^"]*)" hook$/, (hook-name, done) ->
     @exocomm
       ..reset!

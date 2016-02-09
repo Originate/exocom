@@ -22,7 +22,9 @@ when receiving the command "ping", it replies with the command "pong".
 1. create an empty service scaffold
   * `yo exoservice ping`
 
-1. start your server: `exo-js run`
+1. start your server: `exo-js run --exorelay-port 3000 --exocomm-port 3100`
+  * `exorelay-port` is the port at which your service listens to Exosphere messages
+  * `exocomm-port` is the port at which your local ExoComm instance runs
 
 
 ## Testing

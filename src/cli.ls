@@ -16,9 +16,9 @@ doc = """
 Runs Exosphere services written in Node.js.
 
 Usage:
-  #{name} run [--port=<port>] [--exocomm-port=<exocomm-port>]
-  #{name} -h | --help
-  #{name} -v | --version
+  exo-js run [--port=<port>] [--exocomm-port=<exocomm-port>]
+  exo-js -h | --help
+  exo-js -v | --version
 """
 
 run = (options) ->

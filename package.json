@@ -42,9 +42,8 @@
   "scripts": {
     "postpublish": "git push && git push --tags",
     "prepublish": "bin/build",
-    "preversion": "npm test && npm run update",
+    "preversion": "npm test && david",
     "build": "build",
-    "test": "bin/spec",
-    "update": "david update"
+    "test": "bin/spec"
   }
 }

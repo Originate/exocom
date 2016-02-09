@@ -39,7 +39,7 @@ You can integrate ExoComm into your own NodeJS application through its JavaScrip
 The [CLI](src/cli.ls) is implemented using the JavaScript API.
 
 ```livescript
-@exocomm = new ExoComm
+new ExoComm
   ..on 'error', (err) -> # boo!
   ..on 'listening', (port) -> # woohoo!
   ..listen 3100

@@ -20,7 +20,7 @@
     "livescript": "^1.4.0",
     "mocha": "^2.3.4",
     "nitroglycerin": "^1.0.3",
-    "observable-process": "^0.5.1",
+    "observable-process": "^0.6.5",
     "portfinder": "^1.0.0",
     "prelude-ls": "^1.1.2",
     "record-http": "0.5.1",

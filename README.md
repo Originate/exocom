@@ -26,7 +26,7 @@ ExoRelay = require 'exorelay'
 exoRelay = new ExoRelay()
 exoRelay.on 'online', (port) ->  # yay, we are online!
 exoRelay.on 'error', (err) ->    # examine, print, or log the error here
-exoRelay.listen()
+exoRelay.listen 4000
 ```
 
 More details and how to customize the port is described in the [spec](features/listen.feature).

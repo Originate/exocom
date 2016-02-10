@@ -32,7 +32,7 @@ class HttpListener extends EventEmitter
     @emit 'offline'
 
 
-  listen: (@port = 4000) ->
+  listen: (@port) ->
     | isNaN @port  =>  return @emit 'error', Error 'Non-numerical port provided to ExoRelay#listen'
 
     @server = @app.listen @port, ~>

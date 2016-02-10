@@ -6,8 +6,7 @@ Feature: Listening
 
   Rules
   - call "listen" on an ExoRelay instance to take it online
-  - the default port is 4000
-  - you can provide a custom port as an argument to "listen"
+  - you provide the port as an argument to "listen"
 
 
   Background:
@@ -15,12 +14,7 @@ Feature: Listening
     And an ExoRelay instance
 
 
-  Scenario: Setting up on the default port
-    When I take it online at the default port
-    Then it is online at port 4000
-
-
-  Scenario: Setting up on a custom port
+  Scenario: Setting up at the given port
     When I take it online at port 4001
     Then it is online at port 4001
 

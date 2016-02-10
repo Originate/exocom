@@ -20,6 +20,7 @@ class HttpListener extends EventEmitter
       ..use body-parser.json!
       ..get '/run', @_overview-controller
       ..post '/run/:command', @_command-controller
+    @port = null
 
 
   close: ->

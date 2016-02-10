@@ -23,7 +23,7 @@ class ExoRelay extends EventEmitter
     @http-listener = new HttpListener!
       ..on 'command', @_on-incoming-command
 
-    delegate \close \listen from: @, to: @http-listener
+    delegate \close \listen \port from: @, to: @http-listener
     delegate \hasHandler \registerHandler \registerHandlers from: @, to: @command-handler
     delegate-event 'error', from: [@http-listener, @command-handler, @command-sender], to: @
     delegate-event 'online', 'offline', from: @http-listener, to: @

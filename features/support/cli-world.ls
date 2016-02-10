@@ -9,7 +9,7 @@ require! {
 CliWorld = !->
 
   @create-exoservice-instance = ({service-name, exorelay-port, exocomm-port}, done) ->
-    @process = new ObservableProcess("bin/exo-js run --exorelay-port #{exorelay-port} --exocomm-port #{exocomm-port}",
+    @process = new ObservableProcess("#{process.cwd!}/bin/exo-js run --exorelay-port #{exorelay-port} --exocomm-port #{exocomm-port}",
                                      cwd: path.join(process.cwd!, 'features', 'example-apps', service-name),
                                      verbose: yes,
                                      console: dim-console)

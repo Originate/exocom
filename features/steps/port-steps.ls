@@ -27,7 +27,7 @@ module.exports = ->
 
 
   @Then /^it is online at port (\d+)$/, (port, done) ->
-    request "http://localhost:#{port}/run", (err, response, body) ->
+    request "http://localhost:#{port}/status", (err, response, body) ->
       expect(err).to.be.null
       expect(response.status-code).to.equal 200
       done!

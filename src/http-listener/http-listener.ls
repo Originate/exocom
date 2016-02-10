@@ -18,7 +18,7 @@ class HttpListener extends EventEmitter
   ->
     @app = express!
       ..use body-parser.json!
-      ..get '/run', @_overview-controller
+      ..get '/status', @_status-controller
       ..post '/run/:command', @_command-controller
     @port = null
 
@@ -55,7 +55,7 @@ class HttpListener extends EventEmitter
     | _            =>  debug "received command '#{command}' with id '#{request-id}'"
 
 
-  _overview-controller: (req, res) ->
+  _status-controller: (req, res) ->
     res.end!
 
 

@@ -2,7 +2,7 @@
   "name": "exorelay",
   "version": "0.10.1",
   "description": "Communication relay between JavaScript code bases and the Exosphere environment",
-  "main": "lib/exorelay.js",
+  "main": "dist/exorelay.js",
   "scripts": {
     "postpublish": "git push && git push --tags",
     "prepublish": "bin/build",
@@ -15,9 +15,9 @@
   },
   "author": "Kevin Goslar",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/Originate/exorelay-js/issues"
-  },
+  "files": [
+    "dist"
+  ],
   "homepage": "https://github.com/Originate/exorelay-js#readme",
   "dependencies": {
     "body-parser": "^1.14.2",

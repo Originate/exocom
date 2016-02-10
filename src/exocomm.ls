@@ -28,7 +28,7 @@ class ExoComm extends EventEmitter
 
   # takes this instance online at the given port
   listen: (port) ->
-    @http-listener.listen port || 3100
+    @http-listener.listen port
 
 
   # registers the service with the given data

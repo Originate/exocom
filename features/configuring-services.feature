@@ -1,4 +1,4 @@
-Feature: Registering services
+Feature: Configuring services
 
   As an ExoSphere operator
   I want be able to tell ExoComm my current service setup

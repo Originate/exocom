@@ -17,7 +17,8 @@ class HttpListener extends EventEmitter
     @app = express!
       ..use body-parser.json!
       ..get  '/status.json', @_status-controller
-      ..post '/register-service', @_register-service-controller
+      ..get  '/config.json', @_config-controller
+      ..post '/services', @_set-services-controller
       ..post '/send/:command', @_send-controller
     @port = null
 
@@ -37,10 +38,15 @@ class HttpListener extends EventEmitter
       ..on 'listening', ~> @emit 'listening', @port
 
 
-  _register-service-controller: (req, res) ~>
-    request-data = req.body.payload
-    debug "service '#{request-data.name}' requesting to register"
-    switch (result = @listeners('register-service')[0] request-data)
+  _config-controller: (req, res) ~>
+    config = @listeners('get-config')[0]!
+    res
+      ..send config
+      ..end!
+
+
+  _set-services-controller: (req, res) ~>
+    switch (result = @listeners('set-services')[0] req.body)
       | 'success'  =>  res.status(200).end!
       | _          =>  throw new Error "unknown error"
 

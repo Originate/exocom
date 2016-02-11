@@ -16,43 +16,10 @@ ApiWorld = !->
       ..on 'listening', -> done!
 
 
-  @instance-for-receiving = ({name, command}, done) ->
+  @create-instance-at-port = (name, port, done) ->
     @receivers or= {}
     @receivers[name] = new HttpRecorder
-      ..listen 3000 + ascii(name), done
-    @exocomm.register-service do
-      name: name
-      host: 'localhost'
-      port: 3000 + ascii(name)
-      sends: []
-      receives: [command]
-
-
-
-  @instance-for-sending = ({name, command}, done) ->
-    result = @exocomm.register-service do
-      name: name
-      host: 'localhost'
-      port: 3000 + ascii(name)
-      sends: [command]
-      receives: []
-    expect(result).to.equal 'success'
-    done!
-
-
-  @register-service = (service-data, done) ->
-    result = @exocomm.register-service service-data[0]
-    expect(result).to.equal 'success'
-    done!
-
-
-  @run-exocomm = (expect-error, done) ->
-    @exocomm = new ExoComm
-      ..listen null
-    if expect-error
-      @exocomm.on 'error', (@err) ~> done!
-    else
-      @exocomm.on 'listening', -> done!
+      ..listen port, done
 
 
   @run-exocomm-at-port = (port, expect-error, done) ->
@@ -70,15 +37,20 @@ ApiWorld = !->
     done!
 
 
+  @set-service-landscape = (service-data, done) ->
+    result = @exocomm.set-services service-data
+    expect(result).to.equal 'success'
+    done!
+
+
   @verify-abort-with-message = (message, done) ->
     process.next-tick ~>
       expect(@err).to.equal message
       done!
 
 
-  @verify-knows-about-services = (service-data, done) ->
-    @exocomm.get-config ({clients}) ->
-      jsdiff-console clients, service-data, done
+  @verify-routing-setup = (expected-routes, done) ->
+    jsdiff-console @exocomm.get-config!routes, expected-routes, done
 
 
   @verify-runs-at-port = (port, done) ->
@@ -91,7 +63,7 @@ ApiWorld = !->
     condition = -> service-receiver.calls.length is 1
     wait-until condition, 10, ~>
       expected = [
-        url: "http://localhost:4347/run/#{message}"
+        url: "http://localhost:#{@ports[service-name]}/run/#{message}"
         method: 'POST'
         body: {}
         headers:
@@ -99,6 +71,11 @@ ApiWorld = !->
           'content-type': 'application/json'
       ]
       jsdiff-console service-receiver.calls, expected, done
+
+
+  @verify-service-setup = (expected-services, done) ->
+    jsdiff-console @exocomm.get-config!services, expected-services, done
+
 
 
 module.exports = ->

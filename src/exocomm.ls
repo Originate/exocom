@@ -11,7 +11,7 @@ class ExoComm extends EventEmitter
 
   ->
     @http-listener = new HttpListener
-      ..on 'register-service', @register-service
+      ..on 'set-services', @set-services
       ..on 'send-command', @send-command
       ..on 'get-config', @get-config
     @client-registry = new ClientRegistry
@@ -22,8 +22,11 @@ class ExoComm extends EventEmitter
 
 
   # returns the current configuration of this ExoComm instance
-  get-config: (done) ~>
-    done clients: @client-registry.clients!
+  get-config: ~>
+    {
+      services: @client-registry.clients
+      routes: @client-registry.routes
+    }
 
 
   # takes this instance online at the given port
@@ -33,8 +36,9 @@ class ExoComm extends EventEmitter
 
   # registers the service with the given data
   # as a sender and receiver of commands
-  register-service: (service-data) ~>
-    @client-registry.register service-data
+  set-services: (service-data) ~>
+    console.log 'receiving routing setup'
+    @client-registry.set-services service-data
     'success'
 
 

@@ -1,37 +1,28 @@
 Feature: Registering services
 
   As an ExoSphere operator
-  I want ExoComm to learn about client services
-  So that it can send them commands
+  I want be able to tell ExoComm my current service setup
+  So that it can send them commands.
 
   Rules:
-  - services can register with ExoComm via a POST request to /register-service
-  - the payload for this command contains:
-    - the name of the service
-    - the IP address and port of the service
-    - the list of commands this service wants to send and receive
+  - only the Exosphere environment can tell ExoComm about the current service layout
+  - this is done via a POST request to "/config"
 
 
   Background:
     Given an ExoComm instance
 
 
-  Scenario: a service registers itself with ExoComm
-    When receiving a registration for this service:
-      | NAME            | HOST      | PORT | SENDS     | RECEIVES  |
-      | example service | localhost | 3001 | command 1 | command 2 |
-    Then it knows about these services now:
-      | NAME            | HOST      | PORT | SENDS     | RECEIVES  |
-      | example service | localhost | 3001 | command 1 | command 2 |
-
-
-  Scenario: a service updates its registration
-    Given ExoComm knows about these services:
-      | NAME            | HOST      | PORT | SENDS     | RECEIVES  |
-      | example service | localhost | 3001 | command 1 | command 2 |
-    When receiving a registration for this service:
-      | NAME            | HOST      | PORT | SENDS     | RECEIVES  |
-      | example service | localhost | 3002 | command 3 | command 4 |
-    Then it knows about these services now:
-      | NAME            | HOST      | PORT | SENDS     | RECEIVES  |
-      | example service | localhost | 3002 | command 3 | command 4 |
+  Scenario: setting the service configuration
+    When setting this service landscape:
+      | NAME      | HOST      | PORT | SENDS     | RECEIVES  |
+      | service 1 | localhost | 3001 | command-1 | command-2 |
+      | service 2 | localhost | 3002 | command-2 | command-1 |
+    Then ExoComm now knows about these services:
+      | NAME      | HOST      | PORT |
+      | service 1 | localhost | 3001 |
+      | service 2 | localhost | 3002 |
+    And it has this routing table:
+      | COMMAND   | SENDERS   | RECEIVERS                                          |
+      | command-1 | service 1 | {name: 'service 2', host: 'localhost', port: 3002} |
+      | command-2 | service 2 | {name: 'service 1', host: 'localhost', port: 3001} |

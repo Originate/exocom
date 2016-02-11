@@ -9,27 +9,12 @@ Feature: Broadcasting messages
   - ExoComm sends the message to all subscribed services
 
 
-  Scenario: broadcasting a registered message to active listeners
-    Given an ExoComm instance
-    And a web server instance registered to send "create-user"
-    And a users service instance registered to receive "create-user"
-    When the web server sends "create-user"
-    Then ExoComm broadcasts this message to the users service
-
-
-  @todo
-  Scenario: trying to broadcast an unregistered message
-    Given an ExoComm instance
-    And a web server instance registered to send "create user"
-    And a users service instance registered to receive "create user"
-    When the web server tries to send "unregistered command"
-    Then ExoComm sends an "unregistered command" reply
-
-
-  @todo
-  Scenario: a registered receiver is offline
-    Given an ExoComm instance
-    And a users service instance registered to receive "create user"
-    And that users service is no longer online
-    When ExoComm tries to broadcast the "create user" command to the users service
-    Then it removes it from its service list
+  Scenario: broadcasting a message
+    Given a "web-server" instance running at port 3001
+    And a "users-service" instance running at port 3002
+    And an ExoComm instance configured for the service landscape:
+      | NAME       | HOST      | PORT | SENDS       | RECEIVES    |
+      | web-server | localhost | 3001 | create-user |             |
+      | service 2  | localhost | 3002 |             | create-user |
+    When the web-server sends "create-user"
+    Then ExoComm broadcasts this message to the users-service

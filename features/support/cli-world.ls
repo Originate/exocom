@@ -2,6 +2,7 @@ require! {
   'chai' : {expect}
   'jsdiff-console'
   './my-console'
+  'nitroglycerin' : N
   'observable-process' : ObservableProcess
   'record-http' : HttpRecorder
   'request'
@@ -18,51 +19,10 @@ CliWorld = !->
       ..wait "online at port #{port}", done
 
 
-  @instance-for-receiving = ({name, command}, done) ->
+  @create-instance-at-port = (name, port, done) ->
     @receivers or= {}
     @receivers[name] = new HttpRecorder
-      ..listen 3000 + ascii(name), done
-    request-data =
-      url: "http://localhost:#{@exocomm-port}/register-service",
-      method: 'POST'
-      body:
-        payload:
-          name: name
-          port: 3000 + ascii(name)
-          sends: []
-          receives: [command]
-      json: yes
-    request request-data, done
-
-
-  @instance-for-sending = ({name, command}, done) ->
-    request-data =
-      url: "http://localhost:#{@exocomm-port}/register-service",
-      method: 'POST'
-      body:
-        payload:
-          name: name
-          port: 3000 + ascii(name)
-          sends: [command]
-          receives: []
-      json: yes
-    request request-data, done
-
-
-
-  @register-service = (service-data, done) ->
-    request-data =
-      url: "http://localhost:#{@exocomm-port}/register-service",
-      method: 'POST'
-      body:
-        payload: service-data[0]
-      json: yes
-    request request-data, done
-
-
-  @run-exocomm = (_expect-error, done) ->
-    @process = new ObservableProcess 'bin/exocomm', verbose: yes, console: my-console
-    done!
+      ..listen port, done
 
 
   @run-exocomm-at-port = (port, _expect-error, done) ->
@@ -81,17 +41,27 @@ CliWorld = !->
     request request-data, done
 
 
+  @set-service-landscape = (service-data, done) ->
+    request-data =
+      url: "http://localhost:#{@exocomm-port}/services"
+      method: 'POST'
+      body: service-data
+      json: yes
+    request request-data, N (response) ->
+      expect(response.status-code).to.equal 200
+      done!
+
+
   @verify-abort-with-message = (message, done) ->
     @process.wait message, ~>
       wait-until (~> @process.crashed), done
 
 
-  @verify-knows-about-services = (service-data, done) ->
-    request "http://localhost:#{@exocomm-port}/status.json", (err, result, body) ->
+  @verify-routing-setup = (expected-routing, done) ->
+    request "http://localhost:#{@exocomm-port}/config.json", (err, result, body) ->
       expect(err).to.be.null
       expect(result.status-code).to.equal 200
-      actual = JSON.parse body
-      jsdiff-console actual.clients, service-data, done
+      jsdiff-console JSON.parse(body).routes, expected-routing, done
 
 
   @verify-runs-at-port = (port, done) ->
@@ -101,9 +71,9 @@ CliWorld = !->
   @verify-sent-calls = ({service-name, message}, done) ->
     service-receiver = @receivers[service-name]
     condition = -> service-receiver.calls.length is 1
-    wait-until condition, 10, ->
+    wait-until condition, 10, ~>
       expected = [
-        url: "http://localhost:4347/run/#{message}"
+        url: "http://localhost:#{@ports[service-name]}/run/#{message}"
         method: 'POST'
         body:
           payload: ''
@@ -112,6 +82,13 @@ CliWorld = !->
           'content-type': 'application/json'
       ]
       jsdiff-console service-receiver.calls, expected, done
+
+
+  @verify-service-setup = (service-data, done) ->
+    request "http://localhost:#{@exocomm-port}/config.json", (err, result, body) ->
+      expect(err).to.be.null
+      expect(result.status-code).to.equal 200
+      jsdiff-console JSON.parse(body).services, service-data, done
 
 
 module.exports = ->

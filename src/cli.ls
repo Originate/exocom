@@ -33,6 +33,7 @@ run = ->
     ..listen options['--port']
     ..on 'listening', on-listening
     ..on 'error', on-error
+    ..on 'routing-setup', -> console.log 'receiving routing setup'
 
 
 options = docopt doc, help: no

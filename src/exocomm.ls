@@ -37,7 +37,7 @@ class ExoComm extends EventEmitter
   # registers the service with the given data
   # as a sender and receiver of commands
   set-services: (service-data) ~>
-    console.log 'receiving routing setup'
+    @emit 'routing-setup'
     @client-registry.set-services service-data
     'success'
 

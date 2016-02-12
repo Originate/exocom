@@ -46,6 +46,7 @@ class ExoComm extends EventEmitter
   send-command: (command-data) ~>
     subscribers = @client-registry.subscribers-to command-data.name
     @command-sender.send-to-services command-data, subscribers
+    @emit 'command', command-data.name
     'success'
 
 

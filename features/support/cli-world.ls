@@ -57,6 +57,10 @@ CliWorld = !->
       wait-until (~> @process.crashed), done
 
 
+  @verify-exocomm-received-command = (command, done) ->
+    @process.wait "broadcasting '#{command}'", done
+
+
   @verify-routing-setup = (expected-routing, done) ->
     request "http://localhost:#{@exocomm-port}/config.json", (err, result, body) ->
       expect(err).to.be.null

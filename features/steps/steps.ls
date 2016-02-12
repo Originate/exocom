@@ -84,6 +84,10 @@ module.exports = ->
     @verify-service-setup services, done
 
 
+  @Then /^ExoComm signals that this message was sent$/, (done) ->
+    @verify-exocomm-received-command @last-sent-message, done
+
+
   @Then /^it aborts with the message "([^"]*)"$/, (message, done) ->
     @verify-abort-with-message message, done
 

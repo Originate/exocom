@@ -14,12 +14,14 @@ ApiWorld = !->
     @exocomm = new ExoComm
       ..listen port
       ..on 'listening', -> done!
+      ..on 'command', (name) ~> @last-received-command = name
 
 
   @create-instance-at-port = (name, port, done) ->
     @receivers or= {}
     @receivers[name] = new HttpRecorder
       ..listen port, done
+      ..on 'command', (name) ~> @last-received-command = name
 
 
   @run-exocomm-at-port = (port, expect-error, done) ->
@@ -47,6 +49,10 @@ ApiWorld = !->
     process.next-tick ~>
       expect(@err).to.equal message
       done!
+
+
+  @verify-exocomm-received-command = (command, done) ->
+    wait-until (~> @last-received-command is command), 1, done
 
 
   @verify-routing-setup = (expected-routes, done) ->

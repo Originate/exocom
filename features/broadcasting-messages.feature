@@ -17,4 +17,5 @@ Feature: Broadcasting messages
       | web-server | localhost | 3001 | create-user |             |
       | service 2  | localhost | 3002 |             | create-user |
     When the web-server sends "create-user"
-    Then ExoComm broadcasts this message to the users-service
+    Then ExoComm signals that this message was sent
+    And ExoComm broadcasts this message to the users-service

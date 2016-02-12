@@ -34,6 +34,7 @@ run = ->
     ..on 'listening', on-listening
     ..on 'error', on-error
     ..on 'routing-setup', -> console.log 'receiving routing setup'
+    ..on 'command', (command-name) -> console.log "broadcasting '#{command-name}'"
 
 
 options = docopt doc, help: no

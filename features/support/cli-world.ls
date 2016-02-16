@@ -41,6 +41,18 @@ CliWorld = !->
     request request-data, done
 
 
+  @service-sends-reply = (service, reply-command, request-id, done) ->
+    request-data =
+      url: "http://localhost:#{@exocomm-port}/send/#{reply-command}",
+      method: 'POST'
+      body:
+        payload: ''
+        request-id: '123'
+        response-to: request-id
+      json: yes
+    request request-data, done
+
+
   @set-service-landscape = (service-data, done) ->
     request-data =
       url: "http://localhost:#{@exocomm-port}/services"
@@ -61,6 +73,10 @@ CliWorld = !->
     @process.wait "broadcasting '#{command}'", done
 
 
+  @verify-exocomm-received-reply = (command, done) ->
+    @process.wait "broadcasting '#{command}'", done
+
+
   @verify-routing-setup = (expected-routing, done) ->
     request "http://localhost:#{@exocomm-port}/config.json", (err, result, body) ->
       expect(err).to.be.null
@@ -72,7 +88,7 @@ CliWorld = !->
     @process.wait "online at port #{port}", done
 
 
-  @verify-sent-calls = ({service-name, message}, done) ->
+  @verify-sent-calls = ({service-name, message, response-to}, done) ->
     service-receiver = @receivers[service-name]
     condition = -> service-receiver.calls.length is 1
     wait-until condition, 10, ~>
@@ -86,6 +102,7 @@ CliWorld = !->
           accept: 'application/json'
           'content-type': 'application/json'
       ]
+      expected[0].body.response-to = response-to if response-to
       jsdiff-console service-receiver.calls, expected, done
 
 

@@ -39,6 +39,12 @@ ApiWorld = !->
     done!
 
 
+  @service-sends-reply = (service, reply-command, request-id, done) ->
+    result = @exocomm.send-command name: reply-command, request-id: '123', response-to: request-id
+    expect(result).to.equal 'success'
+    done!
+
+
   @set-service-landscape = (service-data, done) ->
     result = @exocomm.set-services service-data
     expect(result).to.equal 'success'
@@ -55,6 +61,10 @@ ApiWorld = !->
     wait-until (~> @last-received-command is command), 1, done
 
 
+  @verify-exocomm-received-reply = (command, done) ->
+    wait-until (~> @last-received-command is command), 1, done
+
+
   @verify-routing-setup = (expected-routes, done) ->
     jsdiff-console @exocomm.get-config!routes, expected-routes, done
 
@@ -64,7 +74,7 @@ ApiWorld = !->
     done!
 
 
-  @verify-sent-calls = ({service-name, message}, done) ->
+  @verify-sent-calls = ({service-name, message, response-to}, done) ->
     service-receiver = @receivers[service-name]
     condition = -> service-receiver.calls.length is 1
     wait-until condition, 1, ~>
@@ -77,6 +87,7 @@ ApiWorld = !->
           accept: 'application/json'
           'content-type': 'application/json'
       ]
+      expected[0].body.response-to = response-to if response-to
       jsdiff-console service-receiver.calls, expected, done
 
 

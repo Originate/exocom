@@ -9,13 +9,22 @@ Feature: Broadcasting messages
   - ExoComm sends the message to all subscribed services
 
 
-  Scenario: broadcasting a message
+  Background:
     Given a "web-server" instance running at port 3001
     And a "users-service" instance running at port 3002
     And an ExoComm instance configured for the service landscape:
       | NAME       | HOST      | PORT | SENDS       | RECEIVES    |
       | web-server | localhost | 3001 | create-user |             |
       | service 2  | localhost | 3002 |             | create-user |
+
+
+  Scenario: broadcasting a message
     When the web-server sends "create-user"
     Then ExoComm signals that this message was sent
     And ExoComm broadcasts this message to the users-service
+
+
+  Scenario: broadcasting a reply
+    When the web-server sends "create-user" in reply to "111"
+    Then ExoComm signals that this reply was sent
+    And ExoComm broadcasts this reply to the users-service

@@ -64,15 +64,26 @@ module.exports = ->
       done!
 
 
-  @When /^the (.*?) sends "([^"]*)"$/, (service, command, done) ->
+  @When /^the (.+?) sends "([^"]*)"$/, (service, command, done) ->
     set-immediate ~>
       @last-sent-message = command
       @service-sends-command service, command, done
 
 
+  @When /^the (.+)? sends "([^"]*)" in reply to "([^"]*)"$/, (service, reply-command, request-id, done) ->
+    set-immediate ~>
+      @last-sent-message = reply-command
+      @service-sends-reply service, reply-command, request-id, done
+
+
 
   @Then /^ExoComm broadcasts this message to the (.*?)$/, (service-name, done) ->
     @verify-sent-calls {service-name, message: @last-sent-message}, done
+
+
+  @Then /^ExoComm broadcasts this reply to the (.+?)$/, (service-name, done) ->
+    @verify-sent-calls {service-name, message: @last-sent-message, response-to: '111'}, done
+
 
 
   @Then /^ExoComm now knows about these services:$/, (table, done) ->
@@ -86,6 +97,10 @@ module.exports = ->
 
   @Then /^ExoComm signals that this message was sent$/, (done) ->
     @verify-exocomm-received-command @last-sent-message, done
+
+
+  @Then /^ExoComm signals that this reply was sent$/, (done) ->
+    @verify-exocomm-received-reply @last-sent-message, done
 
 
   @Then /^it aborts with the message "([^"]*)"$/, (message, done) ->

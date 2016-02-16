@@ -67,7 +67,7 @@ ApiWorld = !->
   @verify-sent-calls = ({service-name, message}, done) ->
     service-receiver = @receivers[service-name]
     condition = -> service-receiver.calls.length is 1
-    wait-until condition, 10, ~>
+    wait-until condition, 1, ~>
       expected = [
         url: "http://localhost:#{@ports[service-name]}/run/#{message}"
         method: 'POST'

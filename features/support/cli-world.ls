@@ -80,6 +80,7 @@ CliWorld = !->
         url: "http://localhost:#{@ports[service-name]}/run/#{message}"
         method: 'POST'
         body:
+          requestId: '123'
           payload: ''
         headers:
           accept: 'application/json'

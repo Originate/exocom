@@ -34,7 +34,7 @@ ApiWorld = !->
 
 
   @service-sends-command = (service, command, done) ->
-    result = @exocomm.send-command name: command
+    result = @exocomm.send-command name: command, request-id: '123'
     expect(result).to.equal 'success'
     done!
 
@@ -71,7 +71,8 @@ ApiWorld = !->
       expected = [
         url: "http://localhost:#{@ports[service-name]}/run/#{message}"
         method: 'POST'
-        body: {}
+        body:
+          requestId: '123'
         headers:
           accept: 'application/json'
           'content-type': 'application/json'

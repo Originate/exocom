@@ -17,6 +17,7 @@ class CommandSender
       url: "http://localhost:#{service.port}/run/#{command.name}"
       method: 'POST'
       body:
+        requestId: command.request-id
         payload: command.payload
       json: yes
     debug "sending '#{command.name}' to '#{service.name}'"

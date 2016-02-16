@@ -7,5 +7,6 @@ module.exports = ->
     @existing-server?.close!
     @exocomm?.close!
     @process?.kill!
-    for _, receiver of @receivers?
-      receiver.close!
+    if @receivers
+      for name, receiver of @receivers
+        receiver.close!

@@ -2,7 +2,7 @@
 set -e
 
 if [ "$#" != "1" ]; then
-  mocha --compilers ls:LiveScript "**/*spec.ls"
+  mocha --compilers ls:livescript "**/*spec.ls"
 fi
 bin/cuc-api "$@"
 bin/cuc-cli "$@"

@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -e
 
-mocha --compilers ls:LiveScript "**/*spec.ls"
+if [ "$#" != "1" ]; then
+  mocha --compilers ls:LiveScript "**/*spec.ls"
+fi
 bin/cuc-api "$@"
 bin/cuc-cli "$@"

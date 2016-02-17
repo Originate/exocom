@@ -3,6 +3,7 @@ require! {
   'docopt' : {docopt}
   'nitroglycerin' : N
   '../package.json' : {name, version}
+  '../package.json' : {version}
   'path'
   './exocomm' : ExoComm
 }
@@ -21,7 +22,7 @@ Usage:
 
 on-listening = (port) ->
   console.log dim "Ctrl-C to stop"
-  console.log "online at port #{cyan port}"
+  console.log "ExoComm #{version} online at port #{cyan port}"
 
 on-error = (err) ->
   console.log red err

@@ -30,7 +30,7 @@ CliWorld = !->
     done!
 
 
-  @service-sends-command = (service, command, done) ->
+  @service-sends-command = ({service, command}, done) ->
     request-data =
       url: "http://localhost:#{@exocomm-port}/send/#{command}",
       method: 'POST'
@@ -67,6 +67,10 @@ CliWorld = !->
   @verify-abort-with-message = (message, done) ->
     @process.wait message, ~>
       wait-until (~> @process.crashed), done
+
+
+  @verify-exocomm-broadcasted-command = ({command, services}, done) ->
+    @process.wait "broadcasting '#{command}' to the #{services.join ', '}", done
 
 
   @verify-exocomm-received-command = (command, done) ->

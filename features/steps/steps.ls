@@ -42,6 +42,11 @@ module.exports = ->
       @existing-server = http.create-server(handler).listen port, done
 
 
+  @Given /^the ([^ ]+) sends "([^"]*)" with id "([^"]*)"$/, (service, command, command-id, done) ->
+    @last-sent-message = command
+    @last-sent-request-id = command-id
+    @service-sends-command {service, command, command-id}, done
+
 
   @When /^I( try to)? run ExoComm at port (\d+)$/, (!!expect-error, +port, done) ->
     @run-exocomm-at-port port, expect-error, done
@@ -65,20 +70,18 @@ module.exports = ->
 
 
   @When /^the (.+?) sends "([^"]*)"$/, (service, command, done) ->
-    set-immediate ~>
-      @last-sent-message = command
-      @service-sends-command service, command, done
+    @last-sent-message = command
+    @service-sends-command {service, command}, done
 
 
   @When /^the (.+)? sends "([^"]*)" in reply to "([^"]*)"$/, (service, reply-command, request-id, done) ->
-    set-immediate ~>
-      @last-sent-message = reply-command
-      @service-sends-reply service, reply-command, request-id, done
+    @last-sent-message = reply-command
+    @service-sends-reply service, reply-command, request-id, done
 
 
 
   @Then /^ExoComm broadcasts this message to the (.*?)$/, (service-name, done) ->
-    @verify-sent-calls {service-name, message: @last-sent-message}, done
+    @verify-sent-calls {service-name, message: @last-sent-message, request-id: @last-sent-request-id}, done
 
 
   @Then /^ExoComm broadcasts this reply to the (.+?)$/, (service-name, done) ->
@@ -95,12 +98,20 @@ module.exports = ->
     @verify-service-setup services, done
 
 
+  @Then /^ExoComm signals that this message is sent to the (.+)$/, (service-name, done) ->
+    @verify-exocomm-broadcasted-command command: @last-sent-message, services: [service-name], done
+
+
   @Then /^ExoComm signals that this message was sent$/, (done) ->
-    @verify-exocomm-received-command @last-sent-message, done
+    @verify-exocomm-broadcasted-command command: @last-sent-message, done
+
+
+  @Then /^ExoComm signals that this reply is sent to the (.+)$/, (service-name, done) ->
+    @verify-exocomm-broadcasted-command command: @last-sent-message, services: [service-name], response-to: '111', done
 
 
   @Then /^ExoComm signals that this reply was sent$/, (done) ->
-    @verify-exocomm-received-reply @last-sent-message, done
+    @verify-exocomm-broadcasted-reply @last-sent-message, done
 
 
   @Then /^it aborts with the message "([^"]*)"$/, (message, done) ->

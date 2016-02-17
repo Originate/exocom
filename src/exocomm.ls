@@ -5,6 +5,7 @@ require! {
   './command-sender' : CommandSender
   'rails-delegate' : {delegate, delegate-event}
 }
+debug = require('debug')('exocomm')
 
 
 class ExoComm extends EventEmitter
@@ -32,11 +33,13 @@ class ExoComm extends EventEmitter
   # takes this instance online at the given port
   listen: (port) ->
     @http-listener.listen port
+    debug "listening at port #{port}"
 
 
   # registers the service with the given data
   # as a sender and receiver of commands
   set-services: (service-data) ~>
+    debug 'receiving service data'
     @emit 'routing-setup'
     @client-registry.set-services service-data
     'success'
@@ -45,8 +48,10 @@ class ExoComm extends EventEmitter
   # sends the given command to all subscribers of it.
   send-command: (command-data) ~>
     subscribers = @client-registry.subscribers-to command-data.name
+    subscriber-names = [subscriber.name for subscriber in subscribers]
+    debug "sending '#{command-data.name}' to #{subscriber-names}"
     @command-sender.send-to-services command-data, subscribers
-    @emit 'command', command-data.name
+    @emit 'command', command-data.name, subscriber-names
     'success'
 
 

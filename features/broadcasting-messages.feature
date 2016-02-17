@@ -13,18 +13,19 @@ Feature: Broadcasting messages
     Given a "web-server" instance running at port 3001
     And a "users-service" instance running at port 3002
     And an ExoComm instance configured for the service landscape:
-      | NAME       | HOST      | PORT | SENDS       | RECEIVES    |
-      | web-server | localhost | 3001 | create-user |             |
-      | service 2  | localhost | 3002 |             | create-user |
+      | NAME          | HOST      | PORT | SENDS        | RECEIVES     |
+      | web-server    | localhost | 3001 | create-user  | created-user |
+      | users-service | localhost | 3002 | created-user | create-user  |
 
 
   Scenario: broadcasting a message
     When the web-server sends "create-user"
-    Then ExoComm signals that this message was sent
+    Then ExoComm signals that this message is sent to the users-service
     And ExoComm broadcasts this message to the users-service
 
 
   Scenario: broadcasting a reply
-    When the web-server sends "create-user" in reply to "111"
-    Then ExoComm signals that this reply was sent
-    And ExoComm broadcasts this reply to the users-service
+    Given the web-server sends "create-user" with id "111"
+    When the web-server sends "created-user" in reply to "111"
+    Then ExoComm signals that this reply is sent to the web-server
+    And ExoComm broadcasts this reply to the web-server

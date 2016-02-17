@@ -23,7 +23,7 @@
     "observable-process": "^0.6.5",
     "portfinder": "^1.0.0",
     "prelude-ls": "^1.1.2",
-    "record-http": "0.5.1",
+    "record-http": "^0.6.0",
     "request": "^2.67.0",
     "wait": "^0.1.0"
   },

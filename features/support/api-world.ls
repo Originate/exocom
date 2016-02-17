@@ -14,14 +14,14 @@ ApiWorld = !->
     @exocomm = new ExoComm
       ..listen port
       ..on 'listening', -> done!
-      ..on 'command', (name) ~> @last-received-command = name
+      ..on 'command', (@last-broadcasted-command, @last-receivers) ~>
 
 
   @create-instance-at-port = (name, port, done) ->
     @receivers or= {}
-    @receivers[name] = new HttpRecorder
+    @receivers[name] = new HttpRecorder name
       ..listen port, done
-      ..on 'command', (name) ~> @last-received-command = name
+      ..on 'receive', (@last-broadcasted-command, name) ~>
 
 
   @run-exocomm-at-port = (port, expect-error, done) ->
@@ -33,8 +33,8 @@ ApiWorld = !->
       @exocomm.on 'listening', -> done!
 
 
-  @service-sends-command = (service, command, done) ->
-    result = @exocomm.send-command name: command, request-id: '123'
+  @service-sends-command = ({service, command, command-id = '123'} = {}, done) ->
+    result = @exocomm.send-command name: command, request-id: command-id
     expect(result).to.equal 'success'
     done!
 
@@ -57,16 +57,24 @@ ApiWorld = !->
       done!
 
 
-  @verify-exocomm-received-command = (command, done) ->
-    wait-until (~> @last-received-command is command), 1, done
+  @verify-exocomm-broadcasted-command = ({command, services, response-to} done) ->
+    wait-until (~> @last-broadcasted-command is command), 1, ~>
+      expect(@last-receivers).to.eql services
+      done!
 
 
-  @verify-exocomm-received-reply = (command, done) ->
-    wait-until (~> @last-received-command is command), 1, done
+  @verify-exocomm-broadcasted-reply = (command, done) ->
+    wait-until (~> @last-broadcasted-command is command), 1, done
 
 
   @verify-routing-setup = (expected-routes, done) ->
     jsdiff-console @exocomm.get-config!routes, expected-routes, done
+
+
+  @verify-exocomm-signals-broadcast = (command-name, done) ->
+    @exocomm.on command-name, (command, receivers) ->
+      console.log command
+      done!
 
 
   @verify-runs-at-port = (port, done) ->
@@ -74,7 +82,7 @@ ApiWorld = !->
     done!
 
 
-  @verify-sent-calls = ({service-name, message, response-to}, done) ->
+  @verify-sent-calls = ({service-name, message, request-id = '123', response-to}, done) ->
     service-receiver = @receivers[service-name]
     condition = -> service-receiver.calls.length is 1
     wait-until condition, 1, ~>
@@ -82,7 +90,7 @@ ApiWorld = !->
         url: "http://localhost:#{@ports[service-name]}/run/#{message}"
         method: 'POST'
         body:
-          requestId: '123'
+          requestId: request-id
         headers:
           accept: 'application/json'
           'content-type': 'application/json'

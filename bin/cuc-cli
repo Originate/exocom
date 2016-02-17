@@ -1,3 +1,4 @@
 #!/usr/bin/env bash
 
+killall node 2> /dev/null
 EXOCOMM_TEST_DEPTH=CLI DEBUG='*,-express:*,-body-parser:*,-finalhandler,-text-stream-search' cucumber-js --tags ~@todo "$@"

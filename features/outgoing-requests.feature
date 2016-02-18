@@ -1,11 +1,11 @@
 Feature: Sending outgoing requests
 
   As an Exoservice developer
-  I want to be able to send other commands from my services
+  I want to be able to send other messages from my services
   So that my services can use other services.
 
   Rules:
-  - use the "send" method given to your command handlers as a parameter
+  - use the "send" method given to your message handlers as a parameter
 
 
   Background:
@@ -13,9 +13,9 @@ Feature: Sending outgoing requests
     And an instance of the "test" service
 
 
-  Scenario: a service sends out a command
-    When receiving the "sender" command
-    Then after a while it sends the "greetings" command with the textual payload:
+  Scenario: a service sends out a message
+    When receiving the "sender" message
+    Then after a while it sends the "greetings" message with the textual payload:
       """
       from the sender service
       """

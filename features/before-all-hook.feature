@@ -5,7 +5,7 @@ Feature: Before-All hook
   So that the service doesn't signal availability before everything is properly initialized.
 
   Rules:
-  - put initializiation code into a "beforeAll" command handler
+  - put initializiation code into a "beforeAll" message handler
 
 
   Background:

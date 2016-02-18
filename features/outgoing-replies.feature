@@ -1,12 +1,12 @@
 Feature: Outgoing replies
 
   As an ExoService developer
-  I want to be able to send outgoing responses to incoming commands
+  I want to be able to send outgoing responses to incoming messages
   So that I can build interactive services.
 
   Rules:
-  - use the "reply" method given as a parameter to your command handler
-    to send replies for the command you are currently handling
+  - use the "reply" method given as a parameter to your message handler
+    to send replies for the message you are currently handling
 
 
   Background:
@@ -14,6 +14,6 @@ Feature: Outgoing replies
     And an instance of the "test" service
 
 
-  Scenario: A command replies
-    When receiving the "ping" command
-    Then after a while it sends the "pong" command
+  Scenario: A message replies
+    When receiving the "ping" message
+    Then after a while it sends the "pong" message

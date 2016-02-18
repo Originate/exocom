@@ -17,7 +17,7 @@ npm install -g exoservice-js
 ## Creating a micro-service
 
 Let's create the simplest possible microservice:
-when receiving the command "ping", it replies with the command "pong".
+when receiving the message "ping", it replies with the message "pong".
 
 1. create an empty service scaffold
   * `yo exoservice ping`

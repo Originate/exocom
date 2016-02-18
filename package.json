@@ -39,7 +39,7 @@
     "lodash.isequal": "^4.0.0",
     "mocha": "^2.3.4",
     "nitroglycerin": "^1.0.3",
-    "record-http": "^0.5.1",
+    "record-http": "^0.6.0",
     "sinon": "^1.17.2",
     "wait": "^0.1.0"
   }

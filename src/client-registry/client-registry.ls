@@ -18,17 +18,17 @@ class ClientRegistry
     #     ...
     @clients = {}
 
-    # List of clients that are subscribed to the given command
+    # List of clients that are subscribed to the given message
     #
     # The format is:
     # {
-    #   'command 1 name':
+    #   'message 1 name':
     #     receivers:
     #       * name: ...
     #         host: ...
     #         port: ...
     #       * name: ...
-    #   'command 2 name':
+    #   'message 2 name':
     #     ...
     @routes = {}
 
@@ -45,18 +45,18 @@ class ClientRegistry
       @clients[service.name] =
         host: service.host
         port: service.port
-      for command in service.receives
-        @routes[command] or= {}
-        @routes[command].receivers or= []
-        @routes[command].receivers.push do
+      for message in service.receives
+        @routes[message] or= {}
+        @routes[message].receivers or= []
+        @routes[message].receivers.push do
           name: service.name
           host: service.host
           port: service.port
 
 
-  # Returns the clients that are subscribed to the given command
-  subscribers-to: (command-name) ->
-    @routes[command-name].receivers
+  # Returns the clients that are subscribed to the given message
+  subscribers-to: (message-name) ->
+    @routes[message-name].receivers
 
 
 

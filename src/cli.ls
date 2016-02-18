@@ -35,7 +35,7 @@ run = ->
     ..on 'listening', on-listening
     ..on 'error', on-error
     ..on 'routing-setup', -> console.log 'receiving routing setup'
-    ..on 'command', (command, receivers) -> console.log "broadcasting '#{command}' to the #{receivers.join ' and '}"
+    ..on 'message', (message, receivers) -> console.log "broadcasting '#{message}' to the #{receivers.join ' and '}"
 
 
 options = docopt doc, help: no

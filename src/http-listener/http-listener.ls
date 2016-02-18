@@ -6,7 +6,7 @@ require! {
 debug = require('debug')('exorelay:http-listener')
 
 
-# The HTTP endpoint that listens for commands that services want to send
+# The HTTP endpoint that listens for messages that services want to send
 #
 # Emits these events:
 # - error: when it cannot bind to the given port
@@ -19,7 +19,7 @@ class HttpListener extends EventEmitter
       ..get  '/status.json', @_status-controller
       ..get  '/config.json', @_config-controller
       ..post '/services', @_set-services-controller
-      ..post '/send/:command', @_send-controller
+      ..post '/send/:message', @_send-controller
     @port = null
 
 
@@ -54,10 +54,10 @@ class HttpListener extends EventEmitter
   _send-controller: (req, res) ~>
     request-data = @_parse-request req
     @_log request-data
-    switch (result = @listeners('send-command')[0] request-data)
+    switch (result = @listeners('send-message')[0] request-data)
       | 'success'             =>  res.status(200).end!
       | 'missing request id'  =>  res.status(400).end 'missing request id'
-      | 'unknown command'     =>  res.status(404).end "unknown command: '#{request-data.command}'"
+      | 'unknown message'     =>  res.status(404).end "unknown message: '#{request-data.message}'"
       | _                     =>  throw new Error "unknown result code: '#{@result}'"
 
 
@@ -68,13 +68,13 @@ class HttpListener extends EventEmitter
 
 
   _log: ({name, request-id, response-to}) ->
-    | response-to  =>  debug "received command '#{name}' with id '#{request-id}' in response to '#{response-to}'"
-    | _            =>  debug "received command '#{name}' with id '#{request-id}'"
+    | response-to  =>  debug "received message '#{name}' with id '#{request-id}' in response to '#{response-to}'"
+    | _            =>  debug "received message '#{name}' with id '#{request-id}'"
 
 
   # Returns the relevant data from a request
   _parse-request: (req) ->
-    name = req.params.command
+    name = req.params.message
     payload = req.body.payload
     response-to = req.body.response-to
     request-id = req.body.request-id

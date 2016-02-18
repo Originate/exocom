@@ -48,7 +48,7 @@ new ExoComm
 
 ## Functionality
 
-ExoComm [broadcasts](features/broadcasting-messages.feature) commands to other services.
+ExoComm [broadcasts](features/broadcasting-messages.feature) messages to other services.
 Services have to [register](features/registering-services.feature) with it first
 to tell it which messages they want to send and receive.
 

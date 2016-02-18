@@ -42,10 +42,10 @@ module.exports = ->
       @existing-server = http.create-server(handler).listen port, done
 
 
-  @Given /^the ([^ ]+) sends "([^"]*)" with id "([^"]*)"$/, (service, command, command-id, done) ->
-    @last-sent-message = command
-    @last-sent-request-id = command-id
-    @service-sends-command {service, command, command-id}, done
+  @Given /^the ([^ ]+) sends "([^"]*)" with id "([^"]*)"$/, (service, message, message-id, done) ->
+    @last-sent-message = message
+    @last-sent-request-id = message-id
+    @service-sends-message {service, message, message-id}, done
 
 
   @When /^I( try to)? run ExoComm at port (\d+)$/, (!!expect-error, +port, done) ->
@@ -69,14 +69,14 @@ module.exports = ->
       done!
 
 
-  @When /^the (.+?) sends "([^"]*)"$/, (service, command, done) ->
-    @last-sent-message = command
-    @service-sends-command {service, command}, done
+  @When /^the (.+?) sends "([^"]*)"$/, (service, message, done) ->
+    @last-sent-message = message
+    @service-sends-message {service, message}, done
 
 
-  @When /^the (.+)? sends "([^"]*)" in reply to "([^"]*)"$/, (service, reply-command, request-id, done) ->
-    @last-sent-message = reply-command
-    @service-sends-reply service, reply-command, request-id, done
+  @When /^the (.+)? sends "([^"]*)" in reply to "([^"]*)"$/, (service, reply-message, request-id, done) ->
+    @last-sent-message = reply-message
+    @service-sends-reply service, reply-message, request-id, done
 
 
 
@@ -99,15 +99,15 @@ module.exports = ->
 
 
   @Then /^ExoComm signals that this message is sent to the (.+)$/, (service-name, done) ->
-    @verify-exocomm-broadcasted-command command: @last-sent-message, services: [service-name], done
+    @verify-exocomm-broadcasted-message message: @last-sent-message, services: [service-name], done
 
 
   @Then /^ExoComm signals that this message was sent$/, (done) ->
-    @verify-exocomm-broadcasted-command command: @last-sent-message, done
+    @verify-exocomm-broadcasted-message message: @last-sent-message, done
 
 
   @Then /^ExoComm signals that this reply is sent to the (.+)$/, (service-name, done) ->
-    @verify-exocomm-broadcasted-command command: @last-sent-message, services: [service-name], response-to: '111', done
+    @verify-exocomm-broadcasted-message message: @last-sent-message, services: [service-name], response-to: '111', done
 
 
   @Then /^ExoComm signals that this reply was sent$/, (done) ->
@@ -122,7 +122,7 @@ module.exports = ->
     expected-routes = {}
     for row in table.hashes!
       eval livescript.compile "receiver-json = #{row.RECEIVERS}", bare: yes, header: no
-      expected-routes[row.COMMAND] =
+      expected-routes[row.MESSAGE] =
         receivers: [receiver-json]
     @verify-routing-setup expected-routes, done
 

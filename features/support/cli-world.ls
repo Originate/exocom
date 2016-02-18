@@ -30,9 +30,9 @@ CliWorld = !->
     done!
 
 
-  @service-sends-command = ({service, command}, done) ->
+  @service-sends-message = ({service, message}, done) ->
     request-data =
-      url: "http://localhost:#{@exocomm-port}/send/#{command}",
+      url: "http://localhost:#{@exocomm-port}/send/#{message}",
       method: 'POST'
       body:
         payload: ''
@@ -41,9 +41,9 @@ CliWorld = !->
     request request-data, done
 
 
-  @service-sends-reply = (service, reply-command, request-id, done) ->
+  @service-sends-reply = (service, reply-message, request-id, done) ->
     request-data =
-      url: "http://localhost:#{@exocomm-port}/send/#{reply-command}",
+      url: "http://localhost:#{@exocomm-port}/send/#{reply-message}",
       method: 'POST'
       body:
         payload: ''
@@ -69,16 +69,16 @@ CliWorld = !->
       wait-until (~> @process.crashed), done
 
 
-  @verify-exocomm-broadcasted-command = ({command, services}, done) ->
-    @process.wait "broadcasting '#{command}' to the #{services.join ', '}", done
+  @verify-exocomm-broadcasted-message = ({message, services}, done) ->
+    @process.wait "broadcasting '#{message}' to the #{services.join ', '}", done
 
 
-  @verify-exocomm-received-command = (command, done) ->
-    @process.wait "broadcasting '#{command}'", done
+  @verify-exocomm-received-message = (message, done) ->
+    @process.wait "broadcasting '#{message}'", done
 
 
-  @verify-exocomm-received-reply = (command, done) ->
-    @process.wait "broadcasting '#{command}'", done
+  @verify-exocomm-received-reply = (message, done) ->
+    @process.wait "broadcasting '#{message}'", done
 
 
   @verify-routing-setup = (expected-routing, done) ->

@@ -14,8 +14,8 @@ as a set of one or more classes.
 - [HttpListener](src/http-listener): implements the HTTP endpoint that services talk to
                                      in order to make requests to ExoComm
 - [ClientRegistry](src/client-registry): keeps track of which service is allowed
-                                         to send and receive what commands
-- [CommandSender](src/command-sender): sends commands to external services
+                                         to send and receive what messages
+- [MessageSender](src/message-sender): sends messages to external services
 - [Kernel](src/exocomm.ls): integrates all the above subsystems and provides the [programmatic API](#javascript-api)
 
 

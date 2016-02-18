@@ -1,15 +1,15 @@
 require! {
-  './command-sender' : CommandSender
+  './message-sender' : MessageSender
   'jsdiff-console'
   'record-http' : HttpRecorder
   'wait' : {wait, wait-until}
 }
 
 
-describe 'CommandSender', ->
+describe 'MessageSender', ->
 
   before-each ->
-    @command-sender = new CommandSender
+    @message-sender = new MessageSender
 
 
   describe 'send-to-service', (...) ->
@@ -18,22 +18,22 @@ describe 'CommandSender', ->
       @http-recorder = new HttpRecorder
         ..listen 4010
       wait 0, ~>
-        command =
-          name: 'command-1'
+        message =
+          name: 'message-1'
           payload: 'yo'
         service =
           name: 'users service'
           port: 4010
-        @command-sender.send-to-service command, service, done
+        @message-sender.send-to-service message, service, done
 
     after-each ->
       @http-recorder.close!
 
-    it 'sends the given command to the given service', (done) ->
+    it 'sends the given message to the given service', (done) ->
       condition = ~> @http-recorder.calls.length is 1
       wait-until condition, 10, ~>
         expected = [
-          url: 'http://localhost:4010/run/command-1'
+          url: 'http://localhost:4010/run/message-1'
           method: 'POST'
           body:
             payload: 'yo'

@@ -14,14 +14,14 @@ ApiWorld = !->
     @exocomm = new ExoComm
       ..listen port
       ..on 'listening', -> done!
-      ..on 'command', (@last-broadcasted-command, @last-receivers) ~>
+      ..on 'message', (@last-broadcasted-message, @last-receivers) ~>
 
 
   @create-instance-at-port = (name, port, done) ->
     @receivers or= {}
     @receivers[name] = new HttpRecorder name
       ..listen port, done
-      ..on 'receive', (@last-broadcasted-command, name) ~>
+      ..on 'receive', (@last-broadcasted-message, name) ~>
 
 
   @run-exocomm-at-port = (port, expect-error, done) ->
@@ -33,14 +33,14 @@ ApiWorld = !->
       @exocomm.on 'listening', -> done!
 
 
-  @service-sends-command = ({service, command, command-id = '123'} = {}, done) ->
-    result = @exocomm.send-command name: command, request-id: command-id
+  @service-sends-message = ({service, message, message-id = '123'} = {}, done) ->
+    result = @exocomm.send-message name: message, request-id: message-id
     expect(result).to.equal 'success'
     done!
 
 
-  @service-sends-reply = (service, reply-command, request-id, done) ->
-    result = @exocomm.send-command name: reply-command, request-id: '123', response-to: request-id
+  @service-sends-reply = (service, reply-message, request-id, done) ->
+    result = @exocomm.send-message name: reply-message, request-id: '123', response-to: request-id
     expect(result).to.equal 'success'
     done!
 
@@ -57,23 +57,23 @@ ApiWorld = !->
       done!
 
 
-  @verify-exocomm-broadcasted-command = ({command, services, response-to} done) ->
-    wait-until (~> @last-broadcasted-command is command), 1, ~>
+  @verify-exocomm-broadcasted-message = ({message, services, response-to} done) ->
+    wait-until (~> @last-broadcasted-message is message), 1, ~>
       expect(@last-receivers).to.eql services
       done!
 
 
-  @verify-exocomm-broadcasted-reply = (command, done) ->
-    wait-until (~> @last-broadcasted-command is command), 1, done
+  @verify-exocomm-broadcasted-reply = (message, done) ->
+    wait-until (~> @last-broadcasted-message is message), 1, done
 
 
   @verify-routing-setup = (expected-routes, done) ->
     jsdiff-console @exocomm.get-config!routes, expected-routes, done
 
 
-  @verify-exocomm-signals-broadcast = (command-name, done) ->
-    @exocomm.on command-name, (command, receivers) ->
-      console.log command
+  @verify-exocomm-signals-broadcast = (message-name, done) ->
+    @exocomm.on message-name, (message, receivers) ->
+      console.log message
       done!
 
 

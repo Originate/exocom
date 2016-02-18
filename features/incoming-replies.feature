@@ -1,7 +1,7 @@
-Feature: Handling incoming replies to sent commands
+Feature: Handling incoming replies to sent message
 
   As an Exosphere developer
-  I want my code to be able to handle replies to commands I send
+  I want my code to be able to handle replies to messages I send
   So that I can use the Exoservice landscape in my workflows.
 
   Rules:
@@ -13,14 +13,14 @@ Feature: Handling incoming replies to sent commands
     And an ExoRelay instance called "exo-relay" listening at port 4000
 
 
-  Scenario: handling replies to outgoing commands
-    Given a hypothetical "print" command
-    And I send a command with a reply handler:
+  Scenario: handling replies to outgoing messages
+    Given a hypothetical "print" message
+    And I send a message with a reply handler:
       """
       exo-relay.send 'users.create', name: 'Will Riker', (reply-payload) ->
         print "created user #{reply-payload.id}"
       """
-    When a reply for the sent command arrives via this incoming request:
+    When a reply for the sent message arrives via this incoming request:
       """
       url: 'http://localhost:4000/run/users.created'
       method: 'POST'
@@ -43,10 +43,10 @@ Feature: Handling incoming replies to sent commands
         exo-relay.send 'photos.store', 'photos.store payload', (photos-stored-payload) ->
           done!
       """
-    Then ExoRelay sends the "users.create" command with payload "users.create payload"
-    When receiving the "users.created" command with payload "users.created payload" as a reply to the "users.create" command
-    Then ExoRelay sends the "photos.store" command with payload "photos.store payload"
-    When receiving the "photos.stored" command with payload "photos.stored payload" as a reply to the "photos.store" command
+    Then ExoRelay sends the "users.create" message with payload "users.create payload"
+    When receiving the "users.created" message with payload "users.created payload" as a reply to the "users.create" message
+    Then ExoRelay sends the "photos.store" message with payload "photos.store payload"
+    When receiving the "photos.stored" message with payload "photos.stored payload" as a reply to the "photos.store" message
     Then my handler calls the "done" method
 
 
@@ -54,7 +54,7 @@ Feature: Handling incoming replies to sent commands
   # ERROR HANDLING
 
   Scenario: providing a non-callable object as the reply handler
-    When trying to send a command with a non-callable reply handler:
+    When trying to send a message with a non-callable reply handler:
       """
       exo-relay.send 'users.create', {name: 'Will Riker'}, 'zonk'
       """

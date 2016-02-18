@@ -1,27 +1,27 @@
-Feature: Receiving commands
+Feature: Receiving messages
 
   As an Exosphere developer
-  I want my code base to be able to respond to incoming commands
+  I want my code base to be able to respond to incoming messages
   So that I can create Exoservices.
 
   Rules:
-  - you need to register handlers for commands that you want to receive
+  - you need to register handlers for messages that you want to receive
   - handlers are called with the request data
 
 
   Background:
     Given ExoComm runs at port 4100
     And an ExoRelay instance listening at port 4000
-    And a hypothetical "print" command
+    And a hypothetical "print" message
 
 
-  Scenario: receiving a command without payload
-    Given I register a handler for the "hello" command:
+  Scenario: receiving a message without payload
+    Given I register a handler for the "hello" message:
       """
       exo-relay.register-handler 'hello-world', ->
         print "Hello world!"
       """
-    When receiving this command via the incoming request:
+    When receiving this message via the incoming request:
       """
       url: 'http://localhost:4000/run/hello-world',
       method: 'POST'
@@ -32,13 +32,13 @@ Feature: Receiving commands
     And it runs the registered handler, in this example calling "print" with "Hello world!"
 
 
-  Scenario: Receiving a command with string payload
-    Given I register a handler for the "hello" command:
+  Scenario: Receiving a message with string payload
+    Given I register a handler for the "hello" message:
       """
       exo-relay.register-handler 'hello', (name) ->
         print "Hello #{name}!"
       """
-    When receiving this command via the incoming request:
+    When receiving this message via the incoming request:
       """
       url: 'http://localhost:4000/run/hello',
       method: 'POST'
@@ -50,13 +50,13 @@ Feature: Receiving commands
     And ExoRelay runs the registered handler, in this example calling "print" with "Hello world!"
 
 
-  Scenario: receiving a command with Hash payload
-    Given I register a handler for the "hello" command:
+  Scenario: receiving a message with Hash payload
+    Given I register a handler for the "hello" message:
       """
       exo-relay.register-handler 'hello', ({name}) ->
         print "Hello #{name}!"
       """
-    When receiving this command via the incoming request:
+    When receiving this message via the incoming request:
       """
       url: 'http://localhost:4000/run/hello',
       method: 'POST'
@@ -69,13 +69,13 @@ Feature: Receiving commands
     And ExoRelay runs the registered handler, in this example calling "print" with "Hello world!"
 
 
-  Scenario: Receiving a command with array payload
-    Given I register a handler for the "sum" command:
+  Scenario: Receiving a message with array payload
+    Given I register a handler for the "sum" message:
       """
       exo-relay.register-handler 'sum', (numbers) ->
         print numbers[0] + numbers[1]
       """
-    When receiving this command via the incoming request:
+    When receiving this message via the incoming request:
       """
       url: 'http://localhost:4000/run/sum',
       method: 'POST'
@@ -90,8 +90,8 @@ Feature: Receiving commands
 
   # ERROR CHECKING
 
-  Scenario: missing incoming command
-    When receiving this command via the incoming request:
+  Scenario: missing incoming message
+    When receiving this message via the incoming request:
       """
       url: 'http://localhost:4000/run',
       method: 'POST'
@@ -101,23 +101,23 @@ Feature: Receiving commands
     Then ExoRelay returns a 404 response
 
 
-  Scenario: the incoming command is not registered
-    When receiving this command via the incoming request:
+  Scenario: the incoming message is not registered
+    When receiving this message via the incoming request:
       """
       url: 'http://localhost:4000/run/zonk',
       method: 'POST'
       body:
         requestId: '123'
       """
-    Then ExoRelay returns a 404 response with the text "unknown command: 'zonk'"
+    Then ExoRelay returns a 404 response with the text "unknown message: 'zonk'"
 
 
-  Scenario: the incoming command has no requestId
-    Given I register a handler for the "hello" command:
+  Scenario: the incoming message has no requestId
+    Given I register a handler for the "hello" message:
       """
       exo-relay.register-handler 'hello', ->
       """
-    When receiving this command via the incoming request:
+    When receiving this message via the incoming request:
       """
       url: 'http://localhost:4000/run/hello',
       method: 'POST'

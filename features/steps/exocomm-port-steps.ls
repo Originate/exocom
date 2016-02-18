@@ -24,4 +24,4 @@ module.exports = ->
 
 
   @Then /^this instance uses the ExoComm port (\d+)$/, (+port) ->
-    expect(@exo-relay.command-sender.exocomm-port).to.equal port
+    expect(@exo-relay.message-sender.exocomm-port).to.equal port

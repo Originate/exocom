@@ -4,7 +4,7 @@ require! {
 }
 
 
-# A registry for command handlers of a particular type
+# A registry for message handlers of a particular type
 class HandlerRegistry extends EventEmitter
 
   (debug-name) ->
@@ -24,7 +24,7 @@ class HandlerRegistry extends EventEmitter
   # returns whether the request was handled or not
   handle: (request-id, request-data, methods) ->
     if handler = @get-handler request-id
-      @debug "handling command '#{request-id}'"
+      @debug "handling message '#{request-id}'"
       handler request-data, methods
     !!handler
 
@@ -38,9 +38,9 @@ class HandlerRegistry extends EventEmitter
   register-handler: (request-id, handler) ->
     | !request-id                      =>  return @emit 'error', new Error 'No request id provided'
     | typeof request-id isnt 'string'  =>  return @emit 'error', new Error 'Request ids must be strings'
-    | !handler                         =>  return @emit 'error', new Error 'No command handler provided'
-    | typeof handler isnt 'function'   =>  return @emit 'error', new Error 'Command handler must be a function'
-    | @has-handler request-id          =>  return @emit 'error', new Error "There is already a handler for command '#{request-id}'"
+    | !handler                         =>  return @emit 'error', new Error 'No message handler provided'
+    | typeof handler isnt 'function'   =>  return @emit 'error', new Error 'Message handler must be a function'
+    | @has-handler request-id          =>  return @emit 'error', new Error "There is already a handler for message '#{request-id}'"
 
     @debug "registering handler for request-id '#{request-id}'"
     @handlers[request-id] = handler

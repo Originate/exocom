@@ -1,12 +1,12 @@
-Feature: Sending outgoing replies to incoming commands
+Feature: Sending outgoing replies to incoming messages
 
   As an Exosphere developer
-  I want my code to be able to send replies to incoming Exosphere commands
+  I want my code to be able to send replies to incoming Exosphere messages
   So that I can write responsive ExoServices.
 
   Rules:
-  - call the "reply" argument given to your command handler
-    to send a reply to the command you are currently processing
+  - call the "reply" argument given to your message handler
+    to send a reply to the message you are currently processing
 
 
   Background:
@@ -14,13 +14,13 @@ Feature: Sending outgoing replies to incoming commands
     And an ExoRelay instance called "exo-relay" listening at port 4000
 
   Scenario: sending a reply with JSON data
-    Given the "users.create" command has this handler:
+    Given the "users.create" message has this handler:
       """
       exo-relay.register-handler 'users.create', (user-attributes, {reply}) ->
         # on this line we would create a user record with the given attributes in the database
         reply 'users.created', id: 456, name: user-attributes.name
       """
-    When receiving this command via the incoming request:
+    When receiving this message via the incoming request:
       """
       url: 'http://localhost:4000/run/users.create'
       method: 'POST'
@@ -30,7 +30,7 @@ Feature: Sending outgoing replies to incoming commands
         requestId: '123'
       """
     Then ExoRelay returns a 200 response
-    And my command handler replies with a "users.created" command sent via this outgoing request:
+    And my message handler replies with a "users.created" message sent via this outgoing request:
       """
       url: 'http://localhost:4010/send/users.created'
       method: 'POST'
@@ -47,12 +47,12 @@ Feature: Sending outgoing replies to incoming commands
 
 
   Scenario: sending a reply with string payload
-    Given the "users.create" command has this handler:
+    Given the "users.create" message has this handler:
       """
       exo-relay.register-handler 'ping', (_payload, {reply}) ->
         reply 'pong', 'from the test'
       """
-    When receiving this command via the incoming request:
+    When receiving this message via the incoming request:
       """
       url: 'http://localhost:4000/run/ping'
       method: 'POST'
@@ -60,7 +60,7 @@ Feature: Sending outgoing replies to incoming commands
         requestId: '123'
       """
     Then ExoRelay returns a 200 response
-    And my command handler replies with a "users.created" command sent via this outgoing request:
+    And my message handler replies with a "users.created" message sent via this outgoing request:
       """
       url: 'http://localhost:4010/send/pong'
       method: 'POST'

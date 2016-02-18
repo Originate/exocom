@@ -1,14 +1,14 @@
-Feature: Registering command handlers
+Feature: Registering message handlers
 
   As a deveoper writing Exosphere applications
-  I want my application to respond to incoming commands
+  I want my application to respond to incoming messages
   So that I can write Exosphere services.
 
   Rules:
-  - register command handlers by via "registerHandler"
-  - the registered commands can be invoked by sending a POST request to "/run/<command-name>"
-  - the response for that request indicates whether the command was understood, not that it was successful
-  - commands are executed asynchronously, and can send other commands back to indicate responses
+  - register message handlers by via "registerHandler"
+  - the registered messages can be invoked by sending a POST request to "/run/<message-name>"
+  - the response for that request indicates whether the message was understood, not that it was successful
+  - messages are executed asynchronously, and can send other messages back to indicate responses
 
 
   Background:
@@ -16,50 +16,50 @@ Feature: Registering command handlers
     And an ExoRelay instance called "exo-relay"
 
 
-  Scenario: registering a command handler
-    When I register a command handler:
+  Scenario: registering a message handler
+    When I register a message handler:
       """
-      exo-relay.register-handler 'command-1', ->
+      exo-relay.register-handler 'message-1', ->
       """
-    Then the instance has a handler for the command "command-1"
+    Then the instance has a handler for the message "message-1"
 
 
   Scenario: registering several handlers
-    When I register the command handlers:
+    When I register the message handlers:
       """
-      exo-relay.register-handlers command1: ->, command2: ->
+      exo-relay.register-handlers message1: ->, message2: ->
       """
-    Then the instance has handlers for the commands "command1" and "command2"
+    Then the instance has handlers for the messages "message1" and "message2"
 
 
 
 
   # ERROR CHECKING
 
-  Scenario: registering an already handled command
-    Given my ExoRelay instance already has a handler for the command "hello"
-    When I try to add another handler for that command
-    Then ExoRelay emits an "error" event with the message "There is already a handler for command 'hello'"
+  Scenario: registering an already handled message
+    Given my ExoRelay instance already has a handler for the message "hello"
+    When I try to add another handler for that message
+    Then ExoRelay emits an "error" event with the message "There is already a handler for message 'hello'"
 
 
-  Scenario: forgetting to provide the command
-    When I try to register the command handler:
+  Scenario: forgetting to provide the message
+    When I try to register the message handler:
       """
       exo-relay.register-handler ->
       """
     Then ExoRelay emits an "error" event with the message "Request ids must be strings"
 
 
-  Scenario: providing an empty command
-    When I try to register the command handler:
+  Scenario: providing an empty message
+    When I try to register the message handler:
       """
       exo-relay.register-handler '', ->
       """
     Then ExoRelay emits an "error" event with the message "No request id provided"
 
 
-  Scenario: providing a non-string command
-    When I try to register the command handler:
+  Scenario: providing a non-string message
+    When I try to register the message handler:
       """
       exo-relay.register-handler [], ->
       """
@@ -67,16 +67,16 @@ Feature: Registering command handlers
 
 
   Scenario: forgetting to provide the handler
-    When I try to register the command handler:
+    When I try to register the message handler:
       """
-      exo-relay.register-handler 'command'
+      exo-relay.register-handler 'message'
       """
-    Then ExoRelay emits an "error" event with the message "No command handler provided"
+    Then ExoRelay emits an "error" event with the message "No message handler provided"
 
 
   Scenario: providing a non-functional handler
-    When I try to register the command handler:
+    When I try to register the message handler:
       """
-      exo-relay.register-handler 'command', 'zonk'
+      exo-relay.register-handler 'message', 'zonk'
       """
-    Then ExoRelay emits an "error" event with the message "Command handler must be a function"
+    Then ExoRelay emits an "error" event with the message "Message handler must be a function"

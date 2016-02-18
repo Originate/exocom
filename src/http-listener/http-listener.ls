@@ -7,7 +7,7 @@ debug = require('debug')('exorelay:http-listener')
 
 
 # The HTTP endpoint into which the Exosphere environment can
-# POST new commands.
+# POST new messages.
 #
 # Emits these events:
 # - online
@@ -19,7 +19,7 @@ class HttpListener extends EventEmitter
     @app = express!
       ..use body-parser.json!
       ..get '/status', @_status-controller
-      ..post '/run/:command', @_command-controller
+      ..post '/run/:message', @_message-controller
     @port = null
 
 
@@ -36,23 +36,23 @@ class HttpListener extends EventEmitter
     | isNaN @port  =>  return @emit 'error', Error 'Non-numerical port provided to ExoRelay#listen'
 
     @server = @app.listen @port, ~>
-      debug "listening for Exosphere commands at port #{port}"
+      debug "listening for Exosphere messages at port #{port}"
       @emit 'online', @port
 
 
-  _command-controller: (req, res) ~>
+  _message-controller: (req, res) ~>
     request-data = @_parse-request req
     @_log request-data
-    switch (result = @listeners('command')[0] request-data)
+    switch (result = @listeners('message')[0] request-data)
       | 'success'             =>  res.status(200).end!
       | 'missing request id'  =>  res.status(400).end 'missing request id'
-      | 'unknown command'     =>  res.status(404).end "unknown command: '#{request-data.command}'"
+      | 'unknown message'     =>  res.status(404).end "unknown message: '#{request-data.message}'"
       | _                     =>  return @emit 'error', Error "unknown result code: '#{@result}'"
 
 
-  _log: ({command, request-id, response-to}) ->
-    | response-to  =>  debug "received command '#{command}' with id '#{request-id}' in response to '#{response-to}'"
-    | _            =>  debug "received command '#{command}' with id '#{request-id}'"
+  _log: ({message, request-id, response-to}) ->
+    | response-to  =>  debug "received message '#{message}' with id '#{request-id}' in response to '#{response-to}'"
+    | _            =>  debug "received message '#{message}' with id '#{request-id}'"
 
 
   _status-controller: (req, res) ->
@@ -61,11 +61,11 @@ class HttpListener extends EventEmitter
 
   # Returns the relevant data from a request
   _parse-request: (req) ->
-    command = req.params.command
+    message = req.params.message
     payload = req.body.payload
     response-to = req.body.response-to
     request-id = req.body.request-id
-    {command, response-to, payload, request-id}
+    {message, response-to, payload, request-id}
 
 
 

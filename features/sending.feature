@@ -1,13 +1,13 @@
-Feature: Sending outgoing commands
+Feature: Sending outgoing messages
 
   As an Exoservice developer
-  I want my service to be able to send commands to other Exosphere services
+  I want my service to be able to send messages to other Exosphere services
   So that it can interact with the rest of the application.
 
   Rules:
-  - call "send" on your ExoRelay instance have it send out the given command
-  - provide the command to send as the first parameter
-  - provide payload for the command as the second parameter
+  - call "send" on your ExoRelay instance have it send out the given message
+  - provide the message to send as the first parameter
+  - provide payload for the message as the second parameter
   - the payload can be either a string, an array, or a Hash
 
 
@@ -16,8 +16,8 @@ Feature: Sending outgoing commands
     And an ExoRelay instance called "exo-relay" listening at port 4001
 
 
-  Scenario: sending a command without payload
-    When sending the "hello" command:
+  Scenario: sending a message without payload
+    When sending the "hello" message:
       """
       exo-relay.send 'hello-world'
       """
@@ -33,8 +33,8 @@ Feature: Sending outgoing commands
       """
 
 
-  Scenario: sending a command with a Hash as payload
-    When sending the "hello" command:
+  Scenario: sending a message with a Hash as payload
+    When sending the "hello" message:
       """
       exo-relay.send 'hello', name: 'world'
       """
@@ -52,8 +52,8 @@ Feature: Sending outgoing commands
       """
 
 
-  Scenario: sending a command with a string as payload
-    When sending the "hello" command:
+  Scenario: sending a message with a string as payload
+    When sending the "hello" message:
       """
       exo-relay.send 'hello', 'world'
       """
@@ -70,8 +70,8 @@ Feature: Sending outgoing commands
       """
 
 
-  Scenario: sending a command with an array as payload
-    When sending the "hello" command:
+  Scenario: sending a message with an array as payload
+    When sending the "hello" message:
       """
       exo-relay.send 'sum', [1, 2, 3]
       """
@@ -88,20 +88,20 @@ Feature: Sending outgoing commands
       """
 
 
-  Scenario: trying to send an empty command
-    When trying to send an empty command:
+  Scenario: trying to send an empty message
+    When trying to send an empty message:
       """
       exo-relay.send ''
       """
-    Then ExoRelay emits an "error" event with the message "ExoRelay#send cannot send empty commands"
+    Then ExoRelay emits an "error" event with the message "ExoRelay#send cannot send empty messages"
 
 
-  Scenario: trying to send a non-string command
-    When trying to send a non-string command:
+  Scenario: trying to send a non-string message
+    When trying to send a non-string message:
       """
       exo-relay.send []
       """
-    Then ExoRelay emits an "error" event with the message "ExoRelay#send can only send string commands"
+    Then ExoRelay emits an "error" event with the message "ExoRelay#send can only send string messages"
 
 
   Scenario: forgetting to provide the payload when providing a reply handler

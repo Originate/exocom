@@ -11,14 +11,14 @@ require! {
 module.exports = ->
 
 
-  @Given /^a hypothetical "([^"]*)" command$/, (command-name) ->
-    global[command-name] = sinon.stub!
+  @Given /^a hypothetical "([^"]*)" message$/, (message-name) ->
+    global[message-name] = sinon.stub!
 
 
-  @Given /^I register this handler for the "([^"]*)" command:$/, (command-name, code) ->
+  @Given /^I register this handler for the "([^"]*)" message:$/, (message-name, code) ->
     code = "handler = #{code}"
     eval livescript.compile code, bare: yes, header: no
-    @exo-relay.register-handler command-name, handler
+    @exo-relay.register-handler message-name, handler
 
 
   @Given /^I try to set up this handler:$/, (code) ->
@@ -28,16 +28,16 @@ module.exports = ->
       @error = e.message
 
 
-  @Given /^my ExoRelay instance already has a handler for the command "([^"]*)"$/, (command-name) ->
-    @exo-relay.register-handler command-name, ->
+  @Given /^my ExoRelay instance already has a handler for the message "([^"]*)"$/, (message-name) ->
+    @exo-relay.register-handler message-name, ->
 
 
-  @Given /^the "([^"]*)" command has this handler:$/, (command-name, handler-code) ->
+  @Given /^the "([^"]*)" message has this handler:$/, (message-name, handler-code) ->
     eval livescript.compile "@#{handler-code}", bare: yes, header: no
 
 
 
-  @When /^I try to add another handler for that command$/, ->
+  @When /^I try to add another handler for that message$/, ->
     try
       @exo-relay.register-handler 'hello', ->
     catch
@@ -51,20 +51,20 @@ module.exports = ->
       @error = e.message
 
 
-  @Then /^(?:ExoRelay|it) runs the registered handler, in this example calling "([^"]*)" with "([^"]*)"$/, (command-name, command-argument, done) ->
-    wait-until (~> global[command-name].called), 10, done
+  @Then /^(?:ExoRelay|it) runs the registered handler, in this example calling "([^"]*)" with "([^"]*)"$/, (message-name, message-argument, done) ->
+    wait-until (~> global[message-name].called), 10, done
 
 
-  @Then /^the instance has a handler for the command "([^"]*)"$/, (handler1) ->
+  @Then /^the instance has a handler for the message "([^"]*)"$/, (handler1) ->
     expect(@exo-relay.has-handler handler1).to.be.true
 
 
-  @Then /^the instance has handlers for the commands "([^"]*)" and "([^"]*)"$/, (handler1, handler2) ->
+  @Then /^the instance has handlers for the messages "([^"]*)" and "([^"]*)"$/, (handler1, handler2) ->
     expect(@exo-relay.has-handler handler1).to.be.true
     expect(@exo-relay.has-handler handler2).to.be.true
 
 
-  @Then /^the reply handler runs and in this example calls my "([^"]*)" method with "([^"]*)"$/, (command-name, command-args, done) ->
+  @Then /^the reply handler runs and in this example calls my "([^"]*)" method with "([^"]*)"$/, (message-name, message-args, done) ->
     condition = ~>
-      global[command-name].called and is-equal global[command-name].first-call.args, [command-args]
+      global[message-name].called and is-equal global[message-name].first-call.args, [message-args]
     wait-until condition, 10, done

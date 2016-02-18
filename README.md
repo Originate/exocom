@@ -32,17 +32,17 @@ exoRelay.listen 4000
 More details and how to customize the port is described in the [spec](features/listen.feature).
 
 
-## Handle incoming commands
+## Handle incoming messages
 
-Register a handler for incoming commands:
+Register a handler for incoming messages:
 
 ```coffeescript
 exoRelay.registerHandler 'hello', (name) ->
   console.log "Hello #{name}"
 ```
 
-More details on how to define command listeners are [here](features/receiving-commands.feature).
-If you are implementing services, you want to send outgoing replies to incoming commands:
+More details on how to define message listeners are [here](features/receiving-messages.feature).
+If you are implementing services, you want to send outgoing replies to incoming messages:
 
 ```coffeescript
 exoRelay.registerHandler 'users.create', (userData, {reply}) ->
@@ -54,19 +54,19 @@ More details and a working example of how to send replies is [here](features/out
 
 
 
-## Send outgoing commands
+## Send outgoing messages
 
-Send a command to Exosphere:
+Send a message to Exosphere:
 
 ```coffeescript
 exoRelay.send 'hello', name: 'world'
 ```
 
-Sending a command is fire-and-forget, i.e. you don't have to wait for the
+Sending a message is fire-and-forget, i.e. you don't have to wait for the
 sending process to finish before you can do the next thing.
 More details on how to send various data are [here](features/sending.feature).
 
-You can handle the incoming replies to your outgoing commands:
+You can handle the incoming replies to your outgoing messages:
 
 ```coffeescript
 exoRelay.send 'users.create', name: 'Will Riker', (createdUser) ->
@@ -74,7 +74,7 @@ exoRelay.send 'users.create', name: 'Will Riker', (createdUser) ->
 ```
 
 More examples for handling incoming replies are [here](features/incoming-replies.feature).
-Command handlers also provide a shortcut to send commands:
+Message handlers also provide a shortcut to send messages:
 
 ```coffeescript
 exoRelay.registerHandler 'users.create', (userData, {send, reply}) ->
@@ -84,4 +84,4 @@ exoRelay.registerHandler 'users.create', (userData, {send, reply}) ->
     reply 'users.created', id: 456, name: userData.name
 ```
 
-More details and a working example of how to send commands from within command handlers is [here](features/sending-from-commands.feature).
+More details and a working example of how to send messages from within message handlers is [here](features/sending-from-messages.feature).

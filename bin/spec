@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-killall node
+killall node 2> /dev/null
 set -e
 if [ "$#" != "1" ]; then
   bin/tests

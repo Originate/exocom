@@ -33,7 +33,7 @@ module.exports = ->
     @service = new HttpRecorder().listen port, done
 
 
-  @Given /^somebody sends it a command$/, (done) ->
+  @Given /^somebody sends it a message$/, (done) ->
     request-data =
       url: "http://localhost:#{@exocomm.port}/send/foo"
       method: "POST"
@@ -44,9 +44,9 @@ module.exports = ->
     request request-data, done
 
 
-  @Given /^somebody sends it a "([^"]*)" command with payload "([^"]*)"$/, (command, payload, done) ->
+  @Given /^somebody sends it a "([^"]*)" message with payload "([^"]*)"$/, (message, payload, done) ->
     request-data =
-      url: "http://localhost:#{@exocomm.port}/send/#{command}"
+      url: "http://localhost:#{@exocomm.port}/send/#{message}"
       method: "POST"
       body:
         payload: payload
@@ -73,9 +73,9 @@ module.exports = ->
     request request-data, done
 
 
-  @When /^trying to send a "([^"]*)" command to the "([^"]*)" service$/, (command-name, service-name) ->
+  @When /^trying to send a "([^"]*)" message to the "([^"]*)" service$/, (message-name, service-name) ->
     try
-      @exocomm.send-command service: service-name, name: command-name, (@error)
+      @exocomm.send-message service: service-name, name: message-name, (@error)
     catch
       @error = e
 
@@ -84,8 +84,8 @@ module.exports = ->
     @exocomm.reset!
 
 
-  @When /^sending a "([^"]*)" command to the "([^"]*)" service with the payload:$/, (command, service, payload) ->
-    @exocomm.send-command service: service, name: command, payload: payload
+  @When /^sending a "([^"]*)" message to the "([^"]*)" service with the payload:$/, (message, service, payload) ->
+    @exocomm.send-message service: service, name: message, payload: payload
 
 
 
@@ -125,14 +125,14 @@ module.exports = ->
     expect(@call-received).to.not.have.been.called
 
 
-  @Then /^it has received no commands/, ->
+  @Then /^it has received no messages/, ->
     expect(@exocomm.calls).to.be.empty
 
 
-  @Then /^it has received the commands/, (table, done) ->
-    expected-commands = [{[key.to-lower-case!, value] for key, value of command} for command in table.hashes!]
-    actual-commands = @exocomm.received-commands!
-    jsdiff-console actual-commands, expected-commands, done
+  @Then /^it has received the messages/, (table, done) ->
+    expected-messages = [{[key.to-lower-case!, value] for key, value of message} for message in table.hashes!]
+    actual-messages = @exocomm.received-messages!
+    jsdiff-console actual-messages, expected-messages, done
 
 
   @Then /^it is no longer listening at port (\d+)$/, (port, done) ->

@@ -1,11 +1,11 @@
-Feature: Waiting until a command is received
+Feature: Waiting until a message is received
 
-  As a developer expecting my service under test to send out a command
+  As a developer expecting my service under test to send out a message
   I want to have a convenient API to wait for that to happen
   So that I don't have to set up boilerplate in my tests to do this myself.
 
   Rules:
-  - call "exocomm.waitUntilReceive" to wait until ExoComm has received an incoming command
+  - call "exocomm.waitUntilReceive" to wait until ExoComm has received an incoming message
 
 
   Background:

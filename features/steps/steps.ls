@@ -52,6 +52,11 @@ module.exports = ->
     @run-exocomm-at-port port, expect-error, done
 
 
+  @When /^requesting the routing information$/, (done) ->
+    @get-routing-information (@routing-information) ~>
+      done!
+
+
   @When /^setting this service landscape:$/, (table, done) ->
     data = for service in table.hashes!
       {
@@ -62,11 +67,6 @@ module.exports = ->
         receives: service.RECEIVES.split(' ')
       }
     @set-service-landscape data, done
-
-
-  @When /^requesting the routing information$/, (done) ->
-    @get-routing-information (@routing-information) ~>
-      done!
 
 
   @When /^the (.+?) sends "([^"]*)"$/, (service, message, done) ->

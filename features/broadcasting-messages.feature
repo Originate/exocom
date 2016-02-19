@@ -26,6 +26,6 @@ Feature: Broadcasting messages
 
   Scenario: broadcasting a reply
     Given the web-server sends "create-user" with id "111"
-    When the web-server sends "created-user" in reply to "111"
+    When the users-service sends "created-user" in reply to "111"
     Then ExoComm signals that this reply is sent to the web-server
     And ExoComm broadcasts this reply to the web-server

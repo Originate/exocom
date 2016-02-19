@@ -23,7 +23,7 @@ ExoRelay instances emit events to signal state changes:
 ```coffeescript
 ExoRelay = require 'exorelay'
 
-exoRelay = new ExoRelay exocommPort: <port>
+exoRelay = new ExoRelay exocommPort: <port>, serviceName: <name of the service using ExoRelay>
 exoRelay.on 'online', (port) ->  # yay, we are online!
 exoRelay.on 'error', (err) ->    # examine, print, or log the error here
 exoRelay.listen 4000

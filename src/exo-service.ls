@@ -10,8 +10,8 @@ debug = require('debug')('exocomm:cli')
 
 class ExoService extends EventEmitter
 
-  ({@root, @exocomm-port, @exorelay-port}) ->
-    @exo-relay = new ExoRelay {@exocomm-port}
+  ({@root, @exocomm-port, @exorelay-port, @service-name}) ->
+    @exo-relay = new ExoRelay {@exocomm-port, @service-name}
     delegate \close, from: @, to: @exo-relay
     delegate-event \online \offline \error, from: @exo-relay, to: @
 

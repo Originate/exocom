@@ -12,8 +12,8 @@ Feature: Sending outgoing messages
 
 
   Background:
-    Given ExoComm runs at port 4000
-    And an ExoRelay instance called "exo-relay" listening at port 4001
+    Given ExoComm runs at port 4100
+    And an ExoRelay instance called "exo-relay" running inside the "test" service at port 4000
 
 
   Scenario: sending a message without payload
@@ -23,9 +23,10 @@ Feature: Sending outgoing messages
       """
     Then ExoRelay makes the request:
       """
-      url: 'http://localhost:4000/send/hello-world'
+      url: 'http://localhost:4100/send/hello-world'
       method: 'POST'
       body:
+        sender: 'test'
         requestId: '<%= request_uuid %>'
       headers:
         accept: 'application/json'
@@ -40,9 +41,10 @@ Feature: Sending outgoing messages
       """
     Then ExoRelay makes the request:
       """
-      url: 'http://localhost:4000/send/hello'
+      url: 'http://localhost:4100/send/hello'
       method: 'POST'
       body:
+        sender: 'test'
         payload:
           name: 'world'
         requestId: '<%= request_uuid %>'
@@ -59,9 +61,10 @@ Feature: Sending outgoing messages
       """
     Then ExoRelay makes the request:
       """
-      url: 'http://localhost:4000/send/hello'
+      url: 'http://localhost:4100/send/hello'
       method: 'POST'
       body:
+        sender: 'test'
         payload: 'world'
         requestId: '<%= request_uuid %>'
       headers:
@@ -77,9 +80,10 @@ Feature: Sending outgoing messages
       """
     Then ExoRelay makes the request:
       """
-      url: 'http://localhost:4000/send/sum'
+      url: 'http://localhost:4100/send/sum'
       method: 'POST'
       body:
+        sender: 'test'
         payload: [1, 2, 3]
         requestId: '<%= request_uuid %>'
       headers:

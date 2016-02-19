@@ -10,7 +10,7 @@ debug = require('debug')('exorelay:message-sender')
 # Subsystem for sending messages out to Exosphere
 class MessageSender extends EventEmitter
 
-  ({@exocomm-port} = {}) ->
+  ({@service-name, @exocomm-port} = {}) ->
 
     @exocomm-port = +@exocomm-port
 
@@ -38,6 +38,7 @@ class MessageSender extends EventEmitter
       url: "http://localhost:#{@exocomm-port}/send/#{message}"
       json: yes
       body:
+        sender: @service-name
         requestId: uuid.v1!
     request-data.body.payload = payload unless is-empty payload
     request-data.body.response-to = options.response-to if options.response-to

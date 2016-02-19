@@ -2,6 +2,8 @@ require! {
   '../..' : ExoRelay
   'chai' : {expect}
   'livescript'
+  'nitroglycerin' : N
+  'portfinder'
   'wait' : {wait-until}
 }
 
@@ -12,6 +14,13 @@ module.exports = ->
   @Given /^an ExoRelay instance called "([^"]*)"$/, (instance-name) ->
     @exo-relay = new ExoRelay {@exocomm-port}
       ..on 'error', (@error) ~>
+
+
+  @Given /^an ExoRelay instance called "([^"]*)" running inside the "([^"]*)" service at port (\d+)$/, (instance-name, service-name, port, done) ->
+    @exo-relay = new ExoRelay {service-name, @exocomm-port}
+      ..on 'online', -> done!
+      ..on 'error', (@error) ~>
+      ..listen port
 
 
   @Given /^an ExoRelay instance called "([^"]*)" listening at port (\d+)$/, (instance-name, port, done) ->

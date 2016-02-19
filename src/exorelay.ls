@@ -10,14 +10,14 @@ debug = require('debug')('exorelay')
 
 class ExoRelay extends EventEmitter
 
-  ({exocomm-port} = {}) ->
+  ({service-name, exocomm-port} = {}) ->
     exocomm-port or throw new Error 'exocommPort not provided'
 
     # manages the request handlers for incoming messages
     @message-handler = new HandlerManager!
 
     # sends outgoing messages to Exosphere
-    @message-sender = new MessageSender {exocomm-port}
+    @message-sender = new MessageSender {service-name, exocomm-port}
 
     # listens to incoming messages from Exosphere
     @http-listener = new HttpListener!

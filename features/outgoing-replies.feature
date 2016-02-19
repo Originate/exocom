@@ -11,7 +11,8 @@ Feature: Sending outgoing replies to incoming messages
 
   Background:
     Given ExoComm runs at port 4010
-    And an ExoRelay instance called "exo-relay" listening at port 4000
+    And an ExoRelay instance called "exo-relay" running inside the "test" service at port 4000
+
 
   Scenario: sending a reply with JSON data
     Given the "users.create" message has this handler:
@@ -35,6 +36,7 @@ Feature: Sending outgoing replies to incoming messages
       url: 'http://localhost:4010/send/users.created'
       method: 'POST'
       body:
+        sender: 'test'
         payload:
           id: 456
           name: 'Will Riker'
@@ -65,6 +67,7 @@ Feature: Sending outgoing replies to incoming messages
       url: 'http://localhost:4010/send/pong'
       method: 'POST'
       body:
+        sender: 'test'
         payload: 'from the test'
         requestId: '<%= request_uuid %>'
         responseTo: '123'

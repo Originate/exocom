@@ -11,7 +11,8 @@ Feature: Sending from messages
 
   Background:
     Given ExoComm runs at port 4010
-    And an ExoRelay instance called "exo-relay" listening at port 4000
+    And an ExoRelay instance called "exo-relay" running inside the "test" service at port 4000
+
 
   Scenario: sending a message from within a message handler
     Given the "users.login" message has this handler:
@@ -24,6 +25,7 @@ Feature: Sending from messages
       url: 'http://localhost:4000/run/users.create'
       method: 'POST'
       body:
+        sender: 'test'
         requestId: '123'
       """
     Then ExoRelay returns a 200 response
@@ -32,6 +34,7 @@ Feature: Sending from messages
       url: 'http://localhost:4010/send/passwords.encrypt'
       method: 'POST'
       body:
+        sender: 'test'
         payload: 'secret'
         requestId: '<%= request_uuid %>'
       headers:

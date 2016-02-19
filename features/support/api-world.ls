@@ -14,7 +14,10 @@ ApiWorld = !->
     @exocomm = new ExoComm
       ..listen port
       ..on 'listening', -> done!
-      ..on 'message', (@last-broadcasted-message, @last-receivers) ~>
+      ..on 'message', ({sender, message, receivers}) ~>
+        @last-sender = sender
+        @last-broadcasted-message = message
+        @last-receivers = receivers
 
 
   @create-instance-at-port = (name, port, done) ->
@@ -34,13 +37,13 @@ ApiWorld = !->
 
 
   @service-sends-message = ({service, message, message-id = '123'} = {}, done) ->
-    result = @exocomm.send-message name: message, request-id: message-id
+    result = @exocomm.send-message name: message, sender: service, request-id: message-id
     expect(result).to.equal 'success'
     done!
 
 
-  @service-sends-reply = (service, reply-message, request-id, done) ->
-    result = @exocomm.send-message name: reply-message, request-id: '123', response-to: request-id
+  @service-sends-reply = ({service, message, request-id}, done) ->
+    result = @exocomm.send-message name: message, sender: service, request-id: '123', response-to: request-id
     expect(result).to.equal 'success'
     done!
 
@@ -57,9 +60,10 @@ ApiWorld = !->
       done!
 
 
-  @verify-exocomm-broadcasted-message = ({message, services, response-to} done) ->
+  @verify-exocomm-broadcasted-message = ({sender, message, receivers, response-to} done) ->
     wait-until (~> @last-broadcasted-message is message), 1, ~>
-      expect(@last-receivers).to.eql services
+      expect(@last-sender).to.eql sender
+      expect(@last-receivers).to.eql receivers
       done!
 
 

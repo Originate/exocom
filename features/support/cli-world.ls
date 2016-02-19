@@ -35,17 +35,19 @@ CliWorld = !->
       url: "http://localhost:#{@exocomm-port}/send/#{message}",
       method: 'POST'
       body:
+        sender: service
         payload: ''
         request-id: '123'
       json: yes
     request request-data, done
 
 
-  @service-sends-reply = (service, reply-message, request-id, done) ->
+  @service-sends-reply = ({service, message, request-id}, done) ->
     request-data =
-      url: "http://localhost:#{@exocomm-port}/send/#{reply-message}",
+      url: "http://localhost:#{@exocomm-port}/send/#{message}",
       method: 'POST'
       body:
+        sender: service
         payload: ''
         request-id: '123'
         response-to: request-id
@@ -69,8 +71,8 @@ CliWorld = !->
       wait-until (~> @process.crashed), done
 
 
-  @verify-exocomm-broadcasted-message = ({message, services}, done) ->
-    @process.wait "broadcasting '#{message}' to the #{services.join ', '}", done
+  @verify-exocomm-broadcasted-message = ({message, sender, receivers}, done) ->
+    @process.wait "#{sender} is broadcasting '#{message}' to the #{receivers.join ', '}", done
 
 
   @verify-exocomm-received-message = (message, done) ->

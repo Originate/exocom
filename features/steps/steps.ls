@@ -76,7 +76,7 @@ module.exports = ->
 
   @When /^the (.+)? sends "([^"]*)" in reply to "([^"]*)"$/, (service, reply-message, request-id, done) ->
     @last-sent-message = reply-message
-    @service-sends-reply service, reply-message, request-id, done
+    @service-sends-reply {service, message: reply-message, request-id}, done
 
 
 
@@ -98,16 +98,16 @@ module.exports = ->
     @verify-service-setup services, done
 
 
-  @Then /^ExoComm signals that this message is sent to the (.+)$/, (service-name, done) ->
-    @verify-exocomm-broadcasted-message message: @last-sent-message, services: [service-name], done
+  @Then /^ExoComm signals that this message is sent from the ([^ ]+) to the (.+)$/, (sender-name, receiver-name, done) ->
+    @verify-exocomm-broadcasted-message sender: sender-name, message: @last-sent-message, receivers: [receiver-name], done
 
 
   @Then /^ExoComm signals that this message was sent$/, (done) ->
     @verify-exocomm-broadcasted-message message: @last-sent-message, done
 
 
-  @Then /^ExoComm signals that this reply is sent to the (.+)$/, (service-name, done) ->
-    @verify-exocomm-broadcasted-message message: @last-sent-message, services: [service-name], response-to: '111', done
+  @Then /^ExoComm signals that this reply is sent from the ([^ ]+) to the (.+)$/, (sender, receiver, done) ->
+    @verify-exocomm-broadcasted-message message: @last-sent-message, sender: sender, receivers: [receiver], response-to: '111', done
 
 
   @Then /^ExoComm signals that this reply was sent$/, (done) ->

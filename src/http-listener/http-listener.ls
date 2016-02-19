@@ -3,7 +3,7 @@ require! {
   'events' : {EventEmitter}
   'express'
 }
-debug = require('debug')('exorelay:http-listener')
+debug = require('debug')('exocomm:http-listener')
 
 
 # The HTTP endpoint that listens for messages that services want to send
@@ -74,11 +74,12 @@ class HttpListener extends EventEmitter
 
   # Returns the relevant data from a request
   _parse-request: (req) ->
+    sender = req.body.sender
     name = req.params.message
     payload = req.body.payload
     response-to = req.body.response-to
     request-id = req.body.request-id
-    {name, response-to, payload, request-id}
+    {sender, name, response-to, payload, request-id}
 
 
 

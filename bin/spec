@@ -4,5 +4,7 @@ killall node 2> /dev/null
 set -e
 if [ "$#" != "1" ]; then
   bin/tests
+  cucumber-js "$@"
+else
+  DEBUG='*,-express:*,-body-parser:*,-finalhandler,-rails-delegate' cucumber-js "$@"
 fi
-DEBUG='*,-express:*,-body-parser:*,-finalhandler,-rails-delegate' cucumber-js "$@"

@@ -10,11 +10,10 @@
     "chalk": "^1.1.1",
     "debug": "^2.2.0",
     "defaults": "^1.0.3",
-    "docopt": "^0.6.2",
     "exocomm-mock": "^0.5.0",
     "exorelay": "^0.12.0",
     "nitroglycerin": "^1.0.3",
-    "observable-process": "^0.6.5",
+    "observable-process": "^0.7.0",
     "rails-delegate": "^0.5.0",
     "robust-callbacks": "^1.0.1"
   },

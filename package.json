@@ -22,8 +22,6 @@
     "chai": "^3.5.0",
     "cucumber": "^0.9.5",
     "express": "^4.13.4",
-    "gulp": "^3.9.1",
-    "gulp-lint-ls": "^0.1.0",
     "livescript": "^1.4.0",
     "npm-check-updates": "^2.5.8",
     "prelude-ls": "^1.1.2",

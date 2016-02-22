@@ -14,16 +14,21 @@
 
 ## Testing
 
+```
+$ spec
+```
 
 ## Update
 
-* `npm run update`
+```
+$ update
+```
 
 
 ## Deploy a new version
 
 ```
-npm run update
-npm version <patch|minor|major>
-npm publish
+$ npm run update
+$ npm version <patch|minor|major>
+$ npm publish
 ```

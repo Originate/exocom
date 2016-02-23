@@ -40,7 +40,7 @@
   "scripts": {
     "postpublish": "git push && git push --tags",
     "prepublish": "bin/build",
-    "preversion": "npm test && david",
+    "preversion": "bin/spec",
     "test": "bin/spec"
   }
 }

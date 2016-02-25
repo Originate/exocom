@@ -1,6 +1,6 @@
 {
   "name": "exocomm-mock",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "author": "Kevin Goslar",
   "description": "A mock implementation of the ExoComm development server in JavaScript, for testing",
   "dependencies": {

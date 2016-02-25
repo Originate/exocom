@@ -25,7 +25,7 @@ class MockExoComm
 
 
   register-service: ({name, port}) ->
-    debug "registering service #{name} at port #{port}"
+    debug "registering service '#{name}' at port #{port}"
     @service-ports[name] = port
 
 
@@ -33,7 +33,7 @@ class MockExoComm
     | !@service-ports[service]  =>  throw new Error "unknown service: '#{service}'"
 
     @reset!
-    debug "sending message #{name} to service #{service}"
+    debug "sending message #{name} to service '#{service}'"
     request-data =
       url: "http://localhost:#{@service-ports[service]}/run/#{name}"
       method: 'POST'
@@ -44,7 +44,7 @@ class MockExoComm
     request request-data, (err, response) ~>
       if err
         return debug "error sending message '#{name}' to service '#{service}' at port #{@service-ports[service]}: #{err.message}"
-      debug "received HTTP response #{response.status-code}"
+      debug "received HTTP response #{response.status-code} from service '#{service}'"
       @last-send-response-code = response.status-code
 
 
@@ -64,6 +64,7 @@ class MockExoComm
   _get-message-name: (url) ->
     segments = url.split '/'
     segments[segments.length-1]
+
 
 
 module.exports = MockExoComm

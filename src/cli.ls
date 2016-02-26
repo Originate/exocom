@@ -34,7 +34,14 @@ run = ->
     ..listen options['--port']
     ..on 'listening', on-listening
     ..on 'error', on-error
-    ..on 'routing-setup', -> console.log 'receiving routing setup'
+    ..on 'routing-setup', ->
+      console.log 'receiving routing setup:'
+      for command, routing of exocomm.client-registry.routes
+        process.stdout.write "  --[ #{command} ]-> "
+        text = for receiver in routing.receivers
+          "#{receiver.name} (#{receiver.host}:#{receiver.port})"
+        process.stdout.write "#{text.join ' + '}\n"
+
     ..on 'message', ({message, sender, receivers}) -> console.log "#{sender} is broadcasting '#{message}' to the #{receivers.join ' and '}"
 
 

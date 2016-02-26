@@ -40,8 +40,8 @@ class ExoComm extends EventEmitter
   # as a sender and receiver of messages
   set-services: (service-data) ~>
     debug 'receiving service data'
-    @emit 'routing-setup'
     @client-registry.set-services service-data
+    @emit 'routing-setup'
     'success'
 
 

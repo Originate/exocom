@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-
 killall node 2> /dev/null
 set -e
 if [ "$#" == "0" ]; then

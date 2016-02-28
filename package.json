@@ -29,7 +29,8 @@
   },
   "files": [
     "dist",
-    "bin/exo-js"
+    "bin/exo-js",
+    "npm-shrinkwrap.json"
   ],
   "license": "ISC",
   "main": "dist/exo-service.js",

@@ -19,6 +19,7 @@
     "chai": "3.5.0",
     "cucumber": "0.9.5",
     "dependency-lint": "3.1.2",
+    "dim-console": "0.1.0",
     "exocomm-mock": "0.6.0",
     "o-tools": "0.1.4",
     "observable-process": "0.7.0",

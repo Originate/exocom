@@ -1,6 +1,6 @@
 require! {
   'chai' : {expect}
-  '../support/dim-console'
+  'dim-console'
   'exocomm-mock' : ExoCommMock
   'http'
   'livescript'

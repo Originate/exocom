@@ -1,5 +1,5 @@
 require! {
-  '../support/dim-console'
+  'dim-console'
   'observable-process' : ObservableProcess
   'path'
 }

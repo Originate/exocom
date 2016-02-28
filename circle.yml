@@ -4,5 +4,12 @@ machine:
 
 
 test:
+
   pre:
     - bin/build
+    - mkdir -p $CIRCLE_TEST_REPORTS/cucumber
+
+  override:
+    - bin/lint
+    - bin/cuc-api --format json:$CIRCLE_TEST_REPORTS/cucumber/api.cucumber --format pretty
+    - bin/cuc-cli --format json:$CIRCLE_TEST_REPORTS/cucumber/cli.cucumber --format pretty

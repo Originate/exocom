@@ -27,3 +27,12 @@ The tests run against the compiled output, so you need to run `watch` before exe
 - run unit tests: `tests`
 - run JS-API tests: `cuc_api`
 - run CLI tests: `cuc_cli`
+
+
+## Updating
+
+- update all dependencies
+
+  ```
+  $ update
+  ```

@@ -1,24 +1,7 @@
 {
   "name": "exorelay",
   "version": "0.12.0",
-  "description": "Communication relay between JavaScript code bases and the Exosphere environment",
-  "main": "dist/exorelay.js",
-  "scripts": {
-    "postpublish": "git push && git push --tags",
-    "prepublish": "bin/build",
-    "preversion": "npm test && david",
-    "test": "bin/spec"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Originate/exorelay-js.git"
-  },
   "author": "Kevin Goslar",
-  "license": "ISC",
-  "files": [
-    "dist"
-  ],
-  "homepage": "https://github.com/Originate/exorelay-js#readme",
   "dependencies": {
     "body-parser": "1.14.2",
     "debug": "2.2.0",
@@ -29,6 +12,7 @@
     "rails-delegate": "0.5.0",
     "request": "2.67.0"
   },
+  "description": "Communication relay between JavaScript code bases and the Exosphere environment",
   "devDependencies": {
     "chai": "3.4.1",
     "chalk": "1.1.1",
@@ -43,5 +27,21 @@
     "record-http": "0.6.0",
     "sinon": "1.17.2",
     "wait": "0.1.0"
+  },
+  "files": [
+    "dist"
+  ],
+  "homepage": "https://github.com/Originate/exorelay-js#readme",
+  "license": "ISC",
+  "main": "dist/exorelay.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Originate/exorelay-js.git"
+  },
+  "scripts": {
+    "postpublish": "git push && git push --tags",
+    "prepublish": "bin/build",
+    "preversion": "npm test && david",
+    "test": "bin/spec"
   }
 }

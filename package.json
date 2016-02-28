@@ -39,9 +39,7 @@
     "url": "git+https://github.com/Originate/exorelay-js.git"
   },
   "scripts": {
-    "postpublish": "git push && git push --tags",
     "prepublish": "bin/build",
-    "preversion": "npm test && david",
     "test": "bin/spec"
   }
 }

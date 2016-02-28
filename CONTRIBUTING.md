@@ -30,10 +30,16 @@ The tests run against the compiled output, so you need to run `watch` before exe
 - run CLI tests: `cuc_cli`
 
 
-## Updating
+## Update dependencies
 
-- update all dependencies
 
-  ```
-  $ update
-  ```
+```
+$ update
+```
+
+
+## Publish a new version
+
+```
+$ publish <patch|minor|major>
+```

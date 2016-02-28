@@ -1,3 +1,5 @@
 #!/usr/bin/env bash
 
-lsc --watch --bare --output dist src
+while true; do
+  lsc --watch --bare --output dist src
+done

@@ -85,3 +85,8 @@ exoRelay.registerHandler 'users.create', (userData, {send, reply}) ->
 ```
 
 More details and a working example of how to send messages from within message handlers is [here](features/sending-from-messages.feature).
+
+
+## Development
+
+See our [developer guidelines](CONTRIBUTING.md)

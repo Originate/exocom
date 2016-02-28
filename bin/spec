@@ -3,8 +3,11 @@
 
 killall node 2> /dev/null
 set -e
-if [ "$#" != "1" ]; then
+if [ "$#" == "0" ]; then
   mocha --compilers ls:livescript "**/*spec.ls"
+  bin/cuc-api
+  bin/cuc-cli
+else
+  bin/cuc-api "$@"
+  bin/cuc-cli "$@"
 fi
-bin/cuc-api "$@"
-bin/cuc-cli "$@"

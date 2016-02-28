@@ -8,23 +8,24 @@
     "debug": "2.2.0",
     "docopt": "0.6.2",
     "express": "4.13.4",
-    "rails-delegate": "0.5.4",
-    "remove-value": "1.0.0"
+    "nitroglycerin": "1.0.3",
+    "rails-delegate": "0.5.5",
+    "remove-value": "1.0.0",
+    "request": "2.69.0"
   },
   "description": "Development version of the Exosphere communication platform",
   "devDependencies": {
     "chai": "3.5.0",
     "cucumber": "0.9.5",
+    "dependency-lint": "3.1.2",
     "jsdiff-console": "1.3.0",
     "livescript": "1.4.0",
     "mocha": "2.4.5",
-    "nitroglycerin": "1.0.3",
     "o-tools": "0.1.1",
     "observable-process": "0.7.0",
     "portfinder": "1.0.1",
     "prelude-ls": "1.1.2",
     "record-http": "0.6.0",
-    "request": "2.69.0",
     "wait": "0.1.0"
   },
   "files": [

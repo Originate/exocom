@@ -25,6 +25,7 @@ The tests run against the compiled output, so you need to run `watch` before exe
 
 - run all tests: `spec`
 - run unit tests: `tests`
+- run linter: `lint`
 - run JS-API tests: `cuc_api`
 - run CLI tests: `cuc_cli`
 

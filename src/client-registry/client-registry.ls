@@ -56,6 +56,7 @@ class ClientRegistry
 
   # Returns the clients that are subscribed to the given message
   subscribers-to: (message-name) ->
+    | !@routes[message-name]  =>  throw new Error "No receivers for message '#{message-name}' registered"
     @routes[message-name].receivers
 
 

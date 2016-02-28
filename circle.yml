@@ -1,10 +1,19 @@
 machine:
+
   node:
     version: 5.1.0
 
+  environment:
+      MOCHA_FILE: "$CIRCLE_TEST_REPORTS/Mocha/test-results.xml"
+
 
 test:
+
   pre:
     - bin/build
+    - mkdir -p $CIRCLE_TEST_REPORTS/cucumber
+
   override:
-    - bin/spec
+    - bin/lint
+    - mocha --compilers ls:livescript "**/*spec.ls" --reporter mocha-circleci-reporter
+    - cucumber-js --format json:$CIRCLE_TEST_REPORTS/cucumber/api.cucumber --format pretty

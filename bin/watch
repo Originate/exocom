@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 
 while true; do
-  find ./src -name '*.ls' -not -name '*spec.ls' -print0 | xargs -0 lsc --compile --bare --output dist/ --watch
+  find ./src -name '*.ls' -not -name '*spec.ls' -print0 | xargs -0 lsc --watch --bare --output dist
 done

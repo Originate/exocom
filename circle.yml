@@ -8,12 +8,13 @@ machine:
 
 
 test:
+
   pre:
-    - npm install mocha-circleci-reporter
     - bin/build
+    - mkdir -p $CIRCLE_TEST_REPORTS/cucumber
+
   override:
     - bin/lint
     - mocha --compilers ls:livescript "**/*spec.ls" --reporter mocha-circleci-reporter
-    - mkdir -p $CIRCLE_TEST_REPORTS/cucumber
     - bin/cuc-api --format json:$CIRCLE_TEST_REPORTS/cucumber/api.cucumber --format pretty
     - bin/cuc-cli --format json:$CIRCLE_TEST_REPORTS/cucumber/cli.cucumber --format pretty

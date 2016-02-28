@@ -25,6 +25,7 @@
     "express": "4.13.4",
     "livescript": "1.4.0",
     "prelude-ls": "1.1.2",
+    "o-tools": "0.1.4",
     "record-http": "0.6.0",
     "request": "2.69.0",
     "wait": "0.1.0"
@@ -40,9 +41,7 @@
     "url": "git+https://github.com/Originate/exoservice-js.git"
   },
   "scripts": {
-    "postpublish": "git push && git push --tags",
     "prepublish": "bin/build",
-    "preversion": "bin/update-check && bin/spec",
     "test": "bin/spec"
   }
 }

@@ -23,7 +23,7 @@
     "mocha": "2.4.5",
     "o-tools": "0.1.4",
     "observable-process": "0.7.0",
-    "portfinder": "1.0.1",
+    "port-reservation": "0.2.2",
     "prelude-ls": "1.1.2",
     "record-http": "0.6.0",
     "wait": "0.1.0"

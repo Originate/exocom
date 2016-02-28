@@ -3,7 +3,7 @@ require! {
   'http'
   'livescript'
   'nitroglycerin' : N
-  'portfinder'
+  'port-reservation'
   'request'
   '../support/text-tools' : {ascii}
   'wait' : {wait}
@@ -18,12 +18,12 @@ module.exports = ->
 
 
   @Given /^an ExoComm instance$/, (done) ->
-    portfinder.get-port N (@exocomm-port) ~>
+    port-reservation.get-port N (@exocomm-port) ~>
       @create-exocomm-instance port: @exocomm-port, done
 
 
   @Given /^an ExoComm instance configured for the service landscape:$/, (table, done) ->
-    portfinder.get-port N (@exocomm-port) ~>
+    port-reservation.get-port N (@exocomm-port) ~>
       @create-exocomm-instance port: @exocomm-port, ~>
         data = for service in table.hashes!
           {

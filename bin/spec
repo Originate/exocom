@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
 set -e
 
-bin/cuc-api "$@"
-bin/cuc-cli "$@"
+if [ "$#" == "0" ]; then
+  bin/lint
+  bin/cuc-api
+  bin/cuc-cli
+else
+  bin/cuc-api "$@"
+  bin/cuc-cli "$@"
+fi

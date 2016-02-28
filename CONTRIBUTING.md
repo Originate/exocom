@@ -16,6 +16,7 @@
 
 ```
 $ spec
+$ lint
 ```
 
 ## Update

@@ -30,7 +30,8 @@
     "wait": "0.1.0"
   },
   "files": [
-    "dist"
+    "dist",
+    "npm-shrinkwrap.json"
   ],
   "homepage": "https://github.com/Originate/exorelay-js#readme",
   "license": "ISC",

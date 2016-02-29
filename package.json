@@ -44,9 +44,7 @@
     "url": "git+https://github.com/Originate/exocomm-dev.git"
   },
   "scripts": {
-    "postpublish": "git push && git push --tags",
     "prepublish": "bin/build",
-    "preversion": "bin/spec",
     "test": "bin/spec"
   }
 }

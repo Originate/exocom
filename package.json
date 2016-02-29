@@ -29,6 +29,9 @@
     "record-http": "0.6.0",
     "wait": "0.1.0"
   },
+  "engines": {
+    "npm": ">= 3.0.0"
+  },
   "files": [
     "dist",
     "npm-shrinkwrap.json"

@@ -17,3 +17,11 @@ test:
     - bin/lint
     - mocha --compilers ls:livescript "**/*spec.ls" --reporter mocha-circleci-reporter
     - cucumber-js --format json:$CIRCLE_TEST_REPORTS/cucumber/api.cucumber --format pretty
+
+
+deployment:
+  publish:
+    branch: release
+    commands:
+      - npm set //registry.npmjs.org/:_authToken $AUTH_TOKEN
+      - npm publish

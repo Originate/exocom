@@ -13,3 +13,11 @@ test:
     - bin/lint
     - bin/cuc-api --format json:$CIRCLE_TEST_REPORTS/cucumber/api.cucumber --format pretty
     - bin/cuc-cli --format json:$CIRCLE_TEST_REPORTS/cucumber/cli.cucumber --format pretty
+
+
+deployment:
+  publish:
+    branch: release
+    commands:
+      - npm set //registry.npmjs.org/:_authToken $AUTH_TOKEN
+      - npm publish

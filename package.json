@@ -30,6 +30,9 @@
     "sinon": "1.17.3",
     "wait": "0.1.0"
   },
+  "engines": {
+    "npm": ">= 3.0.0"
+  },
   "files": [
     "dist",
     "npm-shrinkwrap.json"

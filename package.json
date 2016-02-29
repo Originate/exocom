@@ -8,7 +8,7 @@
     "express": "4.13.4",
     "lodash.isempty": "4.1.2",
     "node-uuid": "1.4.7",
-    "rails-delegate": "0.5.5",
+    "rails-delegate": "0.6.0",
     "request": "2.69.0"
   },
   "description": "Communication relay between JavaScript code bases and the Exosphere environment",

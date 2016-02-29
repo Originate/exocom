@@ -758,7 +758,7 @@
     },
     "mocha-circleci-reporter": {
       "version": "0.0.1",
-      "from": "mocha-circleci-reporter@*",
+      "from": "mocha-circleci-reporter@0.0.1",
       "resolved": "https://registry.npmjs.org/mocha-circleci-reporter/-/mocha-circleci-reporter-0.0.1.tgz"
     },
     "mocha-junit-reporter": {
@@ -2554,9 +2554,9 @@
       "resolved": "https://registry.npmjs.org/qs/-/qs-6.1.0.tgz"
     },
     "rails-delegate": {
-      "version": "0.5.5",
-      "from": "rails-delegate@0.5.5",
-      "resolved": "https://registry.npmjs.org/rails-delegate/-/rails-delegate-0.5.5.tgz",
+      "version": "0.6.0",
+      "from": "rails-delegate@0.6.0",
+      "resolved": "https://registry.npmjs.org/rails-delegate/-/rails-delegate-0.6.0.tgz",
       "dependencies": {
         "d": {
           "version": "0.1.1",

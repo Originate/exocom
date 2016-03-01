@@ -133,16 +133,25 @@ exoRelay.send 'transfer', amount: 100, from: 'checking', to: 'savings', (txn, {o
     | ...
 ```
 
-Another example is ongoing monitoring for processes that take a while,
-for which we want to provide a progress bar in UI.
+A different use case for checking outcomes is ongoing monitoring of commands
+that take a while to execute.
 A service can send multiple replies, causing the reply handler to be called
-multiple times:
+multiple times. Each reply can be a different message type:
 
 ```livescript
 exoRelay.send 'file.copy', from: 'large.csv', to: 'backup.csv', (payload, {outcome}) ->
   switch outcome
-    | 'file.copying'  =>  process.stdout.write "\rcopying, #{payload.percent}% done"
+    | 'file.copying'  =>  console.log "still copying, #{payload.percent}% done"
     | 'file.copied'   =>  console.log 'file copy finished!'
+```
+
+Another use case is streaming responses, where a larger result is sent in chunks:
+
+```livescript
+exoRelay.send 'file.read', path: 'large.csv', (payload, {outcome}) ->
+  switch outcome
+    | 'file.read-chunk'  =>  result += payload
+    | 'file.read-done'   =>  console.log "finished reading #{payload.megabytes} MB!"
 ```
 
 More examples for handling incoming replies are [here](features/incoming-replies.feature).

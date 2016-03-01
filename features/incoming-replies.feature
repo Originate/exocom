@@ -17,8 +17,8 @@ Feature: Handling incoming replies to sent message
     Given a hypothetical "print" message
     And I send a message with a reply handler:
       """
-      exo-relay.send 'users.create', name: 'Will Riker', (reply-payload) ->
-        print "created user #{reply-payload.id}"
+      exo-relay.send 'users.create', name: 'Will Riker', (reply-message, reply-payload) ->
+        print "created user #{reply-payload.id} via '#{reply-message}'"
       """
     When a reply for the sent message arrives via this incoming request:
       """
@@ -33,14 +33,14 @@ Feature: Handling incoming replies to sent message
       headers:
         "content-type": "application/json"
       """
-    Then the reply handler runs and in this example calls my "print" method with "created user 456"
+    Then the reply handler runs and in this example calls my "print" method with "created user 456 via 'users.created'"
 
 
   Scenario: multi-level workflow
     When running this multi-level request:
       """
-      exo-relay.send 'users.create', 'users.create payload', (users-created-payload) ~>
-        exo-relay.send 'photos.store', 'photos.store payload', (photos-stored-payload) ->
+      exo-relay.send 'users.create', 'users.create payload', (_reply-message, _users-created-payload) ~>
+        exo-relay.send 'photos.store', 'photos.store payload', (_reply-message, _photos-stored-payload) ->
           done!
       """
     Then ExoRelay sends the "users.create" message with payload "users.create payload"

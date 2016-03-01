@@ -18,22 +18,26 @@ module.exports = ->
 
 
   @Given /^an ExoComm instance$/, (done) ->
-    port-reservation.get-port N (@exocomm-port) ~>
-      @create-exocomm-instance port: @exocomm-port, done
+    port-reservation
+      ..base-port = 5000
+      ..get-port N (@exocomm-port) ~>
+        @create-exocomm-instance port: @exocomm-port, done
 
 
   @Given /^an ExoComm instance configured for the service landscape:$/, (table, done) ->
-    port-reservation.get-port N (@exocomm-port) ~>
-      @create-exocomm-instance port: @exocomm-port, ~>
-        data = for service in table.hashes!
-          {
-            name: service.NAME
-            host: service.HOST
-            port: +service.PORT
-            sends: service.SENDS.split(',')
-            receives: service.RECEIVES.split(' ')
-          }
-        @set-service-landscape data, done
+    port-reservation
+      ..base-port = 5000
+      ..get-port N (@exocomm-port) ~>
+        @create-exocomm-instance port: @exocomm-port, ~>
+          data = for service in table.hashes!
+            {
+              name: service.NAME
+              host: service.HOST
+              port: +service.PORT
+              sends: service.SENDS.split(',')
+              receives: service.RECEIVES.split(' ')
+            }
+          @set-service-landscape data, done
 
 
   @Given /^another service already uses port (\d+)$/, (+port, done) ->

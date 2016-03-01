@@ -9,10 +9,10 @@
     "chalk": "1.1.1",
     "debug": "2.2.0",
     "defaults": "1.0.3",
-    "exorelay": "0.12.0",
+    "exorelay": "0.13.2",
     "livescript": "1.4.0",
-    "nitroglycerin": "1.0.3",
-    "rails-delegate": "0.5.5"
+    "nitroglycerin": "1.1.1",
+    "rails-delegate": "0.6.0"
   },
   "description": "Opitionated framework to create Exosphere micro-services in Node.js",
   "devDependencies": {
@@ -22,7 +22,7 @@
     "dim-console": "0.1.0",
     "exocomm-mock": "0.6.0",
     "o-tools": "0.1.4",
-    "observable-process": "0.7.0",
+    "observable-process": "0.8.1",
     "record-http": "0.6.0",
     "request": "2.69.0",
     "wait": "0.1.0"

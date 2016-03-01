@@ -45,9 +45,9 @@ More details on how to define message listeners are [here](features/receiving-me
 If you are implementing services, you want to send outgoing replies to incoming messages:
 
 ```coffeescript
-exoRelay.registerHandler 'users.create', (userData, {reply}) ->
+exoRelay.registerHandler 'user.create', (userData, {reply}) ->
   # on this line we would create a user database record with the attributes given in userData
-  reply 'users.created', id: 456, name: userData.name
+  reply 'user.created', id: 456, name: userData.name
 ```
 
 More details and a working example of how to send replies is [here](features/outgoing-replies.feature).
@@ -66,22 +66,92 @@ Sending a message is fire-and-forget, i.e. you don't have to wait for the
 sending process to finish before you can do the next thing.
 More details on how to send various data are [here](features/sending.feature).
 
-You can handle the incoming replies to your outgoing messages:
+
+## Handle incoming replies
+
+If a message you send expects a reply,
+you can provide the handler for it right when you send it:
 
 ```coffeescript
 exoRelay.send 'users.create', name: 'Will Riker', (createdUser) ->
   print "created user #{createdUser.id}"
 ```
 
+Service calls are more expensive than in-process function calls.
+They are also higher-level, crossing functional boundaries within your application.
+Hence they (should) have more complex APIs than function calls.
+
+* replies to commands often return the state changes caused by the command,
+  to avoid having to do another call to the service to query the new state
+* commands often have more than one outcome.
+  For example, the command
+  _"transfer $100 from the checking account to the savings account"_
+  sent to an accounting service can reply with:
+
+  <table>
+    <tr>
+      <th>transferred</th>
+      <td>the money was transferred</td>
+    </tr>
+    <tr>
+      <th>pending</th>
+      <td>the transfer was initiated, but is pending a third-party approval</td>
+    </tr>
+    <tr>
+      <th>transaction limit exceeded</th>
+      <td>the account doesn't allow that much money to be transferred at once</td>
+    </tr>
+    <tr>
+      <th>daily limit exceeded</th>
+      <td>the daily transaction limit was exceeded</td>
+    </tr>
+    <tr>
+      <th>insufficient funds</th>
+      <td>there isn't enough money in the checking account</td>
+    </tr>
+    <tr>
+      <th>unknown account</th>
+      <td>one of the given accounts was not found</td>
+    </tr>
+    <tr>
+      <th>unauthorized</th>
+      <td>the currently logged in user does not have privileges to make this transfer</td>
+    </tr>
+    <tr>
+      <th>internal error</th>
+      <td>an internal error occurred in the accounting service</td>
+    </tr>
+  </table>
+
+The outcome is provided as part of the optional second parameter to the reply handler.
+
+```livescript
+exoRelay.send 'transfer', amount: 100, from: 'checking', to: 'savings', (txn, {outcome}) ->
+  switch outcome
+    | 'transferred'  =>  ...
+    | 'pending'      =>  ...
+    | ...
+```
+
+Another example is ongoing monitoring for processes that take a while,
+for which we want to provide a progress bar in UI.
+A service can send multiple replies, causing the reply handler to be called
+multiple times:
+
+```livescript
+exoRelay.send 'file.copy', from: 'large.csv', to: 'backup.csv', (payload, {outcome}) ->
+  switch outcome
+    | 'file.copying'  =>  process.stdout.write "\rcopying, #{payload.percent}% done"
+    | 'file.copied'   =>  console.log 'file copy finished!'
+```
+
 More examples for handling incoming replies are [here](features/incoming-replies.feature).
 Message handlers also provide a shortcut to send messages:
 
 ```coffeescript
-exoRelay.registerHandler 'users.create', (userData, {send, reply}) ->
-  send 'passwords.encrypt' userData.password, (encryptedPassword) ->
-    userData.encryptedPassword = encryptedPassword
-    # on this line we would create a user database record with the attributes given in userData
-    reply 'users.created', id: 456, name: userData.name
+exoRelay.registerHandler 'users.create', (createdUser, {send}) ->
+  send 'passwords.encrypt' createdUser.password, (encryptedPassword) ->
+    ...
 ```
 
 More details and a working example of how to send messages from within message handlers is [here](features/sending-from-messages.feature).

@@ -1,0 +1,547 @@
+[
+  {
+    "id": "Broadcasting-messages",
+    "name": "Broadcasting messages",
+    "description": "\nAs an ExoService\nI want to broadcast messages to other services\nSo that I can communicate with them.\n\nRules:\n- to broadcast a message, post to /send\n- ExoComm sends the message to all subscribed services",
+    "line": 1,
+    "keyword": "Feature",
+    "uri": "/Users/kevin/exocomm-dev/features/broadcasting-messages.feature",
+    "elements": [
+      {
+        "name": "",
+        "keyword": "Background",
+        "description": "",
+        "type": "background",
+        "line": 12,
+        "steps": [
+          {
+            "name": "a \"web-server\" instance running at port 3001",
+            "line": 13,
+            "keyword": "Given "
+          },
+          {
+            "name": "a \"users-service\" instance running at port 3002",
+            "line": 14,
+            "keyword": "And "
+          },
+          {
+            "name": "an ExoComm instance configured for the service landscape:",
+            "line": 15,
+            "keyword": "And ",
+            "rows": [
+              {
+                "cells": [
+                  "NAME",
+                  "HOST",
+                  "PORT",
+                  "SENDS",
+                  "RECEIVES"
+                ]
+              },
+              {
+                "cells": [
+                  "web-server",
+                  "localhost",
+                  "3001",
+                  "create-user",
+                  "created-user"
+                ]
+              },
+              {
+                "cells": [
+                  "users-service",
+                  "localhost",
+                  "3002",
+                  "created-user",
+                  "create-user"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "broadcasting a message",
+        "id": "Broadcasting-messages;broadcasting-a-message",
+        "line": 21,
+        "keyword": "Scenario",
+        "description": "",
+        "type": "scenario",
+        "steps": [
+          {
+            "name": "a \"web-server\" instance running at port 3001",
+            "line": 13,
+            "keyword": "Given ",
+            "result": {
+              "status": "passed",
+              "duration": 30574960
+            },
+            "match": {}
+          },
+          {
+            "name": "a \"users-service\" instance running at port 3002",
+            "line": 14,
+            "keyword": "And ",
+            "result": {
+              "status": "passed",
+              "duration": 4618345
+            },
+            "match": {}
+          },
+          {
+            "name": "an ExoComm instance configured for the service landscape:",
+            "line": 15,
+            "keyword": "And ",
+            "rows": [
+              {
+                "cells": [
+                  "NAME",
+                  "HOST",
+                  "PORT",
+                  "SENDS",
+                  "RECEIVES"
+                ]
+              },
+              {
+                "cells": [
+                  "web-server",
+                  "localhost",
+                  "3001",
+                  "create-user",
+                  "created-user"
+                ]
+              },
+              {
+                "cells": [
+                  "users-service",
+                  "localhost",
+                  "3002",
+                  "created-user",
+                  "create-user"
+                ]
+              }
+            ],
+            "result": {
+              "status": "passed",
+              "duration": 12011632
+            },
+            "match": {}
+          },
+          {
+            "name": "the web-server sends \"create-user\"",
+            "line": 22,
+            "keyword": "When ",
+            "result": {
+              "status": "passed",
+              "duration": 9722031
+            },
+            "match": {}
+          },
+          {
+            "name": "ExoComm signals that this message is sent from the web-server to the users-service",
+            "line": 23,
+            "keyword": "Then ",
+            "result": {
+              "status": "passed",
+              "duration": 14101288
+            },
+            "match": {}
+          },
+          {
+            "name": "ExoComm broadcasts this message to the users-service",
+            "line": 24,
+            "keyword": "And ",
+            "result": {
+              "status": "passed",
+              "duration": 37386971
+            },
+            "match": {}
+          },
+          {
+            "keyword": "After ",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 888731
+            },
+            "match": {}
+          }
+        ]
+      },
+      {
+        "name": "broadcasting a reply",
+        "id": "Broadcasting-messages;broadcasting-a-reply",
+        "line": 27,
+        "keyword": "Scenario",
+        "description": "",
+        "type": "scenario",
+        "steps": [
+          {
+            "name": "a \"web-server\" instance running at port 3001",
+            "line": 13,
+            "keyword": "Given ",
+            "result": {
+              "status": "passed",
+              "duration": 2484111
+            },
+            "match": {}
+          },
+          {
+            "name": "a \"users-service\" instance running at port 3002",
+            "line": 14,
+            "keyword": "And ",
+            "result": {
+              "status": "passed",
+              "duration": 2158976
+            },
+            "match": {}
+          },
+          {
+            "name": "an ExoComm instance configured for the service landscape:",
+            "line": 15,
+            "keyword": "And ",
+            "rows": [
+              {
+                "cells": [
+                  "NAME",
+                  "HOST",
+                  "PORT",
+                  "SENDS",
+                  "RECEIVES"
+                ]
+              },
+              {
+                "cells": [
+                  "web-server",
+                  "localhost",
+                  "3001",
+                  "create-user",
+                  "created-user"
+                ]
+              },
+              {
+                "cells": [
+                  "users-service",
+                  "localhost",
+                  "3002",
+                  "created-user",
+                  "create-user"
+                ]
+              }
+            ],
+            "result": {
+              "status": "passed",
+              "duration": 5148930
+            },
+            "match": {}
+          },
+          {
+            "name": "the web-server sends \"create-user\" with id \"111\"",
+            "line": 28,
+            "keyword": "Given ",
+            "result": {
+              "status": "passed",
+              "duration": 3023737
+            },
+            "match": {}
+          },
+          {
+            "name": "the users-service sends \"created-user\" in reply to \"111\"",
+            "line": 29,
+            "keyword": "When ",
+            "result": {
+              "status": "passed",
+              "duration": 959732
+            },
+            "match": {}
+          },
+          {
+            "name": "ExoComm signals that this reply is sent from the users-service to the web-server",
+            "line": 30,
+            "keyword": "Then ",
+            "result": {
+              "status": "passed",
+              "duration": 8793731
+            },
+            "match": {}
+          },
+          {
+            "name": "ExoComm broadcasts this reply to the web-server",
+            "line": 31,
+            "keyword": "And ",
+            "result": {
+              "status": "passed",
+              "duration": 8257037
+            },
+            "match": {}
+          },
+          {
+            "keyword": "After ",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 395955
+            },
+            "match": {}
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "Configuring-services",
+    "name": "Configuring services",
+    "description": "\nAs an ExoSphere operator\nI want be able to tell ExoComm my current service setup\nSo that it can send them messages.\n\nRules:\n- only the Exosphere environment can tell ExoComm about the current service layout\n- this is done via a POST request to \"/config\"",
+    "line": 1,
+    "keyword": "Feature",
+    "uri": "/Users/kevin/exocomm-dev/features/configuring-services.feature",
+    "elements": [
+      {
+        "name": "",
+        "keyword": "Background",
+        "description": "",
+        "type": "background",
+        "line": 12,
+        "steps": [
+          {
+            "name": "an ExoComm instance",
+            "line": 13,
+            "keyword": "Given "
+          }
+        ]
+      },
+      {
+        "name": "setting the service configuration",
+        "id": "Configuring-services;setting-the-service-configuration",
+        "line": 16,
+        "keyword": "Scenario",
+        "description": "",
+        "type": "scenario",
+        "steps": [
+          {
+            "name": "an ExoComm instance",
+            "line": 13,
+            "keyword": "Given ",
+            "result": {
+              "status": "passed",
+              "duration": 3355516
+            },
+            "match": {}
+          },
+          {
+            "name": "setting this service landscape:",
+            "line": 17,
+            "keyword": "When ",
+            "rows": [
+              {
+                "cells": [
+                  "NAME",
+                  "HOST",
+                  "PORT",
+                  "SENDS",
+                  "RECEIVES"
+                ]
+              },
+              {
+                "cells": [
+                  "service 1",
+                  "localhost",
+                  "3001",
+                  "message-1",
+                  "message-2"
+                ]
+              },
+              {
+                "cells": [
+                  "service 2",
+                  "localhost",
+                  "3002",
+                  "message-2",
+                  "message-1"
+                ]
+              }
+            ],
+            "result": {
+              "status": "passed",
+              "duration": 541118
+            },
+            "match": {}
+          },
+          {
+            "name": "ExoComm now knows about these services:",
+            "line": 21,
+            "keyword": "Then ",
+            "rows": [
+              {
+                "cells": [
+                  "NAME",
+                  "HOST",
+                  "PORT"
+                ]
+              },
+              {
+                "cells": [
+                  "service 1",
+                  "localhost",
+                  "3001"
+                ]
+              },
+              {
+                "cells": [
+                  "service 2",
+                  "localhost",
+                  "3002"
+                ]
+              }
+            ],
+            "result": {
+              "status": "passed",
+              "duration": 591866
+            },
+            "match": {}
+          },
+          {
+            "name": "it has this routing table:",
+            "line": 25,
+            "keyword": "And ",
+            "rows": [
+              {
+                "cells": [
+                  "MESSAGE",
+                  "SENDERS",
+                  "RECEIVERS"
+                ]
+              },
+              {
+                "cells": [
+                  "message-1",
+                  "service 1",
+                  "{name: 'service 2', host: 'localhost', port: 3002}"
+                ]
+              },
+              {
+                "cells": [
+                  "message-2",
+                  "service 2",
+                  "{name: 'service 1', host: 'localhost', port: 3001}"
+                ]
+              }
+            ],
+            "result": {
+              "status": "passed",
+              "duration": 11694487
+            },
+            "match": {}
+          },
+          {
+            "keyword": "After ",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 1147178
+            },
+            "match": {}
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "configuring-the-port",
+    "name": "configuring the port",
+    "description": "\nAs an Exosphere developer testing my application\nI want to be able to boot ExoComm at various ports\nSo that I have flexibility in testing my system.\n\nRules:\n- the default port is 3100\n- provide the \"--port\" command-line switch to boot up at a custom port",
+    "line": 1,
+    "keyword": "Feature",
+    "uri": "/Users/kevin/exocomm-dev/features/configuring-the-port.feature",
+    "elements": [
+      {
+        "name": "running at a custom port",
+        "id": "configuring-the-port;running-at-a-custom-port",
+        "line": 12,
+        "keyword": "Scenario",
+        "description": "",
+        "type": "scenario",
+        "steps": [
+          {
+            "name": "I run ExoComm at port 3200",
+            "line": 13,
+            "keyword": "When ",
+            "result": {
+              "status": "passed",
+              "duration": 47846017
+            },
+            "match": {}
+          },
+          {
+            "name": "it runs at port 3200",
+            "line": 14,
+            "keyword": "Then ",
+            "result": {
+              "status": "passed",
+              "duration": 283726
+            },
+            "match": {}
+          },
+          {
+            "keyword": "After ",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 199556
+            },
+            "match": {}
+          }
+        ]
+      },
+      {
+        "name": "trying to run at an already used port",
+        "id": "configuring-the-port;trying-to-run-at-an-already-used-port",
+        "line": 17,
+        "keyword": "Scenario",
+        "description": "",
+        "type": "scenario",
+        "steps": [
+          {
+            "name": "another service already uses port 3200",
+            "line": 18,
+            "keyword": "Given ",
+            "result": {
+              "status": "passed",
+              "duration": 105165567
+            },
+            "match": {}
+          },
+          {
+            "name": "I try to run ExoComm at port 3200",
+            "line": 19,
+            "keyword": "When ",
+            "result": {
+              "status": "passed",
+              "duration": 2560121
+            },
+            "match": {}
+          },
+          {
+            "name": "it aborts with the message \"port 3200 is already in use\"",
+            "line": 20,
+            "keyword": "Then ",
+            "result": {
+              "status": "passed",
+              "duration": 297734
+            },
+            "match": {}
+          },
+          {
+            "keyword": "After ",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 258098
+            },
+            "match": {}
+          }
+        ]
+      }
+    ]
+  }
+]

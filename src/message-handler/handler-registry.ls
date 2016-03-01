@@ -35,7 +35,7 @@ class HandlerRegistry extends EventEmitter
   handle-reply: ({message, response-to, payload}) ->
     if handler = @get-handler response-to
       debug "handling message '#{message}' in response to '#{response-to}'"
-      handler message, payload
+      handler payload, outcome: message
     !!handler
 
 

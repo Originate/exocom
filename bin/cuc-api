@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
 
 killall node 2> /dev/null
-EXOCOMM_TEST_DEPTH=API DEBUG='*,-express:*,-body-parser:*,-finalhandler,-text-stream-search,-rails-delegate' cucumber-js --tags ~@todo "$@"
+if [ "$#" == "0" ]; then
+  EXOCOMM_TEST_DEPTH=API cucumber-js --tags ~@todo
+else
+  EXOCOMM_TEST_DEPTH=API DEBUG='*,-express:*,-body-parser:*,-finalhandler,-text-stream-search,-rails-delegate' cucumber-js --tags ~@todo "$@"
+fi

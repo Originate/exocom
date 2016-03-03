@@ -1,7 +1,7 @@
 require! {
   'chai' : {expect}
   'dim-console'
-  'exocomm-mock' : ExoCommMock
+  'exocom-mock' : ExoComMock
   'http'
   'livescript'
   'record-http' : HttpRecorder
@@ -12,15 +12,15 @@ require! {
 
 module.exports = ->
 
-  @Given /^an ExoComm instance$/, (done) ->
-    @exocomm-port = 4100
-    @exocomm = new ExoCommMock
-      ..listen @exocomm-port, done
+  @Given /^an ExoCom instance$/, (done) ->
+    @exocom-port = 4100
+    @exocom = new ExoComMock
+      ..listen @exocom-port, done
 
 
   @Given /^an instance of the "([^"]*)" service$/, (@service-name, done) ->
-    @exocomm.register-service name: @service-name, port: 4000
-    @create-exoservice-instance {@service-name, exorelay-port: 4000, @exocomm-port}, done
+    @exocom.register-service name: @service-name, port: 4000
+    @create-exoservice-instance {@service-name, exorelay-port: 4000, @exocom-port}, done
 
 
   @Given /^ports (\d+) and (\d+) are used$/, (port1, port2, done) ->
@@ -35,47 +35,47 @@ module.exports = ->
 
 
   @When /^receiving the( unknown)? "([^"]*)" message$/, (expect-error, message-name) ->
-    @exocomm
+    @exocom
       ..reset!
       ..send-message {service: @service-name, name: message-name, expect-error}
 
 
   @When /^receiving the( unknown)? "([^"]*)" message with the payload:$/, (expect-error, message-name, payload) ->
     eval livescript.compile "json-payload = {\n#{payload}\n}", bare: yes, header: no
-    @exocomm
+    @exocom
       ..reset!
       ..send-message {service: @service-name, name: message-name, payload: json-payload, expect-error}
 
 
   @When /^starting a service$/, (done) ->
     @service-name = 'test'
-    @exocomm.register-service name: @service-name, port: 4000
-    @create-exoservice-instance {@service-name, exorelay-port: 4000, @exocomm-port}, done
+    @exocom.register-service name: @service-name, port: 4000
+    @create-exoservice-instance {@service-name, exorelay-port: 4000, @exocom-port}, done
 
 
   @When /^starting a service at port (\d+)$/, (exorelay-port, done) ->
     @service-name = 'test'
-    @exocomm.register-service {name: @service-name, port: exorelay-port}
-    @create-exoservice-instance {@service-name, exorelay-port, @exocomm-port}, done
+    @exocom.register-service {name: @service-name, port: exorelay-port}
+    @create-exoservice-instance {@service-name, exorelay-port, @exocom-port}, done
 
 
   @When /^starting the "([^"]*)" service$/, (@service-name, done) ->
-    @exocomm.register-service name: @service-name, port: 4000
-    @create-exoservice-instance {@service-name, exorelay-port: 4000, @exocomm-port}, done
+    @exocom.register-service name: @service-name, port: 4000
+    @create-exoservice-instance {@service-name, exorelay-port: 4000, @exocom-port}, done
 
 
 
   @Then /^after a while it sends the "([^"]*)" message$/, (reply-message-name, done) ->
-    @exocomm.wait-until-receive ~>
-      received-messages = @exocomm.received-messages!
+    @exocom.wait-until-receive ~>
+      received-messages = @exocom.received-messages!
       expect(received-messages).to.have.length 1
       expect(received-messages[0].name).to.equal reply-message-name
       done!
 
 
   @Then /^after a while it sends the "([^"]*)" message with the textual payload:$/, (reply-message-name, payload-text, done) ->
-    @exocomm.wait-until-receive ~>
-      received-messages = @exocomm.received-messages!
+    @exocom.wait-until-receive ~>
+      received-messages = @exocom.received-messages!
       expect(received-messages).to.have.length 1
       expect(received-messages[0].name).to.equal reply-message-name
       expect(received-messages[0].payload).to.equal payload-text
@@ -83,27 +83,27 @@ module.exports = ->
 
 
   @Then /^it acknowledges the received message$/, (done) ->
-    wait-until (~> @exocomm.last-send-response-code), ~>
-      expect(@exocomm.last-send-response-code).to.equal 200
+    wait-until (~> @exocom.last-send-response-code), ~>
+      expect(@exocom.last-send-response-code).to.equal 200
       done!
 
 
   @Then /^it can run the "([^"]*)" service$/, (@service-name, done) ->
-    @create-exoservice-instance {@service-name, exorelay-port: 4000, @exocomm-port}, done
+    @create-exoservice-instance {@service-name, exorelay-port: 4000, @exocom-port}, done
 
 
   @Then /^it runs the "([^"]*)" hook$/, (hook-name, done) ->
-    @exocomm
+    @exocom
       ..reset!
       ..send-message name: 'which-hooks-ran', service: @service-name
       ..wait-until-receive ~>
-        expect(@exocomm.received-messages![0].payload).to.eql ['before-all']
+        expect(@exocom.received-messages![0].payload).to.eql ['before-all']
         done!
 
 
   @Then /^it signals an unknown message$/, (done) ->
-    wait-until (~> @exocomm.last-send-response-code), ~>
-      expect(@exocomm.last-send-response-code).to.equal 404
+    wait-until (~> @exocom.last-send-response-code), ~>
+      expect(@exocom.last-send-response-code).to.equal 404
       done!
 
 

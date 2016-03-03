@@ -22,10 +22,10 @@ when receiving the message "ping", it replies with the message "pong".
 1. create an empty service scaffold
   * `yo exoservice ping`
 
-1. start your server: `SERVICE_NAME=pinger EXORELAY_PORT=3000 EXOCOMM_PORT=3100 exo-js`
+1. start your server: `SERVICE_NAME=pinger EXORELAY_PORT=3000 EXOCOM_PORT=3100 exo-js`
   * `SERVICE_NAME` is as what your service should identify to Exosphere
   * `EXORELAY_PORT` is the port at which your service listens to Exosphere messages
-  * `EXOCOMM_PORT` is the port at which your local ExoComm instance runs
+  * `EXOCOM_PORT` is the port at which your local ExoCom instance runs
 
 
 ## Testing

@@ -14,7 +14,7 @@ Feature: Handling incoming messages
 
 
   Background:
-    Given an ExoComm instance
+    Given an ExoCom instance
     And an instance of the "test" service
 
 

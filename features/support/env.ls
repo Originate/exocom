@@ -7,5 +7,5 @@ module.exports = ->
     @server1?.close!
     @server2?.close!
     @process?.kill!
-    @exocomm?.close!
+    @exocom?.close!
     @exoservice?.close!

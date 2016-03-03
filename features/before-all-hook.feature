@@ -9,7 +9,7 @@ Feature: Before-All hook
 
 
   Background:
-    Given an ExoComm instance
+    Given an ExoCom instance
 
 
   Scenario: code with beforeAll hook

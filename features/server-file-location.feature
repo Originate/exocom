@@ -9,7 +9,7 @@ Feature: server file location
 
 
   Background:
-    Given an ExoComm instance
+    Given an ExoCom instance
 
 
   Scenario: server.ls is in the home directory

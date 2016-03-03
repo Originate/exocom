@@ -5,13 +5,13 @@ require! {
   'rails-delegate' : {delegate, delegate-event}
   './service-loader'
 }
-debug = require('debug')('exocomm:cli')
+debug = require('debug')('exocom:cli')
 
 
 class ExoService extends EventEmitter
 
-  ({@root, @exocomm-port, @exorelay-port, @service-name}) ->
-    @exo-relay = new ExoRelay {@exocomm-port, @service-name}
+  ({@root, @exocom-port, @exorelay-port, @service-name}) ->
+    @exo-relay = new ExoRelay {@exocom-port, @service-name}
     delegate \close, from: @, to: @exo-relay
     delegate-event \online \offline \error, from: @exo-relay, to: @
 

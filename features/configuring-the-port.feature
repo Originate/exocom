@@ -13,7 +13,7 @@ Feature: Defining the port at which the server listens
 
 
   Background:
-    Given an ExoComm instance
+    Given an ExoCom instance
 
 
   Scenario: Running at a custom port

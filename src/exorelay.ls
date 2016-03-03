@@ -11,7 +11,7 @@ debug = require('debug')('exorelay')
 class ExoRelay extends EventEmitter
 
   (config) ->
-    config?.exocomm-port or throw new Error 'exocommPort not provided'
+    config?.exocom-port or throw new Error 'exocomPort not provided'
     config?.service-name or throw new Error 'serviceName not provided'
 
     # manages the request handlers for incoming messages

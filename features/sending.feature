@@ -12,7 +12,7 @@ Feature: Sending outgoing messages
 
 
   Background:
-    Given ExoComm runs at port 4100
+    Given ExoCom runs at port 4100
     And an ExoRelay instance called "exo-relay" running inside the "test" service at port 4000
 
 

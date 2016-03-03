@@ -9,7 +9,7 @@ Feature: Handling incoming replies to sent message
 
 
   Background:
-    Given ExoComm runs at port 4010
+    Given ExoCom runs at port 4010
     And an ExoRelay instance called "exo-relay" listening at port 4000
 
 

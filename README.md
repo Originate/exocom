@@ -19,7 +19,7 @@ Each code base should have only one ExoRelay instance.
 ```coffeescript
 ExoRelay = require 'exorelay'
 
-exoRelay = new ExoRelay exocommPort: <port>, serviceName: <name of the service using ExoRelay>
+exoRelay = new ExoRelay exocomPort: <port>, serviceName: <name of the service using ExoRelay>
 exoRelay.on 'online', (port) ->  # yay, we are online!
 exoRelay.on 'error', (err) ->    # examine, print, or log the error here
 exoRelay.listen 4000

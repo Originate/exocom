@@ -11,7 +11,7 @@ Feature: status check
 
 
   Scenario: ExoRelay is online
-    Given ExoComm runs at port 4100
+    Given ExoCom runs at port 4100
     And an ExoRelay instance listening at port 4000
     When I check the status
     Then it signals it is online

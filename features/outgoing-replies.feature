@@ -10,7 +10,7 @@ Feature: Sending outgoing replies to incoming messages
 
 
   Background:
-    Given ExoComm runs at port 4010
+    Given ExoCom runs at port 4010
     And an ExoRelay instance called "exo-relay" running inside the "test" service at port 4000
 
 

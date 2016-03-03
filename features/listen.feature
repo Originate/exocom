@@ -10,7 +10,7 @@ Feature: Listening
 
 
   Background:
-    Given ExoComm runs at port 4100
+    Given ExoCom runs at port 4100
     And an ExoRelay instance
 
 

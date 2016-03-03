@@ -19,13 +19,11 @@
 
 ## Update
 
-* `david`
+* `update`
 
 
 ## Deploy a new version
 
 ```
-npm run update
-npm version <patch|minor|major>
-npm publish
+publish <patch|minor|major>
 ```

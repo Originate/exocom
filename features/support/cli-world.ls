@@ -19,4 +19,4 @@ CliWorld = !->
 
 
 module.exports = ->
-  @World = CliWorld if process.env.EXOCOMM_TEST_DEPTH is 'CLI'
+  @World = CliWorld if process.env.EXOSERVICE_TEST_DEPTH is 'CLI'

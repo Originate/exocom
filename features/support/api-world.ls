@@ -15,4 +15,4 @@ ApiWorld = !->
 
 
 module.exports = ->
-  @World = ApiWorld if process.env.EXOCOMM_TEST_DEPTH is 'API'
+  @World = ApiWorld if process.env.EXOSERVICE_TEST_DEPTH is 'API'

@@ -23,11 +23,11 @@
     "wait": "0.1.0"
   },
   "files": [
-    "lib/"
+    "dist/"
   ],
   "homepage": "https://github.com/Originate/exocom-mock-js#readme",
   "license": "ISC",
-  "main": "lib/mock-exo-com.js",
+  "main": "dist/mock-exo-com.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Originate/exocom-mock-js.git"

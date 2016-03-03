@@ -25,7 +25,7 @@ Feature: Handling incoming replies to sent message
       url: 'http://localhost:4000/run/users.created'
       method: 'POST'
       body:
-        requestId: '123'
+        id: '123'
         responseTo: "<%= request_uuid %>"
         payload:
           id: 456

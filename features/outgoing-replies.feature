@@ -28,7 +28,7 @@ Feature: Sending outgoing replies to incoming messages
       body:
         payload:
           name: 'Will Riker'
-        requestId: '123'
+        id: '123'
       """
     Then ExoRelay returns a 200 response
     And my message handler replies with a "users.created" message sent via this outgoing request:
@@ -40,7 +40,7 @@ Feature: Sending outgoing replies to incoming messages
         payload:
           id: 456
           name: 'Will Riker'
-        requestId: '<%= request_uuid %>'
+        id: '<%= request_uuid %>'
         responseTo: '123'
       headers:
         accept: 'application/json'
@@ -59,7 +59,7 @@ Feature: Sending outgoing replies to incoming messages
       url: 'http://localhost:4000/run/ping'
       method: 'POST'
       body:
-        requestId: '123'
+        id: '123'
       """
     Then ExoRelay returns a 200 response
     And my message handler replies with a "users.created" message sent via this outgoing request:
@@ -69,7 +69,7 @@ Feature: Sending outgoing replies to incoming messages
       body:
         sender: 'test'
         payload: 'from the test'
-        requestId: '<%= request_uuid %>'
+        id: '<%= request_uuid %>'
         responseTo: '123'
       headers:
         accept: 'application/json'

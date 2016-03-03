@@ -26,7 +26,7 @@ Feature: Receiving messages
       url: 'http://localhost:4000/run/hello-world',
       method: 'POST'
       body:
-        requestId: '123'
+        id: '123'
       """
     Then ExoRelay returns a 200 response
     And it runs the registered handler, in this example calling "print" with "Hello world!"
@@ -44,7 +44,7 @@ Feature: Receiving messages
       method: 'POST'
       body:
         payload: 'world'
-        requestId: '123'
+        id: '123'
       """
     Then ExoRelay returns a 200 response
     And ExoRelay runs the registered handler, in this example calling "print" with "Hello world!"
@@ -63,7 +63,7 @@ Feature: Receiving messages
       body:
         payload:
           name: 'world'
-        requestId: '123'
+        id: '123'
       """
     Then ExoRelay returns a 200 response
     And ExoRelay runs the registered handler, in this example calling "print" with "Hello world!"
@@ -81,7 +81,7 @@ Feature: Receiving messages
       method: 'POST'
       body:
         payload: [1, 2]
-        requestId: '123'
+        id: '123'
       """
     Then ExoRelay returns a 200 response
     And ExoRelay runs the registered handler, in this example calling "print" with "3"
@@ -96,7 +96,7 @@ Feature: Receiving messages
       url: 'http://localhost:4000/run',
       method: 'POST'
       body:
-        requestId: '123'
+        id: '123'
       """
     Then ExoRelay returns a 404 response
 
@@ -107,12 +107,12 @@ Feature: Receiving messages
       url: 'http://localhost:4000/run/zonk',
       method: 'POST'
       body:
-        requestId: '123'
+        id: '123'
       """
     Then ExoRelay returns a 404 response with the text "unknown message: 'zonk'"
 
 
-  Scenario: the incoming message has no requestId
+  Scenario: the incoming message has no id
     Given I register a handler for the "hello" message:
       """
       exo-relay.register-handler 'hello', ->
@@ -122,4 +122,4 @@ Feature: Receiving messages
       url: 'http://localhost:4000/run/hello',
       method: 'POST'
       """
-    Then ExoRelay returns a 400 response with the text "missing request id"
+    Then ExoRelay returns a 400 response with the text "missing message id"

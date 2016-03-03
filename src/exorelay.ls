@@ -33,16 +33,16 @@ class ExoRelay extends EventEmitter
   send: (message, payload, reply-handler) ~>
     | reply-handler and typeof reply-handler isnt 'function'  =>  return @emit 'error', Error 'The reply handler given to ExoRelay#send must be a function'
 
-    request-id = @message-sender.send message, payload
+    message-id = @message-sender.send message, payload
     if reply-handler
-      @message-handler.register-reply-handler request-id, reply-handler
-    request-id
+      @message-handler.register-reply-handler message-id, reply-handler
+    message-id
 
 
   _on-incoming-message: (request-data) ~>
-    | !request-data.request-id  =>  return 'missing request id'
+    | !request-data.id  =>  return 'missing message id'
     @message-handler.handle-request request-data,
-                                    reply: @message-sender.reply-method-for request-data.request-id
+                                    reply: @message-sender.reply-method-for request-data.id
                                     send: @send
 
 

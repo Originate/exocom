@@ -14,7 +14,7 @@ module.exports = ->
 
 
   @When /^a reply for the sent message arrives via this incoming request:$/, (request-data, done) ->
-    rendered = ejs.render request-data, request_uuid: @request-id
+    rendered = ejs.render request-data, request_uuid: @message-id
     eval livescript.compile "data = {\n#{rendered}\n}", bare: yes, header: no
     data.json = yes
     request data, (err, {status-code}) ->
@@ -25,8 +25,8 @@ module.exports = ->
 
   @When /^I send a .*message/, (code) ->
     code = code.replace /\bexo-relay\b/, '@exo-relay'
-    @request-id = eval livescript.compile(code, bare: yes, header: no)
-    expect(@request-id).to.not.be.undefined
+    @message-id = eval livescript.compile(code, bare: yes, header: no)
+    expect(@message-id).to.not.be.undefined
 
 
   @When /^receiving the "([^"]*)" message with payload "([^"]*)" as a reply to the "(?:[^"]*)" message$/, (message-name, payload, done) ->
@@ -35,8 +35,8 @@ module.exports = ->
       method: 'POST'
       body:
         payload: payload
-        requestId: '123'
-        responseTo: @exocomm.calls[0].body.request-id
+        id: '123'
+        responseTo: @exocomm.calls[0].body.id
       json: yes
     @exocomm.reset!
     request data, (err, {status-code}) ->
@@ -60,7 +60,7 @@ module.exports = ->
 
 
   @When /^sending the "([^"]*)" message:$/, (message-name, code) ->
-    eval livescript.compile "@request-id = @#{code}", bare: yes, header: no
+    eval livescript.compile "@message-id = @#{code}", bare: yes, header: no
 
 
   @When /^trying to send/, (code) ->
@@ -75,7 +75,7 @@ module.exports = ->
     # Wait until we get some call data, then wait another 50ms to let all the request data fill in
     wait-until (~> @exocomm.calls?.length), 10, ~>
       wait 50, ~>
-        rendered = ejs.render request-data, request_uuid: @request-id
+        rendered = ejs.render request-data, request_uuid: @message-id
         template = livescript.compile "compiled = {\n#{rendered}\n}", bare: yes, header: no
         eval template
         jsdiff-console @exocomm.calls, [compiled], done
@@ -104,7 +104,7 @@ module.exports = ->
     # Wait until we get some call data, then wait another 50ms to let all the request data fill in
     wait-until (~> @exocomm.calls?.length), 10, ~>
       wait 50, ~>
-        rendered = ejs.render request-data, request_uuid: @exo-relay.message-sender.last-sent-request-id
+        rendered = ejs.render request-data, request_uuid: @exo-relay.message-sender.last-sent-id
         template = "compiled = {\n#{rendered}\n}"
         compiled-template = livescript.compile template, bare: yes, header: no
         parsed = eval compiled-template

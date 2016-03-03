@@ -22,14 +22,14 @@ class HandlerManager extends EventEmitter
   # Handles the given message with the given payload.
   # Return whether the request was handled or not.
   handle-request: (message-data, methods) ->
-    | !message-data.request-id                                =>  'missing request id'
+    | !message-data.id                                        =>  'missing message id'
     | @reply-handlers.handle-reply message-data               =>  'success'
     | @command-handlers.handle-command message-data, methods  =>  'success'
     | otherwise                                               =>  'unknown message'
 
 
-  register-reply-handler: (request-id, handler) ->
-    @reply-handlers.register-handler request-id, handler
+  register-reply-handler: (message-id, handler) ->
+    @reply-handlers.register-handler message-id, handler
 
 
 

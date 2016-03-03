@@ -33,7 +33,6 @@ Feature: Registering message handlers
 
 
 
-
   # ERROR CHECKING
 
   Scenario: registering an already handled message
@@ -47,7 +46,7 @@ Feature: Registering message handlers
       """
       exo-relay.register-handler ->
       """
-    Then ExoRelay emits an "error" event with the message "Request ids must be strings"
+    Then ExoRelay emits an "error" event with the message "Message ids must be strings"
 
 
   Scenario: providing an empty message
@@ -55,7 +54,7 @@ Feature: Registering message handlers
       """
       exo-relay.register-handler '', ->
       """
-    Then ExoRelay emits an "error" event with the message "No request id provided"
+    Then ExoRelay emits an "error" event with the message "No message id provided"
 
 
   Scenario: providing a non-string message
@@ -63,7 +62,7 @@ Feature: Registering message handlers
       """
       exo-relay.register-handler [], ->
       """
-    Then ExoRelay emits an "error" event with the message "Request ids must be strings"
+    Then ExoRelay emits an "error" event with the message "Message ids must be strings"
 
 
   Scenario: forgetting to provide the handler

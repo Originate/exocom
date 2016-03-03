@@ -45,14 +45,14 @@ class HttpListener extends EventEmitter
     @_log request-data
     switch (result = @listeners('message')[0] request-data)
       | 'success'             =>  res.status(200).end!
-      | 'missing request id'  =>  res.status(400).end 'missing request id'
+      | 'missing message id'  =>  res.status(400).end 'missing message id'
       | 'unknown message'     =>  res.status(404).end "unknown message: '#{request-data.message}'"
       | _                     =>  return @emit 'error', Error "unknown result code: '#{@result}'"
 
 
-  _log: ({message, request-id, response-to}) ->
-    | response-to  =>  debug "received message '#{message}' with id '#{request-id}' in response to '#{response-to}'"
-    | _            =>  debug "received message '#{message}' with id '#{request-id}'"
+  _log: ({message, id, response-to}) ->
+    | response-to  =>  debug "received message '#{message}' with id '#{id}' in response to '#{response-to}'"
+    | _            =>  debug "received message '#{message}' with id '#{id}'"
 
 
   _status-controller: (req, res) ->
@@ -64,8 +64,8 @@ class HttpListener extends EventEmitter
     message = req.params.message
     payload = req.body.payload
     response-to = req.body.response-to
-    request-id = req.body.request-id
-    {message, response-to, payload, request-id}
+    id = req.body.id
+    {message, response-to, payload, id}
 
 
 

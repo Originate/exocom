@@ -17,8 +17,8 @@ class HandlerRegistry extends EventEmitter
 
   # Returns the handler for the request with the given id,
   # or undefined if not found.
-  get-handler: (request-id) ->
-    @handlers[request-id]
+  get-handler: (message-id) ->
+    @handlers[message-id]
 
 
   # Tries to handle the given incoming command.
@@ -41,24 +41,24 @@ class HandlerRegistry extends EventEmitter
 
   # Returns whether this RequestManager has a handler for
   # the request with the given id registered.
-  has-handler: (request-id) ->
-    typeof @get-handler(request-id) is 'function'
+  has-handler: (message-id) ->
+    typeof @get-handler(message-id) is 'function'
 
 
-  register-handler: (request-id, handler) ->
-    | !request-id                      =>  return @emit 'error', new Error 'No request id provided'
-    | typeof request-id isnt 'string'  =>  return @emit 'error', new Error 'Request ids must be strings'
+  register-handler: (message-id, handler) ->
+    | !message-id                      =>  return @emit 'error', new Error 'No message id provided'
+    | typeof message-id isnt 'string'  =>  return @emit 'error', new Error 'Message ids must be strings'
     | !handler                         =>  return @emit 'error', new Error 'No message handler provided'
     | typeof handler isnt 'function'   =>  return @emit 'error', new Error 'Message handler must be a function'
-    | @has-handler request-id          =>  return @emit 'error', new Error "There is already a handler for message '#{request-id}'"
+    | @has-handler message-id          =>  return @emit 'error', new Error "There is already a handler for message '#{message-id}'"
 
-    @debug "registering handler for request-id '#{request-id}'"
-    @handlers[request-id] = handler
+    @debug "registering handler for id '#{message-id}'"
+    @handlers[message-id] = handler
 
 
   register-handlers: (handlers) ->
-    for request-id, handler of handlers
-      @register-handler request-id, handler
+    for message-id, handler of handlers
+      @register-handler message-id, handler
 
 
 

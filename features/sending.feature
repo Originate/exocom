@@ -27,7 +27,7 @@ Feature: Sending outgoing messages
       method: 'POST'
       body:
         sender: 'test'
-        requestId: '<%= request_uuid %>'
+        id: '<%= request_uuid %>'
       headers:
         accept: 'application/json'
         'content-type': 'application/json'
@@ -47,7 +47,7 @@ Feature: Sending outgoing messages
         sender: 'test'
         payload:
           name: 'world'
-        requestId: '<%= request_uuid %>'
+        id: '<%= request_uuid %>'
       headers:
         accept: 'application/json'
         'content-type': 'application/json'
@@ -66,7 +66,7 @@ Feature: Sending outgoing messages
       body:
         sender: 'test'
         payload: 'world'
-        requestId: '<%= request_uuid %>'
+        id: '<%= request_uuid %>'
       headers:
         accept: 'application/json'
         'content-type': 'application/json'
@@ -85,7 +85,7 @@ Feature: Sending outgoing messages
       body:
         sender: 'test'
         payload: [1, 2, 3]
-        requestId: '<%= request_uuid %>'
+        id: '<%= request_uuid %>'
       headers:
         accept: 'application/json'
         'content-type': 'application/json'

@@ -24,16 +24,16 @@ describe 'MessageSender', ->
       @reply-method!
       expect(@message-sender.send.called).to.be.true
 
-    it 'pre-populates the request-id', ->
+    it 'pre-populates the id', ->
       @reply-method 'reply-message', 'payload'
       expect(@message-sender.send.first-call.args).to.eql [ 'reply-message', 'payload', response-to: '123' ]
 
 
-    context 'missing request-id', (...) ->
+    context 'missing id', (...) ->
 
       before-each ->
         @message-sender.reply-method-for null
 
       it 'emits an error', (done) ->
-        expect(@error.message).to.eql 'MessageSender.replyMethodFor needs a requestId'
+        expect(@error.message).to.eql 'MessageSender.replyMethodFor needs a id'
         done!

@@ -14,17 +14,17 @@ class MessageSender extends EventEmitter
 
     @exocomm-port = +@exocomm-port
 
-    # Contains the request-id of the most recently sent request (for testing)
-    @last-sent-request-id = null
+    # Contains the id of the most recently sent request (for testing)
+    @last-sent-id = null
 
 
   # Returns a method that sends a reply to the message with the given request
   #
-  reply-method-for: (request-id) ->
-    | !request-id  =>  return @emit 'error', new Error 'MessageSender.replyMethodFor needs a requestId'
+  reply-method-for: (id) ->
+    | !id  =>  return @emit 'error', new Error 'MessageSender.replyMethodFor needs a id'
 
     (message, payload = {}) ~>
-      @send message, payload, response-to: request-id
+      @send message, payload, response-to: id
 
 
   send: (message, payload = {}, options = {}) ->
@@ -39,7 +39,7 @@ class MessageSender extends EventEmitter
       json: yes
       body:
         sender: @service-name
-        requestId: uuid.v1!
+        id: uuid.v1!
     request-data.body.payload = payload unless is-empty payload
     request-data.body.response-to = options.response-to if options.response-to
     request request-data, (err, response, body) ->
@@ -47,7 +47,7 @@ class MessageSender extends EventEmitter
         debug "Error sending message '#{message}'"
         debug "* err: #{err}"
         debug "* response: #{response?.status-code}"
-    @last-sent-request-id = request-data.body.request-id
+    @last-sent-id = request-data.body.id
 
 
   _log: (message, options) ->

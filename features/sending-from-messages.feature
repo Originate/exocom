@@ -26,7 +26,7 @@ Feature: Sending from messages
       method: 'POST'
       body:
         sender: 'test'
-        requestId: '123'
+        id: '123'
       """
     Then ExoRelay returns a 200 response
     And my message handler sends out a "passwords.verify" message via this outgoing request:
@@ -36,7 +36,7 @@ Feature: Sending from messages
       body:
         sender: 'test'
         payload: 'secret'
-        requestId: '<%= request_uuid %>'
+        id: '<%= request_uuid %>'
       headers:
         accept: 'application/json'
         'content-type': 'application/json'

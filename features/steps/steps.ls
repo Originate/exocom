@@ -65,6 +65,23 @@ module.exports = ->
 
 
 
+  @Then /^after a while it sends the "([^"]*)" message$/, (reply-message-name, done) ->
+    @exocomm.wait-until-receive ~>
+      received-messages = @exocomm.received-messages!
+      expect(received-messages).to.have.length 1
+      expect(received-messages[0].name).to.equal reply-message-name
+      done!
+
+
+  @Then /^after a while it sends the "([^"]*)" message with the textual payload:$/, (reply-message-name, payload-text, done) ->
+    @exocomm.wait-until-receive ~>
+      received-messages = @exocomm.received-messages!
+      expect(received-messages).to.have.length 1
+      expect(received-messages[0].name).to.equal reply-message-name
+      expect(received-messages[0].payload).to.equal payload-text
+      done!
+
+
   @Then /^it acknowledges the received message$/, (done) ->
     wait-until (~> @exocomm.last-send-response-code), ~>
       expect(@exocomm.last-send-response-code).to.equal 200
@@ -82,23 +99,6 @@ module.exports = ->
       ..wait-until-receive ~>
         expect(@exocomm.received-messages![0].payload).to.eql ['before-all']
         done!
-
-
-  @Then /^after a while it sends the "([^"]*)" message$/, (reply-message-name, done) ->
-    @exocomm.wait-until-receive ~>
-      received-messages = @exocomm.received-messages!
-      expect(received-messages).to.have.length 1
-      expect(received-messages[0].name).to.equal reply-message-name
-      done!
-
-
-  @Then /^after a while it sends the "([^"]*)" message with the textual payload:$/, (reply-message-name, payload-text, done) ->
-    @exocomm.wait-until-receive ~>
-      received-messages = @exocomm.received-messages!
-      expect(received-messages).to.have.length 1
-      expect(received-messages[0].name).to.equal reply-message-name
-      expect(received-messages[0].payload).to.equal payload-text
-      done!
 
 
   @Then /^it signals an unknown message$/, (done) ->

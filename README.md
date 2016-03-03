@@ -86,8 +86,6 @@ exoRelay.registerHandler 'user.create', (userData, {reply}) ->
 More details and a working example of how to send replies is [here](features/outgoing-replies.feature).
 
 
-
-
 ## Handle incoming replies
 
 If a message you send expects a reply,

@@ -750,6 +750,16 @@
         }
       }
     },
+    "mocha-circleci-reporter": {
+      "version": "0.0.1",
+      "from": "mocha-circleci-reporter@latest",
+      "resolved": "https://registry.npmjs.org/mocha-circleci-reporter/-/mocha-circleci-reporter-0.0.1.tgz"
+    },
+    "mocha-junit-reporter": {
+      "version": "1.9.1",
+      "from": "mocha-junit-reporter@>=1.6.1 <2.0.0",
+      "resolved": "https://registry.npmjs.org/mocha-junit-reporter/-/mocha-junit-reporter-1.9.1.tgz"
+    },
     "ms": {
       "version": "0.7.1",
       "from": "ms@0.7.1",
@@ -4067,6 +4077,11 @@
       "version": "1.0.1",
       "from": "wrappy@>=1.0.0 <2.0.0",
       "resolved": "https://registry.npmjs.org/wrappy/-/wrappy-1.0.1.tgz"
+    },
+    "xml": {
+      "version": "1.0.1",
+      "from": "xml@>=1.0.0 <2.0.0",
+      "resolved": "https://registry.npmjs.org/xml/-/xml-1.0.1.tgz"
     },
     "xtend": {
       "version": "4.0.1",

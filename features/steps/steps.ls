@@ -39,7 +39,7 @@ module.exports = ->
       method: "POST"
       body:
         payload: ''
-        request-id: '123'
+        id: '123'
       json: yes
     request request-data, done
 
@@ -50,7 +50,7 @@ module.exports = ->
       method: "POST"
       body:
         payload: payload
-        request-id: '123'
+        id: '123'
       json: yes
     request request-data, done
 

@@ -39,7 +39,7 @@ class MockExoCom
       method: 'POST'
       body:
         payload: payload
-        request-id: uuid.v1!
+        id: uuid.v1!
       json: yes
     request request-data, (err, response) ~>
       if err

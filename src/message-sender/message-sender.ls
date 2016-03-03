@@ -23,19 +23,19 @@ class MessageSender extends EventEmitter
   reply-method-for: (id) ->
     | !id  =>  return @emit 'error', new Error 'MessageSender.replyMethodFor needs a id'
 
-    (message, payload = {}) ~>
-      @send message, payload, response-to: id
+    (message-name, payload = {}) ~>
+      @send message-name, payload, response-to: id
 
 
-  send: (message, payload = {}, options = {}) ->
-    | !message                      =>  return @emit 'error', new Error 'ExoRelay#send cannot send empty messages'
-    | typeof message isnt 'string'  =>  return @emit 'error', new Error 'ExoRelay#send can only send string messages'
-    | typeof payload is 'function'  =>  return @emit 'error', new Error 'ExoRelay#send cannot send functions as payload'
+  send: (message-name, payload = {}, options = {}) ->
+    | !message-name                      =>  return @emit 'error', new Error 'ExoRelay#send cannot send empty messages'
+    | typeof message-name isnt 'string'  =>  return @emit 'error', new Error 'ExoRelay#send can only send string messages'
+    | typeof payload is 'function'       =>  return @emit 'error', new Error 'ExoRelay#send cannot send functions as payload'
 
-    @_log message, options
+    @_log message-name, options
     request-data =
       method: 'POST'
-      url: "http://localhost:#{@exocomm-port}/send/#{message}"
+      url: "http://localhost:#{@exocomm-port}/send/#{message-name}"
       json: yes
       body:
         sender: @service-name
@@ -44,14 +44,16 @@ class MessageSender extends EventEmitter
     request-data.body.response-to = options.response-to if options.response-to
     request request-data, (err, response, body) ->
       if err || (response?.status-code isnt 200)
-        debug "Error sending message '#{message}'"
+        debug "Error sending message '#{message-name}'"
         debug "* err: #{err}"
         debug "* response: #{response?.status-code}"
     @last-sent-id = request-data.body.id
 
 
-  _log: (message, options) ->
-    | options.response-to  =>  debug "sending message '#{message}' in response to '#{options.response-to}'"
-    | _                    =>  debug "sending message '#{message}'"
+  _log: (message-name, options) ->
+    | options.response-to  =>  debug "sending message '#{message-name}' in response to '#{options.response-to}'"
+    | _                    =>  debug "sending message '#{message-name}'"
+
+
 
 module.exports = MessageSender

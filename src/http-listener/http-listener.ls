@@ -19,7 +19,7 @@ class HttpListener extends EventEmitter
     @app = express!
       ..use body-parser.json!
       ..get '/status', @_status-controller
-      ..post '/run/:message', @_message-controller
+      ..post '/run/:messageName', @_message-controller
     @port = null
 
 
@@ -46,13 +46,13 @@ class HttpListener extends EventEmitter
     switch (result = @listeners('message')[0] request-data)
       | 'success'             =>  res.status(200).end!
       | 'missing message id'  =>  res.status(400).end 'missing message id'
-      | 'unknown message'     =>  res.status(404).end "unknown message: '#{request-data.message}'"
+      | 'unknown message'     =>  res.status(404).end "unknown message: '#{request-data.message-name}'"
       | _                     =>  return @emit 'error', Error "unknown result code: '#{@result}'"
 
 
-  _log: ({message, id, response-to}) ->
-    | response-to  =>  debug "received message '#{message}' with id '#{id}' in response to '#{response-to}'"
-    | _            =>  debug "received message '#{message}' with id '#{id}'"
+  _log: ({message-name, id, response-to}) ->
+    | response-to  =>  debug "received message '#{message-name}' with id '#{id}' in response to '#{response-to}'"
+    | _            =>  debug "received message '#{message-name}' with id '#{id}'"
 
 
   _status-controller: (req, res) ->
@@ -61,11 +61,11 @@ class HttpListener extends EventEmitter
 
   # Returns the relevant data from a request
   _parse-request: (req) ->
-    message = req.params.message
+    message-name = req.params.message-name
     payload = req.body.payload
     response-to = req.body.response-to
     id = req.body.id
-    {message, response-to, payload, id}
+    {message-name, response-to, payload, id}
 
 
 

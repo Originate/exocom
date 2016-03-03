@@ -23,19 +23,19 @@ class HandlerRegistry extends EventEmitter
 
   # Tries to handle the given incoming command.
   # Returns whether it was able to do this.
-  handle-command: ({message, payload}, methods) ->
-    if handler = @get-handler message
-      debug "handling message '#{message}'"
+  handle-command: ({message-name, payload}, methods) ->
+    if handler = @get-handler message-name
+      debug "handling message '#{message-name}'"
       handler payload, methods
     !!handler
 
 
   # Tries to handle the incoming reply.
   # Returns whether it was able to do that.
-  handle-reply: ({message, response-to, payload}) ->
+  handle-reply: ({message-name, response-to, payload}) ->
     if handler = @get-handler response-to
-      debug "handling message '#{message}' in response to '#{response-to}'"
-      handler payload, outcome: message
+      debug "handling message '#{message-name}' in response to '#{response-to}'"
+      handler payload, outcome: message-name
     !!handler
 
 

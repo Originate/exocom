@@ -30,10 +30,10 @@ class ExoRelay extends EventEmitter
     delegate-event 'online', 'offline', from: @http-listener, to: @
 
 
-  send: (message, payload, reply-handler) ~>
+  send: (message-name, payload, reply-handler) ~>
     | reply-handler and typeof reply-handler isnt 'function'  =>  return @emit 'error', Error 'The reply handler given to ExoRelay#send must be a function'
 
-    message-id = @message-sender.send message, payload
+    message-id = @message-sender.send message-name, payload
     if reply-handler
       @message-handler.register-reply-handler message-id, reply-handler
     message-id

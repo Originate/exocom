@@ -33,7 +33,7 @@ when receiving the message "ping", it replies with the message "pong".
 Test a running service manually:
 
 ```bash
-$ curl -d '{"requestId": "123" }' -H "Content-Type: application/json" -i http://localhost:3000/run/hello-world
+$ curl -d '{"id": "123" }' -H "Content-Type: application/json" -i http://localhost:3000/run/hello-world
 ```
 
 

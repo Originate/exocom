@@ -5,11 +5,11 @@ Feature: Waiting until a message is received
   So that I don't have to set up boilerplate in my tests to do this myself.
 
   Rules:
-  - call "exocomm.waitUntilReceive" to wait until ExoComm has received an incoming message
+  - call "exocom.waitUntilReceive" to wait until ExoCom has received an incoming message
 
 
   Background:
-    Given a listening ExoCommMock instance
+    Given a listening ExoComMock instance
 
 
   Scenario: a call is about to be received
@@ -27,6 +27,6 @@ Feature: Waiting until a message is received
 
   Scenario: a reset instance
     Given a call comes in
-    And resetting the ExoCommMock instance
+    And resetting the ExoComMock instance
     When I tell it to wait for a call
     Then it doesn't call the given callback right away

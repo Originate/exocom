@@ -1,20 +1,20 @@
 require! {
-  '..' : MockExoComm
+  '..' : MockExoCom
   'chai' : {expect}
   'jsdiff-console'
 }
 
 
-describe 'MockExoComm', ->
+describe 'MockExoCom', ->
 
   before-each ->
-    @exocomm = new MockExoComm!
+    @exocom = new MockExoCom!
 
 
   describe '_get-message-name', (...) ->
 
     it 'returns the message name part of the given URL', ->
-      expect(@exocomm._get-message-name 'http://localhost:1234/send/users.create').to.equal 'users.create'
+      expect(@exocom._get-message-name 'http://localhost:1234/send/users.create').to.equal 'users.create'
 
 
   describe '_parse-call', (...) ->
@@ -30,4 +30,4 @@ describe 'MockExoComm', ->
       expected =
         name: 'users.create'
         payload: 'my payload'
-      jsdiff-console @exocomm._parse-call(call-data), expected, done
+      jsdiff-console @exocom._parse-call(call-data), expected, done

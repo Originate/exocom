@@ -4,4 +4,4 @@ module.exports = ->
 
 
   @After ->
-    @exocomm?.close!
+    @exocom?.close!

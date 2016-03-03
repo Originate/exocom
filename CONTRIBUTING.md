@@ -1,4 +1,4 @@
-# ExoCommMock-JS Developer Guidelines
+# ExoComMock-JS Developer Guidelines
 
 ## Install
 

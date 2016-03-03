@@ -1,8 +1,8 @@
 {
-  "name": "exocomm-mock",
+  "name": "exocom-mock",
   "version": "0.6.0",
   "author": "Kevin Goslar",
-  "description": "A mock implementation of the ExoComm development server in JavaScript, for testing",
+  "description": "A mock implementation of the ExoCom development server in JavaScript, for testing",
   "dependencies": {
     "debug": "2.2.0",
     "node-uuid": "1.4.7",
@@ -25,12 +25,12 @@
   "files": [
     "lib/"
   ],
-  "homepage": "https://github.com/Originate/exocomm-mock-js#readme",
+  "homepage": "https://github.com/Originate/exocom-mock-js#readme",
   "license": "ISC",
-  "main": "lib/mock-exo-comm.js",
+  "main": "lib/mock-exo-com.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Originate/exocomm-mock-js.git"
+    "url": "git+https://github.com/Originate/exocom-mock-js.git"
   },
   "scripts": {
     "postpublish": "git push && git push --tags",

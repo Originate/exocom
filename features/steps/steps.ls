@@ -1,5 +1,5 @@
 require! {
-  '../..' : MockExoComm
+  '../..' : MockExoCom
   'chai'
   'jsdiff-console'
   'record-http' : HttpRecorder
@@ -14,28 +14,28 @@ chai.use sinon-chai
 
 module.exports = ->
 
-  @Given /^a listening ExoCommMock instance$/, (done) ->
-    @exocomm = new MockExoComm
+  @Given /^a listening ExoComMock instance$/, (done) ->
+    @exocom = new MockExoCom
       ..listen 4111, done
 
 
-  @Given /^an ExoCommMock instance$/, ->
-    @exocomm = new MockExoComm
+  @Given /^an ExoComMock instance$/, ->
+    @exocom = new MockExoCom
 
 
-  @Given /^an ExoCommMock instance listening at port (\d+)$/, (port, done) ->
-    @exocomm = new MockExoComm
+  @Given /^an ExoComMock instance listening at port (\d+)$/, (port, done) ->
+    @exocom = new MockExoCom
       ..listen port, done
 
 
   @Given /^a known "([^"]*)" service listening at port (\d+)$/, (name, port, done) ->
-    @exocomm.register-service {name, port}
+    @exocom.register-service {name, port}
     @service = new HttpRecorder().listen port, done
 
 
   @Given /^somebody sends it a message$/, (done) ->
     request-data =
-      url: "http://localhost:#{@exocomm.port}/send/foo"
+      url: "http://localhost:#{@exocom.port}/send/foo"
       method: "POST"
       body:
         payload: ''
@@ -46,7 +46,7 @@ module.exports = ->
 
   @Given /^somebody sends it a "([^"]*)" message with payload "([^"]*)"$/, (message, payload, done) ->
     request-data =
-      url: "http://localhost:#{@exocomm.port}/send/#{message}"
+      url: "http://localhost:#{@exocom.port}/send/#{message}"
       method: "POST"
       body:
         payload: payload
@@ -57,17 +57,17 @@ module.exports = ->
 
 
   @When /^closing it$/, ->
-    @exocomm.close!
+    @exocom.close!
 
 
   @When /^I tell it to wait for a call$/, ->
     @call-received = sinon.spy!
-    @exocomm.wait-until-receive @call-received
+    @exocom.wait-until-receive @call-received
 
 
   @When /^a call comes in$/, (done) ->
     request-data =
-      url: "http://localhost:#{@exocomm.port}/send/foo"
+      url: "http://localhost:#{@exocom.port}/send/foo"
       method: "POST"
       json: yes
     request request-data, done
@@ -75,27 +75,27 @@ module.exports = ->
 
   @When /^trying to send a "([^"]*)" message to the "([^"]*)" service$/, (message-name, service-name) ->
     try
-      @exocomm.send-message service: service-name, name: message-name, (@error)
+      @exocom.send-message service: service-name, name: message-name, (@error)
     catch
       @error = e
 
 
-  @When /^resetting the ExoCommMock instance$/, ->
-    @exocomm.reset!
+  @When /^resetting the ExoComMock instance$/, ->
+    @exocom.reset!
 
 
   @When /^sending a "([^"]*)" message to the "([^"]*)" service with the payload:$/, (message, service, payload) ->
-    @exocomm.send-message service: service, name: message, payload: payload
+    @exocom.send-message service: service, name: message, payload: payload
 
 
 
-  @Then /^ExoCommMock lists the last send response code as (\d+)$/, (+expected-response-code, done) ->
-    wait-until (~> @exocomm.last-send-response-code), ~>
-      expect(@exocomm.last-send-response-code).to.equal expected-response-code
+  @Then /^ExoComMock lists the last send response code as (\d+)$/, (+expected-response-code, done) ->
+    wait-until (~> @exocom.last-send-response-code), ~>
+      expect(@exocom.last-send-response-code).to.equal expected-response-code
       done!
 
 
-  @Then /^ExoCommMock makes the request:$/, (table, done) ->
+  @Then /^ExoComMock makes the request:$/, (table, done) ->
     expected-request = table.rows-hash!
     wait-until (~> @service.calls.length is 1), 10, ~>
       actual-request = @service.calls[0]
@@ -106,7 +106,7 @@ module.exports = ->
 
 
   @Then /^I can close it without errors$/, ->
-    @exocomm.close!
+    @exocom.close!
 
 
   @Then /^I get the error "([^"]*)"$/, (expected-error) ->
@@ -126,12 +126,12 @@ module.exports = ->
 
 
   @Then /^it has received no messages/, ->
-    expect(@exocomm.calls).to.be.empty
+    expect(@exocom.calls).to.be.empty
 
 
   @Then /^it has received the messages/, (table, done) ->
     expected-messages = [{[key.to-lower-case!, value] for key, value of message} for message in table.hashes!]
-    actual-messages = @exocomm.received-messages!
+    actual-messages = @exocom.received-messages!
     jsdiff-console actual-messages, expected-messages, done
 
 

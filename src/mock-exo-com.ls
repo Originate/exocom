@@ -4,10 +4,10 @@ require! {
   'record-http' : HttpRecorder
   'request'
 }
-debug = require('debug')('exocomm-mock')
+debug = require('debug')('exocom-mock')
 
 
-class MockExoComm
+class MockExoCom
 
 
   ->
@@ -67,4 +67,4 @@ class MockExoComm
 
 
 
-module.exports = MockExoComm
+module.exports = MockExoCom

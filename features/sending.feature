@@ -12,7 +12,7 @@ Feature: Sending requests to services
 
 
   Background:
-    Given an ExoCommMock instance
+    Given an ExoComMock instance
 
 
   Scenario: sending a message to a registered service
@@ -21,11 +21,11 @@ Feature: Sending requests to services
       """
       name: 'Jean-Luc Picard'
       """
-    Then ExoCommMock makes the request:
+    Then ExoComMock makes the request:
       | URL     | http://localhost:3010/run/users.create |
       | METHOD  | POST                                   |
       | PAYLOAD | name: 'Jean-Luc Picard'                |
-    And ExoCommMock lists the last send response code as 200
+    And ExoComMock lists the last send response code as 200
 
 
   Scenario: sending a message to an unknown service

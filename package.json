@@ -1,5 +1,5 @@
 {
-  "name": "exocomm-dev",
+  "name": "exocom-dev",
   "version": "0.9.2",
   "author": "Kevin Goslar",
   "dependencies": {
@@ -36,12 +36,12 @@
     "dist",
     "npm-shrinkwrap.json"
   ],
-  "homepage": "https://github.com/Originate/exocomm-dev",
+  "homepage": "https://github.com/Originate/exocom-dev",
   "license": "ISC",
-  "main": "dist/exocomm.js",
+  "main": "dist/exocom.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Originate/exocomm-dev.git"
+    "url": "git+https://github.com/Originate/exocom-dev.git"
   },
   "scripts": {
     "prepublish": "bin/build",

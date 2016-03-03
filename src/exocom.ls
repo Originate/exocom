@@ -5,10 +5,10 @@ require! {
   './message-sender' : MessageSender
   'rails-delegate' : {delegate, delegate-event}
 }
-debug = require('debug')('exocomm')
+debug = require('debug')('exocom')
 
 
-class ExoComm extends EventEmitter
+class ExoCom extends EventEmitter
 
   ->
     @http-listener = new HttpListener
@@ -22,7 +22,7 @@ class ExoComm extends EventEmitter
     delegate-event 'listening' 'error', from: @http-listener, to: @
 
 
-  # returns the current configuration of this ExoComm instance
+  # returns the current configuration of this ExoCom instance
   get-config: ~>
     {
       services: @client-registry.clients
@@ -56,4 +56,4 @@ class ExoComm extends EventEmitter
 
 
 
-module.exports = ExoComm
+module.exports = ExoCom

@@ -1,9 +1,9 @@
-# ExoComm Guidelines
+# ExoCom Guidelines
 
 
 ## Architecture
 
-ExoComm is implemented using the _micro-kernel_ pattern,
+ExoCom is implemented using the _micro-kernel_ pattern,
 i.e. as a number of relatively independent subsystems that are integrated through
 a relatively small and lightweight core that only provides
 communication between the subsystems.
@@ -12,11 +12,11 @@ and is tested and implemented independently,
 as a set of one or more classes.
 
 - [HttpListener](src/http-listener): implements the HTTP endpoint that services talk to
-                                     in order to make requests to ExoComm
+                                     in order to make requests to ExoCom
 - [ClientRegistry](src/client-registry): keeps track of which service is allowed
                                          to send and receive what messages
 - [MessageSender](src/message-sender): sends messages to external services
-- [Kernel](src/exocomm.ls): integrates all the above subsystems and provides the [programmatic API](#javascript-api)
+- [Kernel](src/exocom.ls): integrates all the above subsystems and provides the [programmatic API](#javascript-api)
 
 
 ## Testing

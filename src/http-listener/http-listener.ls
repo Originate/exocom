@@ -3,7 +3,7 @@ require! {
   'events' : {EventEmitter}
   'express'
 }
-debug = require('debug')('exocomm:http-listener')
+debug = require('debug')('exocom:http-listener')
 
 
 # The HTTP endpoint that listens for messages that services want to send
@@ -61,7 +61,7 @@ class HttpListener extends EventEmitter
       | _                     =>  throw new Error "unknown result code: '#{@result}'"
 
 
-  # returns data about the current status of ExoComm
+  # returns data about the current status of ExoCom
   _status-controller: (req, res) ~>
     @listeners('get-config')[0] (config) ->
       res.send JSON.stringify config

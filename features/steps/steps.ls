@@ -17,18 +17,18 @@ module.exports = ->
     (@ports or= {})[name] = port
 
 
-  @Given /^an ExoComm instance$/, (done) ->
+  @Given /^an ExoCom instance$/, (done) ->
     port-reservation
       ..base-port = 5000
-      ..get-port N (@exocomm-port) ~>
-        @create-exocomm-instance port: @exocomm-port, done
+      ..get-port N (@exocom-port) ~>
+        @create-exocom-instance port: @exocom-port, done
 
 
-  @Given /^an ExoComm instance configured for the service landscape:$/, (table, done) ->
+  @Given /^an ExoCom instance configured for the service landscape:$/, (table, done) ->
     port-reservation
       ..base-port = 5000
-      ..get-port N (@exocomm-port) ~>
-        @create-exocomm-instance port: @exocomm-port, ~>
+      ..get-port N (@exocom-port) ~>
+        @create-exocom-instance port: @exocom-port, ~>
           data = for service in table.hashes!
             {
               name: service.NAME
@@ -52,8 +52,8 @@ module.exports = ->
     @service-sends-message {service, message, message-id}, done
 
 
-  @When /^I( try to)? run ExoComm at port (\d+)$/, (!!expect-error, +port, done) ->
-    @run-exocomm-at-port port, expect-error, done
+  @When /^I( try to)? run ExoCom at port (\d+)$/, (!!expect-error, +port, done) ->
+    @run-exocom-at-port port, expect-error, done
 
 
   @When /^requesting the routing information$/, (done) ->
@@ -84,16 +84,16 @@ module.exports = ->
 
 
 
-  @Then /^ExoComm broadcasts this message to the (.*?)$/, (service-name, done) ->
+  @Then /^ExoCom broadcasts this message to the (.*?)$/, (service-name, done) ->
     @verify-sent-calls {service-name, message: @last-sent-message, request-id: @last-sent-request-id}, done
 
 
-  @Then /^ExoComm broadcasts this reply to the (.+?)$/, (service-name, done) ->
+  @Then /^ExoCom broadcasts this reply to the (.+?)$/, (service-name, done) ->
     @verify-sent-calls {service-name, message: @last-sent-message, response-to: '111'}, done
 
 
 
-  @Then /^ExoComm now knows about these services:$/, (table, done) ->
+  @Then /^ExoCom now knows about these services:$/, (table, done) ->
     services = {}
     for row in table.hashes!
       services[row.NAME] =
@@ -102,20 +102,20 @@ module.exports = ->
     @verify-service-setup services, done
 
 
-  @Then /^ExoComm signals that this message is sent from the ([^ ]+) to the (.+)$/, (sender-name, receiver-name, done) ->
-    @verify-exocomm-broadcasted-message sender: sender-name, message: @last-sent-message, receivers: [receiver-name], done
+  @Then /^ExoCom signals that this message is sent from the ([^ ]+) to the (.+)$/, (sender-name, receiver-name, done) ->
+    @verify-exocom-broadcasted-message sender: sender-name, message: @last-sent-message, receivers: [receiver-name], done
 
 
-  @Then /^ExoComm signals that this message was sent$/, (done) ->
-    @verify-exocomm-broadcasted-message message: @last-sent-message, done
+  @Then /^ExoCom signals that this message was sent$/, (done) ->
+    @verify-exocom-broadcasted-message message: @last-sent-message, done
 
 
-  @Then /^ExoComm signals that this reply is sent from the ([^ ]+) to the (.+)$/, (sender, receiver, done) ->
-    @verify-exocomm-broadcasted-message message: @last-sent-message, sender: sender, receivers: [receiver], response-to: '111', done
+  @Then /^ExoCom signals that this reply is sent from the ([^ ]+) to the (.+)$/, (sender, receiver, done) ->
+    @verify-exocom-broadcasted-message message: @last-sent-message, sender: sender, receivers: [receiver], response-to: '111', done
 
 
-  @Then /^ExoComm signals that this reply was sent$/, (done) ->
-    @verify-exocomm-broadcasted-reply @last-sent-message, done
+  @Then /^ExoCom signals that this reply was sent$/, (done) ->
+    @verify-exocom-broadcasted-reply @last-sent-message, done
 
 
   @Then /^it aborts with the message "([^"]*)"$/, (message, done) ->

@@ -1,20 +1,20 @@
 require! {
-  '../dist/exocomm' : ExoComm
+  '../dist/exocom' : ExoCom
 }
 
 
-describe 'ExoComm', ->
+describe 'ExoCom', ->
 
   before-each ->
-    @exocomm = new ExoComm
+    @exocom = new ExoCom
 
 
   describe 'EventEmitter', (...) ->
 
     it 'allows to register callbacks', ->
-      @exocomm.on 'test', ->
+      @exocom.on 'test', ->
 
 
     it 'allows to fire registered callbacks', (done) ->
-      @exocomm.on 'test', done
-      @exocomm.emit 'test'
+      @exocom.on 'test', done
+      @exocom.emit 'test'

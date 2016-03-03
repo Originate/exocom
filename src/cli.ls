@@ -5,7 +5,7 @@ require! {
   '../package.json' : {name, version}
   '../package.json' : {version}
   'path'
-  './exocomm' : ExoComm
+  './exocom' : ExoCom
 }
 
 
@@ -22,7 +22,7 @@ Usage:
 
 on-listening = (port) ->
   console.log dim "Ctrl-C to stop"
-  console.log "ExoComm #{version} online at port #{cyan port}"
+  console.log "ExoCom #{version} online at port #{cyan port}"
 
 on-error = (err) ->
   console.log red err
@@ -30,13 +30,13 @@ on-error = (err) ->
 
 
 run = ->
-  exocomm = new ExoComm!
+  exocom = new ExoCom!
     ..listen options['--port']
     ..on 'listening', on-listening
     ..on 'error', on-error
     ..on 'routing-setup', ->
       console.log 'receiving routing setup:'
-      for command, routing of exocomm.client-registry.routes
+      for command, routing of exocom.client-registry.routes
         process.stdout.write "  --[ #{command} ]-> "
         text = for receiver in routing.receivers
           "#{receiver.name} (#{receiver.host}:#{receiver.port})"

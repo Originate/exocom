@@ -2,10 +2,10 @@
   {
     "id": "Broadcasting-messages",
     "name": "Broadcasting messages",
-    "description": "\nAs an ExoService\nI want to broadcast messages to other services\nSo that I can communicate with them.\n\nRules:\n- to broadcast a message, post to /send\n- ExoComm sends the message to all subscribed services",
+    "description": "\nAs an ExoService\nI want to broadcast messages to other services\nSo that I can communicate with them.\n\nRules:\n- to broadcast a message, post to /send\n- ExoCom sends the message to all subscribed services",
     "line": 1,
     "keyword": "Feature",
-    "uri": "/Users/kevin/exocomm-dev/features/broadcasting-messages.feature",
+    "uri": "/Users/kevin/exocom-dev/features/broadcasting-messages.feature",
     "elements": [
       {
         "name": "",
@@ -25,7 +25,7 @@
             "keyword": "And "
           },
           {
-            "name": "an ExoComm instance configured for the service landscape:",
+            "name": "an ExoCom instance configured for the service landscape:",
             "line": 15,
             "keyword": "And ",
             "rows": [
@@ -89,7 +89,7 @@
             "match": {}
           },
           {
-            "name": "an ExoComm instance configured for the service landscape:",
+            "name": "an ExoCom instance configured for the service landscape:",
             "line": 15,
             "keyword": "And ",
             "rows": [
@@ -138,7 +138,7 @@
             "match": {}
           },
           {
-            "name": "ExoComm signals that this message is sent from the web-server to the users-service",
+            "name": "ExoCom signals that this message is sent from the web-server to the users-service",
             "line": 23,
             "keyword": "Then ",
             "result": {
@@ -148,7 +148,7 @@
             "match": {}
           },
           {
-            "name": "ExoComm broadcasts this message to the users-service",
+            "name": "ExoCom broadcasts this message to the users-service",
             "line": 24,
             "keyword": "And ",
             "result": {
@@ -197,7 +197,7 @@
             "match": {}
           },
           {
-            "name": "an ExoComm instance configured for the service landscape:",
+            "name": "an ExoCom instance configured for the service landscape:",
             "line": 15,
             "keyword": "And ",
             "rows": [
@@ -256,7 +256,7 @@
             "match": {}
           },
           {
-            "name": "ExoComm signals that this reply is sent from the users-service to the web-server",
+            "name": "ExoCom signals that this reply is sent from the users-service to the web-server",
             "line": 30,
             "keyword": "Then ",
             "result": {
@@ -266,7 +266,7 @@
             "match": {}
           },
           {
-            "name": "ExoComm broadcasts this reply to the web-server",
+            "name": "ExoCom broadcasts this reply to the web-server",
             "line": 31,
             "keyword": "And ",
             "result": {
@@ -291,10 +291,10 @@
   {
     "id": "Configuring-services",
     "name": "Configuring services",
-    "description": "\nAs an ExoSphere operator\nI want be able to tell ExoComm my current service setup\nSo that it can send them messages.\n\nRules:\n- only the Exosphere environment can tell ExoComm about the current service layout\n- this is done via a POST request to \"/config\"",
+    "description": "\nAs an ExoSphere operator\nI want be able to tell ExoCom my current service setup\nSo that it can send them messages.\n\nRules:\n- only the Exosphere environment can tell ExoCom about the current service layout\n- this is done via a POST request to \"/config\"",
     "line": 1,
     "keyword": "Feature",
-    "uri": "/Users/kevin/exocomm-dev/features/configuring-services.feature",
+    "uri": "/Users/kevin/exocom-dev/features/configuring-services.feature",
     "elements": [
       {
         "name": "",
@@ -304,7 +304,7 @@
         "line": 12,
         "steps": [
           {
-            "name": "an ExoComm instance",
+            "name": "an ExoCom instance",
             "line": 13,
             "keyword": "Given "
           }
@@ -319,7 +319,7 @@
         "type": "scenario",
         "steps": [
           {
-            "name": "an ExoComm instance",
+            "name": "an ExoCom instance",
             "line": 13,
             "keyword": "Given ",
             "result": {
@@ -368,7 +368,7 @@
             "match": {}
           },
           {
-            "name": "ExoComm now knows about these services:",
+            "name": "ExoCom now knows about these services:",
             "line": 21,
             "keyword": "Then ",
             "rows": [
@@ -449,10 +449,10 @@
   {
     "id": "configuring-the-port",
     "name": "configuring the port",
-    "description": "\nAs an Exosphere developer testing my application\nI want to be able to boot ExoComm at various ports\nSo that I have flexibility in testing my system.\n\nRules:\n- the default port is 3100\n- provide the \"--port\" command-line switch to boot up at a custom port",
+    "description": "\nAs an Exosphere developer testing my application\nI want to be able to boot ExoCom at various ports\nSo that I have flexibility in testing my system.\n\nRules:\n- the default port is 3100\n- provide the \"--port\" command-line switch to boot up at a custom port",
     "line": 1,
     "keyword": "Feature",
-    "uri": "/Users/kevin/exocomm-dev/features/configuring-the-port.feature",
+    "uri": "/Users/kevin/exocom-dev/features/configuring-the-port.feature",
     "elements": [
       {
         "name": "running at a custom port",
@@ -463,7 +463,7 @@
         "type": "scenario",
         "steps": [
           {
-            "name": "I run ExoComm at port 3200",
+            "name": "I run ExoCom at port 3200",
             "line": 13,
             "keyword": "When ",
             "result": {
@@ -512,7 +512,7 @@
             "match": {}
           },
           {
-            "name": "I try to run ExoComm at port 3200",
+            "name": "I try to run ExoCom at port 3200",
             "line": 19,
             "keyword": "When ",
             "result": {

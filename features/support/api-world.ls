@@ -1,5 +1,5 @@
 require! {
-  '../../dist/exocomm' : ExoComm
+  '../../dist/exocom' : ExoCom
   './text-tools' : {ascii}
   'chai' : {expect}
   'jsdiff-console'
@@ -10,8 +10,8 @@ require! {
 
 ApiWorld = !->
 
-  @create-exocomm-instance = ({port}, done) ->
-    @exocomm = new ExoComm
+  @create-exocom-instance = ({port}, done) ->
+    @exocom = new ExoCom
       ..listen port
       ..on 'listening', -> done!
       ..on 'message', ({sender, message, receivers}) ~>
@@ -27,29 +27,29 @@ ApiWorld = !->
       ..on 'receive', (@last-broadcasted-message, name) ~>
 
 
-  @run-exocomm-at-port = (port, expect-error, done) ->
-    @exocomm = new ExoComm
+  @run-exocom-at-port = (port, expect-error, done) ->
+    @exocom = new ExoCom
       ..listen port
     if expect-error
-      @exocomm.on 'error', (@err) ~> done!
+      @exocom.on 'error', (@err) ~> done!
     else
-      @exocomm.on 'listening', -> done!
+      @exocom.on 'listening', -> done!
 
 
   @service-sends-message = ({service, message, message-id = '123'} = {}, done) ->
-    result = @exocomm.send-message name: message, sender: service, request-id: message-id
+    result = @exocom.send-message name: message, sender: service, request-id: message-id
     expect(result).to.equal 'success'
     done!
 
 
   @service-sends-reply = ({service, message, request-id}, done) ->
-    result = @exocomm.send-message name: message, sender: service, request-id: '123', response-to: request-id
+    result = @exocom.send-message name: message, sender: service, request-id: '123', response-to: request-id
     expect(result).to.equal 'success'
     done!
 
 
   @set-service-landscape = (service-data, done) ->
-    result = @exocomm.set-services service-data
+    result = @exocom.set-services service-data
     expect(result).to.equal 'success'
     done!
 
@@ -60,29 +60,29 @@ ApiWorld = !->
       done!
 
 
-  @verify-exocomm-broadcasted-message = ({sender, message, receivers, response-to} done) ->
+  @verify-exocom-broadcasted-message = ({sender, message, receivers, response-to} done) ->
     wait-until (~> @last-broadcasted-message is message), 1, ~>
       expect(@last-sender).to.eql sender
       expect(@last-receivers).to.eql receivers
       done!
 
 
-  @verify-exocomm-broadcasted-reply = (message, done) ->
+  @verify-exocom-broadcasted-reply = (message, done) ->
     wait-until (~> @last-broadcasted-message is message), 1, done
 
 
   @verify-routing-setup = (expected-routes, done) ->
-    jsdiff-console @exocomm.get-config!routes, expected-routes, done
+    jsdiff-console @exocom.get-config!routes, expected-routes, done
 
 
-  @verify-exocomm-signals-broadcast = (message-name, done) ->
-    @exocomm.on message-name, (message, receivers) ->
+  @verify-exocom-signals-broadcast = (message-name, done) ->
+    @exocom.on message-name, (message, receivers) ->
       console.log message
       done!
 
 
   @verify-runs-at-port = (port, done) ->
-    expect(@exocomm.port).to.equal port
+    expect(@exocom.port).to.equal port
     done!
 
 
@@ -94,7 +94,7 @@ ApiWorld = !->
         url: "http://localhost:#{@ports[service-name]}/run/#{message}"
         method: 'POST'
         body:
-          requestId: request-id
+          id: request-id
         headers:
           accept: 'application/json'
           'content-type': 'application/json'
@@ -104,9 +104,9 @@ ApiWorld = !->
 
 
   @verify-service-setup = (expected-services, done) ->
-    jsdiff-console @exocomm.get-config!services, expected-services, done
+    jsdiff-console @exocom.get-config!services, expected-services, done
 
 
 
 module.exports = ->
-  @World = ApiWorld if process.env.EXOCOMM_TEST_DEPTH is 'API'
+  @World = ApiWorld if process.env.EXOCOM_TEST_DEPTH is 'API'

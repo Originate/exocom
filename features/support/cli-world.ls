@@ -14,8 +14,8 @@ require! {
 # Provides steps for end-to-end testing of the service as a stand-alone binary
 CliWorld = !->
 
-  @create-exocomm-instance = ({port}, done) ->
-    @process = new ObservableProcess "bin/exocomm --port #{@exocomm-port}", verbose: yes, console: my-console
+  @create-exocom-instance = ({port}, done) ->
+    @process = new ObservableProcess "bin/exocom --port #{@exocom-port}", verbose: yes, console: my-console
       ..wait "online at port #{port}", done
 
 
@@ -25,14 +25,14 @@ CliWorld = !->
       ..listen port, done
 
 
-  @run-exocomm-at-port = (port, _expect-error, done) ->
-    @process = new ObservableProcess "bin/exocomm --port #{port}", verbose: yes, console: my-console
+  @run-exocom-at-port = (port, _expect-error, done) ->
+    @process = new ObservableProcess "bin/exocom --port #{port}", verbose: yes, console: my-console
     done!
 
 
   @service-sends-message = ({service, message}, done) ->
     request-data =
-      url: "http://localhost:#{@exocomm-port}/send/#{message}",
+      url: "http://localhost:#{@exocom-port}/send/#{message}",
       method: 'POST'
       body:
         sender: service
@@ -44,7 +44,7 @@ CliWorld = !->
 
   @service-sends-reply = ({service, message, request-id}, done) ->
     request-data =
-      url: "http://localhost:#{@exocomm-port}/send/#{message}",
+      url: "http://localhost:#{@exocom-port}/send/#{message}",
       method: 'POST'
       body:
         sender: service
@@ -57,7 +57,7 @@ CliWorld = !->
 
   @set-service-landscape = (service-data, done) ->
     request-data =
-      url: "http://localhost:#{@exocomm-port}/services"
+      url: "http://localhost:#{@exocom-port}/services"
       method: 'POST'
       body: service-data
       json: yes
@@ -71,20 +71,20 @@ CliWorld = !->
       wait-until (~> @process.crashed), done
 
 
-  @verify-exocomm-broadcasted-message = ({message, sender, receivers}, done) ->
+  @verify-exocom-broadcasted-message = ({message, sender, receivers}, done) ->
     @process.wait "#{sender} is broadcasting '#{message}' to the #{receivers.join ', '}", done
 
 
-  @verify-exocomm-received-message = (message, done) ->
+  @verify-exocom-received-message = (message, done) ->
     @process.wait "broadcasting '#{message}'", done
 
 
-  @verify-exocomm-received-reply = (message, done) ->
+  @verify-exocom-received-reply = (message, done) ->
     @process.wait "broadcasting '#{message}'", done
 
 
   @verify-routing-setup = (expected-routing, done) ->
-    request "http://localhost:#{@exocomm-port}/config.json", (err, result, body) ->
+    request "http://localhost:#{@exocom-port}/config.json", (err, result, body) ->
       expect(err).to.be.null
       expect(result.status-code).to.equal 200
       jsdiff-console JSON.parse(body).routes, expected-routing, done
@@ -102,7 +102,7 @@ CliWorld = !->
         url: "http://localhost:#{@ports[service-name]}/run/#{message}"
         method: 'POST'
         body:
-          requestId: '123'
+          id: '123'
           payload: ''
         headers:
           accept: 'application/json'
@@ -113,11 +113,11 @@ CliWorld = !->
 
 
   @verify-service-setup = (service-data, done) ->
-    request "http://localhost:#{@exocomm-port}/config.json", (err, result, body) ->
+    request "http://localhost:#{@exocom-port}/config.json", (err, result, body) ->
       expect(err).to.be.null
       expect(result.status-code).to.equal 200
       jsdiff-console JSON.parse(body).services, service-data, done
 
 
 module.exports = ->
-  @World = CliWorld if process.env.EXOCOMM_TEST_DEPTH is 'CLI'
+  @World = CliWorld if process.env.EXOCOM_TEST_DEPTH is 'CLI'

@@ -1,7 +1,7 @@
 require! {
   'request'
 }
-debug = require('debug')('exocomm:message-sender')
+debug = require('debug')('exocom:message-sender')
 
 
 class MessageSender
@@ -17,7 +17,7 @@ class MessageSender
       url: "http://localhost:#{service.port}/run/#{message.name}"
       method: 'POST'
       body:
-        requestId: message.request-id
+        id: message.request-id
         payload: message.payload
       json: yes
     request-data.body.response-to = message.response-to if message.response-to

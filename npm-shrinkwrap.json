@@ -1,6 +1,6 @@
 {
   "name": "exocom-dev",
-  "version": "0.10.0",
+  "version": "0.10.1",
   "dependencies": {
     "accepts": {
       "version": "1.2.13",

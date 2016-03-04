@@ -60,7 +60,7 @@ ApiWorld = !->
       done!
 
 
-  @verify-exocom-broadcasted-message = ({sender, message, receivers, response-to} done) ->
+  @verify-exocom-broadcasted-message = ({sender, message, receivers} done) ->
     wait-until (~> @last-broadcasted-message is message), 1, ~>
       expect(@last-sender).to.eql sender
       expect(@last-receivers).to.eql receivers

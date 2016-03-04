@@ -85,7 +85,7 @@ module.exports = ->
 
 
   @Then /^ExoCom broadcasts this message to the (.*?)$/, (service-name, done) ->
-    @verify-sent-calls {service-name, message: @last-sent-message, request-id: @last-sent-message-id}, done
+    @verify-sent-calls {service-name, message: @last-sent-message, id: @last-sent-message-id}, done
 
 
   @Then /^ExoCom broadcasts this reply to the (.+?)$/, (service-name, done) ->

@@ -17,7 +17,7 @@ class MessageSender
       url: "http://localhost:#{service.port}/run/#{message.name}"
       method: 'POST'
       body:
-        id: message.request-id
+        id: message.id
         payload: message.payload
       json: yes
     request-data.body.response-to = message.response-to if message.response-to
@@ -25,9 +25,9 @@ class MessageSender
     request request-data, done
 
 
-  _log: ({name, request-id, response-to}, service) ->
-    | response-to  =>  debug "sending '#{name}' with id '#{request-id}' in response to '#{response-to}' to '#{service.name}'"
-    | _            =>  debug "sending '#{name}' with id '#{request-id}' to '#{service.name}'"
+  _log: ({name, id, response-to}, service) ->
+    | response-to  =>  debug "sending '#{name}' with id '#{id}' in response to '#{response-to}' to '#{service.name}'"
+    | _            =>  debug "sending '#{name}' with id '#{id}' to '#{service.name}'"
 
 
 

@@ -67,9 +67,9 @@ class HttpListener extends EventEmitter
       res.send JSON.stringify config
 
 
-  _log: ({name, request-id, response-to}) ->
-    | response-to  =>  debug "received message '#{name}' with id '#{request-id}' in response to '#{response-to}'"
-    | _            =>  debug "received message '#{name}' with id '#{request-id}'"
+  _log: ({name, id, response-to}) ->
+    | response-to  =>  debug "received message '#{name}' with id '#{id}' in response to '#{response-to}'"
+    | _            =>  debug "received message '#{name}' with id '#{id}'"
 
 
   # Returns the relevant data from a request
@@ -78,8 +78,8 @@ class HttpListener extends EventEmitter
     name = req.params.message
     payload = req.body.payload
     response-to = req.body.response-to
-    request-id = req.body.request-id
-    {sender, name, response-to, payload, request-id}
+    id = req.body.id
+    {sender, name, response-to, payload, id}
 
 
 

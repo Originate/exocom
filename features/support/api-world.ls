@@ -37,13 +37,13 @@ ApiWorld = !->
 
 
   @service-sends-message = ({service, message, message-id = '123'} = {}, done) ->
-    result = @exocom.send-message name: message, sender: service, request-id: message-id
+    result = @exocom.send-message name: message, sender: service, id: message-id
     expect(result).to.equal 'success'
     done!
 
 
   @service-sends-reply = ({service, message, response-to}, done) ->
-    result = @exocom.send-message name: message, sender: service, request-id: '123', response-to: response-to
+    result = @exocom.send-message name: message, sender: service, id: '123', response-to: response-to
     expect(result).to.equal 'success'
     done!
 
@@ -86,7 +86,7 @@ ApiWorld = !->
     done!
 
 
-  @verify-sent-calls = ({service-name, message, request-id = '123', response-to}, done) ->
+  @verify-sent-calls = ({service-name, message, id = '123', response-to}, done) ->
     service-receiver = @receivers[service-name]
     condition = -> service-receiver.calls.length is 1
     wait-until condition, 1, ~>
@@ -94,7 +94,7 @@ ApiWorld = !->
         url: "http://localhost:#{@ports[service-name]}/run/#{message}"
         method: 'POST'
         body:
-          id: request-id
+          id: id
         headers:
           accept: 'application/json'
           'content-type': 'application/json'

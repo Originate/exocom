@@ -37,7 +37,7 @@ CliWorld = !->
       body:
         sender: service
         payload: ''
-        request-id: '123'
+        id: '123'
       json: yes
     request request-data, done
 
@@ -49,7 +49,7 @@ CliWorld = !->
       body:
         sender: service
         payload: ''
-        request-id: '123'
+        id: '123'
         response-to: response-to
       json: yes
     request request-data, done

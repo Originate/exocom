@@ -48,7 +48,7 @@ module.exports = ->
 
   @Given /^the ([^ ]+) sends "([^"]*)" with id "([^"]*)"$/, (service, message, message-id, done) ->
     @last-sent-message = message
-    @last-sent-request-id = message-id
+    @last-sent-message-id = message-id
     @service-sends-message {service, message, message-id}, done
 
 
@@ -85,7 +85,7 @@ module.exports = ->
 
 
   @Then /^ExoCom broadcasts this message to the (.*?)$/, (service-name, done) ->
-    @verify-sent-calls {service-name, message: @last-sent-message, request-id: @last-sent-request-id}, done
+    @verify-sent-calls {service-name, message: @last-sent-message, request-id: @last-sent-message-id}, done
 
 
   @Then /^ExoCom broadcasts this reply to the (.+?)$/, (service-name, done) ->

@@ -42,7 +42,7 @@ CliWorld = !->
     request request-data, done
 
 
-  @service-sends-reply = ({service, message, request-id}, done) ->
+  @service-sends-reply = ({service, message, response-to}, done) ->
     request-data =
       url: "http://localhost:#{@exocom-port}/send/#{message}",
       method: 'POST'
@@ -50,7 +50,7 @@ CliWorld = !->
         sender: service
         payload: ''
         request-id: '123'
-        response-to: request-id
+        response-to: response-to
       json: yes
     request request-data, done
 

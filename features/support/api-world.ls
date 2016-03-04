@@ -42,8 +42,8 @@ ApiWorld = !->
     done!
 
 
-  @service-sends-reply = ({service, message, request-id}, done) ->
-    result = @exocom.send-message name: message, sender: service, request-id: '123', response-to: request-id
+  @service-sends-reply = ({service, message, response-to}, done) ->
+    result = @exocom.send-message name: message, sender: service, request-id: '123', response-to: response-to
     expect(result).to.equal 'success'
     done!
 

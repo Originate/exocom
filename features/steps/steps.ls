@@ -78,9 +78,9 @@ module.exports = ->
     @service-sends-message {service, message}, done
 
 
-  @When /^the (.+)? sends "([^"]*)" in reply to "([^"]*)"$/, (service, reply-message, request-id, done) ->
+  @When /^the (.+)? sends "([^"]*)" in reply to "([^"]*)"$/, (service, reply-message, response-to, done) ->
     @last-sent-message = reply-message
-    @service-sends-reply {service, message: reply-message, request-id}, done
+    @service-sends-reply {service, message: reply-message, response-to}, done
 
 
 

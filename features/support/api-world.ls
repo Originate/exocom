@@ -36,8 +36,8 @@ ApiWorld = !->
       @exocom.on 'listening', -> done!
 
 
-  @service-sends-message = ({service, message, message-id = '123'} = {}, done) ->
-    result = @exocom.send-message name: message, sender: service, id: message-id
+  @service-sends-message = ({service, message, id = '123'} = {}, done) ->
+    result = @exocom.send-message name: message, sender: service, id: id
     expect(result).to.equal 'success'
     done!
 

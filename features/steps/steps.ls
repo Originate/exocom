@@ -46,10 +46,10 @@ module.exports = ->
       @existing-server = http.create-server(handler).listen port, done
 
 
-  @Given /^the ([^ ]+) sends "([^"]*)" with id "([^"]*)"$/, (service, message, message-id, done) ->
+  @Given /^the ([^ ]+) sends "([^"]*)" with id "([^"]*)"$/, (service, message, id, done) ->
     @last-sent-message = message
-    @last-sent-message-id = message-id
-    @service-sends-message {service, message, message-id}, done
+    @last-sent-message-id = id
+    @service-sends-message {service, message, id}, done
 
 
   @When /^I( try to)? run ExoCom at port (\d+)$/, (!!expect-error, +port, done) ->

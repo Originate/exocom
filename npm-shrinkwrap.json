@@ -376,9 +376,9 @@
       "resolved": "https://registry.npmjs.org/exocom-mock/-/exocom-mock-0.7.0.tgz"
     },
     "exorelay": {
-      "version": "0.16.2",
-      "from": "exorelay@0.16.2",
-      "resolved": "https://registry.npmjs.org/exorelay/-/exorelay-0.16.2.tgz",
+      "version": "0.16.3",
+      "from": "exorelay@0.16.3",
+      "resolved": "https://registry.npmjs.org/exorelay/-/exorelay-0.16.3.tgz",
       "dependencies": {
         "accepts": {
           "version": "1.2.13",
@@ -452,7 +452,7 @@
         },
         "chalk": {
           "version": "1.1.1",
-          "from": "chalk@>=1.1.1 <2.0.0",
+          "from": "chalk@1.1.1",
           "resolved": "https://registry.npmjs.org/chalk/-/chalk-1.1.1.tgz"
         },
         "color-convert": {

@@ -34,7 +34,7 @@ Feature: Sending outgoing messages
       """
 
 
-  Scenario: sending a message with a Hash as payload
+  Scenario: sending a message with a populated Hash as payload
     When sending the "hello" message:
       """
       exo-relay.send 'hello', name: 'world'
@@ -47,6 +47,25 @@ Feature: Sending outgoing messages
         sender: 'test'
         payload:
           name: 'world'
+        id: '<%= request_uuid %>'
+      headers:
+        accept: 'application/json'
+        'content-type': 'application/json'
+      """
+
+
+  Scenario: sending a message with an empty Hash as payload
+    When sending the "hello" message:
+      """
+      exo-relay.send 'hello', {}
+      """
+    Then ExoRelay makes the request:
+      """
+      url: 'http://localhost:4100/send/hello'
+      method: 'POST'
+      body:
+        sender: 'test'
+        payload: {}
         id: '<%= request_uuid %>'
       headers:
         accept: 'application/json'
@@ -73,6 +92,25 @@ Feature: Sending outgoing messages
       """
 
 
+  Scenario: sending a message with an empty string as payload
+    When sending the "hello" message:
+      """
+      exo-relay.send 'hello', ''
+      """
+    Then ExoRelay makes the request:
+      """
+      url: 'http://localhost:4100/send/hello'
+      method: 'POST'
+      body:
+        sender: 'test'
+        payload: ''
+        id: '<%= request_uuid %>'
+      headers:
+        accept: 'application/json'
+        'content-type': 'application/json'
+      """
+
+
   Scenario: sending a message with an array as payload
     When sending the "hello" message:
       """
@@ -85,6 +123,25 @@ Feature: Sending outgoing messages
       body:
         sender: 'test'
         payload: [1, 2, 3]
+        id: '<%= request_uuid %>'
+      headers:
+        accept: 'application/json'
+        'content-type': 'application/json'
+      """
+
+
+  Scenario: sending a message with an empty array as payload
+    When sending the "hello" message:
+      """
+      exo-relay.send 'sum', []
+      """
+    Then ExoRelay makes the request:
+      """
+      url: 'http://localhost:4100/send/sum'
+      method: 'POST'
+      body:
+        sender: 'test'
+        payload: []
         id: '<%= request_uuid %>'
       headers:
         accept: 'application/json'

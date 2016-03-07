@@ -23,11 +23,11 @@ class MessageSender extends EventEmitter
   reply-method-for: (id) ->
     | !id  =>  return @emit 'error', new Error 'MessageSender.replyMethodFor needs a id'
 
-    (message-name, payload = {}) ~>
+    (message-name, payload) ~>
       @send message-name, payload, response-to: id
 
 
-  send: (message-name, payload = {}, options = {}) ->
+  send: (message-name, payload, options = {}) ->
     | !message-name                      =>  return @emit 'error', new Error 'ExoRelay#send cannot send empty messages'
     | typeof message-name isnt 'string'  =>  return @emit 'error', new Error 'ExoRelay#send can only send string messages'
     | typeof payload is 'function'       =>  return @emit 'error', new Error 'ExoRelay#send cannot send functions as payload'
@@ -40,7 +40,7 @@ class MessageSender extends EventEmitter
       body:
         sender: @service-name
         id: uuid.v1!
-    request-data.body.payload = payload unless is-empty payload
+    request-data.body.payload = payload if payload?
     request-data.body.response-to = options.response-to if options.response-to
     request request-data, (err, response, body) ->
       if err || (response?.status-code isnt 200)

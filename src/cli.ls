@@ -42,7 +42,9 @@ run = ->
           "#{receiver.name} (#{receiver.host}:#{receiver.port})"
         process.stdout.write "#{text.join ' + '}\n"
 
-    ..on 'message', ({message, sender, receivers}) -> console.log "#{sender} is broadcasting '#{message}' to the #{receivers.join ' and '}"
+    ..on 'message', ({message, receivers}) ->
+      console.log "#{message.sender} is broadcasting '#{message.name}' to the #{receivers.join ' and '}"
+      console.log message.payload
 
 
 options = docopt doc, help: no

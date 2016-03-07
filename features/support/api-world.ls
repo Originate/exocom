@@ -14,8 +14,7 @@ ApiWorld = !->
     @exocom = new ExoCom
       ..listen port
       ..on 'listening', -> done!
-      ..on 'message', ({sender, message, receivers}) ~>
-        @last-sender = sender
+      ..on 'message', ({message, receivers}) ~>
         @last-broadcasted-message = message
         @last-receivers = receivers
 
@@ -61,14 +60,14 @@ ApiWorld = !->
 
 
   @verify-exocom-broadcasted-message = ({sender, message, receivers} done) ->
-    wait-until (~> @last-broadcasted-message is message), 1, ~>
-      expect(@last-sender).to.eql sender
+    wait-until (~> @last-broadcasted-message.name is message), 1, ~>
+      expect(@last-broadcasted-message.sender).to.eql sender
       expect(@last-receivers).to.eql receivers
       done!
 
 
   @verify-exocom-broadcasted-reply = (message, done) ->
-    wait-until (~> @last-broadcasted-message is message), 1, done
+    wait-until (~> @last-broadcasted-message.name is message), 1, done
 
 
   @verify-routing-setup = (expected-routes, done) ->

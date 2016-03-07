@@ -51,7 +51,7 @@ class ExoCom extends EventEmitter
     subscriber-names = [subscriber.name for subscriber in subscribers]
     debug "sending '#{message-data.name}' to #{subscriber-names}"
     @message-sender.send-to-services message-data, subscribers
-    @emit 'message', {sender: message-data.sender, message: message-data.name, receivers: subscriber-names}
+    @emit 'message', {message: message-data, receivers: subscriber-names}
     'success'
 
 

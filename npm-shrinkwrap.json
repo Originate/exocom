@@ -376,9 +376,9 @@
       "resolved": "https://registry.npmjs.org/exocom-mock/-/exocom-mock-0.7.0.tgz"
     },
     "exorelay": {
-      "version": "0.16.1",
-      "from": "exorelay@0.16.1",
-      "resolved": "https://registry.npmjs.org/exorelay/-/exorelay-0.16.1.tgz",
+      "version": "0.16.2",
+      "from": "exorelay@0.16.2",
+      "resolved": "https://registry.npmjs.org/exorelay/-/exorelay-0.16.2.tgz",
       "dependencies": {
         "accepts": {
           "version": "1.2.13",
@@ -1100,9 +1100,9 @@
       "resolved": "https://registry.npmjs.org/gherkin/-/gherkin-2.12.2.tgz"
     },
     "glob": {
-      "version": "7.0.0",
+      "version": "7.0.3",
       "from": "glob@>=7.0.0 <8.0.0",
-      "resolved": "https://registry.npmjs.org/glob/-/glob-7.0.0.tgz"
+      "resolved": "https://registry.npmjs.org/glob/-/glob-7.0.3.tgz"
     },
     "graceful-fs": {
       "version": "4.1.3",

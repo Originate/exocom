@@ -24,7 +24,7 @@
     "mocha-circleci-reporter": "0.0.1",
     "o-tools": "0.1.4",
     "observable-process": "0.8.1",
-    "port-reservation": "0.3.1",
+    "port-reservation": "0.3.2",
     "prelude-ls": "1.1.2",
     "record-http": "0.6.0",
     "wait": "0.1.0"

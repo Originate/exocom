@@ -1,4 +1,5 @@
 require! {
+  'chalk' : {bold, red}
   'debug'
   'events' : {EventEmitter}
 }
@@ -26,7 +27,12 @@ class HandlerRegistry extends EventEmitter
   handle-command: ({message-name, payload}, methods) ->
     if handler = @get-handler message-name
       debug "handling message '#{message-name}'"
-      handler payload, methods
+      try
+        handler payload, methods
+      catch
+        console.log "\n#{red bold e.message}\n"
+        console.log e.stack
+        throw e
     !!handler
 
 
@@ -35,7 +41,12 @@ class HandlerRegistry extends EventEmitter
   handle-reply: ({message-name, response-to, payload}) ->
     if handler = @get-handler response-to
       debug "handling message '#{message-name}' in response to '#{response-to}'"
-      handler payload, outcome: message-name
+      try
+        handler payload, outcome: message-name
+      catch
+        console.log "\n#{red bold e.message}\n"
+        console.log e.stack
+        throw e
     !!handler
 
 

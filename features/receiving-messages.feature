@@ -90,6 +90,24 @@ Feature: Receiving messages
 
   # ERROR CHECKING
 
+
+  Scenario: a handler throws an exception
+    Given I register a handler for the "sum" message:
+      """
+      exo-relay.register-handler 'boom', ->
+        throw new Error 'boom!'
+      """
+    When receiving this message via the incoming request:
+      """
+      url: 'http://localhost:4000/run/boom',
+      method: 'POST'
+      body:
+        id: '123'
+      """
+    Then ExoRelay returns a 500 response
+
+
+
   Scenario: missing incoming message
     When receiving this message via the incoming request:
       """

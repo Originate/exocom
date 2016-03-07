@@ -1,6 +1,6 @@
 {
   "name": "exoservice",
-  "version": "0.14.1",
+  "version": "0.14.2",
   "dependencies": {
     "accepts": {
       "version": "1.2.13",

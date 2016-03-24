@@ -14,7 +14,7 @@ find-server-path = (root, done) ->
     | !err  =>  return done path.join(process.cwd!, root, 'server.ls')
     fs.stat path.join(process.cwd!, root, 'src', 'server.ls'), (err, stats) ->
       | !err  =>  return done path.join(process.cwd!, root, 'src', 'server.ls')
-      threw new Error "Cannot find server.ls file"
+      throw new Error "Cannot find server.ls file"
 
 
 load-service = (root = '', done) ->

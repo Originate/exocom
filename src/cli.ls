@@ -43,7 +43,7 @@ run = ->
         process.stdout.write "#{text.join ' + '}\n"
 
     ..on 'message', ({message, receivers}) ->
-      console.log "#{message.sender} is broadcasting '#{message.name}' to the #{receivers.join ' and '}"
+      console.log "#{message.sender}  --[ #{message.name} ]->  #{receivers.join ' and '}"
       console.log message.payload
 
 

@@ -70,6 +70,14 @@ ApiWorld = !->
     wait-until (~> @last-broadcasted-message.name is message), 1, done
 
 
+  @verify-exocom-signaled-string = (string, done) ->
+    [sender-name, _, _, message-name, _, _, receivers] = string.split ' '
+    wait-until (~> @last-broadcasted-message.name is message-name), 1, ~>
+      expect(@last-broadcasted-message.sender).to.eql sender-name
+      expect(@last-receivers).to.eql [receivers]
+      done!
+
+
   @verify-routing-setup = (expected-routes, done) ->
     jsdiff-console @exocom.get-config!routes, expected-routes, done
 

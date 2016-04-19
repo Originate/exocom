@@ -75,6 +75,10 @@ CliWorld = !->
     @process.wait "#{sender} is broadcasting '#{message}' to the #{receivers.join ', '}", done
 
 
+  @verify-exocom-signaled-string = (message, done) ->
+    @process.wait message, done
+
+
   @verify-exocom-received-message = (message, done) ->
     @process.wait "broadcasting '#{message}'", done
 

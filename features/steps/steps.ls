@@ -102,8 +102,8 @@ module.exports = ->
     @verify-service-setup services, done
 
 
-  @Then /^ExoCom signals that this message is sent from the ([^ ]+) to the (.+)$/, (sender-name, receiver-name, done) ->
-    @verify-exocom-broadcasted-message sender: sender-name, message: @last-sent-message, receivers: [receiver-name], done
+  @Then /^ExoCom signals "([^"]*)"$/, (message, done) ->
+    @verify-exocom-signaled-string message, done
 
 
   @Then /^ExoCom signals that this message was sent$/, (done) ->

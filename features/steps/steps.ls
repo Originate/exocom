@@ -84,12 +84,12 @@ module.exports = ->
 
 
 
-  @Then /^ExoCom broadcasts this message to the (.*?)$/, (service-name, done) ->
-    @verify-sent-calls {service-name, message: @last-sent-message, id: @last-sent-message-id}, done
+  @Then /^ExoCom broadcasts the message "([^"]*)" to the (.*?)$/, (message, service-name, done) ->
+    @verify-sent-calls {service-name, message: message, id: @last-sent-message-id}, done
 
 
-  @Then /^ExoCom broadcasts this reply to the (.+?)$/, (service-name, done) ->
-    @verify-sent-calls {service-name, message: @last-sent-message, response-to: '111'}, done
+  @Then /^ExoCom broadcasts the reply "([^"]*)" to the (.+?)$/, (message, service-name, done) ->
+    @verify-sent-calls {service-name, message: message, response-to: '111'}, done
 
 
 

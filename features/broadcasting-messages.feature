@@ -21,11 +21,11 @@ Feature: Broadcasting messages
   Scenario: broadcasting a message
     When the web-server sends "create-user"
     Then ExoCom signals "web-server  --[ create-user ]->  users-service"
-    And ExoCom broadcasts this message to the users-service
+    And ExoCom broadcasts the message "create-user" to the users-service
 
 
   Scenario: broadcasting a reply
     Given the web-server sends "create-user" with id "111"
     When the users-service sends "created-user" in reply to "111"
     Then ExoCom signals "users-service  --[ created-user ]->  web-server"
-    And ExoCom broadcasts this reply to the web-server
+    And ExoCom broadcasts the reply "created-user" to the web-server

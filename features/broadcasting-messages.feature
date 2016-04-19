@@ -10,22 +10,22 @@ Feature: Broadcasting messages
 
 
   Background:
-    Given a "web-server" instance running at port 3001
-    And a "users-service" instance running at port 3002
+    Given a "web" instance running at port 3001
+    And a "users" instance running at port 3002
     And an ExoCom instance configured for the service landscape:
-      | NAME          | TYPE          | HOST      | PORT | SENDS        | RECEIVES     |
-      | web-server    | web-server    | localhost | 3001 | create-user  | created-user |
-      | users-service | users-service | localhost | 3002 | created-user | create-user  |
+      | NAME  | INTERNAL NAMESPACE | HOST      | PORT | SENDS        | RECEIVES     |
+      | web   | web                | localhost | 3001 | create-user  | created-user |
+      | users | users              | localhost | 3002 | created-user | create-user  |
 
 
   Scenario: broadcasting a message
-    When the "web-server" service sends "create-user"
-    Then ExoCom signals "web-server  --[ create-user ]->  users-service"
-    And ExoCom broadcasts the message "create-user" to the "users-service" service
+    When the "web" service sends "create-user"
+    Then ExoCom signals "web  --[ create-user ]->  users"
+    And ExoCom broadcasts the message "create-user" to the "users" service
 
 
   Scenario: broadcasting a reply
-    Given the "web-server" service sends "create-user" with id "111"
-    When the "users-service" service sends "created-user" in reply to "111"
-    Then ExoCom signals "users-service  --[ created-user ]->  web-server"
-    And ExoCom broadcasts the reply "created-user" to the "web-server" service
+    Given the "web" service sends "create-user" with id "111"
+    When the "users" service sends "created-user" in reply to "111"
+    Then ExoCom signals "users  --[ created-user ]->  web"
+    And ExoCom broadcasts the reply "created-user" to the "web" service

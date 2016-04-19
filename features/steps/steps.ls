@@ -46,7 +46,7 @@ module.exports = ->
       @existing-server = http.create-server(handler).listen port, done
 
 
-  @Given /^the ([^ ]+) sends "([^"]*)" with id "([^"]*)"$/, (service, message, id, done) ->
+  @Given /^the "([^"]+)" service sends "([^"]*)" with id "([^"]*)"$/, (service, message, id, done) ->
     @last-sent-message = message
     @last-sent-message-id = id
     @service-sends-message {service, message, id}, done
@@ -73,22 +73,22 @@ module.exports = ->
     @set-service-landscape data, done
 
 
-  @When /^the (.+?) sends "([^"]*)"$/, (service, message, done) ->
+  @When /^the "([^"]+)" service sends "([^"]*)"$/, (service, message, done) ->
     @last-sent-message = message
     @service-sends-message {service, message}, done
 
 
-  @When /^the (.+)? sends "([^"]*)" in reply to "([^"]*)"$/, (service, reply-message, response-to, done) ->
+  @When /^the "([^"]+)" service sends "([^"]*)" in reply to "([^"]*)"$/, (service, reply-message, response-to, done) ->
     @last-sent-message = reply-message
     @service-sends-reply {service, message: reply-message, response-to}, done
 
 
 
-  @Then /^ExoCom broadcasts the message "([^"]*)" to the (.*?)$/, (message, service-name, done) ->
+  @Then /^ExoCom broadcasts the message "([^"]*)" to the "([^"]+)" service$/, (message, service-name, done) ->
     @verify-sent-calls {service-name, message: message, id: @last-sent-message-id}, done
 
 
-  @Then /^ExoCom broadcasts the reply "([^"]*)" to the (.+?)$/, (message, service-name, done) ->
+  @Then /^ExoCom broadcasts the reply "([^"]*)" to the "([^"]+)" service$/, (message, service-name, done) ->
     @verify-sent-calls {service-name, message: message, response-to: '111'}, done
 
 

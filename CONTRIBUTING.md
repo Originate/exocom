@@ -1,5 +1,41 @@
 # ExoCom Guidelines
 
+## APIs
+
+Exocom can be used via 2 separate APIs.
+
+
+### Command-line API
+
+This is the main way to use ExoComDev by end users (Exosphere developers).
+
+```
+$ exocom
+```
+
+The default port is 3100. To run it at another port:
+
+```
+$ exocom --port <port number>
+```
+
+More details around configuring the port [here](features/configuring-the-port.feature).
+
+
+### JavaScript API
+
+You can integrate Exocom into your own NodeJS application through its JavaScript API.
+The [CLI](src/cli.ls) is implemented using the JavaScript API.
+
+```livescript
+new ExoCom
+  ..on 'error', (err) -> # boo!
+  ..on 'listening', (port) -> # woohoo!
+  ..listen 3100
+```
+
+
+## Functionality
 
 ## Architecture
 

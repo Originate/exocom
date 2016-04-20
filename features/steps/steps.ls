@@ -120,7 +120,7 @@ module.exports = ->
   @Then /^it has this routing table:$/, (table, done) ->
     expected-routes = {}
     for row in table.hashes!
-      eval livescript.compile "receiver-json = #{row.RECEIVERS}", bare: yes, header: no
+      eval livescript.compile "receiver-json = {#{row.RECEIVERS}}", bare: yes, header: no
       expected-routes[row.MESSAGE] =
         receivers: [receiver-json]
     @verify-routing-setup expected-routes, done

@@ -33,6 +33,6 @@ Feature: Configuring services
       | service 1 | foo                | localhost | 3001 |
       | service 2 | bar                | localhost | 3002 |
     And it has this routing table:
-      | MESSAGE   | SENDERS   | RECEIVERS                                                                     |
-      | message-1 | service 1 | {name: 'service 2', internal-namespace: 'bar', host: 'localhost', port: 3002} |
-      | message-2 | service 2 | {name: 'service 1', internal-namespace: 'foo', host: 'localhost', port: 3001} |
+      | MESSAGE   | SENDERS   | RECEIVERS                                                                   |
+      | message-1 | service 1 | name: 'service 2', internal-namespace: 'bar', host: 'localhost', port: 3002 |
+      | message-2 | service 2 | name: 'service 1', internal-namespace: 'foo', host: 'localhost', port: 3001 |

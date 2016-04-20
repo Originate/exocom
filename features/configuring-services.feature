@@ -4,7 +4,6 @@ Feature: Configuring services
   I want be able to tell ExoCom my current service setup
   So that it can send them messages.
 
-  Rules:
   - only the Exosphere environment can tell ExoCom about the current service layout
   - this is done via a POST request to "/config"
 

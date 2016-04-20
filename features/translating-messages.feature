@@ -1,14 +1,13 @@
 Feature: Translating messages
 
   As an ExoService developer
-  I want to be able to add a domain-specific API on top of generic off-the-shelf services
-  So that I can quickly plug together applications without copy-and-pasting code around.
+  I want to be able to use generic off-the-shelf services with a domain-specific API
+  So that I can quickly plug together application prototypes without copy-and-pasting code around.
 
-  Rules:
   - when a broadcasted message is delivered to a service,
-    the service name is replaced with the service type in the message name
+    the service name in the message name is replaced with the service type
   - when a service broadcasts a message,
-    ExoCom replaces the service type with the service name
+    Exocom replaces the service type with the external service name
 
 
   Background:

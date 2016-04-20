@@ -4,7 +4,6 @@ Feature: Broadcasting messages
   I want to broadcast messages to other services
   So that I can communicate with them.
 
-  Rules:
   - to broadcast a message, post to /send
   - ExoCom sends the message to all subscribed services
 

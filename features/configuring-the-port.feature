@@ -4,7 +4,6 @@ Feature: configuring the port
   I want to be able to boot ExoCom at various ports
   So that I have flexibility in testing my system.
 
-  Rules:
   - the default port is 3100
   - provide the "--port" command-line switch to boot up at a custom port
 

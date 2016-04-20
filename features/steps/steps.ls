@@ -62,16 +62,9 @@ module.exports = ->
       done!
 
 
-  @When /^setting this service landscape:$/, (table, done) ->
-    data = for service in table.hashes!
-      {
-        name: service.NAME
-        host: service.HOST
-        port: +service.PORT
-        sends: service.SENDS.split(',')
-        receives: service.RECEIVES.split(' ')
-      }
-    @set-service-landscape data, done
+  @When /^sending the service configuration:$/, (config-text, done) ->
+    eval livescript.compile "config = \n#{config-text.replace /^/gm, '  '}", bare: yes, header: no
+    @set-service-landscape config, done
 
 
   @When /^the "([^"]+)" service sends "([^"]*)"$/, (service, message, done) ->
@@ -98,6 +91,7 @@ module.exports = ->
     for row in table.hashes!
       services[row.NAME] =
         name: row.NAME
+        internal-namespace: row['INTERNAL NAMESPACE']
         host: row.HOST
         port: +row.PORT
     @verify-service-setup services, done

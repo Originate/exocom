@@ -13,15 +13,26 @@ Feature: Configuring services
 
 
   Scenario: setting the service configuration
-    When setting this service landscape:
-      | NAME      | HOST      | PORT | SENDS     | RECEIVES  |
-      | service 1 | localhost | 3001 | message-1 | message-2 |
-      | service 2 | localhost | 3002 | message-2 | message-1 |
+    When sending the service configuration:
+      """
+      * name: 'service 1'
+        internal-namespace: 'foo'
+        host: 'localhost'
+        port: 3001
+        sends: ['message-1']
+        receives: ['message-2']
+      * name: 'service 2'
+        internal-namespace: 'bar'
+        host: 'localhost'
+        port: 3002
+        sends: ['message-2']
+        receives: ['message-1']
+      """
     Then ExoCom now knows about these services:
-      | NAME      | HOST      | PORT |
-      | service 1 | localhost | 3001 |
-      | service 2 | localhost | 3002 |
+      | NAME      | INTERNAL NAMESPACE | HOST      | PORT |
+      | service 1 | foo                | localhost | 3001 |
+      | service 2 | bar                | localhost | 3002 |
     And it has this routing table:
-      | MESSAGE   | SENDERS   | RECEIVERS                                          |
-      | message-1 | service 1 | {name: 'service 2', host: 'localhost', port: 3002} |
-      | message-2 | service 2 | {name: 'service 1', host: 'localhost', port: 3001} |
+      | MESSAGE   | SENDERS   | RECEIVERS                                                                     |
+      | message-1 | service 1 | {name: 'service 2', internal-namespace: 'bar', host: 'localhost', port: 3002} |
+      | message-2 | service 2 | {name: 'service 1', internal-namespace: 'foo', host: 'localhost', port: 3001} |

@@ -59,25 +59,8 @@ as a set of one or more classes.
 ## Configuring the routes
 
 To provide the routing information to Exocom,
-do a POST request to `http://localhost:<exocom-port>/services` with the payload:
-
-```
-[
-  {
-    "name": "my service",
-    "internal-namespace": "foobar",
-    "host": "localhost",
-    "port": 3200,
-    "sends": ["command 1", "command 2"],
-    "receives": ["command 3", "command 4"]
-  },
-  {
-    "name": "my other service",
-    ...
-  }
-]
-```
-
+do a POST request to `http://localhost:<exocom-port>/services`
+with the payload described [here](features/configuring-services.feature).
 
 
 ## Testing

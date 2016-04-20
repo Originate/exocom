@@ -14,11 +14,6 @@ without production-grade features like persistence or horizontal scalability.
 * optional [translating](features/translating-messages.feature) of messages along the way
 
 
-## Architecture
-
-<img src="documentation/architecture.gif">
-
-
 ## Distribution
 
 This implementation is bundled into the

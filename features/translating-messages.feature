@@ -1,4 +1,4 @@
-Feature: Broadcasting messages
+Feature: Translating messages
 
   As an ExoService developer
   I want to be able to add a domain-specific API on top of generic off-the-shelf services
@@ -12,22 +12,21 @@ Feature: Broadcasting messages
 
 
   Background:
-    Given a "web-server" instance running at port 3001
-    And a "users-service" instance running at port 3002
+    Given a "web" instance running at port 3001
+    And a "tweets" instance running at port 3002
     And an ExoCom instance configured for the service landscape:
-      | NAME   | TYPE             | HOST      | PORT | SENDS            | RECEIVES        |
-      | web    | web-server       | localhost | 3001 | tweets.create    | tweets.created  |
-      | tweets | snippets-service | localhost | 3002 | snippets.created | snippets.create |
+      | NAME   | INTERNAL NAMESPACE | HOST      | PORT | SENDS                | RECEIVES            |
+      | web    |                    | localhost | 3001 | tweets.create        | tweets.created      |
+      | tweets | text-snippets      | localhost | 3002 | text-snippet.created | text-snippet.create |
 
 
-  Scenario: broadcasting a message
-    When the web-server sends "tweets.create"
-    Then ExoCom signals that this message is sent from the "web" service to the "tweets" service
-    And ExoCom broadcasts the message "snippets.create" to the "tweets" service
+  Scenario: translating a message
+    When the "web" service sends "tweets.create"
+    Then ExoCom signals "web  --[ tweets.create ]-[ text-snippets.create ]->  tweets"
+    And ExoCom broadcasts the message "text-snippets.create" to the "tweets" service
 
 
-  Scenario: broadcasting a reply
-    Given the web-server sends "tweets.create" with id "111"
-    When the users-service sends "snippets.created" in reply to "111"
-    Then ExoCom signals that this reply is sent from the "tweets" to the "web-server" service
-    And ExoCom broadcasts this reply to the web-server
+  Scenario: translating a reply
+    When the "tweets" service sends "text-snippets.created" in reply to "111"
+    Then ExoCom signals "tweets  --[ text-snippets.created ]-[ tweets.created ]->  web"
+    And ExoCom broadcasts the reply "tweets.created" to the "web" service

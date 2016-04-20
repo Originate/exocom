@@ -42,9 +42,13 @@ run = ->
           "#{receiver.name} (#{receiver.host}:#{receiver.port})"
         process.stdout.write "#{text.join ' + '}\n"
 
-    ..on 'message', ({message, receivers}) ->
-      console.log "#{message.sender}  --[ #{message.name} ]->  #{receivers.join ' and '}"
-      console.log message.payload
+    ..on 'message', ({messages, receivers}) ->
+      for message in messages
+        if message.name is message.original-name
+          console.log "#{message.sender}  --[ #{message.name} ]->  #{receivers.join ' and '}"
+        else
+          console.log "#{message.sender}  --[ #{message.original-name} ]-[ #{message.name} ]->  #{receivers.join ' and '}"
+        console.log message.payload
 
 
 options = docopt doc, help: no

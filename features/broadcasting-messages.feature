@@ -25,7 +25,6 @@ Feature: Broadcasting messages
 
 
   Scenario: broadcasting a reply
-    Given the "web" service sends "create-user" with id "111"
     When the "users" service sends "created-user" in reply to "111"
     Then ExoCom signals "users  --[ created-user ]->  web"
     And ExoCom broadcasts the reply "created-user" to the "web" service

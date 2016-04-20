@@ -47,11 +47,22 @@ class ExoCom extends EventEmitter
 
   # sends the given message to all subscribers of it.
   send-message: (message-data) ~>
-    subscribers = @client-registry.subscribers-to message-data.name
+
+    # convert the outgoing message name from its internal version to the public version
+    sender = @client-registry.clients[message-data.sender]
+    external-message-name = @client-registry.outgoing-message-name message-data.name, sender
+    message-data.original-name = message-data.name
+    message-data.name = external-message-name
+
+    # determine the subscribers
+    subscribers = @client-registry.subscribers-to external-message-name
     subscriber-names = [subscriber.name for subscriber in subscribers]
+
+    # send the message to the subscribers
     debug "sending '#{message-data.name}' to #{subscriber-names}"
-    @message-sender.send-to-services message-data, subscribers
-    @emit 'message', {message: message-data, receivers: subscriber-names}
+    sent-messages = @message-sender.send-to-services message-data, subscribers
+    @emit 'message', messages: sent-messages, receivers: subscriber-names
+
     'success'
 
 

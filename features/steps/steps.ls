@@ -32,6 +32,7 @@ module.exports = ->
           data = for service in table.hashes!
             {
               name: service.NAME
+              internal-namespace: service['INTERNAL NAMESPACE']
               host: service.HOST
               port: +service.PORT
               sends: service.SENDS.split(',')
@@ -92,11 +93,11 @@ module.exports = ->
     @verify-sent-calls {service-name, message: message, response-to: '111'}, done
 
 
-
   @Then /^ExoCom now knows about these services:$/, (table, done) ->
     services = {}
     for row in table.hashes!
       services[row.NAME] =
+        name: row.NAME
         host: row.HOST
         port: +row.PORT
     @verify-service-setup services, done

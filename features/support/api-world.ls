@@ -14,8 +14,8 @@ ApiWorld = !->
     @exocom = new ExoCom
       ..listen port
       ..on 'listening', -> done!
-      ..on 'message', ({message, receivers}) ~>
-        @last-broadcasted-message = message
+      ..on 'message', ({messages, receivers}) ~>
+        @last-sent-messages = messages
         @last-receivers = receivers
 
 
@@ -23,7 +23,7 @@ ApiWorld = !->
     @receivers or= {}
     @receivers[name] = new HttpRecorder name
       ..listen port, done
-      ..on 'receive', (@last-broadcasted-message, name) ~>
+      ..on 'receive', (@last-received-message, name) ~>
 
 
   @run-exocom-at-port = (port, expect-error, done) ->
@@ -60,20 +60,25 @@ ApiWorld = !->
 
 
   @verify-exocom-broadcasted-message = ({sender, message, receivers} done) ->
-    wait-until (~> @last-broadcasted-message.name is message), 1, ~>
-      expect(@last-broadcasted-message.sender).to.eql sender
+    wait-until (~> @last-sent-messages.name is message), 1, ~>
+      expect(@last-sent-messages.sender).to.eql sender
       expect(@last-receivers).to.eql receivers
       done!
 
 
   @verify-exocom-broadcasted-reply = (message, done) ->
-    wait-until (~> @last-broadcasted-message.name is message), 1, done
+    wait-until (~> @last-sent-messages.name is message), 1, done
 
 
   @verify-exocom-signaled-string = (string, done) ->
-    [sender-name, _, _, message-name, _, _, receivers] = string.split ' '
-    wait-until (~> @last-broadcasted-message.name is message-name), 1, ~>
-      expect(@last-broadcasted-message.sender).to.eql sender-name
+    [sender-name, message-names, receivers] = string.split '  '
+    message-name-parts = message-names.split ' '
+    switch message-name-parts.length
+      | 3  =>  [_, translated-name, _] = message-name-parts
+      | 5  =>  [_, original-name, _, translated-name, _] = message-name-parts
+      | _  =>  throw new Error "Unknown message name parts"
+    wait-until (~> @last-sent-messages[0].name is translated-name), 1, ~>
+      expect(@last-sent-messages[0].sender).to.eql sender-name
       expect(@last-receivers).to.eql [receivers]
       done!
 

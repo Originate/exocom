@@ -61,7 +61,7 @@ as a set of one or more classes.
 To provide the routing information to Exocom,
 do a POST request to `http://localhost:<exocom-port>/services` with the payload:
 
-```json
+```
 [
   {
     "name": "my service",
@@ -71,7 +71,10 @@ do a POST request to `http://localhost:<exocom-port>/services` with the payload:
     "sends": ["command 1", "command 2"],
     "receives": ["command 3", "command 4"]
   },
-  {}
+  {
+    "name": "my other service",
+    ...
+  }
 ]
 ```
 

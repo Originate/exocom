@@ -310,8 +310,8 @@
       "dependencies": {
         "jsbn": {
           "version": "0.0.0",
-          "from": "git+https://github.com/rynomad/jsbn.git#bb522b0124f75424f89d49446c40a87111942c7b",
-          "resolved": "git+https://github.com/rynomad/jsbn.git#bb522b0124f75424f89d49446c40a87111942c7b"
+          "from": "https://github.com/rynomad/jsbn.git#bb522b0124f75424f89d49446c40a87111942c7b",
+          "resolved": "https://github.com/rynomad/jsbn.git#bb522b0124f75424f89d49446c40a87111942c7b"
         }
       }
     },

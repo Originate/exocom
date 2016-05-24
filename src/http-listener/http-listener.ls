@@ -16,7 +16,6 @@ class HttpListener extends EventEmitter
   ({@set-services, @send-message, @get-config}) ->
     @app = express!
       ..use body-parser.json!
-      ..get  '/status.json', @_status-controller
       ..get  '/config.json', @_config-controller
       ..post '/services', @_set-services-controller
       ..post '/send/:message', @_send-controller
@@ -59,12 +58,6 @@ class HttpListener extends EventEmitter
       | 'missing request id'  =>  res.status(400).end 'missing request id'
       | 'unknown message'     =>  res.status(404).end "unknown message: '#{request-data.message}'"
       | _                     =>  throw new Error "unknown result code: '#{@result}'"
-
-
-  # returns data about the current status of ExoCom
-  _status-controller: (req, res) ~>
-    @get-config (config) ->
-      res.send JSON.stringify config
 
 
   _log: ({name, id, response-to}) ->

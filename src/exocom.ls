@@ -11,10 +11,7 @@ debug = require('debug')('exocom')
 class ExoCom extends EventEmitter
 
   ->
-    @http-listener = new HttpListener
-      ..on 'set-services', @set-services
-      ..on 'send-message', @send-message
-      ..on 'get-config', @get-config
+    @http-listener = new HttpListener {@set-services, @send-message, @get-config}
     @client-registry = new ClientRegistry
     @message-sender = new MessageSender
 

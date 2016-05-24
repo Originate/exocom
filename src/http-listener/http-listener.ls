@@ -13,7 +13,7 @@ debug = require('debug')('exocom:http-listener')
 # - listening: when it listens at the given port
 class HttpListener extends EventEmitter
 
-  ->
+  ({@set-services, @send-message, @get-config}) ->
     @app = express!
       ..use body-parser.json!
       ..get  '/status.json', @_status-controller
@@ -39,22 +39,22 @@ class HttpListener extends EventEmitter
 
 
   _config-controller: (req, res) ~>
-    config = @listeners('get-config')[0]!
+    config = @get-config!
     res
       ..send config
       ..end!
 
 
   _set-services-controller: (req, res) ~>
-    switch (result = @listeners('set-services')[0] req.body)
+    switch (result = @set-services req.body)
       | 'success'  =>  res.status(200).end!
-      | _          =>  throw new Error "unknown error"
+      | _          =>  throw new Error "unknown error: #{result}"
 
 
   _send-controller: (req, res) ~>
     request-data = @_parse-request req
     @_log request-data
-    switch (result = @listeners('send-message')[0] request-data)
+    switch (result = @send-message request-data)
       | 'success'             =>  res.status(200).end!
       | 'missing request id'  =>  res.status(400).end 'missing request id'
       | 'unknown message'     =>  res.status(404).end "unknown message: '#{request-data.message}'"
@@ -63,7 +63,7 @@ class HttpListener extends EventEmitter
 
   # returns data about the current status of ExoCom
   _status-controller: (req, res) ~>
-    @listeners('get-config')[0] (config) ->
+    @get-config (config) ->
       res.send JSON.stringify config
 
 

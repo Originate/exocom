@@ -821,6 +821,7 @@
     "o-tools": {
       "version": "0.1.4",
       "from": "o-tools@0.1.4",
+      "resolved": "https://registry.npmjs.org/o-tools/-/o-tools-0.1.4.tgz",
       "dependencies": {
         "ansi-escapes": {
           "version": "1.1.1",
@@ -2509,6 +2510,11 @@
           "resolved": "https://registry.npmjs.org/xtend/-/xtend-4.0.1.tgz"
         }
       }
+    },
+    "o-tools-livescript": {
+      "version": "1.0.3",
+      "from": "o-tools-livescript@latest",
+      "resolved": "https://registry.npmjs.org/o-tools-livescript/-/o-tools-livescript-1.0.3.tgz"
     },
     "oauth-sign": {
       "version": "0.8.1",

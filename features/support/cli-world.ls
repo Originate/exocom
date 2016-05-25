@@ -13,7 +13,7 @@ CliWorld = !->
                                      env: {SERVICE_NAME: service-name, EXORELAY_PORT: exorelay-port, EXOCOM_PORT: exocom-port},
                                      cwd: path.join(process.cwd!, 'features', 'example-apps', service-name),
                                      verbose: yes,
-                                     console: dim-console)
+                                     console: dim-console.console)
       ..wait 'online at port', done
 
 

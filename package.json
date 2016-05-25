@@ -19,7 +19,7 @@
     "chai": "3.5.0",
     "cucumber": "0.10.3",
     "dependency-lint": "4.0.1",
-    "dim-console": "0.1.0",
+    "dim-console": "0.3.2",
     "exocom-mock": "0.7.0",
     "o-tools": "0.3.1",
     "o-tools-livescript": "1.0.3",

@@ -46,7 +46,6 @@
     "url": "git+https://github.com/Originate/exorelay-js.git"
   },
   "scripts": {
-    "prepublish": "bin/build",
     "test": "bin/spec"
   }
 }

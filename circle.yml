@@ -10,7 +10,7 @@ machine:
 test:
 
   pre:
-    - bin/build
+    - node_modules/o-tools-livescript/bin/build
     - mkdir -p $CIRCLE_TEST_REPORTS/cucumber
 
   override:

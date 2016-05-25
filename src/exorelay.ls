@@ -1,8 +1,8 @@
 require! {
-  './message-manager' : HandlerManager
-  './message-sender' : MessageSender
+  './message-handler/message-manager' : HandlerManager
+  './message-sender/message-sender' : MessageSender
   'events' : {EventEmitter}
-  './http-listener' : HttpListener
+  './http-listener/http-listener' : HttpListener
   'rails-delegate' : {delegate, delegate-event}
 }
 debug = require('debug')('exorelay')

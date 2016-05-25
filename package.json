@@ -14,7 +14,7 @@
     "nitroglycerin": "1.1.1",
     "rails-delegate": "0.6.0"
   },
-  "description": "Opitionated framework to create Exosphere micro-services in Node.js",
+  "description": "Opinionated framework to create Exosphere micro-services in Node.js",
   "devDependencies": {
     "chai": "3.5.0",
     "cucumber": "0.9.5",

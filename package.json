@@ -1,6 +1,6 @@
 {
   "name": "exorelay",
-  "version": "0.16.3",
+  "version": "0.16.4",
   "author": "Kevin Goslar",
   "dependencies": {
     "body-parser": "1.15.1",

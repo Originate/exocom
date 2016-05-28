@@ -36,7 +36,6 @@
     "url": "git+https://github.com/Originate/exocom-mock-js.git"
   },
   "scripts": {
-    "prepublish": "bin/build",
     "test": "bin/spec"
   }
 }

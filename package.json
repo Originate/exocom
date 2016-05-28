@@ -17,6 +17,7 @@
   "devDependencies": {
     "chai": "3.5.0",
     "cucumber": "0.10.2",
+    "cucumber-snippets-livescript": "1.0.1",
     "dependency-lint": "4.0.1",
     "jsdiff-console": "1.3.0",
     "livescript": "1.4.0",

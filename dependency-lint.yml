@@ -4,22 +4,20 @@
 executedModules:
   npmScripts:
     dev:
-      - lint
       - publish
-      - test
-      - version
   shellScripts:
-    dev: []
+    dev:
+      - 'bin/*'
     ignore: []
-    root: ''
+    root: 'bin/*'
 
 ignoreErrors:
   missing: []
   shouldBeDependency: []
   shouldBeDevDependency: []
   unused:
-    - cucumber
-    - mocha
+    - cucumber-snippets-livescript
+    - mocha-circleci-reporter
     - o-tools
 
 requiredModules:

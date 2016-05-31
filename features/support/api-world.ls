@@ -48,7 +48,7 @@ ApiWorld = !->
 
 
   @set-service-landscape = (service-data, done) ->
-    result = @exocom.set-services service-data
+    result = @exocom.set-routing-config service-data
     expect(result).to.equal 'success'
     done!
 

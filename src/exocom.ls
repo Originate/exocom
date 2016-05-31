@@ -1,8 +1,8 @@
 require! {
   'events' : {EventEmitter}
-  './http-listener' : HttpListener
-  './client-registry' : ClientRegistry
-  './message-sender' : MessageSender
+  './http-listener/http-listener' : HttpListener
+  './client-registry/client-registry' : ClientRegistry
+  './message-sender/message-sender' : MessageSender
   'rails-delegate' : {delegate, delegate-event}
 }
 debug = require('debug')('exocom')
@@ -11,11 +11,11 @@ debug = require('debug')('exocom')
 class ExoCom extends EventEmitter
 
   ->
-    @http-listener = new HttpListener {@set-services, @send-message, @get-config}
+    @http-listener = new HttpListener @
     @client-registry = new ClientRegistry
     @message-sender = new MessageSender
 
-    delegate 'close' 'port', from: @, to: @http-listener
+    delegate 'close' 'listen' 'port', from: @, to: @http-listener
     delegate-event 'listening' 'error', from: @http-listener, to: @
 
 
@@ -27,17 +27,11 @@ class ExoCom extends EventEmitter
     }
 
 
-  # takes this instance online at the given port
-  listen: (port) ->
-    @http-listener.listen port
-    debug "listening at port #{port}"
-
-
   # registers the service with the given data
   # as a sender and receiver of messages
-  set-services: (service-data) ~>
-    debug 'receiving service data'
-    @client-registry.set-services service-data
+  set-routing-config: (routing-config) ~>
+    debug 'receiving routing config'
+    @client-registry.set-routing-config routing-config
     @emit 'routing-setup'
     'success'
 

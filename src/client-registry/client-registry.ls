@@ -41,7 +41,7 @@ class ClientRegistry
 
 
   # Sets the currently known service landscape to the given setup
-  set-services: (services) ->
+  set-routing-config: (services) ->
     @reset!
     for service in services
       @clients[service.name] =

@@ -13,11 +13,13 @@ debug = require('debug')('exocom:http-listener')
 # - listening: when it listens at the given port
 class HttpListener extends EventEmitter
 
-  ({@set-services, @send-message, @get-config}) ->
+  # This method receives an object that provides access to Exocom's API.
+  # It is used to call into other Exocom services.
+  (@exocom) ->
     @app = express!
       ..use body-parser.json!
       ..get  '/config.json', @_config-controller
-      ..post '/services', @_set-services-controller
+      ..post '/services', @_set-routing-config-controller
       ..post '/send/:message', @_send-controller
     @port = null
 
@@ -29,7 +31,7 @@ class HttpListener extends EventEmitter
 
 
   listen: (+@port) ->
-    | isNaN @port =>  @emit 'error', 'Non-numerical port provided to ExoRelay#listen'
+    | isNaN @port  =>  @emit 'error', 'Non-numerical port provided to ExoRelay#listen'
     @server = @app.listen @port
       ..on 'error', (err) ~>
         err = "port #{err.port} is already in use" if err.code is 'EADDRINUSE'
@@ -38,14 +40,14 @@ class HttpListener extends EventEmitter
 
 
   _config-controller: (req, res) ~>
-    config = @get-config!
+    config = @exocom.get-config!
     res
       ..send config
       ..end!
 
 
-  _set-services-controller: (req, res) ~>
-    switch (result = @set-services req.body)
+  _set-routing-config-controller: (req, res) ~>
+    switch (result = @exocom.set-routing-config req.body)
       | 'success'  =>  res.status(200).end!
       | _          =>  throw new Error "unknown error: #{result}"
 
@@ -53,7 +55,7 @@ class HttpListener extends EventEmitter
   _send-controller: (req, res) ~>
     request-data = @_parse-request req
     @_log request-data
-    switch (result = @send-message request-data)
+    switch (result = @exocom.send-message request-data)
       | 'success'             =>  res.status(200).end!
       | 'missing request id'  =>  res.status(400).end 'missing request id'
       | 'unknown message'     =>  res.status(404).end "unknown message: '#{request-data.message}'"

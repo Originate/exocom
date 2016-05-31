@@ -15,7 +15,7 @@ test:
     - mkdir -p $CIRCLE_TEST_REPORTS/cucumber
 
   override:
-    - bin/lint
+    - node_modules/o-tools/bin/lint
     - mocha --compilers ls:livescript "**/*spec.ls" --reporter mocha-circleci-reporter
     - bin/cuc-api --format json:$CIRCLE_TEST_REPORTS/cucumber/api.cucumber --format pretty
     - bin/cuc-cli --format json:$CIRCLE_TEST_REPORTS/cucumber/cli.cucumber --format pretty

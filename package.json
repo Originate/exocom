@@ -13,19 +13,19 @@
     "glob": "7.0.3",
     "livescript": "1.5.0",
     "nitroglycerin": "1.1.1",
-    "rails-delegate": "0.6.0"
+    "rails-delegate": "0.6.1"
   },
   "description": "Opinionated framework to create Exosphere micro-services in Node.js",
   "devDependencies": {
     "chai": "3.5.0",
-    "cucumber": "0.10.3",
+    "cucumber": "1.0.0",
     "cucumber-snippets-livescript": "1.0.1",
     "dependency-lint": "4.0.1",
     "dim-console": "0.3.2",
     "exocom-mock": "0.7.0",
-    "o-tools": "0.3.1",
-    "o-tools-livescript": "1.0.3",
-    "observable-process": "1.0.1",
+    "o-tools": "0.4.0",
+    "o-tools-livescript": "1.0.4",
+    "observable-process": "1.2.0",
     "record-http": "0.6.0",
     "request": "2.72.0",
     "wait": "0.1.0"

@@ -25,7 +25,7 @@ on-listening = (port) ->
   console.log "ExoCom #{version} online at port #{cyan port}"
 
 on-error = (err) ->
-  console.log red err
+  console.log red "Error: #{err}"
   process.exit 1
 
 

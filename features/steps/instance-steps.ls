@@ -25,13 +25,14 @@ module.exports = ->
 
   @Given /^an ExoRelay instance called "([^"]*)" listening at port (\d+)$/, (instance-name, port, done) ->
     @exo-relay = new ExoRelay {@exocom-port, service-name: 'test'}
-      ..on 'online', -> done!
+      ..on 'online', (@online-port) ~> done!
       ..on 'error', (@error) ~>
       ..listen port
 
 
   @Given /^an ExoRelay instance$/, ->
     @exo-relay = new ExoRelay {@exocom-port, service-name: 'test'}
+      ..on 'online', (@online-port) ~>
 
 
   @Given /^an ExoRelay instance listening at port (\d+)$/, (port, done) ->
@@ -51,6 +52,10 @@ module.exports = ->
     expect(@error).to.not.be.null
     expect(@error.message).to.equal message
     @error = null
+
+
+  @Then /^it emits the 'online' event with payload (\d+)$/ (payload) ->
+    expect(@online-port).to.equal payload
 
 
   @Then /^it throws the error "([^"]*)"$/, (expected-error) ->

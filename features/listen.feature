@@ -17,6 +17,7 @@ Feature: Listening
   Scenario: Setting up at the given port
     When I take it online at port 4001
     Then it is online at port 4001
+    And it emits the 'online' event with payload 4001
 
 
   # ERROR HANDLING

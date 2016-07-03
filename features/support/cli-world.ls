@@ -15,7 +15,7 @@ require! {
 CliWorld = !->
 
   @create-exocom-instance = ({port}, done) ->
-    @process = new ObservableProcess "bin/exocom --port #{@exocom-port}", verbose: yes, console: my-console
+    @process = new ObservableProcess "bin/exocom --port #{@exocom-port}", console: my-console
       ..wait "online at port #{port}", done
 
 
@@ -26,7 +26,7 @@ CliWorld = !->
 
 
   @run-exocom-at-port = (port, _expect-error, done) ->
-    @process = new ObservableProcess "bin/exocom --port #{port}", verbose: yes, console: my-console
+    @process = new ObservableProcess "bin/exocom --port #{port}", console: my-console
     done!
 
 
@@ -68,7 +68,7 @@ CliWorld = !->
 
   @verify-abort-with-message = (message, done) ->
     @process.wait message, ~>
-      wait-until (~> @process.crashed), done
+      wait-until (~> @process.ended), done
 
 
   @verify-exocom-broadcasted-message = ({message, sender, receivers}, done) ->

@@ -11,13 +11,13 @@
     "nitroglycerin": "1.1.1",
     "rails-delegate": "0.6.1",
     "remove-value": "1.0.0",
-    "zmq": "2.15.2"
+    "zmq": "2.15.3"
   },
   "description": "Development version of the Exosphere communication platform",
   "devDependencies": {
     "async": "2.0.0-rc.6",
     "chai": "3.5.0",
-    "cucumber": "1.2.0",
+    "cucumber": "1.2.1",
     "cucumber-snippets-livescript": "1.0.1",
     "dependency-lint": "4.0.2",
     "jsdiff-console": "2.2.1",
@@ -27,7 +27,7 @@
     "node-uuid": "1.4.7",
     "o-tools": "0.4.0",
     "o-tools-livescript": "1.0.4",
-    "observable-process": "2.0.0",
+    "observable-process": "2.1.0",
     "port-reservation": "0.3.2",
     "prelude-ls": "1.1.2",
     "record-http": "0.6.0",

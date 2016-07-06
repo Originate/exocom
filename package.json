@@ -8,14 +8,14 @@
     "lodash.isempty": "4.2.1",
     "node-uuid": "1.4.7",
     "rails-delegate": "0.6.1",
-    "zmq": "2.15.2"
+    "zmq": "^2.15.3"
   },
   "description": "Communication relay between JavaScript code bases and the Exosphere environment",
   "devDependencies": {
     "chai": "3.5.0",
-    "cucumber": "1.0.0",
+    "cucumber": "^1.2.1",
     "cucumber-snippets-livescript": "1.0.1",
-    "dependency-lint": "4.0.1",
+    "dependency-lint": "^4.0.2",
     "ejs": "2.4.2",
     "jsdiff-console": "2.2.1",
     "livescript": "1.5.0",
@@ -27,9 +27,9 @@
     "o-tools-livescript": "1.0.4",
     "portfinder": "1.0.3",
     "record-http": "0.6.0",
+    "request": "2.72.0",
     "sinon": "1.17.4",
-    "wait": "0.1.0",
-    "request": "2.72.0"
+    "wait": "0.1.0"
   },
   "engines": {
     "npm": ">= 3.0.0"

@@ -1,10 +1,30 @@
 require! {
-  'request'
+  'events' : {EventEmitter}
+  'zmq'
 }
 debug = require('debug')('exocom:message-sender')
 
 
-class MessageSender
+class MessageSender extends EventEmitter
+
+  ->
+    # Stores the service names and respective push socket
+    @service-sockets = {}
+
+  # Connects our outgoing socket to all existing services
+  bind-services: (services) ->
+    @clear-ports!
+    for service, params of services
+      @service-sockets[service] = zmq.socket 'push'
+        ..connect "tcp://#{params.host}:#{params.port}"
+
+
+  # Closes and deletes all existing push sockets
+  clear-ports: ->
+    for service, socket of @service-sockets
+      socket.close!
+      delete @service-sockets[service]
+
 
   # Sends the given message to the given services
   send-to-services: (message-data, services) ->
@@ -15,19 +35,16 @@ class MessageSender
   send-to-service: (message-data, service, done) ->
     translated-message-name = @_translate message-data.name, for: service
     request-data =
-      url: "http://localhost:#{service.port}/run/#{translated-message-name}"
-      method: 'POST'
-      body:
-        id: message-data.id
-        payload: message-data.payload
-      json: yes
-    request-data.body.response-to = message-data.response-to if message-data.response-to
+      name: translated-message-name
+      id: message-data.id
+      payload: message-data.payload
+    request-data.response-to = message-data.response-to if message-data.response-to
     @_log message-data, service
-    request request-data, done
+    @service-sockets[service.name].send JSON.stringify request-data
+    done?!
     result = {[key, value] for key, value of message-data}
     result.name = translated-message-name
     result
-
 
 
   _log: ({name, id, response-to}, service) ->

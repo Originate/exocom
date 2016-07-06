@@ -1,7 +1,7 @@
 require! {
-  'events' : {EventEmitter}
-  './http-listener/http-listener' : HttpListener
   './client-registry/client-registry' : ClientRegistry
+  'events' : {EventEmitter}
+  './listener-subsystem/listener-subsystem' : ListenerSubsystem
   './message-sender/message-sender' : MessageSender
   'rails-delegate' : {delegate, delegate-event}
 }
@@ -11,12 +11,13 @@ debug = require('debug')('exocom')
 class ExoCom extends EventEmitter
 
   ->
-    @http-listener = new HttpListener @
+    @listener-subsystem = new ListenerSubsystem @
     @client-registry = new ClientRegistry
     @message-sender = new MessageSender
 
-    delegate 'close' 'listen' 'port', from: @, to: @http-listener
-    delegate-event 'listening' 'error', from: @http-listener, to: @
+    delegate 'close' 'listen' 'zmqPort' 'httpPort', from: @, to: @listener-subsystem
+    delegate 'clearPorts', from: @, to: @message-sender
+    delegate-event 'zmq-bound' 'http-bound' 'error', from: @listener-subsystem, to: @
 
 
   # returns the current configuration of this ExoCom instance
@@ -27,11 +28,18 @@ class ExoCom extends EventEmitter
     }
 
 
+  # bind to the given port to send socket messages
+  listen: (ports) ->
+    @listener-subsystem.listen ports
+    debug "ZMQ bound at port #{ports.zmq-port}, HTTP listening at port #{ports.http-port}"
+
+
   # registers the service with the given data
   # as a sender and receiver of messages
   set-routing-config: (routing-config) ~>
-    debug 'receiving routing config'
+    debug 'receiving service setup'
     @client-registry.set-routing-config routing-config
+    @message-sender.bind-services @client-registry.clients
     @emit 'routing-setup'
     'success'
 

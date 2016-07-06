@@ -1,7 +1,9 @@
 require! {
+  'async'
   'chai' : {expect}
   'jsdiff-console'
   './my-console'
+  './mock-service': MockService
   'nitroglycerin' : N
   'observable-process' : ObservableProcess
   'record-http' : HttpRecorder
@@ -14,50 +16,50 @@ require! {
 # Provides steps for end-to-end testing of the service as a stand-alone binary
 CliWorld = !->
 
-  @create-exocom-instance = ({port}, done) ->
-    @process = new ObservableProcess "bin/exocom --port #{@exocom-port}", console: my-console
-      ..wait "online at port #{port}", done
+  @create-exocom-instance = (ports, done) ->
+    @exocom-http-port = ports.http-port
+    @exocom-zmq-port = ports.zmq-port
+    @process = new ObservableProcess "bin/exocom --zmq-port #{@exocom-zmq-port} --http-port #{@exocom-http-port}", console: my-console
+      ..wait "HTTP service online at port #{@exocom-http-port}", done
 
 
   @create-instance-at-port = (name, port, done) ->
-    @receivers or= {}
-    @receivers[name] = new HttpRecorder
-      ..listen port, done
+    (@service-mocks or= {})[name] = new MockService push-port: @exocom-zmq-port, pull-port: port
+    done!
 
 
-  @run-exocom-at-port = (port, _expect-error, done) ->
-    @process = new ObservableProcess "bin/exocom --port #{port}", console: my-console
+  @run-exocom-at-port = (ports, _expect-error, done) ->
+    command = "bin/exocom"
+    command += " --zmq-port #{ports.zmq-port}" if ports.zmq-port
+    command += " --http-port #{ports.http-port}" if ports.http-port
+    @process = new ObservableProcess command, console: my-console
     done!
 
 
   @service-sends-message = ({service, message}, done) ->
     request-data =
-      url: "http://localhost:#{@exocom-port}/send/#{message}",
-      method: 'POST'
-      body:
-        sender: service
-        payload: ''
-        id: '123'
-      json: yes
-    request request-data, done
+      sender: service
+      payload: ''
+      id: '123'
+      name: message
+    @service-mocks[service].send request-data
+    done!
 
 
   @service-sends-reply = ({service, message, response-to}, done) ->
     request-data =
-      url: "http://localhost:#{@exocom-port}/send/#{message}",
-      method: 'POST'
-      body:
-        sender: service
-        payload: ''
-        id: '123'
-        response-to: response-to
-      json: yes
-    request request-data, done
+      sender: service
+      payload: ''
+      id: '123'
+      response-to: response-to
+      name: message
+    @service-mocks[service].send request-data
+    done!
 
 
   @set-service-landscape = (service-data, done) ->
     request-data =
-      url: "http://localhost:#{@exocom-port}/services"
+      url: "http://localhost:#{@exocom-http-port}/services"
       method: 'POST'
       body: service-data
       json: yes
@@ -88,39 +90,37 @@ CliWorld = !->
 
 
   @verify-routing-setup = (expected-routing, done) ->
-    request "http://localhost:#{@exocom-port}/config.json", (err, result, body) ->
+    request "http://localhost:#{@exocom-http-port}/config.json", (err, result, body) ->
       expect(err).to.be.null
       expect(result.status-code).to.equal 200
       jsdiff-console JSON.parse(body).routes, expected-routing, done
 
 
-  @verify-runs-at-port = (port, done) ->
-    @process.wait "online at port #{port}", done
+  @verify-listening-at-ports = (ports, done) ->
+    messages = []
+    messages.push "ZMQ service online at port #{ports.zmq-port}" if ports.zmq-port
+    messages.push "HTTP service online at port #{ports.http-port}" if ports.http-port
+    async.each messages,
+               ((message, cb) ~> @process.wait message, cb),
+               done
 
 
-  @verify-sent-calls = ({service-name, message, response-to}, done) ->
-    service-receiver = @receivers[service-name]
-    condition = -> service-receiver.calls.length is 1
-    wait-until condition, 10, ~>
-      expected = [
-        url: "http://localhost:#{@ports[service-name]}/run/#{message}"
-        method: 'POST'
-        body:
-          id: '123'
-          payload: ''
-        headers:
-          accept: 'application/json'
-          'content-type': 'application/json'
-      ]
-      expected[0].body.response-to = response-to if response-to
-      jsdiff-console service-receiver.calls, expected, done
+  @verify-sent-calls = ({service-name, message, id = '123', response-to}, done) ->
+    wait-until (~> @service-mocks[service-name].received-messages[0]), 1, ~>
+      expected =
+        name: message
+        id: id
+        payload: ''
+      expected.response-to = response-to if response-to
+      jsdiff-console @service-mocks[service-name].received-messages[0], expected, done
 
 
   @verify-service-setup = (service-data, done) ->
-    request "http://localhost:#{@exocom-port}/config.json", (err, result, body) ->
+    request "http://localhost:#{@exocom-http-port}/config.json", (err, result, body) ->
       expect(err).to.be.null
       expect(result.status-code).to.equal 200
       jsdiff-console JSON.parse(body).services, service-data, done
+
 
 
 module.exports = ->

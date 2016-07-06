@@ -3,36 +3,35 @@ require! {
   './text-tools' : {ascii}
   'chai' : {expect}
   'jsdiff-console'
-  'record-http' : HttpRecorder
+  './mock-service' : MockService
   'wait' : {wait-until}
 }
 
 
 ApiWorld = !->
 
-  @create-exocom-instance = ({port}, done) ->
+  @create-exocom-instance = (ports, done) ->
     @exocom = new ExoCom
-      ..listen port
-      ..on 'listening', -> done!
+      ..on 'zmq-bound', ~> done!
       ..on 'message', ({messages, receivers}) ~>
         @last-sent-messages = messages
-        @last-receivers = receivers
+        @last-listeners = receivers
+      ..listen zmq-port: ports.zmq-port, http-port: ports.http-port
 
 
   @create-instance-at-port = (name, port, done) ->
-    @receivers or= {}
-    @receivers[name] = new HttpRecorder name
-      ..listen port, done
-      ..on 'receive', (@last-received-message, name) ~>
+    (@service-mocks or= {})[name] = new MockService push-port: null, pull-port: port
+    done!
 
 
-  @run-exocom-at-port = (port, expect-error, done) ->
+  @run-exocom-at-port = (options, expect-error, done) ->
     @exocom = new ExoCom
-      ..listen port
+    if options.http-port then port-event = 'http-bound' else port-event = 'zmq-bound'
     if expect-error
       @exocom.on 'error', (@err) ~> done!
     else
-      @exocom.on 'listening', -> done!
+      @exocom.on port-event , ~> done!
+    @exocom.listen zmq-port: (options.zmq-port or 4100), http-port: (options.http-port or 4101)
 
 
   @service-sends-message = ({service, message, id = '123'} = {}, done) ->
@@ -71,7 +70,7 @@ ApiWorld = !->
 
 
   @verify-exocom-signaled-string = (string, done) ->
-    [sender-name, message-names, receivers] = string.split '  '
+    [sender-name, message-names, listeners] = string.split '  '
     message-name-parts = message-names.split ' '
     switch message-name-parts.length
       | 3  =>  [_, translated-name, _] = message-name-parts
@@ -79,7 +78,7 @@ ApiWorld = !->
       | _  =>  throw new Error "Unknown message name parts"
     wait-until (~> @last-sent-messages[0].name is translated-name), 1, ~>
       expect(@last-sent-messages[0].sender).to.eql sender-name
-      expect(@last-receivers).to.eql [receivers]
+      expect(@last-listeners).to.eql [listeners]
       done!
 
 
@@ -89,30 +88,22 @@ ApiWorld = !->
 
   @verify-exocom-signals-broadcast = (message-name, done) ->
     @exocom.on message-name, (message, receivers) ->
-      console.log message
       done!
 
 
-  @verify-runs-at-port = (port, done) ->
-    expect(@exocom.port).to.equal port
+  @verify-listening-at-ports = ({zmq-port, http-port}, done) ->
+    expect(@exocom.zmq-port!).to.equal zmq-port if zmq-port
+    expect(@exocom.http-port!).to.equal http-port if http-port
     done!
 
 
   @verify-sent-calls = ({service-name, message, id = '123', response-to}, done) ->
-    service-receiver = @receivers[service-name]
-    condition = -> service-receiver.calls.length is 1
-    wait-until condition, 1, ~>
-      expected = [
-        url: "http://localhost:#{@ports[service-name]}/run/#{message}"
-        method: 'POST'
-        body:
-          id: id
-        headers:
-          accept: 'application/json'
-          'content-type': 'application/json'
-      ]
-      expected[0].body.response-to = response-to if response-to
-      jsdiff-console service-receiver.calls, expected, done
+    wait-until (~> @service-mocks[service-name].received-messages[0]), 1, ~>
+      expected =
+        name: message
+        id: id
+      expected.response-to = response-to if response-to
+      jsdiff-console @service-mocks[service-name].received-messages[0], expected, done
 
 
   @verify-service-setup = (expected-services, done) ->

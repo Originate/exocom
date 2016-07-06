@@ -6,7 +6,7 @@ module.exports = ->
   @After ->
     @existing-server?.close!
     @exocom?.close!
+    @exocom?.clearPorts!
     @process?.kill!
-    if @receivers
-      for name, receiver of @receivers
-        receiver.close!
+    for name, mock of @service-mocks or {}
+      mock.close!

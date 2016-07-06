@@ -4,17 +4,17 @@ Feature: Broadcasting messages
   I want to broadcast messages to other services
   So that I can communicate with them.
 
-  - to broadcast a message, post to /send
+  - to broadcast a message, send a ZMQ request to the ZMQ port of the ExoCom Instance
   - ExoCom sends the message to all subscribed services
 
 
   Background:
-    Given a "web" instance running at port 3001
-    And a "users" instance running at port 3002
-    And an ExoCom instance configured for the service landscape:
+    Given an ExoCom instance configured for the service landscape:
       | NAME  | INTERNAL NAMESPACE | HOST      | PORT | SENDS        | RECEIVES     |
       | web   | web                | localhost | 3001 | create-user  | created-user |
       | users | users              | localhost | 3002 | created-user | create-user  |
+    And a "web" instance running at port 3001
+    And a "users" instance running at port 3002
 
 
   Scenario: broadcasting a message

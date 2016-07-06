@@ -16,5 +16,6 @@ describe 'ExoCom', ->
 
 
     it 'allows to fire registered callbacks', (done) ->
-      @exocom.on 'test', done
-      @exocom.emit 'test'
+      @exocom
+        ..on 'test', done
+        ..emit 'test'

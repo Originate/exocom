@@ -11,12 +11,12 @@ Feature: Translating messages
 
 
   Background:
-    Given a "web" instance running at port 3001
-    And a "tweets" instance running at port 3002
-    And an ExoCom instance configured for the service landscape:
+    Given an ExoCom instance configured for the service landscape:
       | NAME   | INTERNAL NAMESPACE | HOST      | PORT | SENDS                | RECEIVES            |
       | web    |                    | localhost | 3001 | tweets.create        | tweets.created      |
       | tweets | text-snippets      | localhost | 3002 | text-snippet.created | text-snippet.create |
+    And a "web" instance running at port 3001
+    And a "tweets" instance running at port 3002
 
 
   Scenario: translating a message

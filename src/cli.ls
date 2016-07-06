@@ -1,5 +1,5 @@
 require! {
-  'chalk' : {cyan, dim, green, red}
+  'chalk' : {cyan, dim, green, red, magenta}
   'docopt' : {docopt}
   'nitroglycerin' : N
   '../package.json' : {name, version}
@@ -15,14 +15,18 @@ doc = """
 Provides Exosphere communication infrastructure services in development mode.
 
 Usage:
-  #{name} [--port=<port>]
+  #{name} [--zmq-port=<port>] [--http-port=<port>]
   #{name} -h | --help
   #{name} -v | --version
 """
 
-on-listening = (port) ->
+on-zmq-bound = (port) ->
   console.log dim "Ctrl-C to stop"
-  console.log "ExoCom #{version} online at port #{cyan port}"
+  console.log "ExoCom #{version} ZMQ service online at port #{cyan port}"
+
+on-http-bound = (port) ->
+  console.log dim "Ctrl-C to stop"
+  console.log "ExoCom #{version} HTTP service online at port #{magenta port}"
 
 on-error = (err) ->
   console.log red "Error: #{err}"
@@ -31,9 +35,10 @@ on-error = (err) ->
 
 run = ->
   exocom = new ExoCom!
-    ..listen options['--port']
-    ..on 'listening', on-listening
+    ..on 'zmq-bound', on-zmq-bound
+    ..on 'http-bound', on-http-bound
     ..on 'error', on-error
+    ..listen zmq-port: (options['--zmq-port'] or 4100), http-port: (options['--http-port'] or 4101)
     ..on 'routing-setup', ->
       console.log 'receiving routing setup:'
       for command, routing of exocom.client-registry.routes

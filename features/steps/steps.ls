@@ -14,21 +14,22 @@ module.exports = ->
 
   @Given /^a "([^"]*)" instance running at port (\d+)$/, (name, port, done) ->
     @create-instance-at-port name, port, done
-    (@ports or= {})[name] = port
 
 
   @Given /^an ExoCom instance$/, (done) ->
     port-reservation
       ..base-port = 5000
-      ..get-port N (@exocom-port) ~>
-        @create-exocom-instance port: @exocom-port, done
+      ..get-port N (@exocom-zmq-port) ~>
+      ..get-port N (@exocom-http-port) ~>
+        @create-exocom-instance zmq-port: @exocom-zmq-port, http-port: @exocom-http-port, done
 
 
   @Given /^an ExoCom instance configured for the service landscape:$/, (table, done) ->
     port-reservation
       ..base-port = 5000
-      ..get-port N (@exocom-port) ~>
-        @create-exocom-instance port: @exocom-port, ~>
+      ..get-port N (@exocom-zmq-port) ~>
+      ..get-port N (@exocom-http-port) ~>
+        @create-exocom-instance http-port:@exocom-http-port, zmq-port: @exocom-zmq-port, ~>
           data = for service in table.hashes!
             {
               name: service.NAME
@@ -53,8 +54,17 @@ module.exports = ->
     @service-sends-message {service, message, id}, done
 
 
-  @When /^I( try to)? run ExoCom at port (\d+)$/, (!!expect-error, +port, done) ->
-    @run-exocom-at-port port, expect-error, done
+
+  @When /^(I try )?starting ExoCom at ZMQ port (\d+)$/, (!!expect-error, +port, done) ->
+    @run-exocom-at-port zmq-port: port, http-port: null, expect-error, done
+
+
+  @When /^(I try )?starting ExoCom at HTTP port (\d+)$/, (!!expect-error, +port, done) ->
+    @run-exocom-at-port zmq-port: null, http-port: port, expect-error, done
+
+
+  @When /^I( try to)? run ExoCom$/, (!!expect-error, done) ->
+    @run-exocom-at-port zmq-port: null, http-port: null, expect-error, done
 
 
   @When /^requesting the routing information$/, (done) ->
@@ -126,5 +136,9 @@ module.exports = ->
     @verify-routing-setup expected-routes, done
 
 
-  @Then /^it runs at port (\d+)$/, (+port, done) ->
-    @verify-runs-at-port port, done
+  @Then /^it opens a ZMQ socket at port (\d+)$/, (+port, done) ->
+    @verify-listening-at-ports zmq-port: port, done
+
+
+  @Then /^it opens an HTTP listener at port (\d+)$/, (+port, done) ->
+    @verify-listening-at-ports http-port: port, done

@@ -6,6 +6,9 @@ machine:
   environment:
       MOCHA_FILE: "$CIRCLE_TEST_REPORTS/Mocha/test-results.xml"
 
+dependencies:
+  pre:
+    - bin/install-zeromq-circleci
 
 test:
 

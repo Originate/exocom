@@ -10,7 +10,7 @@ Feature: Sending outgoing replies to incoming messages
 
 
   Background:
-    Given ExoCom runs at port 4010
+    Given ExoCom runs at port 4100
     And an ExoRelay instance called "exo-relay" running inside the "test" service at port 4000
 
 
@@ -21,30 +21,22 @@ Feature: Sending outgoing replies to incoming messages
         # on this line we would create a user record with the given attributes in the database
         reply 'users.created', id: 456, name: user-attributes.name
       """
-    When receiving this message via the incoming request:
+    When receiving this message:
       """
-      url: 'http://localhost:4000/run/users.create'
-      method: 'POST'
-      body:
-        payload:
-          name: 'Will Riker'
-        id: '123'
+      name: 'users.create'
+      payload:
+        name: 'Will Riker'
+      id: '123'
       """
-    Then ExoRelay returns a 200 response
-    And my message handler replies with a "users.created" message sent via this outgoing request:
+    Then my message handler replies with the message:
       """
-      url: 'http://localhost:4010/send/users.created'
-      method: 'POST'
-      body:
-        sender: 'test'
-        payload:
-          id: 456
-          name: 'Will Riker'
-        id: '<%= request_uuid %>'
-        responseTo: '123'
-      headers:
-        accept: 'application/json'
-        'content-type': 'application/json'
+      name: 'users.created'
+      sender: 'test'
+      payload:
+        id: 456
+        name: 'Will Riker'
+      id: '<%= request_uuid %>'
+      response-to: '123'
       """
 
 
@@ -54,29 +46,16 @@ Feature: Sending outgoing replies to incoming messages
       exo-relay.register-handler 'ping', (_payload, {reply}) ->
         reply 'pong', 'from the test'
       """
-    When receiving this message via the incoming request:
+    When receiving this message:
       """
-      url: 'http://localhost:4000/run/ping'
-      method: 'POST'
-      body:
-        id: '123'
+      name: 'ping'
+      id: '123'
       """
-    Then ExoRelay returns a 200 response
-    And my message handler replies with a "users.created" message sent via this outgoing request:
+    Then my message handler replies with the message:
       """
-      url: 'http://localhost:4010/send/pong'
-      method: 'POST'
-      body:
-        sender: 'test'
-        payload: 'from the test'
-        id: '<%= request_uuid %>'
-        responseTo: '123'
-      headers:
-        accept: 'application/json'
-        'content-type': 'application/json'
+      name: 'pong'
+      sender: 'test'
+      payload: 'from the test'
+      id: '<%= request_uuid %>'
+      response-to: '123'
       """
-
-
-
-  # ERROR CHECKING
-  # the "reply" method calls "ExoRelay#send", so it is tested there.

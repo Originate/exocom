@@ -17,135 +17,99 @@ Feature: Sending outgoing messages
 
 
   Scenario: sending a message without payload
-    When sending the "hello" message:
+    When sending the message:
       """
       exo-relay.send 'hello-world'
       """
-    Then ExoRelay makes the request:
+    Then ExoRelay makes the ZMQ request:
       """
-      url: 'http://localhost:4100/send/hello-world'
-      method: 'POST'
-      body:
-        sender: 'test'
-        id: '<%= request_uuid %>'
-      headers:
-        accept: 'application/json'
-        'content-type': 'application/json'
+      name: 'hello-world'
+      sender: 'test'
+      id: '<%= request_uuid %>'
       """
 
 
   Scenario: sending a message with a populated Hash as payload
-    When sending the "hello" message:
+    When sending the message:
       """
       exo-relay.send 'hello', name: 'world'
       """
-    Then ExoRelay makes the request:
+    Then ExoRelay makes the ZMQ request:
       """
-      url: 'http://localhost:4100/send/hello'
-      method: 'POST'
-      body:
-        sender: 'test'
-        payload:
-          name: 'world'
-        id: '<%= request_uuid %>'
-      headers:
-        accept: 'application/json'
-        'content-type': 'application/json'
+      name: 'hello'
+      sender: 'test'
+      payload:
+        name: 'world'
+      id: '<%= request_uuid %>'
       """
 
 
   Scenario: sending a message with an empty Hash as payload
-    When sending the "hello" message:
+    When sending the message:
       """
       exo-relay.send 'hello', {}
       """
-    Then ExoRelay makes the request:
+    Then ExoRelay makes the ZMQ request:
       """
-      url: 'http://localhost:4100/send/hello'
-      method: 'POST'
-      body:
-        sender: 'test'
-        payload: {}
-        id: '<%= request_uuid %>'
-      headers:
-        accept: 'application/json'
-        'content-type': 'application/json'
+      name: 'hello'
+      sender: 'test'
+      payload: {}
+      id: '<%= request_uuid %>'
       """
 
 
   Scenario: sending a message with a string as payload
-    When sending the "hello" message:
+    When sending the message:
       """
       exo-relay.send 'hello', 'world'
       """
-    Then ExoRelay makes the request:
+    Then ExoRelay makes the ZMQ request:
       """
-      url: 'http://localhost:4100/send/hello'
-      method: 'POST'
-      body:
-        sender: 'test'
-        payload: 'world'
-        id: '<%= request_uuid %>'
-      headers:
-        accept: 'application/json'
-        'content-type': 'application/json'
+      name: 'hello'
+      sender: 'test'
+      payload: 'world'
+      id: '<%= request_uuid %>'
       """
-
 
   Scenario: sending a message with an empty string as payload
-    When sending the "hello" message:
+    When sending the message:
       """
       exo-relay.send 'hello', ''
       """
-    Then ExoRelay makes the request:
+    Then ExoRelay makes the ZMQ request:
       """
-      url: 'http://localhost:4100/send/hello'
-      method: 'POST'
-      body:
-        sender: 'test'
-        payload: ''
-        id: '<%= request_uuid %>'
-      headers:
-        accept: 'application/json'
-        'content-type': 'application/json'
+      name: 'hello'
+      sender: 'test'
+      payload: ''
+      id: '<%= request_uuid %>'
       """
 
 
   Scenario: sending a message with an array as payload
-    When sending the "hello" message:
+    When sending the message:
       """
       exo-relay.send 'sum', [1, 2, 3]
       """
-    Then ExoRelay makes the request:
+    Then ExoRelay makes the ZMQ request:
       """
-      url: 'http://localhost:4100/send/sum'
-      method: 'POST'
-      body:
-        sender: 'test'
-        payload: [1, 2, 3]
-        id: '<%= request_uuid %>'
-      headers:
-        accept: 'application/json'
-        'content-type': 'application/json'
+      name: 'sum'
+      sender: 'test'
+      payload: [1, 2, 3]
+      id: '<%= request_uuid %>'
       """
 
 
   Scenario: sending a message with an empty array as payload
-    When sending the "hello" message:
+    When sending the message:
       """
       exo-relay.send 'sum', []
       """
-    Then ExoRelay makes the request:
+    Then ExoRelay makes the ZMQ request:
       """
-      url: 'http://localhost:4100/send/sum'
-      method: 'POST'
-      body:
-        sender: 'test'
-        payload: []
-        id: '<%= request_uuid %>'
-      headers:
-        accept: 'application/json'
-        'content-type': 'application/json'
+      name: 'sum'
+      sender: 'test'
+      payload: []
+      id: '<%= request_uuid %>'
       """
 
 
@@ -154,7 +118,7 @@ Feature: Sending outgoing messages
       """
       exo-relay.send ''
       """
-    Then ExoRelay emits an "error" event with the message "ExoRelay#send cannot send empty messages"
+    Then ExoRelay emits an "error" event with the error "ExoRelay#send cannot send empty messages"
 
 
   Scenario: trying to send a non-string message
@@ -162,7 +126,7 @@ Feature: Sending outgoing messages
       """
       exo-relay.send []
       """
-    Then ExoRelay emits an "error" event with the message "ExoRelay#send can only send string messages"
+    Then ExoRelay emits an "error" event with the error "ExoRelay#send can only send string messages"
 
 
   Scenario: forgetting to provide the payload when providing a reply handler
@@ -170,4 +134,4 @@ Feature: Sending outgoing messages
       """
       exo-relay.send 'test', ->
       """
-    Then ExoRelay emits an "error" event with the message "ExoRelay#send cannot send functions as payload"
+    Then ExoRelay emits an "error" event with the error "ExoRelay#send cannot send functions as payload"

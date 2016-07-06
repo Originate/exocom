@@ -24,4 +24,4 @@ Feature: Listening
 
   Scenario: providing a non-number as the port
     When I try to take it online at port "zonk"
-    Then ExoRelay emits an "error" event with the message "Non-numerical port provided to ExoRelay#listen"
+    Then ExoRelay emits an "error" event with the error "Non-numerical port provided to ExoRelay#listen"

@@ -2,13 +2,16 @@ require! {
   '../..' : ExoRelay
   'chai' : {expect}
   'record-http' : HttpRecorder
+  'zmq'
 }
 
 
 module.exports = ->
 
-  @Given /^ExoCom runs at port (\d+)$/, (@exocom-port, done) ->
-    @exocom = new HttpRecorder!listen @exocom-port, done
+  @Given /^ExoCom runs at port (\d+)$/, (@exocom-port) ->
+    @exocom-listener = zmq.socket 'pull'
+      ..bind-sync "tcp://*:#{@exocom-port}"
+      ..on 'message' (data) ~> @exorelay-message = JSON.parse data.to-string!
 
 
 
@@ -21,6 +24,7 @@ module.exports = ->
       @exo-relay = new ExoRelay service-name: 'test'
     catch
       @error = e.message
+
 
 
   @Then /^this instance uses the ExoCom port (\d+)$/, (+port) ->

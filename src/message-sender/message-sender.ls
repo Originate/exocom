@@ -2,7 +2,7 @@ require! {
   'events' : {EventEmitter}
   'lodash.isempty' : is-empty
   'node-uuid' : uuid
-  'request'
+  'zmq'
 }
 debug = require('debug')('exorelay:message-sender')
 
@@ -13,13 +13,20 @@ class MessageSender extends EventEmitter
   ({@service-name, @exocom-port} = {}) ->
 
     @exocom-port = +@exocom-port
+    throw new Error 'ExoCom port not provided' unless @exocom-port
+    @socket = zmq.socket 'push'
+      ..connect "tcp://localhost:#{@exocom-port}"
 
     # Contains the id of the most recently sent request (for testing)
     @last-sent-id = null
 
 
+  # Closes the port that ExoRelay is sending messages on
+  close-port: ->
+    @socket.close!
+
+
   # Returns a method that sends a reply to the message with the given request
-  #
   reply-method-for: (id) ->
     | !id  =>  return @emit 'error', new Error 'MessageSender.replyMethodFor needs a id'
 
@@ -34,20 +41,13 @@ class MessageSender extends EventEmitter
 
     @_log message-name, options
     request-data =
-      method: 'POST'
-      url: "http://localhost:#{@exocom-port}/send/#{message-name}"
-      json: yes
-      body:
-        sender: @service-name
-        id: uuid.v1!
-    request-data.body.payload = payload if payload?
-    request-data.body.response-to = options.response-to if options.response-to
-    request request-data, (err, response, body) ->
-      if err || (response?.status-code isnt 200)
-        debug "Error sending message '#{message-name}'"
-        debug "* err: #{err}"
-        debug "* response: #{response?.status-code}"
-    @last-sent-id = request-data.body.id
+      name: message-name
+      sender: @service-name
+      id: uuid.v1!
+    request-data.payload = payload if payload?
+    request-data.response-to = options.response-to if options.response-to
+    @socket.send JSON.stringify request-data
+    @last-sent-id = request-data.id
 
 
   _log: (message-name, options) ->

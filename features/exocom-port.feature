@@ -5,7 +5,7 @@ Feature: Configuring the ExoCom port
   So that I have flexibility in my test setup.
 
   Rules:
-  - the default ExoCom port is 3010
+  - the default ExoCom port is 4100
   - provide a custom ExoCom port via the "exocomPort" constructor parameter
 
 
@@ -15,5 +15,5 @@ Feature: Configuring the ExoCom port
 
 
   Scenario: the user provides an available ExoCom port
-    When I create an ExoRelay instance that uses ExoCom port 3011
-    Then this instance uses the ExoCom port 3011
+    When I create an ExoRelay instance that uses ExoCom port 3200
+    Then this instance uses the ExoCom port 3200

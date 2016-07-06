@@ -1,9 +1,9 @@
 require! {
+  'events' : {EventEmitter}
   './message-handler/message-manager' : HandlerManager
   './message-sender/message-sender' : MessageSender
-  'events' : {EventEmitter}
-  './http-listener/http-listener' : HttpListener
   'rails-delegate' : {delegate, delegate-event}
+  './zmq-listener/zmq-listener' : ZmqListener
 }
 debug = require('debug')('exorelay')
 
@@ -21,13 +21,14 @@ class ExoRelay extends EventEmitter
     @message-sender = new MessageSender config
 
     # listens to incoming messages from Exosphere
-    @http-listener = new HttpListener!
+    @zmq-listener = new ZmqListener!
       ..on 'message', @_on-incoming-message
 
-    delegate \close \listen \port from: @, to: @http-listener
+    delegate \closePort, from: @, to: @message-sender
+    delegate \close \listen \port from: @, to: @zmq-listener
     delegate \hasHandler \registerHandler \registerHandlers from: @, to: @message-handler
-    delegate-event 'error', from: [@http-listener, @message-handler, @message-sender], to: @
-    delegate-event 'online', 'offline', from: @http-listener, to: @
+    delegate-event 'error', from: [@zmq-listener, @message-handler, @message-sender], to: @
+    delegate-event 'status', 'online', 'offline', from: @zmq-listener, to: @
 
 
   send: (message-name, payload, reply-handler) ~>
@@ -40,7 +41,12 @@ class ExoRelay extends EventEmitter
 
 
   _on-incoming-message: (request-data) ~>
-    | !request-data.id  =>  return 'missing message id'
+    if request-data.message-name is '__status'
+      @message-sender.send "__status-ok"
+      return 'success'
+    if !request-data.id
+      return 'missing message id'
+
     @message-handler.handle-request request-data,
                                     reply: @message-sender.reply-method-for request-data.id
                                     send: @send

@@ -7,20 +7,17 @@ require! {
   'request'
   'sinon'
   'wait' : {wait, wait-until}
+  'zmq'
 }
 
 
 module.exports = ->
 
 
-  @When /^a reply for the sent message arrives via this incoming request:$/, (request-data, done) ->
+  @When /^the reply arrives via this message:$/, (request-data) ->
     rendered = ejs.render request-data, request_uuid: @message-id
     eval livescript.compile "data = {\n#{rendered}\n}", bare: yes, header: no
-    data.json = yes
-    request data, (err, {status-code}) ->
-      expect(err).to.be.null
-      expect(status-code).to.equal 200
-      done!
+    @exocom-sender.send JSON.stringify data
 
 
   @When /^I send a .*message/, (code) ->
@@ -29,29 +26,20 @@ module.exports = ->
     expect(@message-id).to.not.be.undefined
 
 
-  @When /^receiving the "([^"]*)" message with payload "([^"]*)" as a reply to the "(?:[^"]*)" message$/, (message-name, payload, done) ->
-    data =
-      url: "http://localhost:4000/run/#{message-name}",
-      method: 'POST'
-      body:
+  @When /^receiving the "([^"]*)" message with payload "([^"]*)" as a reply to the "(?:[^"]*)" message$/, (message-name, payload) ->
+    wait-until (~> @exorelay-message), 1, ~>
+      exocom-data =
+        message: message-name
         payload: payload
         id: '123'
-        responseTo: @exocom.calls[0].body.id
-      json: yes
-    @exocom.reset!
-    request data, (err, {status-code}) ->
-      expect(err).to.be.null
-      expect(status-code).to.equal 200
-      done!
+        response-to: @exorelay-message.id
+      @exorelay-message = null
+      @exocom-sender.send JSON.stringify exocom-data
 
 
-  @When /^receiving this message via the incoming request:$/, (request-data, done) ->
+  @When /^receiving this message:$/, (request-data) ->
     eval livescript.compile "data = {\n#{request-data}\n}", bare: yes, header: no
-    data.json = yes
-    request data, (err, response, @response-body) ~>
-      expect(err).to.be.null
-      @response-code = response.status-code
-      done err
+    @exocom-sender.send JSON.stringify data
 
 
   @When /^running this multi\-level request:$/, (code) ->
@@ -59,7 +47,7 @@ module.exports = ->
     eval livescript.compile code.replace(/\bexo-relay\b/g, '@exo-relay'), bare: yes, header: no
 
 
-  @When /^sending the "([^"]*)" message:$/, (message-name, code) ->
+  @When /^sending the message:$/, (code) ->
     eval livescript.compile "@message-id = @#{code}", bare: yes, header: no
 
 
@@ -71,41 +59,30 @@ module.exports = ->
 
 
 
-  @Then /^ExoRelay makes the request:$/, (request-data, done) ->
+  @Then /^ExoRelay makes the ZMQ request:$/, (request-data, done) ->
     # Wait until we get some call data, then wait another 50ms to let all the request data fill in
-    wait-until (~> @exocom.calls?.length), 10, ~>
+    wait-until (~> @exorelay-message), 10, ~>
       wait 50, ~>
         rendered = ejs.render request-data, request_uuid: @message-id
         template = livescript.compile "compiled = {\n#{rendered}\n}", bare: yes, header: no
         eval template
-        jsdiff-console @exocom.calls, [compiled], done
-
-
-  @Then /^ExoRelay returns a (\d+) response$/, (+expected-response-code) ->
-    expect(@response-code).to.equal expected-response-code
-
-
-  @Then /^ExoRelay returns a (\d+) response with the text "([^"]*)"$/, (+expected-response-code, expected-response-body) ->
-    expect(@response-code).to.equal expected-response-code
-    expect(@response-body).to.equal expected-response-body
+        jsdiff-console @exorelay-message, compiled, done
 
 
   @Then /^ExoRelay sends the "([^"]*)" message with payload "([^"]*)"$/, (message-name, payload, done) ->
-    wait-until (~> @exocom.calls?.length), 10, ~>
+    wait-until (~> @exorelay-message), 10, ~>
       wait 50, ~>
-        expect(@exocom.calls).to.have.length 1
-        call = @exocom.calls[0]
-        expect(call.url).to.equal "http://localhost:4010/send/#{message-name}"
-        expect(call.body.payload).to.equal payload
+        expect(@exorelay-message.name).to.equal "#{message-name}"
+        expect(@exorelay-message.payload).to.equal payload
         done!
 
 
-  @Then /^my message handler (?:replies with|sends out)? a "([^"]*)" message(?: sent)? via this outgoing request:$/, (message-name, request-data, done) ->
+  @Then /^my message handler (replies with|sends out) the message:$/ (request-data, done) ->
     # Wait until we get some call data, then wait another 50ms to let all the request data fill in
-    wait-until (~> @exocom.calls?.length), 10, ~>
+    wait-until (~> @exorelay-message), 10, ~>
       wait 50, ~>
         rendered = ejs.render request-data, request_uuid: @exo-relay.message-sender.last-sent-id
         template = "compiled = {\n#{rendered}\n}"
         compiled-template = livescript.compile template, bare: yes, header: no
         parsed = eval compiled-template
-        jsdiff-console @exocom.calls, [parsed], done
+        jsdiff-console @exorelay-message, parsed, done

@@ -6,8 +6,7 @@ Feature: Registering message handlers
 
   Rules:
   - register message handlers by via "registerHandler"
-  - the registered messages can be invoked by sending a POST request to "/run/<message-name>"
-  - the response for that request indicates whether the message was understood, not that it was successful
+  - the registered messages are invoked by sending a message to the ExoRelay pull socket listening at the ZMQ port
   - messages are executed asynchronously, and can send other messages back to indicate responses
 
 
@@ -38,7 +37,7 @@ Feature: Registering message handlers
   Scenario: registering an already handled message
     Given my ExoRelay instance already has a handler for the message "hello"
     When I try to add another handler for that message
-    Then ExoRelay emits an "error" event with the message "There is already a handler for message 'hello'"
+    Then ExoRelay emits an "error" event with the error "There is already a handler for message 'hello'"
 
 
   Scenario: forgetting to provide the message
@@ -46,7 +45,7 @@ Feature: Registering message handlers
       """
       exo-relay.register-handler ->
       """
-    Then ExoRelay emits an "error" event with the message "Message ids must be strings"
+    Then ExoRelay emits an "error" event with the error "Message ids must be strings"
 
 
   Scenario: providing an empty message
@@ -54,7 +53,7 @@ Feature: Registering message handlers
       """
       exo-relay.register-handler '', ->
       """
-    Then ExoRelay emits an "error" event with the message "No message id provided"
+    Then ExoRelay emits an "error" event with the error "No message id provided"
 
 
   Scenario: providing a non-string message
@@ -62,7 +61,7 @@ Feature: Registering message handlers
       """
       exo-relay.register-handler [], ->
       """
-    Then ExoRelay emits an "error" event with the message "Message ids must be strings"
+    Then ExoRelay emits an "error" event with the error "Message ids must be strings"
 
 
   Scenario: forgetting to provide the handler
@@ -70,7 +69,7 @@ Feature: Registering message handlers
       """
       exo-relay.register-handler 'message'
       """
-    Then ExoRelay emits an "error" event with the message "No message handler provided"
+    Then ExoRelay emits an "error" event with the error "No message handler provided"
 
 
   Scenario: providing a non-functional handler
@@ -78,4 +77,4 @@ Feature: Registering message handlers
       """
       exo-relay.register-handler 'message', 'zonk'
       """
-    Then ExoRelay emits an "error" event with the message "Message handler must be a function"
+    Then ExoRelay emits an "error" event with the error "Message handler must be a function"

@@ -5,6 +5,7 @@ require! {
   'nitroglycerin' : N
   'portfinder'
   'wait' : {wait-until}
+  'zmq'
 }
 
 
@@ -17,13 +18,17 @@ module.exports = ->
 
 
   @Given /^an ExoRelay instance called "([^"]*)" running inside the "([^"]*)" service at port (\d+)$/, (instance-name, service-name, port, done) ->
+    @exocom-sender = zmq.socket 'push'
+      ..connect "tcp://localhost:#{port}"
     @exo-relay = new ExoRelay {service-name, @exocom-port}
       ..on 'online', -> done!
       ..on 'error', (@error) ~>
       ..listen port
 
 
-  @Given /^an ExoRelay instance called "([^"]*)" listening at port (\d+)$/, (instance-name, port, done) ->
+  @Given /^an ExoRelay instance called "([^"]*)" listening on port (\d+)$/, (instance-name, port, done) ->
+    @exocom-sender = zmq.socket 'push'
+      ..connect "tcp://localhost:#{port}"
     @exo-relay = new ExoRelay {@exocom-port, service-name: 'test'}
       ..on 'online', (@online-port) ~> done!
       ..on 'error', (@error) ~>
@@ -35,7 +40,9 @@ module.exports = ->
       ..on 'online', (@online-port) ~>
 
 
-  @Given /^an ExoRelay instance listening at port (\d+)$/, (port, done) ->
+  @Given /^an ExoRelay instance listening on port (\d+)$/, (port, done) ->
+    @exocom-sender = zmq.socket 'push'
+      ..connect "tcp://localhost:#{port}"
     @exo-relay = new ExoRelay exocom-port: @exocom-port, service-name: 'test'
       ..on 'online', -> done!
       ..on 'error', (@error) ~>
@@ -48,13 +55,13 @@ module.exports = ->
 
 
 
-  @Then /^ExoRelay emits an "error" event with the message "([^"]*)"$/, (message) ->
-    expect(@error).to.not.be.null
-    expect(@error.message).to.equal message
-    @error = null
+  @Then /^ExoRelay emits an "error" event with the error "([^"]*)"$/, (error-message) ->
+    wait-until (~> @error), 1, ~>
+      expect(@error.message).to.equal error-message
+      @error = null
 
 
-  @Then /^it emits the 'online' event with payload (\d+)$/ (payload) ->
+  @Then /^it emits the 'online' event with payload (\d+)$/ (+payload) ->
     expect(@online-port).to.equal payload
 
 

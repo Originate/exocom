@@ -9,8 +9,8 @@ Feature: Handling incoming replies to sent message
 
 
   Background:
-    Given ExoCom runs at port 4010
-    And an ExoRelay instance called "exo-relay" listening at port 4000
+    Given ExoCom runs at port 4100
+    And an ExoRelay instance called "exo-relay" listening on port 4000
 
 
   Scenario: handling replies to outgoing messages
@@ -20,18 +20,14 @@ Feature: Handling incoming replies to sent message
       exo-relay.send 'users.create', name: 'Will Riker', (createdUser, {outcome}) ->
         print "created user #{createdUser.id} via '#{outcome}'"
       """
-    When a reply for the sent message arrives via this incoming request:
+    When the reply arrives via this message:
       """
-      url: 'http://localhost:4000/run/users.created'
-      method: 'POST'
-      body:
-        id: '123'
-        responseTo: "<%= request_uuid %>"
-        payload:
-          id: 456
-          name: 'Will Riker'
-      headers:
-        "content-type": "application/json"
+      name: 'users.created'
+      payload:
+        id: 456
+        name: 'Will Riker'
+      id: '123'
+      response-to: '<%= request_uuid %>'
       """
     Then the reply handler runs and in this example calls my "print" method with "created user 456 via 'users.created'"
 
@@ -58,4 +54,4 @@ Feature: Handling incoming replies to sent message
       """
       exo-relay.send 'users.create', {name: 'Will Riker'}, 'zonk'
       """
-    Then ExoRelay emits an "error" event with the message "The reply handler given to ExoRelay#send must be a function"
+    Then ExoRelay emits an "error" event with the error "The reply handler given to ExoRelay#send must be a function"

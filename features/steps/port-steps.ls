@@ -1,6 +1,8 @@
 require! {
   'chai' : {expect}
   'request'
+  'wait': {wait}
+  'zmq'
 }
 
 
@@ -27,7 +29,10 @@ module.exports = ->
 
 
   @Then /^it is online at port (\d+)$/, (port, done) ->
-    request "http://localhost:#{port}/status", (err, response, body) ->
-      expect(err).to.be.null
-      expect(response.status-code).to.equal 200
-      done!
+    @exocom-listener.on 'message', (data) ~>
+      if JSON.parse(data.to-string!).name is "__status-ok"
+        done!
+    @exocom-sender = zmq.socket 'push'
+      ..connect "tcp://localhost:#{port}"
+      ..send JSON.stringify name: '__status'
+

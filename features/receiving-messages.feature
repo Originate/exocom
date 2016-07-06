@@ -11,25 +11,22 @@ Feature: Receiving messages
 
   Background:
     Given ExoCom runs at port 4100
-    And an ExoRelay instance listening at port 4000
+    And an ExoRelay instance listening on port 4000
     And a hypothetical "print" message
 
 
   Scenario: receiving a message without payload
-    Given I register a handler for the "hello" message:
+    Given I register a handler for the "hello-world" message:
       """
       exo-relay.register-handler 'hello-world', ->
         print "Hello world!"
       """
-    When receiving this message via the incoming request:
+    When receiving this message:
       """
-      url: 'http://localhost:4000/run/hello-world',
-      method: 'POST'
-      body:
-        id: '123'
+      name: 'hello-world'
+      id: '123'
       """
-    Then ExoRelay returns a 200 response
-    And it runs the registered handler, in this example calling "print" with "Hello world!"
+    Then ExoRelay runs the registered handler, in this example calling "print" with "Hello world!"
 
 
   Scenario: Receiving a message with string payload
@@ -38,16 +35,13 @@ Feature: Receiving messages
       exo-relay.register-handler 'hello', (name) ->
         print "Hello #{name}!"
       """
-    When receiving this message via the incoming request:
+    When receiving this message:
       """
-      url: 'http://localhost:4000/run/hello',
-      method: 'POST'
-      body:
-        payload: 'world'
-        id: '123'
+      name: 'hello'
+      payload: 'world'
+      id: '123'
       """
-    Then ExoRelay returns a 200 response
-    And ExoRelay runs the registered handler, in this example calling "print" with "Hello world!"
+    Then ExoRelay runs the registered handler, in this example calling "print" with "Hello world!"
 
 
   Scenario: receiving a message with Hash payload
@@ -56,17 +50,14 @@ Feature: Receiving messages
       exo-relay.register-handler 'hello', ({name}) ->
         print "Hello #{name}!"
       """
-    When receiving this message via the incoming request:
+    When receiving this message:
       """
-      url: 'http://localhost:4000/run/hello',
-      method: 'POST'
-      body:
-        payload:
-          name: 'world'
-        id: '123'
+      name: 'hello'
+      payload:
+        name: 'world'
+      id: '123'
       """
-    Then ExoRelay returns a 200 response
-    And ExoRelay runs the registered handler, in this example calling "print" with "Hello world!"
+    Then ExoRelay runs the registered handler, in this example calling "print" with "Hello world!"
 
 
   Scenario: Receiving a message with array payload
@@ -75,59 +66,34 @@ Feature: Receiving messages
       exo-relay.register-handler 'sum', (numbers) ->
         print numbers[0] + numbers[1]
       """
-    When receiving this message via the incoming request:
+    When receiving this message:
       """
-      url: 'http://localhost:4000/run/sum',
-      method: 'POST'
-      body:
-        payload: [1, 2]
-        id: '123'
+      name: 'sum'
+      payload: [1, 2]
+      id: '123'
       """
-    Then ExoRelay returns a 200 response
-    And ExoRelay runs the registered handler, in this example calling "print" with "3"
+    Then ExoRelay runs the registered handler, in this example calling "print" with "3"
 
 
-
-  # ERROR CHECKING
-
-
-  Scenario: a handler throws an exception
-    Given I register a handler for the "sum" message:
-      """
-      exo-relay.register-handler 'boom', ->
-        throw new Error 'boom!'
-      """
-    When receiving this message via the incoming request:
-      """
-      url: 'http://localhost:4000/run/boom',
-      method: 'POST'
-      body:
-        id: '123'
-      """
-    Then ExoRelay returns a 500 response
-
+ #   ERROR CHECKING
 
 
   Scenario: missing incoming message
-    When receiving this message via the incoming request:
+    When receiving this message:
       """
-      url: 'http://localhost:4000/run',
-      method: 'POST'
-      body:
-        id: '123'
-      """
-    Then ExoRelay returns a 404 response
+      name: undefined
+      id: '123'
+     """
+    Then ExoRelay emits an "error" event with the error "unknown message: 'undefined'"
 
 
   Scenario: the incoming message is not registered
-    When receiving this message via the incoming request:
+    When receiving this message:
       """
-      url: 'http://localhost:4000/run/zonk',
-      method: 'POST'
-      body:
-        id: '123'
+      name: 'zonk'
+      id: '123'
       """
-    Then ExoRelay returns a 404 response with the text "unknown message: 'zonk'"
+    Then ExoRelay emits an "error" event with the error "unknown message: 'zonk'"
 
 
   Scenario: the incoming message has no id
@@ -135,9 +101,8 @@ Feature: Receiving messages
       """
       exo-relay.register-handler 'hello', ->
       """
-    When receiving this message via the incoming request:
+    When receiving this message:
       """
-      url: 'http://localhost:4000/run/hello',
-      method: 'POST'
+      name: 'hello'
       """
-    Then ExoRelay returns a 400 response with the text "missing message id"
+    Then ExoRelay emits an "error" event with the error "missing message id"

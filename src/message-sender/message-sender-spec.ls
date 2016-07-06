@@ -7,8 +7,11 @@ require! {
 describe 'MessageSender', ->
 
   before-each ->
-    @message-sender = new MessageSender!
+    @message-sender = new MessageSender exocom-port: 4100, service-name: 'test'
       ..on 'error', (@error) ~>
+
+  after-each ->
+    @message-sender.close-port!
 
 
   describe 'reply-method-for', (...) ->

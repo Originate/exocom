@@ -10,7 +10,7 @@ Feature: Sending from messages
 
 
   Background:
-    Given ExoCom runs at port 4010
+    Given ExoCom runs at port 4100
     And an ExoRelay instance called "exo-relay" running inside the "test" service at port 4000
 
 
@@ -20,25 +20,16 @@ Feature: Sending from messages
       exo-relay.register-handler 'users.create', (_payload, {send}) ->
         send 'passwords.encrypt', 'secret'
       """
-    When receiving this message via the incoming request:
+    When receiving this message:
       """
-      url: 'http://localhost:4000/run/users.create'
-      method: 'POST'
-      body:
-        sender: 'test'
-        id: '123'
+      name: 'users.create'
+      id: '123'
       """
-    Then ExoRelay returns a 200 response
-    And my message handler sends out a "passwords.verify" message via this outgoing request:
+    Then my message handler sends out the message:
       """
-      url: 'http://localhost:4010/send/passwords.encrypt'
-      method: 'POST'
-      body:
-        sender: 'test'
-        payload: 'secret'
-        id: '<%= request_uuid %>'
-      headers:
-        accept: 'application/json'
-        'content-type': 'application/json'
+      name: 'passwords.encrypt'
+      sender: 'test'
+      payload: 'secret'
+      id: '<%= request_uuid %>'
       """
 

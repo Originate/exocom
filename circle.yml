@@ -10,6 +10,7 @@ machine:
 
 dependencies:
   pre:
+    - npm i npm -g
     - bin/install-zeromq-circleci
 
 

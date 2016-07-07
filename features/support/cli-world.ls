@@ -23,7 +23,7 @@ CliWorld = !->
       ..wait "HTTP service online at port #{@exocom-http-port}", done
 
 
-  @create-instance-at-port = (name, port, done) ->
+  @create-mock-service-at-port = (name, port, done) ->
     (@service-mocks or= {})[name] = new MockService push-port: @exocom-zmq-port, pull-port: port
     done!
 

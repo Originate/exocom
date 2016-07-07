@@ -13,7 +13,7 @@ require! {
 module.exports = ->
 
   @Given /^a "([^"]*)" instance running at port (\d+)$/, (name, port, done) ->
-    @create-instance-at-port name, port, done
+    @create-mock-service-at-port name, port, done
 
 
   @Given /^an ExoCom instance$/, (done) ->

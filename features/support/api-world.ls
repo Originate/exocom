@@ -19,7 +19,7 @@ ApiWorld = !->
       ..listen zmq-port: ports.zmq-port, http-port: ports.http-port
 
 
-  @create-instance-at-port = (name, port, done) ->
+  @create-mock-service-at-port = (name, port, done) ->
     (@service-mocks or= {})[name] = new MockService push-port: null, pull-port: port
     done!
 

@@ -79,6 +79,7 @@ ApiWorld = !->
     wait-until (~> @last-sent-messages[0].name is translated-name), 1, ~>
       expect(@last-sent-messages[0].sender).to.eql sender-name
       expect(@last-listeners).to.eql [listeners]
+      expect(@last-sent-messages[0].timestamp).to.be.above(0)
       done!
 
 
@@ -102,6 +103,8 @@ ApiWorld = !->
       expected =
         name: message
         id: id
+      timestamp = @service-mocks[service-name].received-messages[0].timestamp
+      expected.timestamp = timestamp if timestamp
       expected.response-to = response-to if response-to
       jsdiff-console @service-mocks[service-name].received-messages[0], expected, done
 

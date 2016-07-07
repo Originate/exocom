@@ -3,6 +3,7 @@ require! {
   'events' : {EventEmitter}
   './listener-subsystem/listener-subsystem' : ListenerSubsystem
   './message-sender/message-sender' : MessageSender
+  'process'
   'rails-delegate' : {delegate, delegate-event}
 }
 debug = require('debug')('exocom')
@@ -46,12 +47,13 @@ class ExoCom extends EventEmitter
 
   # sends the given message to all subscribers of it.
   send-message: (message-data) ~>
-
+    [seconds, nanos] = process.hrtime!
     # convert the outgoing message name from its internal version to the public version
     sender = @client-registry.clients[message-data.sender]
     external-message-name = @client-registry.outgoing-message-name message-data.name, sender
     message-data.original-name = message-data.name
     message-data.name = external-message-name
+    message-data.timestamp = seconds * 1e9 + nanos
 
     # determine the subscribers
     subscribers = @client-registry.subscribers-to external-message-name

@@ -38,6 +38,7 @@ class MessageSender extends EventEmitter
       name: translated-message-name
       id: message-data.id
       payload: message-data.payload
+      timestamp: message-data.timestamp
     request-data.response-to = message-data.response-to if message-data.response-to
     @_log message-data, service
     @service-sockets[service.name].send JSON.stringify request-data

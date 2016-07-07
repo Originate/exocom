@@ -111,6 +111,8 @@ CliWorld = !->
         name: message
         id: id
         payload: ''
+      timestamp = @service-mocks[service-name].received-messages[0].timestamp
+      expected.timestamp = timestamp if timestamp
       expected.response-to = response-to if response-to
       jsdiff-console @service-mocks[service-name].received-messages[0], expected, done
 

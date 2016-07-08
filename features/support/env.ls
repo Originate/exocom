@@ -4,4 +4,5 @@ module.exports = ->
 
 
   @After ->
-    @exocom?.close!
+    @exocom?.close! unless @closed
+    @service?.close!

@@ -1,69 +1,67 @@
 require! {
   'node-uuid' : uuid
-  'rails-delegate' : {delegate}
-  'record-http' : HttpRecorder
-  'request'
+  'zmq'
 }
 debug = require('debug')('exocom-mock')
 
 
+# ASends and receives ZMQ messages in tests
 class MockExoCom
 
-
   ->
-    @service-ports = {}
-    @receiver = new HttpRecorder
-      ..on 'receive', ~>
-        debug "received incoming call"
-        @receive-callback?!
-
-    delegate \listen \port \reset \close, from: @, to: @receiver
+    @push-sockets = {}
+    @pull-socket = null
+    @pull-socket-port = null
+    @received-messages = []
+    @receive-callback = null
 
 
-  received-messages: ->
-    [@_parse-call(call) for call in @receiver.calls]
+  close: ~>
+    for service, socket of @push-sockets
+      socket.close!
+      delete @push-sockets[service]
+    @pull-socket?.close!
 
 
-  register-service: ({name, port}) ->
-    debug "registering service '#{name}' at port #{port}"
-    @service-ports[name] = port
+  listen: (+@pull-socket-port) ~>
+    @pull-socket = zmq.socket 'pull'
+      ..bind-sync "tcp://*:#{@pull-socket-port}"
+      ..on 'message', @_on-pull-socket-message
 
 
-  send-message: ({service, name, payload}) ->
-    | !@service-ports[service]  =>  throw new Error "unknown service: '#{service}'"
-
-    @reset!
-    debug "sending message #{name} to service '#{service}'"
-    request-data =
-      url: "http://localhost:#{@service-ports[service]}/run/#{name}"
-      method: 'POST'
-      body:
-        payload: payload
-        id: uuid.v1!
-      json: yes
-    request request-data, (err, response) ~>
-      if err
-        return debug "error sending message '#{name}' to service '#{service}' at port #{@service-ports[service]}: #{err.message}"
-      debug "received HTTP response #{response.status-code} from service '#{service}'"
-      @last-send-response-code = response.status-code
-
-
-  wait-until-receive: (@receive-callback) ->
-    if @receiver.calls.length
+  on-receive: (@receive-callback) ~>
+    if @received-messages.length
       @receive-callback!
 
 
-  _parse-call: (call) ->
-    {
-      name: @_get-message-name(call.url)
-      payload: call.body.payload
-    }
+  register-service: ({name, port}) ~>
+    @push-sockets[name] = zmq.socket 'push'
+      ..connect "tcp://localhost:#{port}"
 
 
+  reset: ~>
+    @received-messages = []
 
-  _get-message-name: (url) ->
-    segments = url.split '/'
-    segments[segments.length-1]
+
+  send: ({service, name, payload}) ~>
+    | !@push-sockets[service]  =>  throw new Error "unknown service: '#{service}'"
+
+    @received-messages = []
+    request-data =
+      name: name
+      payload: payload
+      id: uuid.v1!
+    @push-sockets[service].send JSON.stringify request-data
+
+
+  _on-pull-socket-message: (data) ~>
+    @receive-callback?!
+    message-json = JSON.parse data.to-string!
+    call =
+      name: message-json.name
+      payload: message-json.payload
+    @received-messages.push call
+
 
 
 

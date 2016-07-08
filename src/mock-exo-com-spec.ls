@@ -11,23 +11,11 @@ describe 'MockExoCom', ->
     @exocom = new MockExoCom!
 
 
-  describe '_get-message-name', (...) ->
+  describe '_on-pull-socket-message', (...) ->
 
-    it 'returns the message name part of the given URL', ->
-      expect(@exocom._get-message-name 'http://localhost:1234/send/users.create').to.equal 'users.create'
-
-
-  describe '_parse-call', (...) ->
-
-    it 'returns a data structure describing the parsed call', (done) ->
-      call-data =
-        url: 'http://localhost:1234/send/users.create'
-        method: 'POST'
-        body:
-          payload: 'my payload'
-        headers:
-          accept: 'application/json'
-      expected =
-        name: 'users.create'
-        payload: 'my payload'
-      jsdiff-console @exocom._parse-call(call-data), expected, done
+    it 'records a parsed ZMQ socket message', ->
+      call =
+        name: "users.create"
+        payload: ""
+      @exocom._on-pull-socket-message JSON.stringify call
+      jsdiff-console @exocom.received-messages[0], call

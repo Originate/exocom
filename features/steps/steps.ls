@@ -2,10 +2,13 @@ require! {
   '../..' : MockExoCom
   'chai'
   'jsdiff-console'
+  'nitroglycerin': N
+  'port-reservation'
   'record-http' : HttpRecorder
   'request'
   'sinon'
   'sinon-chai'
+  '../support/zmq-endpoint' : ZmqEndpoint
   'wait' : {wait-until}
 }
 expect = chai.expect
@@ -16,66 +19,65 @@ module.exports = ->
 
   @Given /^a listening ExoComMock instance$/, (done) ->
     @exocom = new MockExoCom
-      ..listen 4111, done
+    port-reservation.get-port N (@exocom-zmq-port) ~>
+      @exocom.listen @exocom-zmq-port
+      done!
 
 
   @Given /^an ExoComMock instance$/, ->
     @exocom = new MockExoCom
 
 
-  @Given /^an ExoComMock instance listening at port (\d+)$/, (port, done) ->
+  @Given /^an ExoComMock instance listening at ZMQ port (\d+)$/, (@exocom-zmq-port) ->
     @exocom = new MockExoCom
-      ..listen port, done
+      ..listen @exocom-zmq-port
 
 
-  @Given /^a known "([^"]*)" service listening at port (\d+)$/, (name, port, done) ->
+  @Given /^a known "([^"]*)" service listening at port (\d+)$/, (name, port) ->
     @exocom.register-service {name, port}
-    @service = new HttpRecorder().listen port, done
+    @service = new ZmqEndpoint push-port: @exocom-zmq-port, pull-port: port
 
 
-  @Given /^somebody sends it a message$/, (done) ->
-    request-data =
-      url: "http://localhost:#{@exocom.port}/send/foo"
-      method: "POST"
-      body:
-        payload: ''
-        id: '123'
-      json: yes
-    request request-data, done
+  @Given /^somebody sends it a message$/, ->
+    message-data =
+      name: "foo"
+      payload: ''
+      id: '123'
+    @service or= new ZmqEndpoint push-port: @exocom-zmq-port
+      ..send message-data
 
 
-  @Given /^somebody sends it a "([^"]*)" message with payload "([^"]*)"$/, (message, payload, done) ->
-    request-data =
-      url: "http://localhost:#{@exocom.port}/send/#{message}"
-      method: "POST"
-      body:
-        payload: payload
-        id: '123'
-      json: yes
-    request request-data, done
+  @Given /^somebody sends it a "([^"]*)" message with payload "([^"]*)"$/, (name, payload) ->
+    message-data =
+      name: name
+      payload: payload
+      id: '123'
+    @service or= new ZmqEndpoint push-port: @exocom-zmq-port
+      ..send message-data
 
 
 
   @When /^closing it$/, ->
+    @closed = yes
     @exocom.close!
 
 
   @When /^I tell it to wait for a call$/, ->
     @call-received = sinon.spy!
-    @exocom.wait-until-receive @call-received
+    @exocom.on-receive @call-received
 
 
-  @When /^a call comes in$/, (done) ->
-    request-data =
-      url: "http://localhost:#{@exocom.port}/send/foo"
-      method: "POST"
-      json: yes
-    request request-data, done
+  @When /^a call comes in$/, ->
+    message-data =
+      name: 'foo'
+      id: '123'
+    @service or= new ZmqEndpoint push-port: @exocom-zmq-port
+      ..send message-data
 
 
   @When /^trying to send a "([^"]*)" message to the "([^"]*)" service$/, (message-name, service-name) ->
     try
-      @exocom.send-message service: service-name, name: message-name, (@error)
+      @exocom.send service: service-name, name: message-name
     catch
       @error = e
 
@@ -85,23 +87,16 @@ module.exports = ->
 
 
   @When /^sending a "([^"]*)" message to the "([^"]*)" service with the payload:$/, (message, service, payload) ->
-    @exocom.send-message service: service, name: message, payload: payload
+    @exocom.send service: service, name: message, payload: payload
 
-
-
-  @Then /^ExoComMock lists the last send response code as (\d+)$/, (+expected-response-code, done) ->
-    wait-until (~> @exocom.last-send-response-code), ~>
-      expect(@exocom.last-send-response-code).to.equal expected-response-code
-      done!
 
 
   @Then /^ExoComMock makes the request:$/, (table, done) ->
     expected-request = table.rows-hash!
-    wait-until (~> @service.calls.length is 1), 10, ~>
-      actual-request = @service.calls[0]
-      expect(actual-request.url).to.equal expected-request.URL
-      expect(actual-request.method).to.equal expected-request.METHOD
-      expect(actual-request.body.payload).to.equal expected-request.PAYLOAD
+    wait-until (~> @service.received-messages.length), 1, ~>
+      actual-request = @service.received-messages[0]
+      expect(actual-request.name).to.equal expected-request.NAME
+      expect(actual-request.payload).to.equal expected-request.PAYLOAD
       done!
 
 
@@ -117,8 +112,10 @@ module.exports = ->
     wait-until (~> @call-received.called), done
 
 
-  @Then /^it calls the given callback right away$/, ->
-    expect(@call-received).to.have.been.called
+  @Then /^it calls the given callback right away$/, (done) ->
+    wait-until (~> @exocom.received-messages.length), 1, ~>
+      expect(@call-received).to.have.been.called
+      done!
 
 
   @Then /^it doesn't call the given callback right away$/, ->
@@ -126,13 +123,13 @@ module.exports = ->
 
 
   @Then /^it has received no messages/, ->
-    expect(@exocom.calls).to.be.empty
+    expect(@exocom.received-messages).to.be.empty
 
 
   @Then /^it has received the messages/, (table, done) ->
-    expected-messages = [{[key.to-lower-case!, value] for key, value of message} for message in table.hashes!]
-    actual-messages = @exocom.received-messages!
-    jsdiff-console actual-messages, expected-messages, done
+    wait-until (~> @exocom.received-messages.length), 1, ~>
+      expected-messages = [{[key.to-lower-case!, value] for key, value of message} for message in table.hashes!]
+      jsdiff-console @exocom.received-messages, expected-messages, done
 
 
   @Then /^it is no longer listening at port (\d+)$/, (port, done) ->

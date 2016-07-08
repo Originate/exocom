@@ -22,10 +22,8 @@ Feature: Sending requests to services
       name: 'Jean-Luc Picard'
       """
     Then ExoComMock makes the request:
-      | URL     | http://localhost:3010/run/users.create |
-      | METHOD  | POST                                   |
-      | PAYLOAD | name: 'Jean-Luc Picard'                |
-    And ExoComMock lists the last send response code as 200
+      | NAME    | users.create            |
+      | PAYLOAD | name: 'Jean-Luc Picard' |
 
 
   Scenario: sending a message to an unknown service

@@ -19,9 +19,9 @@ Feature: Listing receiving messages
     And somebody sends it a "hello" message with payload "world"
     And somebody sends it a "foo" message with payload "bar"
     Then it has received the messages
-      | NAME  | PAYLOAD |
-      | hello | world   |
-      | foo   | bar     |
+      | NAME  | PAYLOAD |  ID |
+      | hello | world   | 123 |
+      | foo   | bar     | 123 |
 
 
   Scenario: resetting the calls list after calls have been received

@@ -60,6 +60,7 @@ class MockExoCom
     call =
       name: message-json.name
       payload: message-json.payload
+    call.id = message-json.id if message-json.id
     @received-messages.push call
 
 

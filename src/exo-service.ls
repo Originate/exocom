@@ -12,7 +12,7 @@ class ExoService extends EventEmitter
 
   ({@root, @exocom-port, @exorelay-port, @service-name}) ->
     @exo-relay = new ExoRelay {@exocom-port, @service-name}
-    delegate \close, from: @, to: @exo-relay
+    delegate \close \closePort, from: @, to: @exo-relay
     delegate-event \online \offline \error, from: @exo-relay, to: @
 
 

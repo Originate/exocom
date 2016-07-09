@@ -4,8 +4,9 @@ require! {
   'exocom-mock' : ExoComMock
   'http'
   'livescript'
+  'nitroglycerin': N
+  'port-reservation'
   'record-http' : HttpRecorder
-  'request'
   'wait' : {wait, wait-until}
 }
 
@@ -13,9 +14,10 @@ require! {
 module.exports = ->
 
   @Given /^an ExoCom instance$/, (done) ->
-    @exocom-port = 4100
-    @exocom = new ExoComMock
-      ..listen @exocom-port, done
+    port-reservation.get-port N (@exocom-port) ~>
+      @exocom = new ExoComMock
+        ..listen @exocom-port
+        done!
 
 
   @Given /^an instance of the "([^"]*)" service$/, (@service-name, done) ->
@@ -37,14 +39,14 @@ module.exports = ->
   @When /^receiving the( unknown)? "([^"]*)" message$/, (expect-error, message-name) ->
     @exocom
       ..reset!
-      ..send-message {service: @service-name, name: message-name, expect-error}
+      ..send {service: @service-name, name: message-name, expect-error}
 
 
   @When /^receiving the( unknown)? "([^"]*)" message with the payload:$/, (expect-error, message-name, payload) ->
     eval livescript.compile "json-payload = {\n#{payload}\n}", bare: yes, header: no
     @exocom
       ..reset!
-      ..send-message {service: @service-name, name: message-name, payload: json-payload, expect-error}
+      ..send {service: @service-name, name: message-name, payload: json-payload, expect-error}
 
 
   @When /^starting a service$/, (done) ->
@@ -66,16 +68,16 @@ module.exports = ->
 
 
   @Then /^after a while it sends the "([^"]*)" message$/, (reply-message-name, done) ->
-    @exocom.wait-until-receive ~>
-      received-messages = @exocom.received-messages!
+    @exocom.on-receive ~>
+      received-messages = @exocom.received-messages
       expect(received-messages).to.have.length 1
       expect(received-messages[0].name).to.equal reply-message-name
       done!
 
 
   @Then /^after a while it sends the "([^"]*)" message with the textual payload:$/, (reply-message-name, payload-text, done) ->
-    @exocom.wait-until-receive ~>
-      received-messages = @exocom.received-messages!
+    @exocom.on-receive ~>
+      received-messages = @exocom.received-messages
       expect(received-messages).to.have.length 1
       expect(received-messages[0].name).to.equal reply-message-name
       expect(received-messages[0].payload).to.equal payload-text
@@ -83,9 +85,7 @@ module.exports = ->
 
 
   @Then /^it acknowledges the received message$/, (done) ->
-    wait-until (~> @exocom.last-send-response-code), ~>
-      expect(@exocom.last-send-response-code).to.equal 200
-      done!
+    wait-until (~> @exocom.received-messages.length), done
 
 
   @Then /^it can run the "([^"]*)" service$/, (@service-name, done) ->
@@ -95,17 +95,14 @@ module.exports = ->
   @Then /^it runs the "([^"]*)" hook$/, (hook-name, done) ->
     @exocom
       ..reset!
-      ..send-message name: 'which-hooks-ran', service: @service-name
-      ..wait-until-receive ~>
-        expect(@exocom.received-messages![0].payload).to.eql ['before-all']
+      ..send name: 'which-hooks-ran', service: @service-name
+      ..on-receive ~>
+        expect(@exocom.received-messages[0].payload).to.eql ['before-all']
         done!
 
 
-  @Then /^it signals an unknown message$/, (done) ->
-    wait-until (~> @exocom.last-send-response-code), ~>
-      expect(@exocom.last-send-response-code).to.equal 404
-      done!
-
-
   @Then /^the service runs at port (\d+)$/, (port, done) ->
-    request "http://localhost:#{port}", done
+    @exocom.send service: 'test', name: '__status' , id: '123'
+    wait-until (~> @exocom.received-messages[0]), 1, ~>
+      if @exocom.received-messages[0].name is "__status-ok"
+        done!

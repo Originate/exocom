@@ -9,3 +9,4 @@ module.exports = ->
     @process?.kill!
     @exocom?.close!
     @exoservice?.close!
+    @exoservice?.close-port!

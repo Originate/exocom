@@ -34,8 +34,3 @@ Feature: Handling incoming messages
       """
       Hello world
       """
-
-
-  Scenario: receiving a non-existing message
-    When receiving the unknown "zonk" message
-    Then it signals an unknown message

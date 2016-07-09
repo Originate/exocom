@@ -2,7 +2,6 @@ require! {
   'chai' : {expect}
   'livescript'
   'lodash.isequal' : is-equal
-  'request'
   'sinon'
   'wait' : {wait-until}
 }

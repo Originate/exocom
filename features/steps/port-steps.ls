@@ -1,8 +1,6 @@
 require! {
   'chai' : {expect}
-  'request'
-  'wait': {wait}
-  'zmq'
+  'wait': {wait, wait-until}
 }
 
 
@@ -29,10 +27,10 @@ module.exports = ->
 
 
   @Then /^it is online at port (\d+)$/, (port, done) ->
-    @exocom-listener.on 'message', (data) ~>
-      if JSON.parse(data.to-string!).name is "__status-ok"
+    @exocom
+      ..register-service name: 'test-service', port: port
+      ..send service: 'test-service', name: '__status'
+    wait-until (~> @exocom.received-messages.length), 1, ~>
+      if @exocom.received-messages[0].name is "__status-ok"
         done!
-    @exocom-sender = zmq.socket 'push'
-      ..connect "tcp://localhost:#{port}"
-      ..send JSON.stringify name: '__status'
 

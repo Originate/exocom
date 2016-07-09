@@ -11,7 +11,7 @@ Feature: Sending outgoing replies to incoming messages
 
   Background:
     Given ExoCom runs at port 4100
-    And an ExoRelay instance called "exo-relay" running inside the "test" service at port 4000
+    And an ExoRelay instance called "exo-relay" running inside the "test-service" service at port 4000
 
 
   Scenario: sending a reply with JSON data
@@ -31,7 +31,7 @@ Feature: Sending outgoing replies to incoming messages
     Then my message handler replies with the message:
       """
       name: 'users.created'
-      sender: 'test'
+      sender: 'test-service'
       payload:
         id: 456
         name: 'Will Riker'
@@ -44,7 +44,7 @@ Feature: Sending outgoing replies to incoming messages
     Given the "users.create" message has this handler:
       """
       exo-relay.register-handler 'ping', (_payload, {reply}) ->
-        reply 'pong', 'from the test'
+        reply 'pong', 'from the test-service'
       """
     When receiving this message:
       """
@@ -54,8 +54,8 @@ Feature: Sending outgoing replies to incoming messages
     Then my message handler replies with the message:
       """
       name: 'pong'
-      sender: 'test'
-      payload: 'from the test'
+      sender: 'test-service'
+      payload: 'from the test-service'
       id: '<%= request_uuid %>'
       response-to: '123'
       """

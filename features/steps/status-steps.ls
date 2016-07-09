@@ -1,19 +1,19 @@
 require! {
   'chai' : {expect}
-  'request'
-  'zmq'
   'wait': {wait-until}
 }
 
 
 module.exports = ->
 
-  @When /^I check the status$/, ->
-    @exocom-listener.on 'message', (data) ~> @status-code = data
-    @exocom-sender.send JSON.stringify name: '__status'
+  @When /^I check the status$/, (done) ->
+    @exocom.send service: 'test-service', name: '__status'
+    wait-until (~> @exocom.received-messages.length), 1, ~>
+      @status-code = @exocom.received-messages[0].name
+      done!
 
 
-
-  @Then /^it signals it is online$/, ->
+  @Then /^it signals it is online$/, (done) ->
     wait-until (~> @status-code), 1, ~>
-      expect(@status-code.name).to.equal '__status-ok'
+      expect(@status-code).to.equal '__status-ok'
+      done!

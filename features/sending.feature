@@ -13,7 +13,7 @@ Feature: Sending outgoing messages
 
   Background:
     Given ExoCom runs at port 4100
-    And an ExoRelay instance called "exo-relay" running inside the "test" service at port 4000
+    And an ExoRelay instance called "exo-relay" running inside the "test-service" service at port 4000
 
 
   Scenario: sending a message without payload
@@ -24,7 +24,7 @@ Feature: Sending outgoing messages
     Then ExoRelay makes the ZMQ request:
       """
       name: 'hello-world'
-      sender: 'test'
+      sender: 'test-service'
       id: '<%= request_uuid %>'
       """
 
@@ -37,7 +37,7 @@ Feature: Sending outgoing messages
     Then ExoRelay makes the ZMQ request:
       """
       name: 'hello'
-      sender: 'test'
+      sender: 'test-service'
       payload:
         name: 'world'
       id: '<%= request_uuid %>'
@@ -52,7 +52,7 @@ Feature: Sending outgoing messages
     Then ExoRelay makes the ZMQ request:
       """
       name: 'hello'
-      sender: 'test'
+      sender: 'test-service'
       payload: {}
       id: '<%= request_uuid %>'
       """
@@ -66,7 +66,7 @@ Feature: Sending outgoing messages
     Then ExoRelay makes the ZMQ request:
       """
       name: 'hello'
-      sender: 'test'
+      sender: 'test-service'
       payload: 'world'
       id: '<%= request_uuid %>'
       """
@@ -79,7 +79,7 @@ Feature: Sending outgoing messages
     Then ExoRelay makes the ZMQ request:
       """
       name: 'hello'
-      sender: 'test'
+      sender: 'test-service'
       payload: ''
       id: '<%= request_uuid %>'
       """
@@ -93,7 +93,7 @@ Feature: Sending outgoing messages
     Then ExoRelay makes the ZMQ request:
       """
       name: 'sum'
-      sender: 'test'
+      sender: 'test-service'
       payload: [1, 2, 3]
       id: '<%= request_uuid %>'
       """
@@ -107,7 +107,7 @@ Feature: Sending outgoing messages
     Then ExoRelay makes the ZMQ request:
       """
       name: 'sum'
-      sender: 'test'
+      sender: 'test-service'
       payload: []
       id: '<%= request_uuid %>'
       """

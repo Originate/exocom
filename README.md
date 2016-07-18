@@ -3,6 +3,8 @@
 > Communication relay between JavaScript code bases and the Exosphere environment
 
 [![Circle CI](https://circleci.com/gh/Originate/exorelay-js.svg?style=shield&circle-token=012a2c6405c702e0a8271de804eed0c4c179772f)](https://circleci.com/gh/Originate/exorelay-js)
+[![Dependency Status](https://david-dm.org/originate/exorelay-js.svg)](https://david-dm.org/originate/exorelay-js)
+[![devDependency Status](https://david-dm.org/originate/exorelay-js/dev-status.svg)](https://david-dm.org/originate/exorelay-js#info=devDependencies)
 
 This library allows you to add Exosphere communication to any Node.JS codebase.
 It is intended to be used in your web or API server,

@@ -15,7 +15,7 @@ doc = """
 Provides Exosphere communication infrastructure services in development mode.
 
 Usage:
-  #{name} [--zmq-port=<port>] [--http-port=<port>]
+  #{name} [EXOCOM_ZMQ_PORT=<port>] [EXOCOM_HTTP_PORT=<port>]
   #{name} -h | --help
   #{name} -v | --version
 """
@@ -38,7 +38,7 @@ run = ->
     ..on 'zmq-bound', on-zmq-bound
     ..on 'http-bound', on-http-bound
     ..on 'error', on-error
-    ..listen zmq-port: (options['--zmq-port'] or 4100), http-port: (options['--http-port'] or 4101)
+    ..listen zmq-port: (+process.env.EXOCOM_ZMQ_PORT or 4100), http-port: (+process.env.EXOCOM_HTTP_PORT or 4101)
     ..on 'routing-setup', ->
       console.log 'receiving routing setup:'
       for command, routing of exocom.client-registry.routes

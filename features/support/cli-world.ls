@@ -17,9 +17,12 @@ require! {
 CliWorld = !->
 
   @create-exocom-instance = (ports, done) ->
+    env =
+      EXOCOM_HTTP_PORT : ports.http-port
+      EXOCOM_ZMQ_PORT : ports.zmq-port
     @exocom-http-port = ports.http-port
     @exocom-zmq-port = ports.zmq-port
-    @process = new ObservableProcess "bin/exocom --zmq-port #{@exocom-zmq-port} --http-port #{@exocom-http-port}", console: my-console
+    @process = new ObservableProcess "bin/exocom", console: my-console, env: env
       ..wait "HTTP service online at port #{@exocom-http-port}", done
 
 
@@ -29,10 +32,10 @@ CliWorld = !->
 
 
   @run-exocom-at-port = (ports, _expect-error, done) ->
-    command = "bin/exocom"
-    command += " --zmq-port #{ports.zmq-port}" if ports.zmq-port
-    command += " --http-port #{ports.http-port}" if ports.http-port
-    @process = new ObservableProcess command, console: my-console
+    env =
+      EXOCOM_HTTP_PORT : ports.http-port
+      EXOCOM_ZMQ_PORT : ports.zmq-port
+    @process = new ObservableProcess "bin/exocom", console: my-console, env: env
     done!
 
 

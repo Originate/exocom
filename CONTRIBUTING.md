@@ -15,7 +15,7 @@ $ exocom [--port <port number>]
 ```
 
 The default port is 3100.
-More details around configuring the port [here](features/configuring-the-port.feature).
+More details around configuring the port [here](features/configuring-the-ports.feature).
 
 
 ### JavaScript API

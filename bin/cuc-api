@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-killall node 2> /dev/null
 if [ "$#" == "0" ]; then
   EXOCOM_TEST_DEPTH=API cucumber-js --tags ~@todo
 else

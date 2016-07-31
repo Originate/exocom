@@ -77,7 +77,6 @@ Feature: Receiving messages
 
  #   ERROR CHECKING
 
-
   Scenario: missing incoming message
     When receiving this message:
       """

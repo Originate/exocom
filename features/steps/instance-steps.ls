@@ -52,10 +52,11 @@ module.exports = ->
 
 
 
-  @Then /^ExoRelay emits an "error" event with the error "([^"]*)"$/, (error-message) ->
+  @Then /^ExoRelay emits an "error" event with the error "([^"]*)"$/, (error-message, done) ->
     wait-until (~> @error), 1, ~>
       expect(@error.message).to.equal error-message
       @error = null
+      done!
 
 
   @Then /^it emits the 'online' event with payload (\d+)$/ (+payload) ->

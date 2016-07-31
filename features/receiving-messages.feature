@@ -94,15 +94,3 @@ Feature: Receiving messages
       id: '123'
       """
     Then ExoRelay emits an "error" event with the error "unknown message: 'zonk'"
-
-
-  Scenario: the incoming message has no id
-    Given I register a handler for the "hello" message:
-      """
-      exo-relay.register-handler 'hello', ->
-      """
-    When receiving this message:
-      """
-      name: 'hello'
-      """
-    Then ExoRelay emits an "error" event with the error "missing message id"

@@ -44,8 +44,6 @@ class ExoRelay extends EventEmitter
     if request-data.message-name is '__status'
       @message-sender.send "__status-ok"
       return 'success'
-    if !request-data.id
-      return 'missing message id'
 
     @message-handler.handle-request request-data,
                                     reply: @message-sender.reply-method-for request-data.id

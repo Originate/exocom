@@ -28,6 +28,7 @@
     "o-tools-livescript": "1.1.2",
     "portfinder": "1.0.3",
     "sinon": "1.17.4",
+    "tertestrial": "0.0.4",
     "wait": "0.1.0"
   },
   "engines": {

@@ -23,6 +23,7 @@ ignoreErrors:
     - mocha-circleci-reporter
     - o-tools
     - o-tools-livescript
+    - tertestrial
 
 requiredModules:
   files:

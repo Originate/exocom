@@ -22,11 +22,11 @@ _find-server-path = (root, done) ->
   glob path.join(process.cwd!, root, 'server.*'), N (files) ->
     | files.length > 1   =>  throw _multi-files-error files
     | files.length is 1  =>  return done files[0]
-    glob path.join(process.cwd!, root, '*', 'server.*'), N (files) ->
+    glob path.join(process.cwd!, root, '**', 'server.*'), N (files) ->
       | files.length > 1   =>  throw _multi-files-error files
       | files.length is 1  =>  return done files[0]
       throw new Error "Cannot find server file.
-                      It must be named 'server.js' or comparably for your language."
+                       It must be named 'server.js' or comparably for your language."
 
 
 _multi-files-error = (files) ->

@@ -1,3 +1,4 @@
+{-# LANGUAGE OverloadedStrings #-}
 module Network.Exocom where
 
 import System.ZMQ4
@@ -6,6 +7,8 @@ import Data.ByteString as B
 import Data.HashMap as HM
 import Control.Concurrent.Chan
 import Control.Concurrent
+import Data.UUID
+import Data.Aeson
 
 
 type ListenHandler = B.ByteString -> IO ()
@@ -42,5 +45,24 @@ waitAndSend exo sock = do
   send sock [] toSend
   waitAndSend exo sock
 
-sendMsg :: ExoRelay -> ByteString -> IO ()
-sendMsg exo toSend = writeChan (sendChan exo) toSend
+
+data SendPacket = SendPacket {
+  name :: B.ByteString,
+  sender :: B.ByteString,
+  msgId :: UUID,
+  payload :: B.ByteString,
+  responseTo :: UUID
+}
+
+instance ToJSON SendPacket where
+  toJSON packet =
+    object [
+      "name" .= (unpack (name packet)),
+      "sender" .= (unpack (sender packet)),
+      "id" .= (toString (msgId packet)),
+      "payload" .= (unpack (payload packet)),
+      "response-to" .= (toString (responseTo packet))
+    ]
+
+sendMsg :: ExoRelay -> B.ByteString -> B.ByteString -> IO ()
+sendMsg exo command toSend = writeChan (sendChan exo) toSend

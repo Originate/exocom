@@ -20,7 +20,7 @@ data ExoRelay = ExoRelay {
   port :: Int,
   serviceName :: B.ByteString,
   sendChan :: Chan B.ByteString,
-  recieveHandlers :: MVar (HM.Map String ListenHandler)
+  receiveHandlers :: MVar (HM.Map B.ByteString ListenHandler)
 }
 
 newExoRelay :: Int -> B.ByteString -> IO ExoRelay
@@ -34,6 +34,9 @@ newExoRelay portNum service = do
   let exo = ExoRelay portNum service sendchan handlerMapLock
   _ <- forkIO (senderThread exo oSock)
   return exo
+
+
+-- Sender Functions
 
 
 senderThread :: ExoRelay -> Socket Push -> IO ()
@@ -75,6 +78,7 @@ instance ToJSON SendPacket where
           "payload" .= (unpack (payload packet))
         ]
 
+-- internal sending of
 sendMsgGeneral :: ExoRelay -> B.ByteString -> B.ByteString -> Maybe UUID -> IO ()
 sendMsgGeneral exo command toSend respond = do
   ident <- nextRandom
@@ -83,5 +87,26 @@ sendMsgGeneral exo command toSend respond = do
   writeChan (sendChan exo) (LB.toStrict jsonByteString)
 
 
+-- sendMsg takes in the exorelay object, a command type and a payload and sends it
 sendMsg :: ExoRelay -> B.ByteString -> B.ByteString -> IO ()
 sendMsg exo command toSend = sendMsgGeneral exo command toSend Nothing
+
+
+-- Listener Functions
+
+registerHandler :: ExoRelay -> B.ByteString -> ListenHandler -> IO ()
+registerHandler exo command func = do
+  handlers <- takeMVar $ receiveHandlers exo
+  let newHandlers = HM.insert command func handlers
+  putMVar (receiveHandlers exo) newHandlers
+
+
+listenerThread :: ExoRelay -> Socket Pull -> IO ()
+listenerThread exo sock = do
+  let address = "tcp://*:" ++ (show (port exo))
+  bind sock address
+
+waitAndRecv :: ExoRelay -> Socket Pull -> IO ()
+waitAndRecv exo sock = do
+  contents <- receive sock
+  waitAndRecv exo sock

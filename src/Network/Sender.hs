@@ -4,6 +4,7 @@ import System.ZMQ4
 import Network.ExoRelay
 import Data.ByteString as B
 import qualified Data.ByteString.Lazy as LB
+import qualified Data.ByteString.Char8 as SB
 import Control.Concurrent.Chan
 import Data.UUID
 import Data.UUID.V4
@@ -28,10 +29,11 @@ waitAndSend exo sock = do
   waitAndSend exo sock
 
 
--- internal sending of
-sendMsgGeneral :: ExoRelay -> B.ByteString -> B.ByteString -> Maybe UUID -> IO ()
+-- internal sending of msg
+sendMsgGeneral :: ExoRelay -> B.ByteString -> B.ByteString -> Maybe B.ByteString -> IO ()
 sendMsgGeneral exo command toSend respond = do
-  ident <- nextRandom
+  identUUID <- nextRandom
+  let ident = SB.pack $ toString identUUID
   let packet = SendPacket command (serviceName exo) ident toSend respond
   let jsonByteString = encode packet
   writeChan (sendChan exo) (LB.toStrict jsonByteString)

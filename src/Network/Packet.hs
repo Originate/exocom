@@ -13,9 +13,9 @@ import qualified Data.ByteString.Char8 as SB
 data SendPacket = SendPacket {
   name :: B.ByteString,
   sender :: B.ByteString,
-  msgId :: UUID,
+  msgId :: B.ByteString,
   payload :: B.ByteString,
-  responseTo :: Maybe UUID
+  responseTo :: Maybe B.ByteString
 } deriving (Show)
 
 instance ToJSON SendPacket where
@@ -24,15 +24,15 @@ instance ToJSON SendPacket where
         object [
           "name" .= (SB.unpack (name packet)),
           "sender" .= (SB.unpack (sender packet)),
-          "id" .= (toString (msgId packet)),
+          "id" .= (SB.unpack (msgId packet)),
           "payload" .= (SB.unpack (payload packet)),
-          "response-to" .= (toString (fromJust (responseTo packet)))
+          "response-to" .= (SB.unpack (fromJust (responseTo packet)))
         ]
     | otherwise =
         object [
           "name" .= (SB.unpack (name packet)),
           "sender" .= (SB.unpack (sender packet)),
-          "id" .= (toString (msgId packet)),
+          "id" .= (SB.unpack (msgId packet)),
           "payload" .= (SB.unpack (payload packet))
         ]
 
@@ -46,11 +46,9 @@ instance FromJSON SendPacket where
     responseToString <- v .:? "response-to"
     let nameByteString = SB.pack nameString
     let senderBytesString = SB.pack senderString
-    let msgIdUUIDmaybe = fromString msgIdString
-    if msgIdUUIDmaybe == Nothing then fail "Invalid UUID" else do
-      let msgIdUUID = fromJust msgIdUUIDmaybe
-      let payloadByteString = SB.pack payloadString
-      let responseToUUID = responseToString >>= (\str -> fromString str)
-      return $ SendPacket nameByteString senderBytesString msgIdUUID payloadByteString responseToUUID
+    let msgIdUUID = SB.pack msgIdString
+    let payloadByteString = SB.pack payloadString
+    let responseToUUID = fmap SB.pack responseToString
+    return $ SendPacket nameByteString senderBytesString msgIdUUID payloadByteString responseToUUID
 
   parseJSON _ = fail "Needs an object"

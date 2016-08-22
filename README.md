@@ -23,7 +23,7 @@ where `exo` is the exorelay instance, `cmd` is the command, and `payload` is the
 
 If you expect a reply to your sent message then call the following function instead:
 ```haskell
-sendMsg exo cmd payload handler
+sendMsgWithReply exo cmd payload handler
 ```
 where `exo`, `cmd`, and `payload` is the same as the previous function. `handler` is a function with a signature: `ByteString -> IO ()` where the input argument is the content that is received as a reply to your sent message. Therefore, when a reply is received, your handler is called asynchronously on the given payload. Note that your handler is called in a different thread and therefore do not perform any thread-unsafe actions without proper precautions.
 

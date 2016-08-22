@@ -1,5 +1,13 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Network.Exocom where
+module Network.Exocom (
+  ExoRelay,
+  newExoRelay,
+  sendMsg,
+  sendMsgWithReply,
+  registerHandler,
+  registerHandlerWithReply
+)
+where
 
 import System.ZMQ4
 import Control.Concurrent.MVar

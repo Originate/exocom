@@ -12,7 +12,7 @@ Then, initialize the system by calling:
 newExoRelay portNum serviceName
 ```
 where `portNum` is an int that represents the port that the exocom service is (already) listening on and `serviceName` is a bytestring which represents the name of your service.
-Returned from this function is an `exoRelay` object which will be needed for future sending and receiving calls to the message bus.
+Returned from this function is an `IO exoRelay` object which will be needed for future sending and receiving calls to the message bus.
 
 ### Sending Messages
 To send a message, encode the message and command (message name) as a bytestring and call:

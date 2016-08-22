@@ -24,4 +24,5 @@ newExoRelay portNum service = do
   iSock <- socket newContext Pull
   let exo = ExoRelay portNum service sendchan handlerMapLock
   _ <- forkIO (senderThread exo oSock)
+  _ <- forkIO (listenerThread exo iSock)
   return exo

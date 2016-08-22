@@ -47,3 +47,12 @@ sendMsg exo command toSend = sendMsgGeneral exo command toSend Nothing
 -- sendMsgReply acts like sendMsg but has a last argument which is a UUID to which the message is replying to
 sendMsgReply :: ExoRelay -> B.ByteString -> B.ByteString -> B.ByteString -> IO ()
 sendMsgReply exo cmd toSend replUUID = sendMsgGeneral exo cmd toSend (Just replUUID)
+
+sendMsgWithReply :: ExoRelay -> B.ByteString -> B.ByteString -> (B.ByteString -> IO ()) -> IO ()
+sendMsgWithReply exo cmd payload hand = do
+  identUUID <- nextRandom
+  let ident = SB.pack $ toString identUUID
+  let packet = SendPacket cmd (serviceName exo) ident payload Nothing
+  let jsonByteString = encode packet
+  registerHandler exo ident (\response -> unregisterHandler exo ident >> hand response)
+  writeChan (sendChan exo) (LB.toStrict jsonByteString)

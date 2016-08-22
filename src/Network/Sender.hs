@@ -42,3 +42,8 @@ sendMsgGeneral exo command toSend respond = do
 -- sendMsg takes in the exorelay object, a command type and a payload and sends it
 sendMsg :: ExoRelay -> B.ByteString -> B.ByteString -> IO ()
 sendMsg exo command toSend = sendMsgGeneral exo command toSend Nothing
+
+
+-- sendMsgReply acts like sendMsg but has a last argument which is a UUID to which the message is replying to
+sendMsgReply :: ExoRelay -> B.ByteString -> B.ByteString -> B.ByteString -> IO ()
+sendMsgReply exo cmd toSend replUUID = sendMsgGeneral exo cmd toSend (Just replUUID)

@@ -25,6 +25,7 @@ listenerThread :: ExoRelay -> Socket Pull -> Int -> IO ()
 listenerThread exo sock listenPort = do
   let address = "tcp://*:" ++ (show (listenPort))
   bind sock address
+  waitAndRecv exo sock
 
 waitAndRecv :: ExoRelay -> Socket Pull -> IO ()
 waitAndRecv exo sock = do

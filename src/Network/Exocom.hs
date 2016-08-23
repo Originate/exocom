@@ -5,7 +5,7 @@ module Network.Exocom (
   sendMsg,
   sendMsgWithReply,
   registerHandler,
-  registerHandlerWithReply
+  registerHandlerWithReply,
 )
 where
 
@@ -38,6 +38,6 @@ newExoRelay portNum service listenerPort = do
   return exo
 
 statusHandler :: B.ByteString -> IO (B.ByteString, B.ByteString)
-statusHandler _ = return (cmd, emptyByteStr) where
+statusHandler _ = Prelude.putStrLn "sending OK" >> return (cmd, emptyByteStr) where
   cmd = SB.pack "__status-ok"
   emptyByteStr = B.empty

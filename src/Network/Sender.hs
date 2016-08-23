@@ -34,25 +34,25 @@ sendMsgGeneral :: ExoRelay -> B.ByteString -> B.ByteString -> Maybe B.ByteString
 sendMsgGeneral exo command toSend respond = do
   identUUID <- nextRandom
   let ident = SB.pack $ toString identUUID
-  let packet = SendPacket command (serviceName exo) ident toSend respond
+  let packet = SendPacket command (Just (serviceName exo)) ident toSend respond
   let jsonByteString = encode packet
   writeChan (sendChan exo) (LB.toStrict jsonByteString)
 
 
 -- sendMsg takes in the exorelay object, a command type and a payload and sends it
-sendMsg :: ExoRelay -> B.ByteString -> B.ByteString -> IO ()
-sendMsg exo command toSend = sendMsgGeneral exo command toSend Nothing
+sendMsg :: ToJSON a => ExoRelay -> B.ByteString -> a -> IO ()
+sendMsg exo command toSend = sendMsgGeneral exo command (LB.toStrict (encode toSend)) Nothing
 
 
 -- sendMsgReply acts like sendMsg but has a last argument which is a UUID to which the message is replying to
 sendMsgReply :: ExoRelay -> B.ByteString -> B.ByteString -> B.ByteString -> IO ()
 sendMsgReply exo cmd toSend replUUID = sendMsgGeneral exo cmd toSend (Just replUUID)
 
-sendMsgWithReply :: ExoRelay -> B.ByteString -> B.ByteString -> (B.ByteString -> IO ()) -> IO ()
+sendMsgWithReply :: ToJSON a => ExoRelay -> B.ByteString -> a -> (B.ByteString -> IO ()) -> IO ()
 sendMsgWithReply exo cmd payload hand = do
   identUUID <- nextRandom
   let ident = SB.pack $ toString identUUID
-  let packet = SendPacket cmd (serviceName exo) ident payload Nothing
+  let packet = SendPacket cmd (Just (serviceName exo)) ident (LB.toStrict (encode payload)) Nothing
   let jsonByteString = encode packet
   registerHandler exo ident (\response -> unregisterHandler exo ident >> hand response)
   writeChan (sendChan exo) (LB.toStrict jsonByteString)

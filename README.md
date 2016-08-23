@@ -9,9 +9,9 @@ First, you will will need to import the module: `import Network.Exocom`
 ### Initialization
 Then, initialize the system by calling:
 ```haskell
-newExoRelay portNum serviceName
+newExoRelay portNum serviceName listenPort
 ```
-where `portNum` is an int that represents the port that the exocom service is (already) listening on and `serviceName` is a bytestring which represents the name of your service.
+where `portNum` is an int that represents the port that the exocom service is (already) listening on and `serviceName` is a bytestring which represents the name of your service. `listenPort` is the port you want your service to listen on.
 Returned from this function is an `IO exoRelay` object which will be needed for future sending and receiving calls to the message bus.
 
 ### Sending Messages

@@ -21,9 +21,9 @@ import Data.Maybe
 -- Listener Functions
 
 
-listenerThread :: ExoRelay -> Socket Pull -> IO ()
-listenerThread exo sock = do
-  let address = "tcp://*:" ++ (show (port exo))
+listenerThread :: ExoRelay -> Socket Pull -> Int -> IO ()
+listenerThread exo sock listenPort = do
+  let address = "tcp://*:" ++ (show (listenPort))
   bind sock address
 
 waitAndRecv :: ExoRelay -> Socket Pull -> IO ()

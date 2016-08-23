@@ -12,7 +12,7 @@ where
 import System.ZMQ4
 import Control.Concurrent.MVar
 import Data.ByteString as B
-import qualified Data.ByteString.Lazy as LB
+import qualified Data.ByteString.Char8 as SB
 import qualified Data.HashMap as HM
 import Control.Concurrent.Chan
 import Control.Concurrent
@@ -22,8 +22,8 @@ import Network.Sender
 import Network.Listener
 
 
-newExoRelay :: Int -> B.ByteString -> IO ExoRelay
-newExoRelay portNum service = do
+newExoRelay :: Int -> B.ByteString -> Int -> IO ExoRelay
+newExoRelay portNum service listenerPort = do
   let handlerMap = HM.empty
   handlerMapLock <- newMVar handlerMap -- newMVar :: IO (MVar HashMap)
   sendchan <- newChan
@@ -31,6 +31,13 @@ newExoRelay portNum service = do
   oSock <- socket newContext Push
   iSock <- socket newContext Pull
   let exo = ExoRelay portNum service sendchan handlerMapLock
+  let statusCheck = SB.pack "__status"
+  registerHandlerWithReply exo statusCheck statusHandler
   _ <- forkIO (senderThread exo oSock)
-  _ <- forkIO (listenerThread exo iSock)
+  _ <- forkIO (listenerThread exo iSock listenerPort)
   return exo
+
+statusHandler :: B.ByteString -> IO (B.ByteString, B.ByteString)
+statusHandler _ = return (cmd, emptyByteStr) where
+  cmd = SB.pack "__status-ok"
+  emptyByteStr = B.empty

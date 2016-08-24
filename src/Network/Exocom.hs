@@ -20,6 +20,7 @@ import Network.Exocom.Packet
 import Network.Exocom.ExoRelay
 import Network.Exocom.Sender
 import Network.Exocom.Listener
+import Network.Exocom.Error
 
 
 newExoRelay :: Int -> B.ByteString -> Int -> IO ExoRelay

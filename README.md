@@ -9,9 +9,10 @@ First, you will will need to import the module: `import Network.Exocom`
 ### Initialization
 Then, initialize the system by calling:
 ```haskell
-newExoRelay portNum serviceName listenPort
+newExoRelay portNum serviceName listenPort errorHandler
 ```
-where `portNum` is an int that represents the port that the exocom service is (already) listening on and `serviceName` is a bytestring which represents the name of your service. `listenPort` is the port you want your service to listen on.
+where `portNum` is an int that represents the port that the exocom service is (already) listening on and `serviceName` is a bytestring which represents the name of your service. `listenPort` is the port you want your service to listen on. `errorHandler` is a function of type `String -> IO ()`. Whenever an error occurs the string describing the error will call `errorHandler` asynchronously.
+Be warned that the handler is called in a separate thread and therefore be careful about using non thread-safe functions and data.
 Returned from this function is an `IO exoRelay` object which will be needed for future sending and receiving calls to the message bus.
 
 ### Sending Messages

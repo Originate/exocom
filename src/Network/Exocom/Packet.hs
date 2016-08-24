@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE DeriveGeneric #-}
-module Network.Packet where
+module Network.Exocom.Packet where
 
 
 import Data.ByteString as B

@@ -1,7 +1,7 @@
-module Network.Sender where
+module Network.Exocom.Sender where
 
 import System.ZMQ4
-import Network.ExoRelay
+import Network.Exocom.ExoRelay
 import Data.ByteString as B
 import qualified Data.ByteString.Lazy as LB
 import qualified Data.ByteString.Char8 as SB
@@ -9,7 +9,7 @@ import Control.Concurrent.Chan
 import Data.UUID
 import Data.UUID.V4
 import Data.Aeson
-import Network.Packet
+import Network.Exocom.Packet
 
 
 

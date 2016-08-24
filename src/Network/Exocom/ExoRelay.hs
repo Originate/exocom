@@ -1,4 +1,4 @@
-module Network.ExoRelay where
+module Network.Exocom.ExoRelay where
 
 import Data.ByteString as B
 import qualified Data.HashMap as HM

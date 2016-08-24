@@ -16,10 +16,10 @@ import qualified Data.ByteString.Char8 as SB
 import qualified Data.HashMap as HM
 import Control.Concurrent.Chan
 import Control.Concurrent
-import Network.Packet
-import Network.ExoRelay
-import Network.Sender
-import Network.Listener
+import Network.Exocom.Packet
+import Network.Exocom.ExoRelay
+import Network.Exocom.Sender
+import Network.Exocom.Listener
 
 
 newExoRelay :: Int -> B.ByteString -> Int -> IO ExoRelay

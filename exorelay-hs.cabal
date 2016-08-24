@@ -32,7 +32,8 @@ library
                        Network.Exocom.ExoRelay,
                        Network.Exocom.Sender,
                        Network.Exocom.Listener,
-                       Network.Exocom.Packet
+                       Network.Exocom.Packet,
+                       Network.Exocom.Error
 
 Test-Suite test-exorelay
   type:       exitcode-stdio-1.0

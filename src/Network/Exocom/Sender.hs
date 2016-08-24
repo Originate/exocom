@@ -2,15 +2,18 @@ module Network.Exocom.Sender where
 
 import System.ZMQ4
 import Network.Exocom.ExoRelay
+import Network.Exocom.Error
 import Data.ByteString as B
 import qualified Data.ByteString.Lazy as LB
 import qualified Data.ByteString.Char8 as SB
 import Control.Concurrent.Chan
+import Control.Concurrent
 import Data.UUID
 import Data.UUID.V4
 import Data.Aeson
 import Network.Exocom.Packet
 
+import System.IO
 
 
 -- Sender Functions
@@ -19,13 +22,21 @@ import Network.Exocom.Packet
 senderThread :: ExoRelay -> Socket Push -> IO ()
 senderThread exo sock = do
   let address = "tcp://localhost:" ++ (show (port exo))
+  resetError
   connect sock address
-  waitAndSend exo sock
+  err <- getError
+  case err of
+    Nothing -> forkIO (waitAndSend exo sock) >> return ()
+    Just errmsg -> emitError exo errmsg
 
 waitAndSend :: ExoRelay -> Socket Push -> IO ()
 waitAndSend exo sock = do
   toSend <- readChan $ sendChan exo
   send sock [] toSend
+  err <- getError
+  case err of
+    Nothing -> return ()
+    Just errmsg -> emitError exo errmsg
   waitAndSend exo sock
 
 

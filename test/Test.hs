@@ -5,6 +5,7 @@ import Control.Concurrent
 import Control.Concurrent.MVar
 import System.Process
 import System.Exit
+import System.IO
 import Data.Aeson
 import Data.ByteString as B hiding (putStrLn)
 import qualified Data.ByteString.Char8 as SB
@@ -16,7 +17,7 @@ echoHandler = putMVar
 
 main :: IO ()
 main = do
-  exo <- newExoRelay 4100 (SB.pack "exorelay-hs") 4001
+  exo <- newExoRelay 4100 (SB.pack "exorelay-hs") 4001 (Just handleError)
   didRoundTrip <- roundTrip exo
   if didRoundTrip then exitSuccess else exitFailure
 
@@ -29,3 +30,10 @@ roundTrip exo = do
   res <- readMVar ctrlVar
   return $ res == (LB.toStrict (encode "payload")) where
     packedHello = SB.pack "hello"
+
+
+
+handleError :: String -> IO ()
+handleError str = do
+  Prelude.putStrLn $ "Error found: " ++ str
+  hFlush stdout

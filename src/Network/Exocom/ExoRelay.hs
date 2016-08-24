@@ -15,7 +15,9 @@ data ExoRelay = ExoRelay {
   port :: Int,
   serviceName :: B.ByteString,
   sendChan :: Chan B.ByteString,
-  receiveHandlers :: MVar (HM.Map B.ByteString MessageHandler)
+  errorChan :: Chan String,
+  receiveHandlers :: MVar (HM.Map B.ByteString MessageHandler),
+  errorHandler :: Maybe (String -> IO ())
 }
 
 

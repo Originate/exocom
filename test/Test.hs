@@ -12,12 +12,12 @@ import qualified Data.ByteString.Char8 as SB
 import qualified Data.ByteString.Lazy as LB
 
 
-echoHandler :: MVar B.ByteString -> B.ByteString -> IO ()
+echoHandler :: MVar Value -> Value -> IO ()
 echoHandler = putMVar
 
 main :: IO ()
 main = do
-  exo <- newExoRelay 4100 (SB.pack "exorelay-hs") 4001 (Just handleError)
+  exo <- newExoRelay 4100 "exorelay-hs" 4001 (Just handleError)
   didRoundTrip <- roundTrip exo
   if didRoundTrip then exitSuccess else exitFailure
 
@@ -25,11 +25,10 @@ main = do
 roundTrip :: ExoRelay -> IO Bool
 roundTrip exo = do
   ctrlVar <- newEmptyMVar
-  registerHandler exo packedHello (echoHandler ctrlVar)
-  sendMsg exo packedHello "payload"
+  registerHandler exo "hello" (echoHandler ctrlVar)
+  sendMsg exo "hello" (toJSON "payload")
   res <- readMVar ctrlVar
-  return $ res == (LB.toStrict (encode "payload")) where
-    packedHello = SB.pack "hello"
+  return $ res == (toJSON "payload") where
 
 
 

@@ -3,9 +3,7 @@ module Network.Exocom.Sender where
 import System.ZMQ4
 import Network.Exocom.ExoRelay
 import Network.Exocom.Error
-import Data.ByteString as B
 import qualified Data.ByteString.Lazy as LB
-import qualified Data.ByteString.Char8 as SB
 import Control.Concurrent.Chan
 import Control.Concurrent
 import Data.UUID
@@ -41,29 +39,29 @@ waitAndSend exo sock = do
 
 
 -- internal sending of msg
-sendMsgGeneral :: ExoRelay -> B.ByteString -> B.ByteString -> Maybe B.ByteString -> IO ()
+sendMsgGeneral :: ExoRelay -> String -> Value -> Maybe String -> IO ()
 sendMsgGeneral exo command toSend respond = do
   identUUID <- nextRandom
-  let ident = SB.pack $ toString identUUID
+  let ident = toString identUUID
   let packet = SendPacket command (Just (serviceName exo)) ident toSend respond
   let jsonByteString = encode packet
   writeChan (sendChan exo) (LB.toStrict jsonByteString)
 
 
 -- sendMsg takes in the exorelay object, a command type and a payload and sends it
-sendMsg :: ToJSON a => ExoRelay -> B.ByteString -> a -> IO ()
-sendMsg exo command toSend = sendMsgGeneral exo command (LB.toStrict (encode toSend)) Nothing
+sendMsg :: ExoRelay -> String -> Value -> IO ()
+sendMsg exo command toSend = sendMsgGeneral exo command toSend Nothing
 
 
 -- sendMsgReply acts like sendMsg but has a last argument which is a UUID to which the message is replying to
-sendMsgReply :: ExoRelay -> B.ByteString -> B.ByteString -> B.ByteString -> IO ()
+sendMsgReply :: ExoRelay -> String -> Value -> String -> IO ()
 sendMsgReply exo cmd toSend replUUID = sendMsgGeneral exo cmd toSend (Just replUUID)
 
-sendMsgWithReply :: ToJSON a => ExoRelay -> B.ByteString -> a -> (B.ByteString -> IO ()) -> IO ()
+sendMsgWithReply :: ExoRelay -> String -> Value -> (Value -> IO ()) -> IO ()
 sendMsgWithReply exo cmd payload hand = do
   identUUID <- nextRandom
-  let ident = SB.pack $ toString identUUID
-  let packet = SendPacket cmd (Just (serviceName exo)) ident (LB.toStrict (encode payload)) Nothing
+  let ident = toString identUUID
+  let packet = SendPacket cmd (Just (serviceName exo)) ident payload Nothing
   let jsonByteString = encode packet
   registerHandler exo ident (\response -> unregisterHandler exo ident >> hand response)
   writeChan (sendChan exo) (LB.toStrict jsonByteString)

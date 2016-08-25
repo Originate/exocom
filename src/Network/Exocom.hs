@@ -11,8 +11,6 @@ where
 
 import System.ZMQ4
 import Control.Concurrent.MVar
-import Data.ByteString as B
-import qualified Data.ByteString.Char8 as SB
 import qualified Data.HashMap as HM
 import Control.Concurrent.Chan
 import Control.Concurrent
@@ -22,9 +20,10 @@ import Network.Exocom.Sender
 import Network.Exocom.Listener
 import Network.Exocom.Error
 import Data.Maybe
+import Data.Aeson
 
 
-newExoRelay :: Int -> B.ByteString -> Int -> Maybe (String -> IO ()) -> IO ExoRelay
+newExoRelay :: Int -> String -> Int -> Maybe (String -> IO ()) -> IO ExoRelay
 newExoRelay portNum service listenerPort errHandler = do
   resetError
   let handlerMap = HM.empty
@@ -35,14 +34,13 @@ newExoRelay portNum service listenerPort errHandler = do
   oSock <- socket newContext Push
   iSock <- socket newContext Pull
   let exo = ExoRelay portNum service sendchan errChan handlerMapLock errHandler
-  let statusCheck = SB.pack "__status"
-  registerHandlerWithReply exo statusCheck statusHandler
+  registerHandlerWithReply exo "__status" statusHandler
   errorThread exo
   sendErr <- senderThread exo oSock
   listenErr <- listenerThread exo iSock listenerPort
   return exo
 
-statusHandler :: B.ByteString -> IO (B.ByteString, B.ByteString)
-statusHandler _ = Prelude.putStrLn "sending OK" >> return (cmd, emptyByteStr) where
-  cmd = SB.pack "__status-ok"
-  emptyByteStr = B.empty
+statusHandler :: Value -> IO (String, Value)
+statusHandler _ = Prelude.putStrLn "sending OK" >> return (cmd, "") where
+  cmd = "__status-ok"
+  emptyJson = Data.Aeson.Null

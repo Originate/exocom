@@ -8,12 +8,7 @@ import Control.Concurrent.MVar
 import Control.Concurrent
 import Control.Monad
 import System.ZMQ4
-import Data.ByteString as B
 import qualified Data.HashMap as HM
-import qualified Data.ByteString.Lazy as LB
-import qualified Data.ByteString.Char8 as SB
-import Data.UUID
-import Data.UUID.V4
 import Data.Aeson
 import Data.Either
 import Data.Maybe
@@ -39,7 +34,7 @@ waitAndRecv exo sock = do
   err <- getError
   case err of
     Nothing -> do
-      let eitherPacket = eitherDecode (LB.fromStrict contents) :: Either String SendPacket
+      let eitherPacket = eitherDecodeStrict contents :: Either String SendPacket
       when (isRight eitherPacket) $ do
         let packet = extract eitherPacket
         handlers <- readMVar (receiveHandlers exo)

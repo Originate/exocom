@@ -39,7 +39,7 @@ where `exo` is the exorelay instance, `cmd` is the command to listen for. `handl
 
 If you would like to listen for a message and then be able to send a reply please call this function:
 ```haskell
-registerHandlerWithReply cmd handler
+registerHandlerWithReply exo cmd handler
 ```
 which is very similar to `registerHandler` except that the type of `handler` is `Value -> IO (String, Value)` which again executes if a message is received with name parameter matching the `cmd` of the function call. The handler then returns an IO tuple of the form `(retCmd, retPayload)` then, the system will send a reply with command (name) `retCmd` and payload `retPayload` to the sender of the message. Again, beware of performing non-thread-safe operations in the handler
 

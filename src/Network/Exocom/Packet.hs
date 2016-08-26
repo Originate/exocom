@@ -23,7 +23,7 @@ instance ToJSON SendPacket where
       "id" .= toJSON (msgId packet),
       "payload" .= payload packet]
     keyList1
-      | isJust (responseTo packet) = "response-to" .= (toJSON (fromJust (responseTo packet))) : keyList
+      | isJust (responseTo packet) = "responseTo" .= (toJSON (fromJust (responseTo packet))) : keyList
       | otherwise = keyList
     keyListFinal
       | isJust (sender packet) = "sender" .= (toJSON (fromJust (sender packet))) : keyList1
@@ -35,5 +35,5 @@ instance FromJSON SendPacket where
     senderString <- v .:? "sender"
     msgIdString <- v .: "id"
     payloadString <- v .: "payload" :: Parser (Value)
-    responseToString <- v .:? "response-to"
+    responseToString <- v .:? "responseTo" :: Parser (Maybe String)
     return $ SendPacket nameString senderString msgIdString payloadString responseToString

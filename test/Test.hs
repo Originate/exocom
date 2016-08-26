@@ -19,7 +19,10 @@ main :: IO ()
 main = do
   exo <- newExoRelay 4100 "exorelay-hs" 4001 (Just handleError)
   didRoundTrip <- roundTrip exo
-  if didRoundTrip then exitSuccess else exitFailure
+  didSendReply <- testSendReply exo
+  didListenReply <- testReply exo
+  let results = [didRoundTrip, didSendReply, didListenReply]
+  if and results then exitSuccess else exitFailure
 
 
 roundTrip :: ExoRelay -> IO Bool
@@ -30,9 +33,29 @@ roundTrip exo = do
   res <- readMVar ctrlVar
   return $ res == (toJSON "payload") where
 
+testSendReply :: ExoRelay -> IO Bool
+testSendReply exo = do
+  ctrlVar <- newEmptyMVar
+  sendMsgWithReply exo "reply" (toJSON "reply Payload") (\val -> do
+    if val == (toJSON "reply Payload") then putMVar ctrlVar True
+    else putMVar ctrlVar False
+    )
+  result <- readMVar ctrlVar
+  return result
+
+testReply :: ExoRelay -> IO Bool
+testReply exo = do
+  ctrlVar <- newEmptyMVar
+  registerHandlerWithReply exo "needReply" (\val -> do
+    registerHandler exo "listenReply" (\val -> putMVar ctrlVar (val == (toJSON "payload")))
+    putStrLn "sending listenreply"
+    hFlush stdout
+    return ("listenReply", val)
+    )
+  result <- readMVar ctrlVar
+  return result
 
 
 handleError :: String -> IO ()
 handleError str = do
   Prelude.putStrLn $ "Error found: " ++ str
-  hFlush stdout

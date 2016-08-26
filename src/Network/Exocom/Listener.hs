@@ -12,6 +12,7 @@ import qualified Data.HashMap as HM
 import Data.Aeson
 import Data.Either
 import Data.Maybe
+import System.IO
 
 
 -- Listener Functions
@@ -37,16 +38,19 @@ waitAndRecv exo sock = do
       let eitherPacket = eitherDecodeStrict contents :: Either String SendPacket
       when (isRight eitherPacket) $ do
         let packet = extract eitherPacket
-        handlers <- readMVar (receiveHandlers exo)
-        let handlerMaybe = HM.lookup (name packet) handlers
+        putStrLn $ "received packet with name: " ++ (name packet) ++ " rt: " ++ (show (responseTo packet)) ++ " id: " ++ (msgId packet)
+        hFlush stdout
+        handlerMaybe <- getListenerForCommand exo packet
         when (isJust handlerMaybe) $ do
           let handler = fromJust handlerMaybe
           case handler of
             NoReply hand -> forkIO $ hand (payload packet)
             Reply hand -> forkIO $ do
-              unregisterHandler exo (name packet)
-              (cmd, repl) <- hand (payload packet)
-              if isJust (responseTo packet) then
+              if isJust (responseTo packet) then do
+                unregisterHandler exo (fromJust (responseTo packet))
+                (cmd, repl) <- hand (payload packet)
+                putStrLn "about to send"
+                hFlush stdout
                 sendMsgReply exo cmd repl (fromJust (responseTo packet))
               else
                 return ()
@@ -58,3 +62,26 @@ waitAndRecv exo sock = do
 -- helper function to extract right from an either
 extract :: Either a b -> b
 extract (Right x) = x
+
+
+getListenerForCommand :: ExoRelay -> SendPacket -> IO (Maybe MessageHandler)
+getListenerForCommand exo packet = do
+  listeners <- readMVar (receiveHandlers exo)
+  print $ HM.keys listeners
+  print $ responseTo packet
+  hFlush stdout
+  if isJust (responseTo packet) then do
+    let response = fromJust $ responseTo packet
+    let hand = HM.lookup response listeners
+    case hand of
+      Nothing -> do
+        let handCmd = HM.lookup (name packet) listeners
+        case handCmd of
+          Nothing -> return Nothing
+          Just handler -> return $ Just handler
+      Just handler -> return $ Just handler
+  else do
+    let nameCmd = (name packet)
+    case HM.lookup nameCmd listeners of
+      Nothing -> return Nothing
+      Just handler -> return $ Just handler

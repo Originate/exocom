@@ -1,4 +1,4 @@
-module Network.Exocom.Error (
+module Network.Exocom.Internal.Error (
   getError,
   resetError,
   emitError,
@@ -6,7 +6,7 @@ module Network.Exocom.Error (
 )
 where
 
-import Network.Exocom.ExoRelay
+import Network.Exocom.Internal.ExoRelay
 import Control.Concurrent.Chan
 import Control.Concurrent
 import Foreign.C.Error

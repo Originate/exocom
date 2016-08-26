@@ -14,11 +14,11 @@ import Control.Concurrent.MVar
 import qualified Data.HashMap as HM
 import Control.Concurrent.Chan
 import Control.Concurrent
-import Network.Exocom.Packet
-import Network.Exocom.ExoRelay
-import Network.Exocom.Sender
-import Network.Exocom.Listener
-import Network.Exocom.Error
+import Network.Exocom.Internal.Packet
+import Network.Exocom.Internal.ExoRelay
+import Network.Exocom.Internal.Sender
+import Network.Exocom.Internal.Listener
+import Network.Exocom.Internal.Error
 import Data.Maybe
 import Data.Aeson
 

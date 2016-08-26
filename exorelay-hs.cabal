@@ -29,11 +29,11 @@ library
   hs-source-dirs:      src
   default-language:    Haskell2010
   exposed-modules:     Network.Exocom,
-                       Network.Exocom.ExoRelay,
-                       Network.Exocom.Sender,
-                       Network.Exocom.Listener,
-                       Network.Exocom.Packet,
-                       Network.Exocom.Error
+                       Network.Exocom.Internal.ExoRelay,
+                       Network.Exocom.Internal.Sender,
+                       Network.Exocom.Internal.Listener,
+                       Network.Exocom.Internal.Packet,
+                       Network.Exocom.Internal.Error
 
 Test-Suite test-exorelay
   type:       exitcode-stdio-1.0

@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE DeriveGeneric #-}
-module Network.Exocom.Packet where
+module Network.Exocom.Internal.Packet where
 
 import Data.Aeson
 import Data.Aeson.Types

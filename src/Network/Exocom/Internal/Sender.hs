@@ -1,15 +1,15 @@
-module Network.Exocom.Sender where
+module Network.Exocom.Internal.Sender where
 
 import System.ZMQ4
-import Network.Exocom.ExoRelay
-import Network.Exocom.Error
+import Network.Exocom.Internal.ExoRelay
+import Network.Exocom.Internal.Error
 import qualified Data.ByteString.Lazy as LB
 import Control.Concurrent.Chan
 import Control.Concurrent
 import Data.UUID
 import Data.UUID.V4
 import Data.Aeson
-import Network.Exocom.Packet
+import Network.Exocom.Internal.Packet
 
 
 

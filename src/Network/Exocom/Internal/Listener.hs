@@ -1,9 +1,9 @@
-module Network.Exocom.Listener where
+module Network.Exocom.Internal.Listener where
 
-import Network.Exocom.ExoRelay
-import Network.Exocom.Packet
-import Network.Exocom.Sender
-import Network.Exocom.Error
+import Network.Exocom.Internal.ExoRelay
+import Network.Exocom.Internal.Packet
+import Network.Exocom.Internal.Sender
+import Network.Exocom.Internal.Error
 import Control.Concurrent.MVar
 import Control.Concurrent
 import Control.Monad

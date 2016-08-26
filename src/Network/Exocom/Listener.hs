@@ -12,7 +12,6 @@ import qualified Data.HashMap as HM
 import Data.Aeson
 import Data.Either
 import Data.Maybe
-import System.IO
 
 
 -- Listener Functions
@@ -38,22 +37,17 @@ waitAndRecv exo sock = do
       let eitherPacket = eitherDecodeStrict contents :: Either String SendPacket
       when (isRight eitherPacket) $ do
         let packet = extract eitherPacket
-        putStrLn $ "received packet with name: " ++ (name packet) ++ " rt: " ++ (show (responseTo packet)) ++ " id: " ++ (msgId packet)
-        hFlush stdout
         handlerMaybe <- getListenerForCommand exo packet
         when (isJust handlerMaybe) $ do
           let handler = fromJust handlerMaybe
           case handler of
             NoReply hand -> forkIO $ hand (payload packet)
             Reply hand -> forkIO $ do
-              if isJust (responseTo packet) then do
+              if isJust (responseTo packet) then
                 unregisterHandler exo (fromJust (responseTo packet))
-                (cmd, repl) <- hand (payload packet)
-                putStrLn "about to send"
-                hFlush stdout
-                sendMsgReply exo cmd repl (fromJust (responseTo packet))
-              else
-                return ()
+              else return ()
+              (cmd, repl) <- hand (payload packet)
+              sendMsgReply exo cmd repl (msgId packet)
           return ()
     Just errmsg -> emitError exo errmsg
   waitAndRecv exo sock
@@ -67,9 +61,6 @@ extract (Right x) = x
 getListenerForCommand :: ExoRelay -> SendPacket -> IO (Maybe MessageHandler)
 getListenerForCommand exo packet = do
   listeners <- readMVar (receiveHandlers exo)
-  print $ HM.keys listeners
-  print $ responseTo packet
-  hFlush stdout
   if isJust (responseTo packet) then do
     let response = fromJust $ responseTo packet
     let hand = HM.lookup response listeners

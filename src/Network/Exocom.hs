@@ -41,6 +41,6 @@ newExoRelay portNum service listenerPort errHandler = do
   return exo
 
 statusHandler :: Value -> IO (String, Value)
-statusHandler _ = Prelude.putStrLn "sending OK" >> return (cmd, "") where
+statusHandler _ = return (cmd, Data.Aeson.Null) where
   cmd = "__status-ok"
   emptyJson = Data.Aeson.Null

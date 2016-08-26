@@ -11,7 +11,6 @@ import Data.UUID.V4
 import Data.Aeson
 import Network.Exocom.Packet
 
-import System.IO
 
 
 -- Sender Functions

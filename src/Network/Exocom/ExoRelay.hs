@@ -5,7 +5,6 @@ import qualified Data.HashMap as HM
 import Control.Concurrent.Chan
 import Control.Concurrent.MVar
 import Data.Aeson
-import System.IO
 
 data MessageHandler = NoReply ListenHandler | Reply ReplyHandler
 
@@ -34,8 +33,6 @@ registerHandler exo command func = do
 
 registerHandlerWithReply :: ExoRelay -> String -> (Value -> IO (String, Value)) -> IO ()
 registerHandlerWithReply exo command func = do
-  print $ "registering handler: " ++ command
-  hFlush stdout
   handlers <- takeMVar $ receiveHandlers exo
   let newHandlers = HM.insert command (Reply func) handlers
   putMVar (receiveHandlers exo) newHandlers

@@ -5,7 +5,6 @@ import Control.Concurrent
 import Control.Concurrent.MVar
 import System.Process
 import System.Exit
-import System.IO
 import Data.Aeson
 import Data.ByteString as B hiding (putStrLn)
 import qualified Data.ByteString.Char8 as SB
@@ -48,8 +47,6 @@ testReply exo = do
   ctrlVar <- newEmptyMVar
   registerHandlerWithReply exo "needReply" (\val -> do
     registerHandler exo "listenReply" (\val -> putMVar ctrlVar (val == (toJSON "payload")))
-    putStrLn "sending listenreply"
-    hFlush stdout
     return ("listenReply", val)
     )
   result <- readMVar ctrlVar

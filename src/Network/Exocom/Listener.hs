@@ -43,9 +43,6 @@ waitAndRecv exo sock = do
           case handler of
             NoReply hand -> forkIO $ hand (payload packet)
             Reply hand -> forkIO $ do
-              if isJust (responseTo packet) then
-                unregisterHandler exo (fromJust (responseTo packet))
-              else return ()
               (cmd, repl) <- hand (payload packet)
               sendMsgReply exo cmd repl (msgId packet)
           return ()

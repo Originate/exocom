@@ -1,8 +1,8 @@
 require! {
   'async'
   'chai' : {expect}
+  'dim-console'
   'jsdiff-console'
-  './my-console'
   './mock-service': MockService
   'nitroglycerin' : N
   'observable-process' : ObservableProcess
@@ -22,7 +22,7 @@ CliWorld = !->
       EXOCOM_ZMQ_PORT : ports.zmq-port
     @exocom-http-port = ports.http-port
     @exocom-zmq-port = ports.zmq-port
-    @process = new ObservableProcess "bin/exocom", console: my-console, env: env
+    @process = new ObservableProcess "bin/exocom", stdout: dim-console.process.stdout, stderr: dim-console.process.stderr, env: env
       ..wait "HTTP service online at port #{@exocom-http-port}", done
 
 
@@ -35,7 +35,7 @@ CliWorld = !->
     env =
       EXOCOM_HTTP_PORT : ports.http-port
       EXOCOM_ZMQ_PORT : ports.zmq-port
-    @process = new ObservableProcess "bin/exocom", console: my-console, env: env
+    @process = new ObservableProcess "bin/exocom", stdout: dim-console.process.stdout, stderr: dim-console.process.stderr, env: env
     done!
 
 

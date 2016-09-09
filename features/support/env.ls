@@ -15,6 +15,4 @@ module.exports = ->
     @exocom?.close!
     @exoservice?.close!
     @exoservice?.close-port!
-    if @app-dir
-      fs.remove-sync @app-dir
     kill-child-processes done

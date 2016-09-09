@@ -3,7 +3,8 @@
 
 executedModules:
   npmScripts:
-    dev: []
+    dev:
+      - test
   shellScripts:
     dev: []
     ignore: []

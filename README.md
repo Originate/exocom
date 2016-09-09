@@ -5,6 +5,7 @@
 in Node.JS
 
 [![Circle CI](https://circleci.com/gh/Originate/exoservice-js.svg?style=shield&circle-token=33fbf4fc2b0c128479443c5e8bff337815205ec7)](https://circleci.com/gh/Originate/exoservice-js)
+[![Build status](https://ci.appveyor.com/api/projects/status/ry2m89moblmwign7?svg=true&passingText=windows%20passing&failingText=windows%20failing&pendingText=windows%20pending)](https://ci.appveyor.com/project/kevgo/exoservice-js)
 [![Dependency Status](https://david-dm.org/originate/exoservice-js.svg)](https://david-dm.org/originate/exoservice-js)
 [![devDependency Status](https://david-dm.org/originate/exoservice-js/dev-status.svg)](https://david-dm.org/originate/exoservice-js#info=devDependencies)
 

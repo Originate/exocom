@@ -9,13 +9,15 @@ require! {
 CliWorld = !->
 
   @create-exoservice-instance = ({service-name, exorelay-port, exocom-port}, done) ->
-    @process = new ObservableProcess("#{process.cwd!}/bin/exo-js"
+    command = "#{process.cwd!}/bin/exo-js"
+    if process.platform is 'win32' then command += '.cmd'
+    @process = new ObservableProcess(command,
                                      env: {SERVICE_NAME: service-name, EXORELAY_PORT: exorelay-port, EXOCOM_PORT: exocom-port},
                                      cwd: path.join(process.cwd!, 'features', 'example-apps', service-name),
                                      verbose: yes,
-                                     console: dim-console.console)
+                                     stdout: process.stdout,
+                                     stderr: process.stderr)
       ..wait 'online at port', done
-
 
 
 module.exports = ->

@@ -21,8 +21,9 @@ module.exports = ->
 
 
   @Given /^an instance of the "([^"]*)" service$/, (@service-name, done) ->
-    @exocom.register-service name: @service-name, port: 4000
-    @create-exoservice-instance {@service-name, exorelay-port: 4000, @exocom-port}, done
+    port-reservation.get-port N (@exorelay-port) ~>
+      @exocom.register-service name: @service-name, port: @exorelay-port
+      @create-exoservice-instance {@service-name, @exorelay-port, @exocom-port}, done
 
 
   @Given /^ports (\d+) and (\d+) are used$/, (port1, port2, done) ->
@@ -89,7 +90,8 @@ module.exports = ->
 
 
   @Then /^it can run the "([^"]*)" service$/, (@service-name, done) ->
-    @create-exoservice-instance {@service-name, exorelay-port: 4000, @exocom-port}, done
+    port-reservation.get-port N (@exorelay-port) ~>
+      @create-exoservice-instance {@service-name, @exorelay-port, @exocom-port}, done
 
 
   @Then /^it runs the "([^"]*)" hook$/, (hook-name, done) ->

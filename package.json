@@ -35,8 +35,9 @@
     "npm": ">= 3.0.0"
   },
   "files": [
-    "dist",
     "bin/exo-js",
+    "bin/exo-js.cmd",
+    "dist",
     "npm-shrinkwrap.json"
   ],
   "license": "ISC",

@@ -11,7 +11,6 @@ require! {
 
 service-loader = (root = '') ->
   server-file-path = _find-server-path root
-  console.log server-file-path
   handlers = require server-file-path
   if not handlers.before-all? then handlers.before-all = -> it!
   {handlers}
@@ -25,7 +24,7 @@ _find-server-path = (root) ->
   if files.length is 1 then return files[0]
 
   # try files in a subdirectory
-  files = globby.sync path.join(process.cwd!, root, '**', 'server.*')
+  files = globby.sync [path.join(process.cwd!, root, '**', 'server.*'), path.join('!**', 'node_modules', '**')]
   if files.length > 1 then throw _multi-files-error files
   if files.length is 1 then return files[0]
   throw new Error "Cannot find server file. It must be named 'server.js' or comparably for your language."

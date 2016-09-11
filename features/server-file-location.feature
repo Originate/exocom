@@ -18,3 +18,6 @@ Feature: server file location
 
   Scenario: server.ls is in the "src" folder
     Then it can run the "server-in-src" service
+
+  Scenario: dependencies also contain "server.js"
+    Then it can run the "dependencies-contain-server-js" service

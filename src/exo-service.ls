@@ -17,11 +17,11 @@ class ExoService extends EventEmitter
 
 
   listen: ->
-    service-loader @root, (service) ~>
-      service.handlers.before-all ~>
-        @exo-relay
-          ..register-handlers service.handlers
-          ..listen @exorelay-port
+    service = service-loader @root
+    service.handlers.before-all ~>
+      @exo-relay
+        ..register-handlers service.handlers
+        ..listen @exorelay-port
 
 
 

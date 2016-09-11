@@ -1,13 +1,14 @@
 require! {
   \chalk : {cyan, dim, green, red}
-  '../package.json' : {name, version}
   'path'
+  'require-yaml'
   './exo-service' : ExoService
 }
 
-console.log dim "Exosphere Node.js service runner #{version}\n"
+exo-js-data = require path.join(__dirname, '..', 'package.json')
+console.log dim "Exosphere Node.js service runner #{exo-js-data.version}\n"
 
-service-data = require path.resolve('./package.json')
+service-data = require path.resolve('./service.yml')
 console.log "Running #{green service-data.name} #{green service-data.version}\n"
 
 

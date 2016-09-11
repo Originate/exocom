@@ -10,7 +10,8 @@
     "globby": "6.0.0",
     "livescript": "1.5.0",
     "nitroglycerin": "1.1.2",
-    "rails-delegate": "0.6.2"
+    "rails-delegate": "0.6.2",
+    "require-yaml": "0.0.1"
   },
   "description": "Opinionated framework to create Exosphere micro-services in Node.js",
   "devDependencies": {

@@ -13,7 +13,7 @@ CliWorld = !->
     if process.platform is 'win32' then command += '.cmd'
     @process = new ObservableProcess(command,
                                      env: {SERVICE_NAME: service-name, EXORELAY_PORT: exorelay-port, EXOCOM_PORT: exocom-port},
-                                     cwd: path.join(process.cwd!, 'features', 'example-apps', service-name),
+                                     cwd: path.join(process.cwd!, 'features', 'example-services', service-name),
                                      verbose: yes,
                                      stdout: process.stdout,
                                      stderr: process.stderr)

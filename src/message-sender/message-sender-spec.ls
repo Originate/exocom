@@ -7,7 +7,7 @@ require! {
 describe 'MessageSender', ->
 
   before-each ->
-    @message-sender = new MessageSender exocom-port: 4100, service-name: 'test'
+    @message-sender = new MessageSender exocom-host: 'localhost', exocom-port: 4100, service-name: 'test'
       ..on 'error', (@error) ~>
 
   after-each ->

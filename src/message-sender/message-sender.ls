@@ -10,12 +10,11 @@ debug = require('debug')('exorelay:message-sender')
 # Subsystem for sending messages out to Exosphere
 class MessageSender extends EventEmitter
 
-  ({@service-name, @exocom-port} = {}) ->
+  ({@exocom-host, @service-name, @exocom-port} = {}) ->
 
     @exocom-port = +@exocom-port
-    throw new Error 'ExoCom port not provided' unless @exocom-port
     @socket = zmq.socket 'push'
-      ..connect "tcp://localhost:#{@exocom-port}"
+      ..connect "tcp://#{@exocom-host}:#{@exocom-port}"
 
     # Contains the id of the most recently sent request (for testing)
     @last-sent-id = null

@@ -12,6 +12,7 @@ class ExoRelay extends EventEmitter
 
   (config) ->
     config?.exocom-port or throw new Error 'exocomPort not provided'
+    config?.exocom-host or throw new Error 'exocomHost not provided'
     config?.service-name or throw new Error 'serviceName not provided'
 
     # manages the request handlers for incoming messages

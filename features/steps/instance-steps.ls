@@ -13,13 +13,13 @@ module.exports = ->
 
 
   @Given /^an ExoRelay instance called "([^"]*)"$/, (instance-name) ->
-    @exo-relay = new ExoRelay {@exocom-port, service-name: 'test-service'}
+    @exo-relay = new ExoRelay {exocom-host: 'localhost', @exocom-port, service-name: 'test-service'}
       ..on 'error', (@error) ~>
 
 
   @Given /^an ExoRelay instance called "([^"]*)" running inside the "([^"]*)" service at port (\d+)$/, (instance-name, service-name, port, done) ->
     @exocom.register-service name: service-name, port: port
-    @exo-relay = new ExoRelay {service-name, @exocom-port}
+    @exo-relay = new ExoRelay {exocom-host: 'localhost',service-name, @exocom-port}
       ..on 'online', -> done!
       ..on 'error', (@error) ~>
       ..listen port
@@ -27,20 +27,20 @@ module.exports = ->
 
   @Given /^an ExoRelay instance called "([^"]*)" listening on port (\d+)$/, (instance-name, port, done) ->
     @exocom.register-service name: 'test-service', port: port
-    @exo-relay = new ExoRelay {@exocom-port, service-name: 'test-service'}
+    @exo-relay = new ExoRelay {exocom-host: 'localhost', @exocom-port, service-name: 'test-service'}
       ..on 'online', (@online-port) ~> done!
       ..on 'error', (@error) ~>
       ..listen port
 
 
   @Given /^an ExoRelay instance$/, ->
-    @exo-relay = new ExoRelay {@exocom-port, service-name: 'test-service'}
+    @exo-relay = new ExoRelay {exocom-host: 'localhost', @exocom-port, service-name: 'test-service'}
       ..on 'online', (@online-port) ~>
 
 
   @Given /^an ExoRelay instance listening on port (\d+)$/, (port, done) ->
     @exocom.register-service name: 'test-service', port: port
-    @exo-relay = new ExoRelay exocom-port: @exocom-port, service-name: 'test-service'
+    @exo-relay = new ExoRelay exocom-host: 'localhost', exocom-port: @exocom-port, service-name: 'test-service'
       ..on 'online', -> done!
       ..on 'error', (@error) ~>
       ..listen port

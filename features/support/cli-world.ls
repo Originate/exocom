@@ -109,7 +109,7 @@ CliWorld = !->
 
 
   @verify-sent-calls = ({service-name, message, id = '123', response-to}, done) ->
-    wait-until (~> @service-mocks[service-name].received-messages[0]), 1, ~>
+    wait-until (~> @service-mocks[service-name].received-messages[0]?.name is message), 1, ~>
       expected =
         name: message
         id: id

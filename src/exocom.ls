@@ -13,8 +13,8 @@ class ExoCom extends EventEmitter
 
   ->
     @listener-subsystem = new ListenerSubsystem @
-    @client-registry = new ClientRegistry
-    @message-sender = new MessageSender
+    @client-registry    = new ClientRegistry
+    @message-sender     = new MessageSender
 
     delegate 'close' 'listen' 'zmqPort' 'httpPort', from: @, to: @listener-subsystem
     delegate 'clearPorts', from: @, to: @message-sender

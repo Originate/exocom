@@ -20,7 +20,6 @@ describe 'MessageSender', ->
       message =
           name: 'message-1'
           payload: 'payload-1'
-          timestamp: 123
       services =
         'mock-service':
           name: 'mock-service'
@@ -45,7 +44,6 @@ describe 'MessageSender', ->
         expected =
           name: 'message-1'
           payload: 'payload-1'
-          timestamp: 123
         jsdiff-console @data, expected, done
 
 

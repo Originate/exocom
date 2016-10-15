@@ -1,5 +1,6 @@
 require! {
   'wait' : {repeat}
+  'nanoseconds'
 }
 
 
@@ -9,8 +10,8 @@ class MessageCache
     @cleanup-interval = cleanup-interval
     @cache = {}
     repeat @cleanup-interval, ->
-      now = Date.now!
-      for id, timestamp of @cache when (timestamp - now) >= @cleanup-interval
+      now = nanoseconds process.hrtime!
+      for id, timestamp of @cache when (timestamp - now) >= @cleanup-interval * 1e9
         @remove id
 
 

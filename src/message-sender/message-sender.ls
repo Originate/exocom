@@ -11,9 +11,6 @@ class MessageSender extends EventEmitter
     # Stores the service names and respective push socket
     @service-sockets = {}
 
-    # Caches message metadata (id, timestamp) to calculate response time
-    @message-cache = new MessageCache!
-
   # Connects our outgoing socket to all existing services
   bind-services: (services) ->
     @clear-ports!
@@ -43,10 +40,8 @@ class MessageSender extends EventEmitter
       payload: message-data.payload
       timestamp: message-data.timestamp
     if message-data.response-to
-      original-timestamp = @message-cache.get-original-timestamp request-data.id
+      request-data.response-time = message-data.response-time
       request-data.response-to = message-data.response-to
-    else
-      @message-cache.push request-data.id, request-data.timestamp
     @_log message-data, service
     @service-sockets[service.name].send JSON.stringify request-data
     done?!

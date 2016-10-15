@@ -70,16 +70,16 @@ ApiWorld = !->
 
 
   @verify-exocom-signaled-string = (string, done) ->
-    [sender-name, message-names, listeners] = string.split '  '
+    [sender-name, message-names, listeners, response-time-msg] = string.split '  '
     message-name-parts = message-names.split ' '
     switch message-name-parts.length
       | 3  =>  [_, translated-name, _] = message-name-parts
       | 5  =>  [_, original-name, _, translated-name, _] = message-name-parts
       | _  =>  throw new Error "Unknown message name parts"
     wait-until (~> @last-sent-messages[0].name is translated-name), 1, ~>
+      expect(@last-sent-messages[0].timestamp).to.be.above(0)
       expect(@last-sent-messages[0].sender).to.eql sender-name
       expect(@last-listeners).to.eql [listeners]
-      expect(@last-sent-messages[0].timestamp).to.be.above(0)
       done!
 
 
@@ -104,7 +104,9 @@ ApiWorld = !->
         name: message
         id: id
       timestamp = @service-mocks[service-name].received-messages[0].timestamp
+      response-time = @service-mocks[service-name].received-messages[0].response-time
       expected.timestamp = timestamp if timestamp
+      expected.response-time = response-time if response-time
       expected.response-to = response-to if response-to
       jsdiff-console @service-mocks[service-name].received-messages[0], expected, done
 

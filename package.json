@@ -8,6 +8,7 @@
     "debug": "2.2.0",
     "docopt": "0.6.2",
     "express": "4.14.0",
+    "nanoseconds": "0.1.0",
     "nitroglycerin": "1.1.2",
     "process": "0.11.9",
     "rails-delegate": "0.6.2",

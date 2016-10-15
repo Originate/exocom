@@ -59,8 +59,9 @@ class ZMQListener extends EventEmitter
     name = req.name
     payload = req.payload
     response-to = req.response-to
+    timestamp = req.timestamp
     id = req.id
-    {sender, name, response-to, payload, id}
+    {id, name, payload, response-to, sender, timestamp}
 
 
 

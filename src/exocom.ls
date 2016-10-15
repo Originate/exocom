@@ -2,7 +2,9 @@ require! {
   './client-registry/client-registry' : ClientRegistry
   'events' : {EventEmitter}
   './listener-subsystem/listener-subsystem' : ListenerSubsystem
+  './message-cache/message-cache' : MessageCache
   './message-sender/message-sender' : MessageSender
+  'nanoseconds'
   'process'
   'rails-delegate' : {delegate, delegate-event}
 }
@@ -12,8 +14,9 @@ debug = require('debug')('exocom')
 class ExoCom extends EventEmitter
 
   ->
-    @listener-subsystem = new ListenerSubsystem @
     @client-registry    = new ClientRegistry
+    @listener-subsystem = new ListenerSubsystem @
+    @message-cache = new MessageCache!
     @message-sender     = new MessageSender
 
     delegate 'close' 'listen' 'zmqPort' 'httpPort', from: @, to: @listener-subsystem
@@ -47,17 +50,22 @@ class ExoCom extends EventEmitter
 
   # sends the given message to all subscribers of it.
   send-message: (message-data) ~>
-    [seconds, nanos] = process.hrtime!
     # convert the outgoing message name from its internal version to the public version
     sender = @client-registry.clients[message-data.sender]
     external-message-name = @client-registry.outgoing-message-name message-data.name, sender
     message-data.original-name = message-data.name
     message-data.name = external-message-name
-    message-data.timestamp = seconds * 1e9 + nanos
-
+    message-data.timestamp = nanoseconds process.hrtime!
     # determine the subscribers
     subscribers = @client-registry.subscribers-to external-message-name
     subscriber-names = [subscriber.name for subscriber in subscribers]
+
+    # calculate a message's response time if it is a reply
+    if message-data.response-to
+      original-timestamp  = @message-cache.get-original-timestamp message-data.id
+      message-data.response-time = message-data.timestamp - original-timestamp
+    else
+      @message-cache.push message-data.id, message-data.timestamp
 
     # send the message to the subscribers
     debug "sending '#{message-data.name}' to #{subscriber-names}"

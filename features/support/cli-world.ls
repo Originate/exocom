@@ -81,7 +81,8 @@ CliWorld = !->
 
 
   @verify-exocom-signaled-string = (message, done) ->
-    @process.wait message, done
+    [...message-main, response-time-msg] = message.split '  '
+    @process.wait "#{message-main.join '  '}  ", done
 
 
   @verify-exocom-received-message = (message, done) ->
@@ -115,7 +116,9 @@ CliWorld = !->
         id: id
         payload: ''
       timestamp = @service-mocks[service-name].received-messages[0].timestamp
+      response-time = @service-mocks[service-name].received-messages[0].response-time
       expected.timestamp = timestamp if timestamp
+      expected.response-time = response-time if response-time
       expected.response-to = response-to if response-to
       jsdiff-console @service-mocks[service-name].received-messages[0], expected, done
 

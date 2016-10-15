@@ -49,10 +49,13 @@ run = ->
 
     ..on 'message', ({messages, receivers}) ->
       for message in messages
+        response-time = ''
+        if message.response-to
+          response-time = "  (#{(message.response-time * 1e-6).to-fixed 2} ms)"
         if message.name is message.original-name
-          console.log "#{message.sender}  --[ #{message.name} ]->  #{receivers.join ' and '}"
+          console.log "#{message.sender}  --[ #{message.name} ]->  #{receivers.join ' and '}#{response-time}"
         else
-          console.log "#{message.sender}  --[ #{message.original-name} ]-[ #{message.name} ]->  #{receivers.join ' and '}"
+          console.log "#{message.sender}  --[ #{message.original-name} ]-[ #{message.name} ]->  #{receivers.join ' and '}#{response-time}"
         console.log message.payload
 
 

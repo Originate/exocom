@@ -10,19 +10,33 @@ class ExoRelaySpec
   with Matchers
   with BeforeAndAfterAll {
 
+  implicit val executor = system.dispatcher
+
+  val EXOCOM_PORT = 42
+  val SERVICE_NAME = "test-service"
+
+  val exoRelay = new ExoRelay(Config(EXOCOM_PORT, SERVICE_NAME))
+
   override def afterAll = {
     TestKit.shutdownActorSystem(system)
   }
 
-  def withExoRelay(testCode: ExoRelay => Any) = {
-    val exoRelay = new ExoRelay(42, "test-service")
-    testCode(exoRelay)
+  "An ExoRelay" should "require a specified port via the exocomPort parameter" in {
+
+    exoRelay.config.exocomPort shouldBe EXOCOM_PORT
   }
 
-  "An ExoRelay" should "require a specified port via the exocomPort parameter" in {
-      val port = 42
-      val exorelay = new ExoRelay(port, "test-service")
+  it should "be able to listen on a specied port for incoming messages" in {
+    exoRelay.listen()
+    exoRelay.listen(4100)
+    assert(true)
+  }
 
-      exorelay.config.exocomPort shouldBe port
+  it should "be able to add a new handler" in {
+    assert(false)
+  }
+
+  it should "be able to remove an existing handler" in {
+    assert(false)
   }
 }

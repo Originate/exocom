@@ -18,3 +18,6 @@ libraryDependencies ++= {
     "org.scalatest"     %% "scalatest" % scalaTestV % "test")
 }
 
+javaOptions in Test := Seq("-Djava.library.path=/usr/local/lib")
+
+fork in Test := true

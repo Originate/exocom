@@ -8,7 +8,12 @@ require! {
 ApiWorld = !->
 
   @create-exoservice-instance = ({service-name, exorelay-port, exocom-port}, done) ->
-    @exoservice = new ExoService {root: path.join('features', 'example-services', service-name), exorelay-port, exocom-port, service-name}
+    @exoservice = new ExoService {
+      root: path.join('features', 'example-services', service-name)
+      exorelay-port
+      exocom-port
+      service-name
+      }  
       ..on 'online', (port) -> done!
       ..listen!
 

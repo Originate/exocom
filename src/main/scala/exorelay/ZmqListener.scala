@@ -17,20 +17,22 @@ class ZmqListener(out: ActorRef, zmq: ZeroMQExtension)
 
   startWith(Offline, Uninitialized)
 
+  // When ZmqListener is offline
+  // it can be requested to connect
+  // and begin listening on a given port
   when(Offline){
-    // Connect to the endpoint
     case Event(Connect(port), _) =>
-
       val endpoint = s"tcp://*:$port"
       val zmqSocket = zmq.newSocket(SocketType.Pull, Bind(endpoint), Listener(out))
 
       goto(Online) using ConnectionData(zmqSocket)
   }
 
+  // When ZmqListener is online
+  // it can be requested to close
+  // the current socket and disconnect
   when(Online){
-    // Close the connection
     case Event(Disconnect, ConnectionData(socket)) =>
-
       socket ! PoisonPill
 
       goto(Offline) using Uninitialized
@@ -64,8 +66,8 @@ class ZmqListener(out: ActorRef, zmq: ZeroMQExtension)
   }
 
   whenUnhandled{
-    case Event(msg, _) =>
-      log.debug("Received unexpected message" + msg)
+    case Event(e, _) =>
+      log.error(s"Unhandled message $e received from $sender in zmqListener")
       stay
   }
 }

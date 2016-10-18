@@ -12,6 +12,7 @@ libraryDependencies ++= {
   val akkaV = "2.4.10"
   val scalaTestV = "3.0.0"
 	Seq(
+    "com.lihaoyi"       %% "upickle" % "0.4.3",
     "com.mdialog"       %% "scala-zeromq" % "1.2.1-SNAPSHOT",
     "com.typesafe.akka" %% "akka-actor" % akkaV,
     "com.typesafe.akka" %% "akka-testkit" % akkaV % "test",

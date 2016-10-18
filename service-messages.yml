@@ -1,0 +1,27 @@
+tweets:
+  receives:
+  - tweets.create
+  - tweets.list
+  - tweets.get-details
+  - tweets.update
+  - tweets.delete
+
+users:
+  receives:
+    - users.create
+    - users.list
+    - user.get-details
+    - user.update
+    - user.delete
+
+web:
+  receives:
+  - user.details
+  - user.not-found
+  - user.updated
+  - user.deleted
+  - users.listed
+  - users.created
+  - tweets.listed
+  - tweets.created
+  - tweets.deleted

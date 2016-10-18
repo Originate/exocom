@@ -2,6 +2,7 @@ require! {
   'chai' : {expect}
   'http'
   'livescript'
+  '../support/mock-service' : MockService
   'nitroglycerin' : N
   'port-reservation'
   'request'
@@ -35,10 +36,29 @@ module.exports = ->
               name: service.NAME
               internal-namespace: service['INTERNAL NAMESPACE']
               host: service.HOST
+              type: service.TYPE
               port: +service.PORT
               sends: service.SENDS.split(',')
               receives: service.RECEIVES.split(' ')
             }
+          @set-service-landscape data, done
+
+
+  @Given /^an ExoCom instance managing the service landscape:$/ (table, done) ->
+    port-reservation
+      ..base-port = 5000
+      ..get-port N (@exocom-zmq-port) ~>
+      ..get-port N (@exocom-http-port) ~>
+        @create-exocom-instance http-port: @exocom-http-port, zmq-port: @exocom-zmq-port, ~>
+          data = []
+          for service in table.hashes!
+            data.push do
+              name: service.NAME
+              internal-namespace: service['INTERNAL NAMESPACE']
+              host: service.HOST
+              type: service.TYPE
+              port: +service.PORT
+            @create-mock-service-at-port service.NAME, service.PORT, ->
           @set-service-landscape data, done
 
 
@@ -53,6 +73,17 @@ module.exports = ->
     @last-sent-message-id = id
     @service-sends-message {service, message, id}, done
 
+
+  @When /^the "([^"]*)" goes offline$/ (service-name, done) ->
+    @service-mocks[service-name].close!
+    wait 200, done
+
+
+  @When /^a new service instance registers itself via the message:$/ (message-text, done) ->
+    eval livescript.compile "message = \n#{message-text.replace /^/gm, '  '}", bare: yes, header: no
+    (@service-mocks or= {})[message.sender] = new MockService push-port: 5000, pull-port: message.payload.port
+    @service-mocks[message.sender].send message
+    wait 100, done # wait for message to send
 
 
   @When /^(I try )?starting ExoCom at ZMQ port (\d+)$/, (!!expect-error, +port, done) ->
@@ -87,7 +118,6 @@ module.exports = ->
     @service-sends-reply {service, message: reply-message, response-to}, done
 
 
-
   @Then /^ExoCom broadcasts the message "([^"]*)" to the "([^"]+)" service$/, (message, service-name, done) ->
     @verify-sent-calls {service-name, message: message, id: @last-sent-message-id}, done
 
@@ -96,7 +126,7 @@ module.exports = ->
     @verify-sent-calls {service-name, message: message, response-to: '111'}, done
 
 
-  @Then /^ExoCom now knows about these services:$/, (table, done) ->
+  @Then /^ExoCom now knows about these services:$/ (table, done) ->
     services = {}
     for row in table.hashes!
       services[row.NAME] =
@@ -104,6 +134,7 @@ module.exports = ->
         internal-namespace: row['INTERNAL NAMESPACE']
         host: row.HOST
         port: +row.PORT
+        type: row.TYPE
     @verify-service-setup services, done
 
 

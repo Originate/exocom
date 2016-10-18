@@ -1,5 +1,6 @@
 require! {
   'remove-value'
+  'require-yaml'
 }
 
 
@@ -44,20 +45,39 @@ class ClientRegistry
   set-routing-config: (services) ->
     @reset!
     for service in services
-      @clients[service.name] =
+      @add-routing-config service
+
+
+  # Adds service routing configurations to the given setup
+  add-routing-config: (service) ->
+    @clients[service.name] =
+      host: service.host
+      port: service.port
+      name: service.name
+      type: service.type
+      internal-namespace: service.internal-namespace
+    service.receives or= @_look-up-service-messages service.type
+    for message in service.receives
+      external-message = @external-message-name {message, service-name: service.name, internal-namespace: service.internal-namespace}
+      @routes[external-message] or= {}
+      @routes[external-message].receivers or= []
+      @routes[external-message].receivers.push do
+        name: service.name
         host: service.host
         port: service.port
-        name: service.name
         internal-namespace: service.internal-namespace
-      for message in service.receives
-        external-message = @external-message-name message, service
-        @routes[external-message] or= {}
-        @routes[external-message].receivers or= []
-        @routes[external-message].receivers.push do
-          name: service.name
-          host: service.host
-          port: service.port
-          internal-namespace: service.internal-namespace
+
+
+  remove-routing-config: ({service-name, host}) ->
+    for message in @_look-up-service-messages @clients[service-name].type
+      external-message = @external-message-name {message, service-name, internal-namespace: @clients[service-name].internal-namespace}
+      delete @routes[external-message]
+    delete @clients[service-name]
+
+
+  _look-up-service-messages: (service-name) ->
+    service-messages = require '../../service-messages.yml'
+    service-messages[service-name].receives
 
 
   # Returns the clients that are subscribed to the given message
@@ -73,13 +93,13 @@ class ClientRegistry
   # - service "tweets" has internal namespace "text-snippets"
   # - it only knows the "text-snippets.create" message
   # - the external message name that it has to subscribe to is "tweets.create"
-  external-message-name: (message, service) ->
+  external-message-name: ({message, service-name, internal-namespace}) ->
     message-parts = message.split '.'
     switch
-    | !service.internal-namespace       =>  message
+    | !internal-namespace               =>  message
     | message-parts.length is 1         =>  message
-    | message-parts[0] is service.name  =>  message
-    | otherwise                         =>  "#{service.name}.#{message-parts[1]}"
+    | message-parts[0] is service-name  =>  message
+    | otherwise                         =>  "#{service-name}.#{message-parts[1]}"
 
 
   # Returns the external name for the given message sent by the given service,

@@ -17,7 +17,7 @@ class ExoCom extends EventEmitter
     @client-registry    = new ClientRegistry
     @listener-subsystem = new ListenerSubsystem @
     @message-cache = new MessageCache!
-    @message-sender     = new MessageSender
+    @message-sender = new MessageSender @
 
     delegate 'close' 'listen' 'zmqPort' 'httpPort', from: @, to: @listener-subsystem
     delegate 'clearPorts', from: @, to: @message-sender
@@ -38,7 +38,7 @@ class ExoCom extends EventEmitter
     debug "ZMQ bound at port #{ports.zmq-port}, HTTP listening at port #{ports.http-port}"
 
 
-  # registers the service with the given data
+  # registers the services with the given data
   # as a sender and receiver of messages
   set-routing-config: (routing-config) ~>
     debug 'receiving service setup'
@@ -47,6 +47,19 @@ class ExoCom extends EventEmitter
     @emit 'routing-setup'
     'success'
 
+  # registers the service with the given data
+  # as a sender and receiver of messages
+  add-routing-config: (routing-config) ~>
+    @client-registry.add-routing-config routing-config
+    @message-sender.bind-new-service service-name: routing-config.name, host: routing-config.host, port: routing-config.port
+    'success'
+
+  # deregisters a service with the given data
+  # as a sender and receiver of messages
+  remove-routing-config: ({service-name, host}) ~>
+    @client-registry.remove-routing-config {service-name, host}
+    @message-sender.unbind-service {service-name, host}
+    'success'
 
   # sends the given message to all subscribers of it.
   send-message: (message-data) ~>

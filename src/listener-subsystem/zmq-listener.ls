@@ -41,11 +41,14 @@ class ZMQListener extends EventEmitter
   on-socket-receive: (data) ~>
     request-data = @_parse-request JSON.parse data.to-string!
     @_log request-data
-    switch (result = @exocom.send-message request-data)
-      | 'success'             =>
-      | 'missing request id'  =>  @emit 'error', 'missing request id'
-      | 'unknown message'     =>  @emit 'error', "unknown message: '#{request-data.message}'"
-      | _                     =>  @emit 'error', "unknown result code: '#{@result}'"
+    if request-data.name is "exocom.register-service"
+      @exocom.add-routing-config request-data.payload
+    else
+      switch (result = @exocom.send-message request-data)
+        | 'success'             =>
+        | 'missing request id'  =>  @emit 'error', 'missing request id'
+        | 'unknown message'     =>  @emit 'error', "unknown message: '#{request-data.message}'"
+        | _                     =>  @emit 'error', "unknown result code: '#{@result}'"
 
 
   _log: ({name, id, response-to}) ->

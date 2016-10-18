@@ -11,7 +11,7 @@ require! {
 describe 'MessageSender', ->
 
   before-each ->
-    @message-sender = new MessageSender
+    @message-sender = new MessageSender @exocom
 
 
   describe 'send-to-service', (...) ->

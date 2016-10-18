@@ -57,4 +57,3 @@ class HttpListener extends EventEmitter
 
 
 module.exports = HttpListener
-

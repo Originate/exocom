@@ -24,8 +24,10 @@ class MockService
 
 
   close: ~>
+    | @closed => return
     @push-socket?.close!
     @pull-socket?.close!
+    @closed = yes
 
 
   send: (request-data) ~>

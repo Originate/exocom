@@ -20,7 +20,7 @@ ApiWorld = !->
 
 
   @create-mock-service-at-port = (name, port, done) ->
-    (@service-mocks or= {})[name] = new MockService push-port: null, pull-port: port
+    (@service-mocks or= {})[name] = new MockService push-port: 5000, pull-port: port
     done!
 
 

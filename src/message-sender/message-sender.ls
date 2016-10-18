@@ -7,16 +7,31 @@ debug = require('debug')('exocom:message-sender')
 
 class MessageSender extends EventEmitter
 
-  ->
+  (@exocom)->
     # Stores the service names and respective push socket
     @service-sockets = {}
 
+
+  # Removes all existing connections
   # Connects our outgoing socket to all existing services
   bind-services: (services) ->
     @clear-ports!
-    for service, params of services
-      @service-sockets[service] = zmq.socket 'push'
-        ..connect "tcp://#{params.host}:#{params.port}"
+    for service-name, params of services
+      @bind-new-service {service-name, params.host, params.port}
+
+
+  # Connects our outgoing socket to all existing services
+  bind-new-service: ({service-name, host, port}) ->
+    @service-sockets[service-name] = zmq.socket 'push'
+      ..connect "tcp://#{host}:#{port}"
+      ..monitor 10, 0
+      ..on 'disconnect', ~>
+        @exocom.remove-routing-config {service-name, host}
+
+
+  unbind-service: ({service-name}) ->
+    @service-sockets[service-name]?.close!
+    delete @service-sockets[service-name]
 
 
   # Closes and deletes all existing push sockets

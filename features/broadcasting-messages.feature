@@ -10,9 +10,9 @@ Feature: Broadcasting messages
 
   Background:
     Given an ExoCom instance configured for the service landscape:
-      | NAME  | INTERNAL NAMESPACE | HOST      | PORT | SENDS        | RECEIVES     |
-      | web   | web                | localhost | 3001 | create-user  | created-user |
-      | users | users              | localhost | 3002 | created-user | create-user  |
+      | NAME  | TYPE  | INTERNAL NAMESPACE | HOST      | PORT | SENDS        | RECEIVES     |
+      | web   | web   | web                | localhost | 3001 | create-user  | created-user |
+      | users | users | users              | localhost | 3002 | created-user | create-user  |
     And a "web" instance running at port 3001
     And a "users" instance running at port 3002
 

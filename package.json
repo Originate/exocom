@@ -5,6 +5,7 @@
   "dependencies": {
     "chalk": "1.1.3",
     "debug": "2.2.0",
+    "ip": "1.1.3",
     "lodash.isempty": "4.4.0",
     "node-uuid": "1.4.7",
     "rails-delegate": "0.6.2",
@@ -26,7 +27,8 @@
     "nitroglycerin": "1.1.2",
     "o-tools": "0.7.0",
     "o-tools-livescript": "1.2.3",
-    "portfinder": "1.0.8",
+    "portfinder": "1.0.7",
+    "prelude-ls": "1.1.2",
     "sinon": "1.17.6",
     "tertestrial": "0.3.2",
     "wait": "0.1.0"

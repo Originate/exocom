@@ -1,6 +1,7 @@
 require! {
   'chai' : {expect}
   'chalk' : {green, grey, red}
+  'ip'
   'jsdiff-console'
   'ejs'
   'livescript'
@@ -66,7 +67,7 @@ module.exports = ->
     # Wait until we get some call data, then wait another 50ms to let all the request data fill in
     wait-until (~> @exocom.received-messages.length), 10, ~>
       wait 50, ~>
-        rendered = ejs.render request-data, request_uuid: @message-id
+        rendered = ejs.render request-data, request_uuid: @message-id, ip_address: ip.address!
         template = livescript.compile "compiled = {\n#{rendered}\n}", bare: yes, header: no
         eval template
         jsdiff-console @exocom.received-messages[0], compiled, done
@@ -84,7 +85,7 @@ module.exports = ->
     # Wait until we get some call data, then wait another 50ms to let all the request data fill in
     wait-until (~> @exocom.received-messages.length), 10, ~>
       wait 50, ~>
-        rendered = ejs.render request-data, request_uuid: @exo-relay.message-sender.last-sent-id
+        rendered = ejs.render request-data, request_uuid: @exo-relay.message-sender.last-sent-id, ip_address: ip.address!
         template = "compiled = {\n#{rendered}\n}"
         compiled-template = livescript.compile template, bare: yes, header: no
         parsed = eval compiled-template

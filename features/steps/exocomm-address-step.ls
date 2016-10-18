@@ -13,19 +13,26 @@ module.exports = ->
 
 
   @When /^creating an ExoRelay instance using ExoCom host "([^"]*)" and port (\d+)$/ (host, +port) ->
-    @exo-relay = new ExoRelay exocom-host: host, exocom-port: port, service-name: 'test-service'
+    @exo-relay = new ExoRelay do
+      exocom-host: host
+      exocom-port: port
+      service-name: 'test-service'
 
 
   @When /^trying to create an ExoRelay without providing the ExoCom port$/, ->
     try
-      @exo-relay = new ExoRelay exocom-host: 'localhost', service-name: 'test-service'
+      @exo-relay = new ExoRelay do
+        exocom-host: 'localhost'
+        service-name: 'test-service'
     catch
       @error = e.message
 
 
   @When /^trying to create an ExoRelay without providing the ExoCom host$/ ->
     try
-      @exo-relay = new ExoRelay exocom-port: 4100, service-name: 'test-service'
+      @exo-relay = new ExoRelay do
+        exocom-port: 4100
+        service-name: 'test-service'
     catch
       @error = e.message
 

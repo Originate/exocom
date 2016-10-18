@@ -16,9 +16,9 @@ Feature: Configuring the ExoCom address
 
   Scenario: the user does not provide the ExoCom port
     When trying to create an ExoRelay without providing the ExoCom port
-    Then it throws the error "exocomPort not provided"
+    Then it throws the error "ExoCom port not provided to Exorelay"
 
 
   Scenario: the user does not provide the ExoCom host
     When trying to create an ExoRelay without providing the ExoCom host
-    Then it throws the error "exocomHost not provided"
+    Then it throws the error "ExoCom host not provided to Exorelay"

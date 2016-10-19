@@ -41,16 +41,17 @@ class ExoRelaySpec
 
   it should "Call 'addHandler' to register a new handler to incoming messages" in {
     for {
-      f <- exoRelay.addHander("test.addHandler", _ => ())
-      f2 <- exoRelay.hasHandler("test.addHandler")
-    } yield assert( f && f2)
+      addedHandler <- exoRelay.addHander("test.addHandler", _ => ())
+      hasHandler <- exoRelay.hasHandler("test.addHandler")
+    } yield assert(addedHandler && hasHandler)
   }
 
   it should "Call 'removeHandler' to remove an existing handler for incoming messages" in {
     for {
-      f <- exoRelay.addHander("test.removeHandler", _ => ())
-      f2 <- exoRelay.removeHandler("test.removeHandler")
-    } yield assert(f && f2)
+      _ <- exoRelay.addHander("test.removeHandler", _ => ())
+      removedHandler <- exoRelay.removeHandler("test.removeHandler")
+      hasHandler <- exoRelay.hasHandler("test.removeHandler")
+    } yield assert(removedHandler && !hasHandler)
   }
 
   it should "Call 'on' method to register a new handler for internal events" in {

@@ -6,6 +6,7 @@ require! {
   'livescript'
   'nitroglycerin': N
   'port-reservation'
+  'prelude-ls' : {any}
   'record-http' : HttpRecorder
   'wait' : {wait, wait-until}
 }
@@ -23,7 +24,10 @@ module.exports = ->
   @Given /^an instance of the "([^"]*)" service$/, (@service-name, done) ->
     port-reservation.get-port N (@exorelay-port) ~>
       @exocom.register-service name: @service-name, port: @exorelay-port
-      @create-exoservice-instance {@service-name, @exorelay-port, @exocom-port}, done
+      @create-exoservice-instance {@service-name, @exorelay-port, @exocom-port}, ~>
+        wait-until (~> @exocom.received-messages.length), 10, ~>
+          @exocom.reset! if @exocom.received-messages |> any (.name is 'exocom.register-service')
+          done!
 
 
   @Given /^ports (\d+) and (\d+) are used$/, (port1, port2, done) ->
@@ -59,13 +63,18 @@ module.exports = ->
   @When /^starting a service at port (\d+)$/, (exorelay-port, done) ->
     @service-name = 'test'
     @exocom.register-service {name: @service-name, port: exorelay-port}
-    @create-exoservice-instance {@service-name, exorelay-port, @exocom-port}, done
+    @create-exoservice-instance {@service-name, exorelay-port, @exocom-port}, ~>
+    wait-until (~> @exocom.received-messages.length), 10, ~>
+      @exocom.reset! if @exocom.received-messages |> any (.name is 'exocom.register-service')
+      done!
 
 
   @When /^starting the "([^"]*)" service$/, (@service-name, done) ->
     @exocom.register-service name: @service-name, port: 4000
-    @create-exoservice-instance {@service-name, exorelay-port: 4000, @exocom-port}, done
-
+    @create-exoservice-instance {@service-name, exorelay-port: 4000, @exocom-port}, ~>
+      wait-until (~> @exocom.received-messages.length), 10, ~>
+        @exocom.reset! if @exocom.received-messages |> any (.name is 'exocom.register-service')
+        done!
 
 
   @Then /^after a while it sends the "([^"]*)" message$/, (reply-message-name, done) ->

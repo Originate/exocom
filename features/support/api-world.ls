@@ -10,10 +10,11 @@ ApiWorld = !->
   @create-exoservice-instance = ({service-name, exorelay-port, exocom-port}, done) ->
     @exoservice = new ExoService {
       root: path.join('features', 'example-services', service-name)
+      exocom-host: "localhost"
       exorelay-port
       exocom-port
       service-name
-      }  
+      }
       ..on 'online', (port) -> done!
       ..listen!
 

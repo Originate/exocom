@@ -2,6 +2,8 @@ require! {
   'dim-console'
   'observable-process' : ObservableProcess
   'path'
+  'prelude-ls' : {any}
+  'wait' : {wait-until}
 }
 
 
@@ -18,6 +20,12 @@ CliWorld = !->
                                      stdout: process.stdout,
                                      stderr: process.stderr)
       ..wait 'online at port', done
+
+
+  @remove-register-service-message = (@exocom, done) ->
+    wait-until (~> @exocom.received-messages.length), 10, ~>
+      @exocom.reset! if @exocom.received-messages |> any (.name is 'exocom.register-service')
+      done!
 
 
 module.exports = ->

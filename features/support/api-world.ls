@@ -1,6 +1,8 @@
 require! {
   '../..' : ExoService
   'path'
+  'prelude-ls' : {any}
+  'wait' : {wait-until}
 }
 
 
@@ -17,6 +19,12 @@ ApiWorld = !->
       }
       ..on 'online', (port) -> done!
       ..listen!
+
+
+  @remove-register-service-message = (@exocom, done) ->
+    wait-until (~> @exocom.received-messages.length), 10, ~>
+      @exocom.reset! if @exocom.received-messages |> any (.name is 'exocom.register-service')
+      done!
 
 
 module.exports = ->

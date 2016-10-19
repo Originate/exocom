@@ -25,9 +25,7 @@ module.exports = ->
     port-reservation.get-port N (@exorelay-port) ~>
       @exocom.register-service name: @service-name, port: @exorelay-port
       @create-exoservice-instance {@service-name, @exorelay-port, @exocom-port}, ~>
-        wait-until (~> @exocom.received-messages.length), 10, ~>
-          @exocom.reset! if @exocom.received-messages |> any (.name is 'exocom.register-service')
-          done!
+        @remove-register-service-message @exocom, done
 
 
   @Given /^ports (\d+) and (\d+) are used$/, (port1, port2, done) ->
@@ -64,17 +62,13 @@ module.exports = ->
     @service-name = 'test'
     @exocom.register-service {name: @service-name, port: exorelay-port}
     @create-exoservice-instance {@service-name, exorelay-port, @exocom-port}, ~>
-    wait-until (~> @exocom.received-messages.length), 10, ~>
-      @exocom.reset! if @exocom.received-messages |> any (.name is 'exocom.register-service')
-      done!
+      @remove-register-service-message @exocom, done
 
 
   @When /^starting the "([^"]*)" service$/, (@service-name, done) ->
     @exocom.register-service name: @service-name, port: 4000
     @create-exoservice-instance {@service-name, exorelay-port: 4000, @exocom-port}, ~>
-      wait-until (~> @exocom.received-messages.length), 10, ~>
-        @exocom.reset! if @exocom.received-messages |> any (.name is 'exocom.register-service')
-        done!
+      @remove-register-service-message @exocom, done
 
 
   @Then /^after a while it sends the "([^"]*)" message$/, (reply-message-name, done) ->

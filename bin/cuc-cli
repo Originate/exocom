@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+build
 if [ "$#" == "0" ]; then
   EXOCOM_TEST_DEPTH=CLI cucumber-js --tags ~@todo
 else

@@ -4,9 +4,9 @@ set -e
 if [ "$#" == "0" ]; then
   node_modules/o-tools/bin/lint
   mocha --compilers ls:livescript "**/*spec.ls"
-  bin/cuc-api
+  # bin/cuc-api
   bin/cuc-cli
 else
-  bin/cuc-api "$@"
+  # bin/cuc-api "$@"
   bin/cuc-cli "$@"
 fi

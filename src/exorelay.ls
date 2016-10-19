@@ -55,7 +55,7 @@ class ExoRelay extends EventEmitter
 
 
   _send-routing-config: ~>
-    @send 'exorelay.register' do
+    @send 'exocom.register-service' do
       name: @config.service-name
       internal-namespace: @config.internal-namespace
       host: ip.address!

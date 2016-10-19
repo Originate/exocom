@@ -17,7 +17,7 @@ module.exports = ->
     @exo-relay = new ExoRelay {exocom-host: 'localhost', @exocom-port, service-name: 'test-service'}
       ..on 'online', ~>
         wait-until (~> @exocom.received-messages.length), 10, ~>
-          @exocom.reset! if @exocom.received-messages |> any (.name is 'exorelay.register')
+          @exocom.reset! if @exocom.received-messages |> any (.name is 'exocom.register-service')
       ..on 'error', (@error) ~>
 
 
@@ -26,7 +26,7 @@ module.exports = ->
     @exo-relay = new ExoRelay {exocom-host: 'localhost', service-name, @exocom-port}
       ..on 'online', ~>
         wait-until (~> @exocom.received-messages.length), 10, ~>
-          @exocom.reset! if @exocom.received-messages |> any (.name is 'exorelay.register')
+          @exocom.reset! if @exocom.received-messages |> any (.name is 'exocom.register-service')
           done!
       ..on 'error', (@error) ~>
       ..listen port
@@ -37,7 +37,7 @@ module.exports = ->
     @exo-relay = new ExoRelay {exocom-host: 'localhost', @exocom-port, service-name: 'test-service'}
       ..on 'online', (@online-port) ~>
         wait-until (~> @exocom.received-messages.length), 10, ~>
-          @exocom.reset! if @exocom.received-messages |> any (.name is 'exorelay.register')
+          @exocom.reset! if @exocom.received-messages |> any (.name is 'exocom.register-service')
           done!
       ..on 'error', (@error) ~>
       ..listen port
@@ -53,7 +53,7 @@ module.exports = ->
     @exo-relay = new ExoRelay {exocom-host: 'localhost', @exocom-port, service-name: 'test-service'}
       ..on 'online', ~>
         wait-until (~> @exocom.received-messages.length), 10, ~>
-          @exocom.reset! if @exocom.received-messages |> any (.name is 'exorelay.register')
+          @exocom.reset! if @exocom.received-messages |> any (.name is 'exocom.register-service')
           done!
       ..on 'error', (@error) ~>
       ..listen port

@@ -15,7 +15,7 @@ Feature: Register a service with ExoCom
     When an ExoRelay instance running inside the "test-service" service comes online at port 4000
     Then ExoRelay makes the ZMQ request:
       """
-      name: 'exorelay.register'
+      name: 'exocom.register-service'
       sender: 'test-service'
       payload:
         name: 'test-service'

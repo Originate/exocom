@@ -32,4 +32,8 @@ class ExoRelay(override val config: Config)(implicit system: ActorSystem)
 
   override def hasHandler(eventName: String): Future[Boolean] =
     (messageHandler ? MessageHandler.HasHandler(eventName)).mapTo[Boolean]
+
+  override def send(message: ExoMessage): Unit = {
+    // Send
+  }
 }

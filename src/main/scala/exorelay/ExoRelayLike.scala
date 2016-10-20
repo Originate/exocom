@@ -15,7 +15,7 @@ trait ExoRelayLike {
   //def on(event: String, handler: => Unit): Unit
 
   // Send message to Exosphere
-  //def send(message: ExoMessage): Unit
+  def send(message: ExoMessage): Unit
 
   // Add a new handler for incoming messages
   def addHander(eventName: String, callback: String => Unit): Future[Boolean]

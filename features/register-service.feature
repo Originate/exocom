@@ -10,7 +10,7 @@ Feature: Manage new instances of services
 
 
   Scenario: a new service comes online
-    Given an ExoCom instance
+    Given an ExoCom instance with routing information "[{name: users-service, receives: [users.create]}]"
     When a new service instance registers itself via the message:
       """
       * name: 'exocom.register-service'

@@ -17,20 +17,20 @@ module.exports = ->
     @create-mock-service-at-port name, port, done
 
 
-  @Given /^an ExoCom instance$/, (done) ->
+  @Given /^an ExoCom instance(?: with routing information "([^"]*)")?$/, (service-messages, done) ->
     port-reservation
       ..base-port = 5000
       ..get-port N (@exocom-zmq-port) ~>
       ..get-port N (@exocom-http-port) ~>
-        @create-exocom-instance zmq-port: @exocom-zmq-port, http-port: @exocom-http-port, done
+        @create-exocom-instance {zmq-port: @exocom-zmq-port, http-port: @exocom-http-port, service-messages}, done
 
 
-  @Given /^an ExoCom instance configured for the service landscape:$/, (table, done) ->
+  @Given /^an ExoCom instance(?: with routing information "([^"]*)")? configured for the service landscape:$/, (service-messages, table, done) ->
     port-reservation
       ..base-port = 5000
       ..get-port N (@exocom-zmq-port) ~>
       ..get-port N (@exocom-http-port) ~>
-        @create-exocom-instance http-port:@exocom-http-port, zmq-port: @exocom-zmq-port, ~>
+        @create-exocom-instance {http-port: @exocom-http-port, zmq-port: @exocom-zmq-port, service-messages: service-messages or '{}'}, ~>
           data = for service in table.hashes!
             {
               name: service.NAME
@@ -38,8 +38,6 @@ module.exports = ->
               host: service.HOST
               type: service.TYPE
               port: +service.PORT
-              sends: service.SENDS.split(',')
-              receives: service.RECEIVES.split(' ')
             }
           @set-service-landscape data, done
 
@@ -49,7 +47,7 @@ module.exports = ->
       ..base-port = 5000
       ..get-port N (@exocom-zmq-port) ~>
       ..get-port N (@exocom-http-port) ~>
-        @create-exocom-instance http-port: @exocom-http-port, zmq-port: @exocom-zmq-port, ~>
+        @create-exocom-instance {http-port: @exocom-http-port, zmq-port: @exocom-zmq-port, service-messages: '{}'}, ~>
           data = []
           for service in table.hashes!
             data.push do
@@ -58,6 +56,7 @@ module.exports = ->
               host: service.HOST
               type: service.TYPE
               port: +service.PORT
+              receives: service.RECEIVES
             @create-mock-service-at-port service.NAME, service.PORT, ->
           @set-service-landscape data, done
 

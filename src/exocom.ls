@@ -13,8 +13,8 @@ debug = require('debug')('exocom')
 
 class ExoCom extends EventEmitter
 
-  ->
-    @client-registry    = new ClientRegistry
+  ({@service-messages} = {}) ->
+    @client-registry    = new ClientRegistry {@service-messages}
     @listener-subsystem = new ListenerSubsystem @
     @message-cache = new MessageCache!
     @message-sender = new MessageSender @

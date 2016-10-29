@@ -1,4 +1,5 @@
 require! {
+  'jsonic'
   'remove-value'
   'require-yaml'
 }
@@ -6,7 +7,10 @@ require! {
 
 class ClientRegistry
 
-  ->
+  ({@service-messages = '{}'} = {}) ->
+
+    # List of messages that are received by the applications services
+    @receives = {[service.name, service.receives] for service in jsonic(@service-messages)}
 
     # List of clients that are currently registered
     #
@@ -56,8 +60,7 @@ class ClientRegistry
       name: service.name
       type: service.type
       internal-namespace: service.internal-namespace
-    service.receives or= @_look-up-service-messages service.type
-    for message in service.receives
+    for message in (@receives[service.name] or {})
       external-message = @external-message-name {message, service-name: service.name, internal-namespace: service.internal-namespace}
       @routes[external-message] or= {}
       @routes[external-message].receivers or= []
@@ -69,15 +72,10 @@ class ClientRegistry
 
 
   remove-routing-config: ({service-name, host}) ->
-    for message in @_look-up-service-messages @clients[service-name].type
+    for message in (@receives[service-name] or {})
       external-message = @external-message-name {message, service-name, internal-namespace: @clients[service-name].internal-namespace}
       delete @routes[external-message]
     delete @clients[service-name]
-
-
-  _look-up-service-messages: (service-name) ->
-    service-messages = require '../../service-messages.yml'
-    service-messages[service-name].receives
 
 
   # Returns the clients that are subscribed to the given message

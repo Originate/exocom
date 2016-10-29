@@ -34,7 +34,7 @@ on-error = (err) ->
 
 
 run = ->
-  exocom = new ExoCom!
+  exocom = new ExoCom service-messages: process.env.SERVICE_MESSAGES
     ..on 'zmq-bound', on-zmq-bound
     ..on 'http-bound', on-http-bound
     ..on 'error', on-error

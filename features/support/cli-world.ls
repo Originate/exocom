@@ -16,12 +16,13 @@ require! {
 # Provides steps for end-to-end testing of the service as a stand-alone binary
 CliWorld = !->
 
-  @create-exocom-instance = (ports, done) ->
+  @create-exocom-instance = ({zmq-port, http-port, service-messages = '{}'}, done) ->
     env =
-      EXOCOM_HTTP_PORT : ports.http-port
-      EXOCOM_ZMQ_PORT : ports.zmq-port
-    @exocom-http-port = ports.http-port
-    @exocom-zmq-port = ports.zmq-port
+      EXOCOM_HTTP_PORT : http-port
+      EXOCOM_ZMQ_PORT : zmq-port
+      SERVICE_MESSAGES : service-messages
+    @exocom-http-port = http-port
+    @exocom-zmq-port = zmq-port
     @process = new ObservableProcess "bin/exocom", stdout: dim-console.process.stdout, stderr: dim-console.process.stderr, env: env
       ..wait "HTTP service online at port #{@exocom-http-port}", done
 

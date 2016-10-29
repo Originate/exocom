@@ -11,10 +11,10 @@ Feature: Translating messages
 
 
   Background:
-    Given an ExoCom instance configured for the service landscape:
-      | NAME   | INTERNAL NAMESPACE | HOST      | PORT | SENDS                | RECEIVES            |
-      | web    |                    | localhost | 3001 | tweets.create        | tweets.created      |
-      | tweets | text-snippets      | localhost | 3002 | text-snippet.created | text-snippet.create |
+    Given an ExoCom instance with routing information "[{name: web, receives: [tweets.created]}, {name: tweets, receives: [text-snippet.create]}]" configured for the service landscape:
+      | NAME   | INTERNAL NAMESPACE | HOST      | PORT |
+      | web    |                    | localhost | 3001 |
+      | tweets | text-snippets      | localhost | 3002 |
     And a "web" instance running at port 3001
     And a "tweets" instance running at port 3002
 

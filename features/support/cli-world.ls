@@ -9,33 +9,33 @@ require! {
   'record-http' : HttpRecorder
   'request'
   './text-tools' : {ascii}
-  'wait' : {wait-until}
+  'wait' : {wait-until, wait}
 }
 
 
 # Provides steps for end-to-end testing of the service as a stand-alone binary
 CliWorld = !->
 
-  @create-exocom-instance = ({zmq-port, http-port, service-messages = '{}'}, done) ->
+  @create-exocom-instance = ({exocom-websockets-port, exocom-http-port, service-messages = '{}'}, done) ->
     env =
-      EXOCOM_HTTP_PORT : http-port
-      EXOCOM_ZMQ_PORT : zmq-port
+      EXOCOM_HTTP_PORT : exocom-http-port
+      EXOCOM_WEBSOCKETS_PORT : exocom-websockets-port
       SERVICE_MESSAGES : service-messages
-    @exocom-http-port = http-port
-    @exocom-zmq-port = zmq-port
+    @exocom-http-port = exocom-http-port
+    @exocom-websockets-port = exocom-websockets-port
     @process = new ObservableProcess "bin/exocom", stdout: dim-console.process.stdout, stderr: dim-console.process.stderr, env: env
-      ..wait "HTTP service online at port #{@exocom-http-port}", done
+      ..wait "WebSocket listener online at port #{@exocom-websockets-port}", done
 
 
-  @create-mock-service-at-port = (name, port, done) ->
-    (@service-mocks or= {})[name] = new MockService push-port: @exocom-zmq-port, pull-port: port
-    done!
+  @create-mock-service-at-port = ({name, port, namespace}, done) ->
+    (@service-mocks or= {})[name] = new MockService {port, name, namespace}
+    wait 200, done
 
 
   @run-exocom-at-port = (ports, _expect-error, done) ->
     env =
       EXOCOM_HTTP_PORT : ports.http-port
-      EXOCOM_ZMQ_PORT : ports.zmq-port
+      EXOCOM_WEBSOCKETS_PORT : ports.websockets-port
     @process = new ObservableProcess "bin/exocom", stdout: dim-console.process.stdout, stderr: dim-console.process.stderr, env: env
     done!
 
@@ -59,6 +59,7 @@ CliWorld = !->
       name: message
     @service-mocks[service].send request-data
     done!
+
 
 
   @set-service-landscape = (service-data, done) ->
@@ -103,7 +104,7 @@ CliWorld = !->
 
   @verify-listening-at-ports = (ports, done) ->
     messages = []
-    messages.push "ZMQ service online at port #{ports.zmq-port}" if ports.zmq-port
+    messages.push "WebSocket listener online at port #{ports.websockets-port}" if ports.websockets-port
     messages.push "HTTP service online at port #{ports.http-port}" if ports.http-port
     async.each messages,
                ((message, cb) ~> @process.wait message, cb),

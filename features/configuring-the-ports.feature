@@ -4,19 +4,19 @@ Feature: configuring the port
   I want to be able to boot ExoCom at various ports
   So that I have flexibility in testing my system.
 
-  - the default ZMQ port is 3100
+  - the default WebSocket port is 3100
   - the default HTTP port is 3101
-  - provide the "--zmq-port" command-line switch to bind ZMQ at a custom port
+  - provide the "--websocket-port" command-line switch to bind websocket at a custom port
   - provide the "--http-port" command-line switch to listen for HTTP requests on a custom port
 
 
   Scenario: running at the default ports
     When I run ExoCom
-    Then it opens a ZMQ socket at port 4100
+    Then it opens a websocket at port 4100
     And it opens an HTTP listener at port 4101
 
 
-  Scenario: the default ZMQ port is already taken
+  Scenario: the default websocket port is already taken
     Given another service already uses port 4100
     When I try to run ExoCom
     Then it aborts with the message "port 4100 is already in use"
@@ -28,9 +28,9 @@ Feature: configuring the port
     Then it aborts with the message "port 4101 is already in use"
 
 
-  Scenario: using a custom ZMQ port
-    When starting ExoCom at ZMQ port 3200
-    Then it opens a ZMQ socket at port 3200
+  Scenario: using a custom websocket port
+    When starting ExoCom at websocket port 3200
+    Then it opens a websocket at port 3200
 
 
   Scenario: using a custom HTTP port
@@ -38,9 +38,9 @@ Feature: configuring the port
     Then it opens an HTTP listener at port 3200
 
 
-  Scenario: custom ZMQ port that is already taken
+  Scenario: custom websocket port that is already taken
     Given another service already uses port 3200
-    When I try starting ExoCom at ZMQ port 3200
+    When I try starting ExoCom at websocket port 3200
     Then it aborts with the message "port 3200 is already in use"
 
 

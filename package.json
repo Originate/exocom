@@ -15,7 +15,7 @@
     "remove-value": "1.0.0",
     "require-yaml": "0.0.1",
     "wait": "0.1.0",
-    "zmq": "2.15.3"
+    "ws": "1.1.1"
   },
   "description": "Development version of the Exosphere communication platform",
   "devDependencies": {

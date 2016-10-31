@@ -3,10 +3,10 @@ require! {
   'events' : {EventEmitter}
   './listener-subsystem/listener-subsystem' : ListenerSubsystem
   './message-cache/message-cache' : MessageCache
-  './message-sender/message-sender' : MessageSender
   'nanoseconds'
   'process'
   'rails-delegate' : {delegate, delegate-event}
+  './websocket-subsystem/websocket-subsystem' : WebSocketSubsystem
 }
 debug = require('debug')('exocom')
 
@@ -17,11 +17,11 @@ class ExoCom extends EventEmitter
     @client-registry    = new ClientRegistry {@service-messages}
     @listener-subsystem = new ListenerSubsystem @
     @message-cache = new MessageCache!
-    @message-sender = new MessageSender @
+    @websocket = new WebSocketSubsystem @
 
-    delegate 'close' 'listen' 'zmqPort' 'httpPort', from: @, to: @listener-subsystem
-    delegate 'clearPorts', from: @, to: @message-sender
-    delegate-event 'zmq-bound' 'http-bound' 'error', from: @listener-subsystem, to: @
+    delegate 'httpPort', from: @, to: @listener-subsystem
+    delegate-event 'http-bound' 'error', from: @listener-subsystem, to: @
+    delegate-event 'websocket-bound' 'error', from: @websocket, to: @
 
 
   # returns the current configuration of this ExoCom instance
@@ -32,10 +32,16 @@ class ExoCom extends EventEmitter
     }
 
 
+  close: ->
+    @listener-subsystem.close!
+    @websocket.close!
+
+
   # bind to the given port to send socket messages
   listen: (ports) ->
     @listener-subsystem.listen ports
-    debug "ZMQ bound at port #{ports.zmq-port}, HTTP listening at port #{ports.http-port}"
+    @websocket.listen ports.websockets-port
+    debug "WebSockets bound at port #{ports.websockets-port}, HTTP listening at port #{ports.http-port}"
 
 
   # registers the services with the given data
@@ -43,7 +49,6 @@ class ExoCom extends EventEmitter
   set-routing-config: (routing-config) ~>
     debug 'receiving service setup'
     @client-registry.set-routing-config routing-config
-    @message-sender.bind-services @client-registry.clients
     @emit 'routing-setup'
     'success'
 
@@ -51,14 +56,12 @@ class ExoCom extends EventEmitter
   # as a sender and receiver of messages
   add-routing-config: (routing-config) ~>
     @client-registry.add-routing-config routing-config
-    @message-sender.bind-new-service service-name: routing-config.name, host: routing-config.host, port: routing-config.port
     'success'
 
   # deregisters a service with the given data
   # as a sender and receiver of messages
-  remove-routing-config: ({service-name, host}) ~>
-    @client-registry.remove-routing-config {service-name, host}
-    @message-sender.unbind-service {service-name, host}
+  remove-routing-config: ({service-name}) ~>
+    @client-registry.remove-routing-config {service-name}
     'success'
 
   # sends the given message to all subscribers of it.
@@ -82,7 +85,7 @@ class ExoCom extends EventEmitter
 
     # send the message to the subscribers
     debug "sending '#{message-data.name}' to #{subscriber-names}"
-    sent-messages = @message-sender.send-to-services message-data, subscribers
+    sent-messages = @websocket.send-to-services message-data, subscribers
     @emit 'message', messages: sent-messages, receivers: subscriber-names
 
     'success'

@@ -9,22 +9,19 @@ Feature: Broadcasting messages
 
 
   Background:
-    Given an ExoCom instance with routing information "[{name: web, receives: [created-user]}, {name: users, receives: [create-user]}]" configured for the service landscape:
-      | NAME  | TYPE  | INTERNAL NAMESPACE | HOST      | PORT | SENDS        |
-      | web   | web   | web                | localhost | 3001 | create-user  |
-      | users | users | users              | localhost | 3002 | created-user |
-    And a "web" instance running at port 3001
-    And a "users" instance running at port 3002
+    Given an ExoCom instance with routing information "[{name: web, receives: [users.created]}, {name: users, receives: [users.create]}]"
+    And a running "web" instance
+    And a running "users" instance
 
 
   Scenario: broadcasting a message
-    When the "web" service sends "create-user"
-    Then ExoCom signals "web  --[ create-user ]->  users"
-    And ExoCom broadcasts the message "create-user" to the "users" service
+    When the "web" service sends "users.create"
+    Then ExoCom signals "web  --[ users.create ]->  users"
+    And ExoCom broadcasts the message "users.create" to the "users" service
 
 
   Scenario: broadcasting a reply
-    When the "web" service sends "create-user"
-    And the "users" service sends "created-user" in reply to "111"
-    Then ExoCom signals "users  --[ created-user ]->  web  (XX ms)"
-    And ExoCom broadcasts the reply "created-user" to the "web" service
+    When the "web" service sends "users.create"
+    And the "users" service sends "users.created" in reply to "111"
+    Then ExoCom signals "users  --[ users.created ]->  web  (XX ms)"
+    And ExoCom broadcasts the reply "users.created" to the "web" service

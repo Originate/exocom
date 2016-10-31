@@ -13,52 +13,33 @@ require! {
 
 module.exports = ->
 
-  @Given /^a "([^"]*)" instance running at port (\d+)$/, (name, port, done) ->
-    @create-mock-service-at-port name, port, done
+  @Given /^a running "([^"]*)" instance$/, (name, done) ->
+    @create-mock-service-at-port {name, port: @exocom-websockets-port, namespace: null}, ->
+      wait 200, done
+
+
+  @Given /^a running "([^"]*)" instance with namespace "([^"]*)"$/ (name, namespace, done) ->
+    @create-mock-service-at-port {name, port: @exocom-websockets-port, namespace}, ->
+      wait 200, done
 
 
   @Given /^an ExoCom instance(?: with routing information "([^"]*)")?$/, (service-messages, done) ->
     port-reservation
       ..base-port = 5000
-      ..get-port N (@exocom-zmq-port) ~>
+      ..get-port N (@exocom-websockets-port) ~>
       ..get-port N (@exocom-http-port) ~>
-        @create-exocom-instance {zmq-port: @exocom-zmq-port, http-port: @exocom-http-port, service-messages}, done
-
-
-  @Given /^an ExoCom instance(?: with routing information "([^"]*)")? configured for the service landscape:$/, (service-messages, table, done) ->
-    port-reservation
-      ..base-port = 5000
-      ..get-port N (@exocom-zmq-port) ~>
-      ..get-port N (@exocom-http-port) ~>
-        @create-exocom-instance {http-port: @exocom-http-port, zmq-port: @exocom-zmq-port, service-messages: service-messages or '{}'}, ~>
-          data = for service in table.hashes!
-            {
-              name: service.NAME
-              internal-namespace: service['INTERNAL NAMESPACE']
-              host: service.HOST
-              type: service.TYPE
-              port: +service.PORT
-            }
-          @set-service-landscape data, done
+        @create-exocom-instance {@exocom-websockets-port, @exocom-http-port, service-messages}, done
 
 
   @Given /^an ExoCom instance managing the service landscape:$/ (table, done) ->
     port-reservation
       ..base-port = 5000
-      ..get-port N (@exocom-zmq-port) ~>
+      ..get-port N (@exocom-websockets-port) ~>
       ..get-port N (@exocom-http-port) ~>
-        @create-exocom-instance {http-port: @exocom-http-port, zmq-port: @exocom-zmq-port, service-messages: '{}'}, ~>
-          data = []
+        @create-exocom-instance {@exocom-websockets-port, @exocom-http-port, service-messages: '{}'}, ~>
           for service in table.hashes!
-            data.push do
-              name: service.NAME
-              internal-namespace: service['INTERNAL NAMESPACE']
-              host: service.HOST
-              type: service.TYPE
-              port: +service.PORT
-              receives: service.RECEIVES
-            @create-mock-service-at-port service.NAME, service.PORT, ->
-          @set-service-landscape data, done
+            @create-mock-service-at-port {name: service.NAME, port: @exocom-websockets-port, namespace: service['INTERNAL NAMESPACE']}, ->
+          done!
 
 
   @Given /^another service already uses port (\d+)$/, (+port, done) ->
@@ -73,28 +54,25 @@ module.exports = ->
     @service-sends-message {service, message, id}, done
 
 
-  @When /^the "([^"]*)" goes offline$/ (service-name, done) ->
+  @When /^the "([^"]*)" service goes offline$/ (service-name, done) ->
     @service-mocks[service-name].close!
     wait 200, done
 
 
-  @When /^a new service instance registers itself via the message:$/ (message-text, done) ->
-    eval livescript.compile "message = \n#{message-text.replace /^/gm, '  '}", bare: yes, header: no
-    (@service-mocks or= {})[message.sender] = new MockService push-port: 5000, pull-port: message.payload.port
-    @service-mocks[message.sender].send message
-    wait 100, done # wait for message to send
+  @When /^a new "([^"]*)" service with namespace "([^"]*)" comes online$/ (name, namespace, done) ->
+    @create-mock-service-at-port {name, port: @exocom-websockets-port, namespace}, done
 
 
-  @When /^(I try )?starting ExoCom at ZMQ port (\d+)$/, (!!expect-error, +port, done) ->
-    @run-exocom-at-port zmq-port: port, http-port: null, expect-error, done
+  @When /^(I try )?starting ExoCom at websocket port (\d+)$/, (!!expect-error, +port, done) ->
+    @run-exocom-at-port websockets-port: port, http-port: null, expect-error, done
 
 
   @When /^(I try )?starting ExoCom at HTTP port (\d+)$/, (!!expect-error, +port, done) ->
-    @run-exocom-at-port zmq-port: null, http-port: port, expect-error, done
+    @run-exocom-at-port websockets-port: null, http-port: port, expect-error, done
 
 
   @When /^I( try to)? run ExoCom$/, (!!expect-error, done) ->
-    @run-exocom-at-port zmq-port: null, http-port: null, expect-error, done
+    @run-exocom-at-port websockets-port: null, http-port: null, expect-error, done
 
 
   @When /^requesting the routing information$/, (done) ->
@@ -131,9 +109,6 @@ module.exports = ->
       services[row.NAME] =
         name: row.NAME
         internal-namespace: row['INTERNAL NAMESPACE']
-        host: row.HOST
-        port: +row.PORT
-        type: row.TYPE
     @verify-service-setup services, done
 
 
@@ -166,8 +141,8 @@ module.exports = ->
     @verify-routing-setup expected-routes, done
 
 
-  @Then /^it opens a ZMQ socket at port (\d+)$/, (+port, done) ->
-    @verify-listening-at-ports zmq-port: port, done
+  @Then /^it opens a websocket at port (\d+)$/, (+port, done) ->
+    @verify-listening-at-ports websockets-port: port, done
 
 
   @Then /^it opens an HTTP listener at port (\d+)$/, (+port, done) ->

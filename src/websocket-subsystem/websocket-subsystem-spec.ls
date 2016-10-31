@@ -1,17 +1,16 @@
 require! {
   'chai' : {expect}
-  './message-sender' : MessageSender
+  '../../dist/exocom' : ExoCom
   'jsdiff-console'
+  '../../features/support/mock-service' : MockService
   'record-http' : HttpRecorder
   'wait' : {wait, wait-until}
-  'zmq'
+  'ws' : WebSocket
+  './websocket-subsystem' : WebSocketSubsystem
 }
 
 
-describe 'MessageSender', ->
-
-  before-each ->
-    @message-sender = new MessageSender @exocom
+describe 'WebSocket', ->
 
 
   describe 'send-to-service', (...) ->
@@ -24,36 +23,36 @@ describe 'MessageSender', ->
         'mock-service':
           name: 'mock-service'
           internal-namespace: 'mock-service'
-          host: 'localhost'
-          port: 3001
-      @listener = zmq.socket 'pull'
-        ..bind-sync "tcp://*:3001"
-        ..on 'message', (data) ~> @data = JSON.parse data
-      @message-sender
-        ..clear-ports!
-        ..bind-services services
-      wait 0, ~>
-        @message-sender.send-to-service message, services['mock-service'], done
+      service-messages = "[{name: mock-service, receives: [message-1]}]"
+      @exocom = new ExoCom {service-messages}
+        ..listen websockets-port: 3001, http-port: 3002
+        ..on 'websocket-bound', ~>
+          @mock-service = new MockService {port: 3001, name: 'mock-service', namespace: 'mock-service'}
+      wait 200, ~>
+        @exocom.websocket
+          ..send-to-service message, services['mock-service'], done
 
     after-each ->
-      @listener.close!
-      @message-sender.clear-ports!
+      @exocom.close!
 
     it 'sends the given message to the given service', (done) ->
-      wait-until (~> @data), 1, ~>
+      wait-until (~> @mock-service.received-messages.length), 1, ~>
         expected =
           name: 'message-1'
           payload: 'payload-1'
-        jsdiff-console @data, expected, done
+        jsdiff-console @mock-service.received-messages[0], expected, done
 
 
   describe '_translate', (...) ->
+
+    before-each ->
+      @exocom-websocket = new WebSocketSubsystem
 
     it 'translates the given message to the internal format of the given sender', ->
       service =
         name: 'tweets'
         internal-namespace: 'text-snippets'
-      result = @message-sender._translate 'tweets.create', for: service
+      result = @exocom-websocket._translate 'tweets.create', for: service
       expect(result).to.eql 'text-snippets.create'
 
 
@@ -61,11 +60,11 @@ describe 'MessageSender', ->
       service =
         name: 'users'
         internal-namespace: 'users'
-      result = @message-sender._translate 'users.create', for: service
+      result = @exocom-websocket._translate 'users.create', for: service
       expect(result).to.eql 'users.create'
 
 
 
     it 'does not translate the given message if it is not in a translatable format', ->
-      result = @message-sender._translate 'foo bar', for: {}
+      result = @exocom-websocket._translate 'foo bar', for: {}
       expect(result).to.eql 'foo bar'

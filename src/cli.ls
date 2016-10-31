@@ -15,14 +15,14 @@ doc = """
 Provides Exosphere communication infrastructure services in development mode.
 
 Usage:
-  #{name} [EXOCOM_ZMQ_PORT=<port>] [EXOCOM_HTTP_PORT=<port>]
+  #{name} [WEBSOCKETS_PORT=<port>] [EXOCOM_HTTP_PORT=<port>]
   #{name} -h | --help
   #{name} -v | --version
 """
 
-on-zmq-bound = (port) ->
+on-websocket-bound = (port) ->
   console.log dim "Ctrl-C to stop"
-  console.log "ExoCom #{version} ZMQ service online at port #{cyan port}"
+  console.log "ExoCom #{version} WebSocket listener online at port #{cyan port}"
 
 on-http-bound = (port) ->
   console.log dim "Ctrl-C to stop"
@@ -35,16 +35,16 @@ on-error = (err) ->
 
 run = ->
   exocom = new ExoCom service-messages: process.env.SERVICE_MESSAGES
-    ..on 'zmq-bound', on-zmq-bound
+    ..on 'websocket-bound', on-websocket-bound
     ..on 'http-bound', on-http-bound
     ..on 'error', on-error
-    ..listen zmq-port: (+process.env.EXOCOM_ZMQ_PORT or 4100), http-port: (+process.env.EXOCOM_HTTP_PORT or 4101)
+    ..listen websockets-port: (+process.env.EXOCOM_WEBSOCKETS_PORT or 4100), http-port: (+process.env.EXOCOM_HTTP_PORT or 4101)
     ..on 'routing-setup', ->
       console.log 'receiving routing setup:'
       for command, routing of exocom.client-registry.routes
         process.stdout.write "  --[ #{command} ]-> "
         text = for receiver in routing.receivers
-          "#{receiver.name} (#{receiver.host}:#{receiver.port})"
+          "#{receiver.name}"
         process.stdout.write "#{text.join ' + '}\n"
 
     ..on 'message', ({messages, receivers}) ->

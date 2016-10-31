@@ -11,29 +11,18 @@ Feature: Manage new instances of services
 
   Scenario: a new service comes online
     Given an ExoCom instance with routing information "[{name: users-service, receives: [users.create]}]"
-    When a new service instance registers itself via the message:
-      """
-      * name: 'exocom.register-service'
-        sender: 'users-service'
-        payload:
-          name: 'users-service'
-          type: 'users'
-          internal-namespace: 'foo'
-          host: 'localhost'
-          port: 4001
-        id: '123'
-      """
+    When a new "users" service with namespace "foo" comes online
     Then ExoCom now knows about these services:
-      | NAME          | TYPE  | INTERNAL NAMESPACE | HOST      | PORT |
-      | users-service | users | foo                | localhost | 4001 |
+      | NAME  | INTERNAL NAMESPACE |
+      | users | foo                |
 
 
   Scenario: deregister a service once it goes offline
     Given an ExoCom instance managing the service landscape:
-      | NAME           | TYPE   | INTERNAL NAMESPACE | HOST      | PORT |
-      | users-service  | users  | foo                | localhost | 4001 |
-      | tweets-service | tweets | bar                | localhost | 4002 |
-    When the "tweets-service" goes offline
+      | NAME   | INTERNAL NAMESPACE |
+      | users  | foo                |
+      | tweets | bar                |
+    When the "tweets" service goes offline
     Then ExoCom now knows about these services:
-      | NAME          | TYPE  | INTERNAL NAMESPACE | HOST      | PORT |
-      | users-service | users | foo                | localhost | 4001 |
+      | NAME  | INTERNAL NAMESPACE |
+      | users | foo                |

@@ -17,8 +17,6 @@ class ClientRegistry
     # The format is:
     # {
     #   'client 1 name':
-    #     host: ...
-    #     port: ...
     #     name: ...
     #     namespace: ...
     #   'client 2 name':
@@ -32,8 +30,6 @@ class ClientRegistry
     #   'message 1 name':
     #     receivers:
     #       * name: ...
-    #         host: ...
-    #         port: ...
     #       * name: ...
     #   'message 2 name':
     #     ...
@@ -55,10 +51,7 @@ class ClientRegistry
   # Adds service routing configurations to the given setup
   add-routing-config: (service) ->
     @clients[service.name] =
-      host: service.host
-      port: service.port
       name: service.name
-      type: service.type
       internal-namespace: service.internal-namespace
     for message in (@receives[service.name] or {})
       external-message = @external-message-name {message, service-name: service.name, internal-namespace: service.internal-namespace}
@@ -66,12 +59,10 @@ class ClientRegistry
       @routes[external-message].receivers or= []
       @routes[external-message].receivers.push do
         name: service.name
-        host: service.host
-        port: service.port
         internal-namespace: service.internal-namespace
 
 
-  remove-routing-config: ({service-name, host}) ->
+  remove-routing-config: ({service-name}) ->
     for message in (@receives[service-name] or {})
       external-message = @external-message-name {message, service-name, internal-namespace: @clients[service-name].internal-namespace}
       delete @routes[external-message]

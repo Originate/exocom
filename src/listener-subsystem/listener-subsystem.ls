@@ -18,8 +18,8 @@ class ListenerSubsystem extends EventEmitter
 
 
   # Bind the subclasses to their respective ports
-  listen: ({http-port}) ->
-    @http-listener.listen http-port
+  listen: (exocom-port) ->
+    @http-listener.listen exocom-port
 
 
   # Closes all open ports

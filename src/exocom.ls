@@ -38,10 +38,10 @@ class ExoCom extends EventEmitter
 
 
   # bind to the given port to send socket messages
-  listen: (ports) ->
-    @listener-subsystem.listen ports
-    @websocket.listen ports.websockets-port
-    debug "WebSockets bound at port #{ports.websockets-port}, HTTP listening at port #{ports.http-port}"
+  listen: (port) ->
+    express-server = @listener-subsystem.listen port
+    @websocket.listen port, express-server
+    debug "Listening at port #{port}"
 
 
   # registers the services with the given data

@@ -15,7 +15,7 @@ doc = """
 Provides Exosphere communication infrastructure services in development mode.
 
 Usage:
-  #{name} [WEBSOCKETS_PORT=<port>] [EXOCOM_HTTP_PORT=<port>]
+  #{name} [PORT=<port>]
   #{name} -h | --help
   #{name} -v | --version
 """
@@ -38,7 +38,7 @@ run = ->
     ..on 'websocket-bound', on-websocket-bound
     ..on 'http-bound', on-http-bound
     ..on 'error', on-error
-    ..listen websockets-port: (+process.env.EXOCOM_WEBSOCKETS_PORT or 4100), http-port: (+process.env.EXOCOM_HTTP_PORT or 4101)
+    ..listen (+process.env.PORT or 3100)
     ..on 'routing-setup', ->
       console.log 'receiving routing setup:'
       for command, routing of exocom.client-registry.routes

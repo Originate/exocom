@@ -2,6 +2,7 @@ require! {
   'body-parser'
   'events' : {EventEmitter}
   'express'
+  'http'
 }
 debug = require('debug')('exocom:http-listener')
 
@@ -19,7 +20,6 @@ class HttpListener extends EventEmitter
     @app = express!
       ..use body-parser.json!
       ..get  '/config.json', @_config-controller
-      ..post '/services', @_set-routing-config-controller
     @port = null
 
 
@@ -31,7 +31,8 @@ class HttpListener extends EventEmitter
 
   listen: (+@port) ->
     | isNaN @port  =>  @emit 'error', 'Non-numerical port provided to ExoCom#listen'
-    @server = @app.listen @port
+    @server = http.create-server @app
+      ..listen @port
       ..on 'error', (err) ~>
         err = "port #{err.port} is already in use" if err.code is 'EADDRINUSE'
         @emit 'error', err
@@ -42,12 +43,6 @@ class HttpListener extends EventEmitter
     res
       ..send @exocom.get-config!
       ..end!
-
-
-  _set-routing-config-controller: (req, res) ~>
-    switch (result = @exocom.set-routing-config req.body)
-      | 'success'  =>  res.status(200).end!
-      | _          =>  throw new Error "unknown error: #{result}"
 
 
   _log: ({name, id, response-to}) ->

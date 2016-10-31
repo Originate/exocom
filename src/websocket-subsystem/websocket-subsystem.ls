@@ -40,15 +40,12 @@ class WebSocketSubsystem extends EventEmitter
     @server.close!
 
 
-  listen: (+@port) ->
-    | isNaN @port  =>  @emit 'error', 'Non-numerical port provided to ExoCom#listen'
-    @server = new WebSocketServer {@port}
+  listen: (@port, express-server) ->
+    @server = new WebSocketServer {server: express-server, path: '/services'}
       ..on 'connection', @on-connection
       ..on 'listening', ~> @emit 'websocket-bound', @port
       ..on 'error', (error) ~>
-        switch error.errno
-        | 'EADDRINUSE' => @emit 'error', "port #{@port} is already in use"
-        | otherwise    => @emit 'error', error
+        @emit 'error', error
 
 
   on-connection: (websocket) ~>

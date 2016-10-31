@@ -13,7 +13,7 @@ class MockService
 
 
     if port
-      @socket = new WebSocket "ws://localhost:#{port}"
+      @socket = new WebSocket "ws://localhost:#{port}/services"
         ..on 'message', @_on-message
         ..on 'error', (error) ~>
           console.log error

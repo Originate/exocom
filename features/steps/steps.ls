@@ -14,31 +14,33 @@ require! {
 module.exports = ->
 
   @Given /^a running "([^"]*)" instance$/, (name, done) ->
-    @create-mock-service-at-port {name, port: @exocom-websockets-port, namespace: null}, ->
+    @create-mock-service-at-port {name, port: @exocom-port, namespace: null}, ->
       wait 200, done
 
 
   @Given /^a running "([^"]*)" instance with namespace "([^"]*)"$/ (name, namespace, done) ->
-    @create-mock-service-at-port {name, port: @exocom-websockets-port, namespace}, ->
+    @create-mock-service-at-port {name, port: @exocom-port, namespace}, ->
       wait 200, done
 
 
   @Given /^an ExoCom instance(?: with routing information "([^"]*)")?$/, (service-messages, done) ->
     port-reservation
       ..base-port = 5000
-      ..get-port N (@exocom-websockets-port) ~>
-      ..get-port N (@exocom-http-port) ~>
-        @create-exocom-instance {@exocom-websockets-port, @exocom-http-port, service-messages}, done
+      ..get-port N (@exocom-port) ~>
+        @create-exocom-instance @exocom-port, service-messages, done
 
 
   @Given /^an ExoCom instance managing the service landscape:$/ (table, done) ->
     port-reservation
       ..base-port = 5000
-      ..get-port N (@exocom-websockets-port) ~>
-      ..get-port N (@exocom-http-port) ~>
-        @create-exocom-instance {@exocom-websockets-port, @exocom-http-port, service-messages: '{}'}, ~>
-          for service in table.hashes!
-            @create-mock-service-at-port {name: service.NAME, port: @exocom-websockets-port, namespace: service['INTERNAL NAMESPACE']}, ->
+      ..get-port N (@exocom-port) ~>
+        @create-exocom-instance @exocom-port, service-messages: '{}', ~>
+          data = for service in table.hashes!
+            {
+              name: service.NAME
+              internal-namespace: service['INTERNAL NAMESPACE']
+            }
+            @create-mock-service-at-port {name: service.NAME, port: @exocom-port, namespace: service['INTERNAL NAMESPACE']}, ->
           done!
 
 
@@ -60,19 +62,15 @@ module.exports = ->
 
 
   @When /^a new "([^"]*)" service with namespace "([^"]*)" comes online$/ (name, namespace, done) ->
-    @create-mock-service-at-port {name, port: @exocom-websockets-port, namespace}, done
+    @create-mock-service-at-port {name, port: @exocom-port, namespace}, done
 
 
-  @When /^(I try )?starting ExoCom at websocket port (\d+)$/, (!!expect-error, +port, done) ->
-    @run-exocom-at-port websockets-port: port, http-port: null, expect-error, done
-
-
-  @When /^(I try )?starting ExoCom at HTTP port (\d+)$/, (!!expect-error, +port, done) ->
-    @run-exocom-at-port websockets-port: null, http-port: port, expect-error, done
+  @When /^(I try )?starting ExoCom at port (\d+)$/, (!!expect-error, +port, done) ->
+    @run-exocom-at-port port, expect-error, done
 
 
   @When /^I( try to)? run ExoCom$/, (!!expect-error, done) ->
-    @run-exocom-at-port websockets-port: null, http-port: null, expect-error, done
+    @run-exocom-at-port null, expect-error, done
 
 
   @When /^requesting the routing information$/, (done) ->
@@ -141,9 +139,9 @@ module.exports = ->
     @verify-routing-setup expected-routes, done
 
 
-  @Then /^it opens a websocket at port (\d+)$/, (+port, done) ->
-    @verify-listening-at-ports websockets-port: port, done
+  @Then /^it opens a port at (\d+)$/, (+port, done) ->
+    @verify-listening-at-ports port, done
 
 
   @Then /^it opens an HTTP listener at port (\d+)$/, (+port, done) ->
-    @verify-listening-at-ports http-port: port, done
+    @verify-listening-at-ports port, done

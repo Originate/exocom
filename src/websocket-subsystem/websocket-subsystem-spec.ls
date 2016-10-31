@@ -25,7 +25,7 @@ describe 'WebSocket', ->
           internal-namespace: 'mock-service'
       service-messages = "[{name: mock-service, receives: [message-1]}]"
       @exocom = new ExoCom {service-messages}
-        ..listen websockets-port: 3001, http-port: 3002
+        ..listen 3001
         ..on 'websocket-bound', ~>
           @mock-service = new MockService {port: 3001, name: 'mock-service', namespace: 'mock-service'}
       wait 200, ~>

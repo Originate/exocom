@@ -16,15 +16,13 @@ require! {
 # Provides steps for end-to-end testing of the service as a stand-alone binary
 CliWorld = !->
 
-  @create-exocom-instance = ({exocom-websockets-port, exocom-http-port, service-messages = '{}'}, done) ->
+  @create-exocom-instance = (port, service-messages = '{}', done) ->
     env =
-      EXOCOM_HTTP_PORT : exocom-http-port
-      EXOCOM_WEBSOCKETS_PORT : exocom-websockets-port
+      PORT : port
       SERVICE_MESSAGES : service-messages
-    @exocom-http-port = exocom-http-port
-    @exocom-websockets-port = exocom-websockets-port
+    @port = port
     @process = new ObservableProcess "bin/exocom", stdout: dim-console.process.stdout, stderr: dim-console.process.stderr, env: env
-      ..wait "WebSocket listener online at port #{@exocom-websockets-port}", done
+      ..wait "WebSocket listener online at port #{@port}", done
 
 
   @create-mock-service-at-port = ({name, port, namespace}, done) ->
@@ -32,10 +30,9 @@ CliWorld = !->
     wait 200, done
 
 
-  @run-exocom-at-port = (ports, _expect-error, done) ->
+  @run-exocom-at-port = (port, _expect-error, done) ->
     env =
-      EXOCOM_HTTP_PORT : ports.http-port
-      EXOCOM_WEBSOCKETS_PORT : ports.websockets-port
+      PORT : port
     @process = new ObservableProcess "bin/exocom", stdout: dim-console.process.stdout, stderr: dim-console.process.stderr, env: env
     done!
 
@@ -61,18 +58,6 @@ CliWorld = !->
     done!
 
 
-
-  @set-service-landscape = (service-data, done) ->
-    request-data =
-      url: "http://localhost:#{@exocom-http-port}/services"
-      method: 'POST'
-      body: service-data
-      json: yes
-    request request-data, N (response) ->
-      expect(response.status-code).to.equal 200
-      done!
-
-
   @verify-abort-with-message = (message, done) ->
     @process.wait message, ~>
       wait-until (~> @process.ended), done
@@ -96,16 +81,16 @@ CliWorld = !->
 
 
   @verify-routing-setup = (expected-routing, done) ->
-    request "http://localhost:#{@exocom-http-port}/config.json", (err, result, body) ->
+    request "http://localhost:#{@port}/config.json", (err, result, body) ->
       expect(err).to.be.null
       expect(result.status-code).to.equal 200
       jsdiff-console JSON.parse(body).routes, expected-routing, done
 
 
-  @verify-listening-at-ports = (ports, done) ->
+  @verify-listening-at-ports = (port, done) ->
     messages = []
-    messages.push "WebSocket listener online at port #{ports.websockets-port}" if ports.websockets-port
-    messages.push "HTTP service online at port #{ports.http-port}" if ports.http-port
+    messages.push "WebSocket listener online at port #{port}" if port
+    messages.push "HTTP service online at port #{port}" if port
     async.each messages,
                ((message, cb) ~> @process.wait message, cb),
                done
@@ -126,7 +111,7 @@ CliWorld = !->
 
 
   @verify-service-setup = (service-data, done) ->
-    request "http://localhost:#{@exocom-http-port}/config.json", (err, result, body) ->
+    request "http://localhost:#{@port}/config.json", (err, result, body) ->
       expect(err).to.be.null
       expect(result.status-code).to.equal 200
       jsdiff-console JSON.parse(body).services, service-data, done

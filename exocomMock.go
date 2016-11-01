@@ -32,7 +32,7 @@ type Service struct {
 
 func New() *ExoCom {
 	http.Handle("/services", websocket.Handler(onConnected))
-	log.Println("EXOCOM: ExoCom INITIALIZED!!!!")
+	log.Println("EXOCOM: ExoCom initialized!")
 	doneChannel := make(chan bool)
 	go func() {
 		select {}
@@ -57,7 +57,7 @@ func (exocom *ExoCom) Listen(port int) {
 func onConnected(ws *websocket.Conn) {
 	var message Message
 	err := websocket.JSON.Receive(ws, &message)
-	log.Println("EXOCOM: CLIENT CONNECTED!!!! YAY!!!!\nEXOCOM: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+	log.Println("EXOCOM: Client connected!")
 	if err != nil {
 		log.Fatalln(err)
 	} else {

@@ -12,11 +12,11 @@ Feature: Sending requests to services
 
 
   Background:
-    Given an ExoComMock instance
+    Given an ExoComMock instance listening at port 4100
 
 
   Scenario: sending a message to a registered service
-    Given a known "users" service listening at port 3010
+    Given a known "users" service
     When sending a "users.create" message to the "users" service with the payload:
       """
       name: 'Jean-Luc Picard'

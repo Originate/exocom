@@ -9,7 +9,7 @@ Feature: Closing the instance
 
 
   Scenario: closing an active instance
-    Given an ExoComMock instance listening at ZMQ port 4100
+    Given an ExoComMock instance listening at port 4100
     When closing it
     Then it is no longer listening at port 4100
 

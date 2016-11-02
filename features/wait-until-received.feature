@@ -27,6 +27,6 @@ Feature: Waiting until a message is received
 
   Scenario: a reset instance
     Given a call comes in
-    And resetting the ExoComMock instance
+    And the ExoComMock instance is reset
     When I tell it to wait for a call
     Then it doesn't call the given callback right away

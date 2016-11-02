@@ -6,7 +6,7 @@
   "dependencies": {
     "debug": "2.2.0",
     "node-uuid": "1.4.7",
-    "zmq": "2.15.3"
+    "ws": "1.1.1"
   },
   "devDependencies": {
     "chai": "3.5.0",
@@ -21,6 +21,7 @@
     "o-tools": "0.4.16",
     "o-tools-livescript": "1.1.2",
     "port-reservation": "0.3.2",
+    "prelude-ls": "1.1.2",
     "record-http": "0.6.0",
     "request": "2.72.0",
     "sinon": "1.17.4",

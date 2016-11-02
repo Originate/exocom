@@ -1,6 +1,6 @@
 require! {
   'node-uuid' : uuid
-  'zmq'
+  'ws' : {Server: WebSocketServer}
 }
 debug = require('debug')('exocom-mock')
 
@@ -9,24 +9,31 @@ debug = require('debug')('exocom-mock')
 class MockExoCom
 
   ->
-    @push-sockets = {}
-    @pull-socket = null
-    @pull-socket-port = null
+    @server = null
+    @port = null
+    @service-sockets = {}
     @received-messages = []
     @receive-callback = null
 
 
   close: ~>
-    for service, socket of @push-sockets
-      socket.close!
-      delete @push-sockets[service]
-    @pull-socket?.close!
+    @server?.close!
 
 
-  listen: (+@pull-socket-port) ~>
-    @pull-socket = zmq.socket 'pull'
-      ..bind-sync "tcp://*:#{@pull-socket-port}"
-      ..on 'message', @_on-pull-socket-message
+  listen: (+@port) ~>
+    @server = new WebSocketServer {port: @port}
+      ..on 'error', (error) ~>
+        console.log error
+      ..on 'connection', (websocket) ~>
+        websocket.on 'message', (message) ~>
+          @on-socket-message message, websocket
+
+
+  on-socket-message: (message, websocket) ->
+    request-data = JSON.parse message
+    if request-data.name is "exocom.register-service"
+      @register-service {name: request-data.sender, websocket}
+    @_on-message request-data
 
 
   on-receive: (@receive-callback) ~>
@@ -34,9 +41,8 @@ class MockExoCom
       @receive-callback!
 
 
-  register-service: ({name, port}) ~>
-    @push-sockets[name] = zmq.socket 'push'
-      ..connect "tcp://localhost:#{port}"
+  register-service: ({name, websocket}) ~>
+    @service-sockets[name] = websocket
 
 
   reset: ~>
@@ -44,7 +50,7 @@ class MockExoCom
 
 
   send: ({service, name, payload, message-id, response-to}) ~>
-    | !@push-sockets[service]  =>  throw new Error "unknown service: '#{service}'"
+    | !@service-sockets[service]  =>  throw new Error "unknown service: '#{service}'"
 
     @received-messages = []
     request-data =
@@ -52,11 +58,11 @@ class MockExoCom
       payload: payload
       id: message-id or uuid.v1!
     request-data.response-to = response-to if response-to
-    @push-sockets[service].send JSON.stringify request-data
+    @service-sockets[service].send JSON.stringify request-data
 
 
-  _on-pull-socket-message: (data) ~>
-    @received-messages.push JSON.parse data.to-string!
+  _on-message: (data) ~>
+    @received-messages.push data
     @receive-callback?!
 
 

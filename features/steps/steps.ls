@@ -1,15 +1,16 @@
 require! {
-  '../..' : MockExoCom
+  '../../src/mock-exo-com' : MockExoCom
   'chai'
   'jsdiff-console'
   'nitroglycerin': N
   'port-reservation'
+  'prelude-ls' : {filter}
   'record-http' : HttpRecorder
   'request'
   'sinon'
   'sinon-chai'
-  '../support/zmq-endpoint' : ZmqEndpoint
-  'wait' : {wait-until}
+  '../support/websocket-endpoint' : WebSocketEndpoint
+  'wait' : {wait, wait-until}
 }
 expect = chai.expect
 chai.use sinon-chai
@@ -19,8 +20,8 @@ module.exports = ->
 
   @Given /^a listening ExoComMock instance$/, (done) ->
     @exocom = new MockExoCom
-    port-reservation.get-port N (@exocom-zmq-port) ~>
-      @exocom.listen @exocom-zmq-port
+    port-reservation.get-port N (@exocom-port) ~>
+      @exocom.listen @exocom-port
       done!
 
 
@@ -28,14 +29,16 @@ module.exports = ->
     @exocom = new MockExoCom
 
 
-  @Given /^an ExoComMock instance listening at ZMQ port (\d+)$/, (@exocom-zmq-port) ->
+  @Given /^an ExoComMock instance listening at port (\d+)$/, (@exocom-port, done) ->
     @exocom = new MockExoCom
-      ..listen @exocom-zmq-port
+      ..listen @exocom-port
+    wait 200, done
 
 
-  @Given /^a known "([^"]*)" service listening at port (\d+)$/, (name, port) ->
-    @exocom.register-service {name, port}
-    @service = new ZmqEndpoint push-port: @exocom-zmq-port, pull-port: port
+  @Given /^a known "([^"]*)" service$/, (name, done) ->
+    @service = new WebSocketEndpoint name
+      ..listen @exocom-port
+    wait 200, done
 
 
   @Given /^somebody sends it a message$/, ->
@@ -43,8 +46,10 @@ module.exports = ->
       name: "foo"
       payload: ''
       id: '123'
-    @service or= new ZmqEndpoint push-port: @exocom-zmq-port
-      ..send message-data
+    @service or= new WebSocketEndpoint
+      ..listen @exocom-port
+    wait 200, ~>
+      @service.send message-data
 
 
   @Given /^somebody sends it a "([^"]*)" message with payload "([^"]*)"$/, (name, payload) ->
@@ -52,13 +57,14 @@ module.exports = ->
       name: name
       payload: payload
       id: '123'
-    @service or= new ZmqEndpoint push-port: @exocom-zmq-port
-      ..send message-data
+    @service = new WebSocketEndpoint
+      ..listen @exocom-port
+    wait 200, ~>
+      @service.send message-data
 
 
 
   @When /^closing it$/, ->
-    @closed = yes
     @exocom.close!
 
 
@@ -71,8 +77,10 @@ module.exports = ->
     message-data =
       name: 'foo'
       id: '123'
-    @service or= new ZmqEndpoint push-port: @exocom-zmq-port
-      ..send message-data
+    @service or= new WebSocketEndpoint
+      ..listen @exocom-port
+    wait 100, ~>
+      @service.send message-data
 
 
   @When /^trying to send a "([^"]*)" message to the "([^"]*)" service$/, (message-name, service-name) ->
@@ -82,8 +90,8 @@ module.exports = ->
       @error = e
 
 
-  @When /^resetting the ExoComMock instance$/, ->
-    @exocom.reset!
+  @When /^the ExoComMock instance is reset$/, ->
+      @exocom.reset!
 
 
   @When /^sending a "([^"]*)" message to the "([^"]*)" service with the payload:$/, (message, service, payload) ->
@@ -122,14 +130,17 @@ module.exports = ->
     expect(@call-received).to.not.have.been.called
 
 
-  @Then /^it has received no messages/, ->
-    expect(@exocom.received-messages).to.be.empty
+  @Then /^it has received no messages/, (done) ->
+    wait 200, ~>
+      expect(filter((.name is not "exocom.register-service"), @exocom.received-messages) if @exocom.register-service).to.be.empty
+      done!
 
 
   @Then /^it has received the messages/, (table, done) ->
-    wait-until (~> @exocom.received-messages.length), 1, ~>
+    wait-until (~> @exocom.received-messages.length), 300, ~>
       expected-messages = [{[key.to-lower-case!, value] for key, value of message} for message in table.hashes!]
-      jsdiff-console @exocom.received-messages, expected-messages, done
+      service-messages = filter (.name is not "exocom.register-service"), @exocom.received-messages
+      jsdiff-console service-messages, expected-messages, done
 
 
   @Then /^it is no longer listening at port (\d+)$/, (port, done) ->

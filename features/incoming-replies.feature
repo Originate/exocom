@@ -10,7 +10,7 @@ Feature: Handling incoming replies to sent message
 
   Background:
     Given ExoCom runs at port 4100
-    And an ExoRelay instance called "exo-relay" listening on port 4000
+    And an ExoRelay instance called "exo-relay"
 
 
   Scenario: handling replies to outgoing messages

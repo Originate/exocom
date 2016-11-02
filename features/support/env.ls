@@ -5,7 +5,6 @@ module.exports = ->
 
   @After ->
     @exo-relay?.close!
-    @exo-relay?.close-port!
     @exocom?.close!
 
 

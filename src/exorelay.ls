@@ -1,10 +1,9 @@
 require! {
   'events' : {EventEmitter}
-  'ip'
   './message-handler/message-manager' : HandlerManager
-  './message-sender/message-sender' : MessageSender
   'rails-delegate' : {delegate, delegate-event}
-  './zmq-listener/zmq-listener' : ZmqListener
+  './websocket-connector/websocket-connector' : WebSocketConnector
+  'ws' : WebSocket
 }
 debug = require('debug')('exorelay')
 
@@ -19,26 +18,23 @@ class ExoRelay extends EventEmitter
     # manages the request handlers for incoming messages
     @message-handler = new HandlerManager!
 
-    # sends outgoing messages to Exosphere
-    @message-sender = new MessageSender config
-
-    # listens to incoming messages from Exosphere
-    @zmq-listener = new ZmqListener!
+    # send and receives messages from Exosphere
+    @websocket-connector = new WebSocketConnector config
       ..on 'message', @_on-incoming-message
       ..on 'online', @_send-routing-config
 
 
-    delegate \closePort, from: @, to: @message-sender
-    delegate \close \listen \port from: @, to: @zmq-listener
+    # TODO: Decide whether or not the listen event is needed, or if it will be ran automatically on the start-up of the @websocket-connector
+    delegate \close \listen from: @, to: @websocket-connector
     delegate \hasHandler \registerHandler \registerHandlers from: @, to: @message-handler
-    delegate-event 'error', from: [@zmq-listener, @message-handler, @message-sender], to: @
-    delegate-event 'status', 'offline', from: @zmq-listener, to: @
+    delegate-event 'error', from: [@websocket-connector, @message-handler], to: @
+    delegate-event 'offline', from: @websocket-connector, to: @
 
 
   send: (message-name, payload, reply-handler) ~>
     | reply-handler and typeof reply-handler isnt 'function'  =>  return @emit 'error', Error 'The reply handler given to ExoRelay#send must be a function'
 
-    message-id = @message-sender.send message-name, payload
+    message-id = @websocket-connector.send message-name, payload
     if reply-handler
       @message-handler.register-reply-handler message-id, reply-handler
     message-id
@@ -46,11 +42,11 @@ class ExoRelay extends EventEmitter
 
   _on-incoming-message: (request-data) ~>
     if request-data.message-name is '__status'
-      @message-sender.send "__status-ok"
+      @websocket-connector.send "__status-ok"
       return 'success'
 
     @message-handler.handle-request request-data,
-                                    reply: @message-sender.reply-method-for request-data.id
+                                    reply: @websocket-connector.reply-method-for request-data.id
                                     send: @send
 
 
@@ -58,9 +54,7 @@ class ExoRelay extends EventEmitter
     @send 'exocom.register-service' do
       name: @config.service-name
       internal-namespace: @config.internal-namespace
-      host: ip.address!
-      port: @zmq-listener.port
-    @emit 'online', @zmq-listener.port
+    @emit 'online', @websocket-connector.exocom-port
 
 
 module.exports = ExoRelay

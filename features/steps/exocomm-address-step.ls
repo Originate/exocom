@@ -2,6 +2,7 @@ require! {
   '../..' : ExoRelay
   'chai' : {expect}
   'exocom-mock': MockExoCom
+  'wait' : {wait}
 }
 
 
@@ -28,7 +29,7 @@ module.exports = ->
       @error = e.message
 
 
-  @When /^trying to create an ExoRelay without providing the ExoCom host$/ ->
+  @When /^trying to create an ExoRelay without providing the ExoCom host$/, ->
     try
       @exo-relay = new ExoRelay do
         exocom-port: 4100
@@ -36,6 +37,7 @@ module.exports = ->
     catch
       @error = e.message
 
+
   @Then /^this instance uses the ExoCom host "([^"]*)" and port (\d+)$/ (host, +port) ->
-    expect(@exo-relay.message-sender.exocom-port).to.equal port
-    expect(@exo-relay.message-sender.exocom-host).to.equal host
+    expect(@exo-relay.websocket-connector.exocom-port).to.equal port
+    expect(@exo-relay.websocket-connector.exocom-host).to.equal host

@@ -10,8 +10,8 @@ Feature: Configuring the ExoCom address
 
 
   Scenario: the user provides the ExoCom address
-    When creating an ExoRelay instance using ExoCom host "localhost" and port 3200
-    Then this instance uses the ExoCom host "localhost" and port 3200
+    When creating an ExoRelay instance using ExoCom host "localhost" and port 4100
+    Then this instance uses the ExoCom host "localhost" and port 4100
 
 
   Scenario: the user does not provide the ExoCom port

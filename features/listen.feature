@@ -11,17 +11,9 @@ Feature: Listening
 
   Background:
     Given ExoCom runs at port 4100
-    And an ExoRelay instance
+    And a new ExoRelay instance
 
 
-  Scenario: Setting up at the given port
-    When I take it online at port 4001
-    Then it is online at port 4001
-    And it emits the 'online' event with payload 4001
-
-
-  # ERROR HANDLING
-
-  Scenario: providing a non-number as the port
-    When I try to take it online at port "zonk"
-    Then ExoRelay emits an "error" event with the error "Non-numerical port provided to ExoRelay#listen"
+  Scenario: Setting up the ExoRelay instance
+    When I take it online
+    Then it is online

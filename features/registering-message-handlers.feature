@@ -6,7 +6,7 @@ Feature: Registering message handlers
 
   Rules:
   - register message handlers by via "registerHandler"
-  - the registered messages are invoked by sending a message to the ExoRelay pull socket listening at the ZMQ port
+  - the registered messages are invoked by sending a message to the ExoRelay socket
   - messages are executed asynchronously, and can send other messages back to indicate responses
 
 

@@ -11,7 +11,7 @@ Feature: Sending outgoing replies to incoming messages
 
   Background:
     Given ExoCom runs at port 4100
-    And an ExoRelay instance called "exo-relay" running inside the "test-service" service at port 4000
+    And an ExoRelay instance called "exo-relay" running inside the "test-service" service
 
 
   Scenario: sending a reply with JSON data

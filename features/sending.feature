@@ -13,7 +13,7 @@ Feature: Sending outgoing messages
 
   Background:
     Given ExoCom runs at port 4100
-    And an ExoRelay instance called "exo-relay" running inside the "test-service" service at port 4000
+    And an ExoRelay instance called "exo-relay" running inside the "test-service" service
 
 
   Scenario: sending a message without payload
@@ -21,7 +21,7 @@ Feature: Sending outgoing messages
       """
       exo-relay.send 'hello-world'
       """
-    Then ExoRelay makes the ZMQ request:
+    Then ExoRelay makes the WebSocket request:
       """
       name: 'hello-world'
       sender: 'test-service'
@@ -34,7 +34,7 @@ Feature: Sending outgoing messages
       """
       exo-relay.send 'hello', name: 'world'
       """
-    Then ExoRelay makes the ZMQ request:
+    Then ExoRelay makes the WebSocket request:
       """
       name: 'hello'
       sender: 'test-service'
@@ -49,7 +49,7 @@ Feature: Sending outgoing messages
       """
       exo-relay.send 'hello', {}
       """
-    Then ExoRelay makes the ZMQ request:
+    Then ExoRelay makes the WebSocket request:
       """
       name: 'hello'
       sender: 'test-service'
@@ -63,7 +63,7 @@ Feature: Sending outgoing messages
       """
       exo-relay.send 'hello', 'world'
       """
-    Then ExoRelay makes the ZMQ request:
+    Then ExoRelay makes the WebSocket request:
       """
       name: 'hello'
       sender: 'test-service'
@@ -76,7 +76,7 @@ Feature: Sending outgoing messages
       """
       exo-relay.send 'hello', ''
       """
-    Then ExoRelay makes the ZMQ request:
+    Then ExoRelay makes the WebSocket request:
       """
       name: 'hello'
       sender: 'test-service'
@@ -90,7 +90,7 @@ Feature: Sending outgoing messages
       """
       exo-relay.send 'sum', [1, 2, 3]
       """
-    Then ExoRelay makes the ZMQ request:
+    Then ExoRelay makes the WebSocket request:
       """
       name: 'sum'
       sender: 'test-service'
@@ -104,7 +104,7 @@ Feature: Sending outgoing messages
       """
       exo-relay.send 'sum', []
       """
-    Then ExoRelay makes the ZMQ request:
+    Then ExoRelay makes the WebSocket request:
       """
       name: 'sum'
       sender: 'test-service'

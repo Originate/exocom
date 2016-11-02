@@ -13,26 +13,15 @@ module.exports = ->
       ..listen!
 
 
-  @When /^I take it online at port (\d+)$/, (port, done) ->
+  @When /^I take it online$/, (done) ->
     @exo-relay
       ..on 'online', ~>
-        wait-until (~> @exocom.received-messages.length), 10, ~>
-          @exocom.reset!
+        wait-until (~> @exocom.service-sockets['test-service']), 10, ~>
           done!
-      ..listen port
 
 
-  @When /^I try to take it online at port "([^"]*)"$/, (port, done) ->
-    @exo-relay
-      ..on 'error', (@error) ~> done!
-      ..on 'online', -> done 'should not be online'
-      ..listen port
-
-
-
-  @Then /^it is online at port (\d+)$/, (port, done) ->
+  @Then /^it is online$/, (done) ->
     @exocom
-      ..register-service name: 'test-service', port: port
       ..send service: 'test-service', name: '__status'
     current-length = @exocom.received-messages.length
     wait-until (~> @exocom.received-messages.length > current-length), 1, ~>

@@ -63,11 +63,11 @@ module.exports = ->
 
 
 
-  @Then /^ExoRelay makes the ZMQ request:$/, (request-data, done) ->
+  @Then /^ExoRelay makes the WebSocket request:$/, (request-data, done) ->
     # Wait until we get some call data, then wait another 50ms to let all the request data fill in
     wait-until (~> @exocom.received-messages.length), 10, ~>
       wait 50, ~>
-        rendered = ejs.render request-data, request_uuid: @message-id, ip_address: ip.address!
+        rendered = ejs.render request-data, request_uuid: @message-id
         template = livescript.compile "compiled = {\n#{rendered}\n}", bare: yes, header: no
         eval template
         jsdiff-console @exocom.received-messages[0], compiled, done

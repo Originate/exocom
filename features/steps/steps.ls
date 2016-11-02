@@ -73,7 +73,7 @@ module.exports = ->
     @exocom.on-receive @call-received
 
 
-  @When /^a call comes in$/, ->
+  @When /^a call comes in$/, (done) ->
     message-data =
       name: 'foo'
       id: '123'
@@ -81,6 +81,7 @@ module.exports = ->
       ..listen @exocom-port
     wait 100, ~>
       @service.send message-data
+      done!
 
 
   @When /^trying to send a "([^"]*)" message to the "([^"]*)" service$/, (message-name, service-name) ->
@@ -90,8 +91,10 @@ module.exports = ->
       @error = e
 
 
-  @When /^the ExoComMock instance is reset$/, ->
+  @When /^the ExoComMock instance is reset$/, (done) ->
+    wait 200, ~>
       @exocom.reset!
+      done!
 
 
   @When /^sending a "([^"]*)" message to the "([^"]*)" service with the payload:$/, (message, service, payload) ->
@@ -130,10 +133,8 @@ module.exports = ->
     expect(@call-received).to.not.have.been.called
 
 
-  @Then /^it has received no messages/, (done) ->
-    wait 200, ~>
-      expect(filter((.name is not "exocom.register-service"), @exocom.received-messages) if @exocom.register-service).to.be.empty
-      done!
+  @Then /^it has received no messages/, ->
+    expect(@exocom.received-messages).to.be.empty
 
 
   @Then /^it has received the messages/, (table, done) ->

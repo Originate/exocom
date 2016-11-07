@@ -30,7 +30,8 @@ describe 'WebSocket', ->
           @mock-service = new MockService {port: 3001, name: 'mock-service', namespace: 'mock-service'}
       wait 200, ~>
         @exocom.websocket
-          ..send-to-service message, services['mock-service'], done
+          ..send-to-service message, services['mock-service']
+        done!
 
     after-each ->
       @exocom.close!

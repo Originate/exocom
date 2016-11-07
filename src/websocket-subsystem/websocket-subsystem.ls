@@ -82,7 +82,7 @@ class WebSocketSubsystem extends EventEmitter
       @send-to-service message-data, service
 
 
-  send-to-service: (message-data, service, done) ->
+  send-to-service: (message-data, service) ->
     translated-message-name = @_translate message-data.name, for: service
     request-data =
       name: translated-message-name
@@ -94,7 +94,6 @@ class WebSocketSubsystem extends EventEmitter
       request-data.response-to = message-data.response-to
     @_log-sending message-data, service
     @service-sockets[service.name].send JSON.stringify request-data
-    done?!
     result = {[key, value] for key, value of message-data}
     result.name = translated-message-name
     result

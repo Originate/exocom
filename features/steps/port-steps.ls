@@ -20,7 +20,7 @@ module.exports = ->
           done!
 
 
-  @Then /^it is online$/, (done) ->
+  @Then /^it connects to the given ExoCom host and port$/, (done) ->
     @exocom
       ..send service: 'test-service', name: '__status'
     current-length = @exocom.received-messages.length

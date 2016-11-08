@@ -3,22 +3,10 @@ machine:
   node:
     version: 5.7.0
 
-  environment:
-      MOCHA_FILE: "$CIRCLE_TEST_REPORTS/Mocha/test-results.xml"
-      LD_RUN_PATH: /home/ubuntu/zeromq/lib
-      LD_LIBRARY_PATH: /home/ubuntu/zeromq/lib
-      PKG_CONFIG_PATH: /home/ubuntu/zeromq/lib/pkgconfig
-      C_INCLUDE_PATH: /home/ubuntu/zeromq/include
-      CPLUS_INCLUDE_PATH: /home/ubuntu/zeromq/include
-
 
 dependencies:
   pre:
     - npm install exosphere-shared
-    - node_modules/exosphere-shared/bin/install-zeromq-ubuntu
-
-  cache_directories:
-    - "~/zeromq"
 
 
 test:
@@ -29,7 +17,6 @@ test:
 
   override:
     - bin/lint
-    - mocha --compilers ls:livescript "**/*spec.ls" --reporter mocha-circleci-reporter
     - cucumber-js --format json:$CIRCLE_TEST_REPORTS/cucumber/tests.cucumber --format pretty
 
 

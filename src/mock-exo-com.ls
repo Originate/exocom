@@ -20,19 +20,9 @@ class MockExoCom
 
 
   listen: (+@port) ~>
-    @server = new WebSocketServer {port: @port}
-      ..on 'error', (error) ~>
-        console.log error
-      ..on 'connection', (websocket) ~>
-        websocket.on 'message', (message) ~>
-          @on-socket-message message, websocket
-
-
-  on-socket-message: (message, websocket) ->
-    request-data = JSON.parse message
-    if request-data.name is "exocom.register-service"
-      @register-service {name: request-data.sender, websocket}
-    @_on-message request-data
+    @server = new WebSocketServer {@port}
+      ..on 'error', @_on-server-error
+      ..on 'connection', @_on-server-connection
 
 
   on-receive: (@receive-callback) ~>
@@ -63,6 +53,20 @@ class MockExoCom
   _on-message: (data) ~>
     @received-messages.push data
     @receive-callback?!
+
+
+  _on-server-connection: (websocket) ~>
+     websocket.on 'message', @_on-socket-message(_, websocket)
+
+
+  _on-server-error: (error) ->
+    console.log error
+
+
+  _on-socket-message: (message, websocket) ~>
+    switch (request-data = JSON.parse message).name
+    | 'exocom.register-service'  =>  @register-service {name: request-data.sender, websocket}
+    | otherwise                  =>  @_on-message request-data
 
 
 

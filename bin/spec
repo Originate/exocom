@@ -2,6 +2,5 @@
 
 if [ "$#" != "1" ]; then
   bin/lint
-  bin/tests
 fi
 DEBUG='*,-express:*,-body-parser:*,-finalhandler,-rails-delegate' cucumber-js "$@"

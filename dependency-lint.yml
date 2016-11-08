@@ -21,7 +21,6 @@ ignoreErrors:
   unused:
     - cucumber-snippets-livescript
     - livescript
-    - mocha-circleci-reporter
     - o-tools
     - o-tools-livescript
 

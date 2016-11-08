@@ -27,5 +27,5 @@ Feature: Listing receiving messages
   Scenario: resetting the calls list after calls have been received
     Given an ExoComMock instance listening at port 4100
     And somebody sends it a message
-    When the ExoComMock instance is reset
+    When resetting the ExoComMock instance
     Then it has received no messages

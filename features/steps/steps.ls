@@ -1,5 +1,5 @@
 require! {
-  '../../src/mock-exo-com' : MockExoCom
+  '../..' : MockExoCom
   'chai'
   'jsdiff-console'
   'nitroglycerin': N
@@ -29,39 +29,23 @@ module.exports = ->
     @exocom = new MockExoCom
 
 
-  @Given /^an ExoComMock instance listening at port (\d+)$/, (@exocom-port, done) ->
+  @Given /^an ExoComMock instance listening at port (\d+)$/, (@exocom-port) ->
     @exocom = new MockExoCom
       ..listen @exocom-port
-    wait 200, done
 
 
-  @Given /^a known "([^"]*)" service$/, (name, done) ->
-    @service = new WebSocketEndpoint name
-      ..listen @exocom-port
-    wait 200, done
+  @Given /^a known "([^"]*)" service$/, (name) ->
+    @create-named-websocket-endpoint {name, port: @exocom-port}
 
 
-  @Given /^somebody sends it a message$/, ->
-    message-data =
-      name: "foo"
-      payload: ''
-      id: '123'
-    @service or= new WebSocketEndpoint
-      ..listen @exocom-port
-    wait 200, ~>
-      @service.send message-data
+  @Given /^somebody sends it a message$/, (done) ->
+    @create-websocket-endpoint @exocom-port
+    @service-send-message {name: \foo, payload: '', id: \123}, done
 
 
-  @Given /^somebody sends it a "([^"]*)" message with payload "([^"]*)"$/, (name, payload) ->
-    message-data =
-      name: name
-      payload: payload
-      id: '123'
-    @service = new WebSocketEndpoint
-      ..listen @exocom-port
-    wait 200, ~>
-      @service.send message-data
-
+  @Given /^somebody sends it a "([^"]*)" message with payload "([^"]*)"$/, (name, payload, done) ->
+    @create-websocket-endpoint @exocom-port
+    @service-send-message {name: name, payload: payload, id: \123}, done
 
 
   @When /^closing it$/, ->
@@ -74,41 +58,29 @@ module.exports = ->
 
 
   @When /^a call comes in$/, (done) ->
-    message-data =
-      name: 'foo'
-      id: '123'
-    @service or= new WebSocketEndpoint
-      ..listen @exocom-port
-    wait 100, ~>
-      @service.send message-data
-      done!
+    @create-websocket-endpoint @exocom-port
+    @service-send-message {name: \foo, id: \123}, done
 
 
-  @When /^trying to send a "([^"]*)" message to the "([^"]*)" service$/, (message-name, service-name) ->
+  @When /^trying to send a "([^"]*)" message to the "([^"]*)" service$/, (message-name, service-name, done) ->
     try
       @exocom.send service: service-name, name: message-name
     catch
       @error = e
-
-
-  @When /^the ExoComMock instance is reset$/, (done) ->
-    wait 200, ~>
-      @exocom.reset!
       done!
 
 
-  @When /^sending a "([^"]*)" message to the "([^"]*)" service with the payload:$/, (message, service, payload) ->
-    @exocom.send service: service, name: message, payload: payload
+  @When /^resetting the ExoComMock instance$/, ->
+    @exocom.reset!
+
+
+  @When /^sending a "([^"]*)" message to the "([^"]*)" service with the payload:$/, (message, service, payload, done) ->
+    @exocom-send-message {@exocom, service, message-data: {name: message, payload: payload}}, done
 
 
 
-  @Then /^ExoComMock makes the request:$/, (table, done) ->
-    expected-request = table.rows-hash!
-    wait-until (~> @service.received-messages.length), 1, ~>
-      actual-request = @service.received-messages[0]
-      expect(actual-request.name).to.equal expected-request.NAME
-      expect(actual-request.payload).to.equal expected-request.PAYLOAD
-      done!
+  @Then /^ExoComMock makes the request:$/, (table) ->
+    @verify-exocom-received-request table.rows-hash!
 
 
   @Then /^I can close it without errors$/, ->
@@ -138,7 +110,7 @@ module.exports = ->
 
 
   @Then /^it has received the messages/, (table, done) ->
-    wait-until (~> @exocom.received-messages.length), 300, ~>
+    wait-until (~> @exocom.received-messages.length > 1), 10, ~>
       expected-messages = [{[key.to-lower-case!, value] for key, value of message} for message in table.hashes!]
       service-messages = filter (.name is not "exocom.register-service"), @exocom.received-messages
       jsdiff-console service-messages, expected-messages, done

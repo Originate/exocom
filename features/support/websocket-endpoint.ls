@@ -8,22 +8,19 @@ debug = require('debug')('mock-websocket-endpoint')
 class WebSocketEndpoint
 
   (@name) ->
-
     @received-messages = []
     @socket = null
 
 
   listen: (@exocom-port) ~>
     @socket = new WebSocket "ws://localhost:#{@exocom-port}"
-      ..on 'error', (error) ~>
-        console.log error
-      ..on 'open', ~>
-        data =
-          name: "exocom.register-service"
-          sender: "#{@name}"
-        @send data
-      ..on 'message', (data) ~>
-        @_on-socket-message data
+      ..on 'error', @_on-socket-error
+      ..on 'open', @_on-socket-open
+      ..on 'message', @_on-socket-message
+
+
+  can-send: ->
+    @socket.ready-state is WebSocket.OPEN
 
 
   close: ~>
@@ -34,8 +31,18 @@ class WebSocketEndpoint
     @socket.send JSON.stringify request-data
 
 
+  _on-socket-error: (error) ->
+    console.log error
+
+
   _on-socket-message: (data) ~>
     @received-messages.push JSON.parse data.to-string!
+
+
+  _on-socket-open: ~>
+    @send do
+      name: \exocom.register-service
+      sender: @name
 
 
 

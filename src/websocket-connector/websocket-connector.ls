@@ -2,6 +2,7 @@ require! {
   'events' : {EventEmitter}
   'lodash.isempty' : is-empty
   'node-uuid' : uuid
+  'wait' : {wait}
   'ws' : WebSocket
 }
 debug = require('debug')('exorelay:websocket-listener')
@@ -29,7 +30,7 @@ class WebSocketConnector extends EventEmitter
   close: ->
     return unless @socket
     debug "no longer istening at port #{@exocom-port}"
-    @socket.close!
+    @socket?.close!
     @emit 'offline'
 
 
@@ -57,15 +58,18 @@ class WebSocketConnector extends EventEmitter
     @last-sent-id = request-data.id
 
 
-  listen: ->
+  listen: ~>
     @socket = new WebSocket "ws://#{@exocom-host}:#{@exocom-port}/services"
       ..on 'open', ~>
         @emit 'online'
-      ..on 'message', (message) ~>
-        @_on-message message
-      ..on 'error' (error) ~>
-        | error.errno is 'EADDRINUSE'  =>  @emit 'error', "port #{@exocom-port} is already in use"
-        | otherwise                    =>  @emit 'error', error
+      ..on 'message', @_on-message
+      ..on 'error', @_on-socket-error
+
+
+  _on-socket-error: (error) ~>
+    | error.errno is 'EADDRINUSE'   =>  @emit 'error', "port #{@exocom-port} is already in use"
+    | error.errno is 'ECONNREFUSED' =>  wait 1_000, @listen
+    | otherwise                     =>  @emit 'error', error
 
 
   _on-message: (data) ~>

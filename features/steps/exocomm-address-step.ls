@@ -13,6 +13,13 @@ module.exports = ->
       ..listen @exocom-port
 
 
+  @When /^an ExoCom instance comes online (\d+) second(?:s)? later$/ timeout: 10_000, (seconds, done) ->
+    wait seconds * 1000, ~>
+      @exocom = new MockExoCom
+        ..listen 4100
+      done!
+
+
   @When /^creating an ExoRelay instance using ExoCom host "([^"]*)" and port (\d+)$/ (host, +port) ->
     @exo-relay = new ExoRelay do
       exocom-host: host

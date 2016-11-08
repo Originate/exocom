@@ -13,6 +13,11 @@ module.exports = ->
       done!
 
 
+  @Then /^ExoRelay connects to ExoCom$/ (done) ->
+    wait-until (~> @exocom.service-sockets['test-service']), 1, ~>
+      done!
+
+
   @Then /^it signals it is online$/, (done) ->
     wait-until (~> @status-code), 1, ~>
       expect(@status-code).to.equal '__status-ok'

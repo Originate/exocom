@@ -8,6 +8,7 @@
     "lodash.isempty": "4.4.0",
     "node-uuid": "1.4.7",
     "rails-delegate": "0.6.2",
+    "wait": "0.1.0",
     "ws": "1.1.1"
   },
   "description": "Communication relay between JavaScript code bases and the Exosphere environment",
@@ -30,8 +31,7 @@
     "portfinder": "1.0.9",
     "prelude-ls": "1.1.2",
     "sinon": "1.17.6",
-    "tertestrial": "0.3.2",
-    "wait": "0.1.0"
+    "tertestrial": "0.3.2"
   },
   "engines": {
     "npm": ">= 3.0.0"

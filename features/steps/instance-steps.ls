@@ -41,6 +41,7 @@ module.exports = ->
 
 
   @Given /^a new ExoRelay instance$/, ->
+    @exocom-port or= 4100
     @exo-relay = new ExoRelay {exocom-host: 'localhost', @exocom-port, service-name: 'test-service'}
 
 

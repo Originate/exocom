@@ -9,12 +9,12 @@ World = !->
   @create-websocket-endpoint = (port) ->
     unless @service
       @service = new WebSocketEndpoint
-        ..listen port
+        ..connect port
 
 
   @create-named-websocket-endpoint = ({name, port}) ->
     @service = new WebSocketEndpoint name
-      ..listen port
+      ..connect port
 
 
   @exocom-send-message = ({exocom, service, message-data}, done) ->

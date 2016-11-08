@@ -14,7 +14,9 @@ module.exports = ->
 
 
   @Then /^ExoRelay connects to ExoCom$/ (done) ->
-    wait-until (~> @exocom.service-sockets['test-service']), 1, ~>
+    @exo-relay
+      ..connect!
+    wait-until (~> @exocom.service-sockets[@service-name]), 1, ~>
       done!
 
 

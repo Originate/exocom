@@ -13,10 +13,10 @@ module.exports = ->
       ..listen @exocom-port
 
 
-  @When /^an ExoCom instance comes online (\d+) second(?:s)? later$/ timeout: 10_000, (seconds, done) ->
+  @When /^an ExoCom instance comes online at port (\d+), (\d+) second(?:s)? later$/ timeout: 10_000, (port, seconds, done) ->
     wait seconds * 1000, ~>
       @exocom = new MockExoCom
-        ..listen 4100
+        ..listen port
       done!
 
 

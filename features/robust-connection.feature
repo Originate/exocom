@@ -8,6 +8,6 @@ Feature: resilient connecting to ExoCom
   - failed connections to ExoCom are retried every second until a connection is made
 
   Scenario: connect to ExoCom instance that comes online after ExoRelay
-    Given a new ExoRelay instance
-    When an ExoCom instance comes online 1 second later
+    Given a new ExoRelay instance connecting to port 4100
+    When an ExoCom instance comes online at port 4100, 1 second later
     Then ExoRelay connects to ExoCom

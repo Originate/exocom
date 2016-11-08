@@ -3,7 +3,6 @@ require! {
   './message-handler/message-manager' : HandlerManager
   'rails-delegate' : {delegate, delegate-event}
   './websocket-connector/websocket-connector' : WebSocketConnector
-  'ws' : WebSocket
 }
 debug = require('debug')('exorelay')
 
@@ -24,8 +23,7 @@ class ExoRelay extends EventEmitter
       ..on 'online', @_send-routing-config
 
 
-    # TODO: Decide whether or not the listen event is needed, or if it will be ran automatically on the start-up of the @websocket-connector
-    delegate \close \listen from: @, to: @websocket-connector
+    delegate \close \connect from: @, to: @websocket-connector
     delegate \hasHandler \registerHandler \registerHandlers from: @, to: @message-handler
     delegate-event 'error', from: [@websocket-connector, @message-handler], to: @
     delegate-event 'offline', from: @websocket-connector, to: @

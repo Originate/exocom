@@ -1,6 +1,5 @@
 require! {
   'events' : {EventEmitter}
-  'lodash.isempty' : is-empty
   'node-uuid' : uuid
   'wait' : {wait}
   'ws' : WebSocket
@@ -18,9 +17,7 @@ debug = require('debug')('exorelay:websocket-listener')
 class WebSocketConnector extends EventEmitter
 
   ({@exocom-host, @service-name, @exocom-port} = {}) ->
-
     @exocom-port = +@exocom-port
-    @listen!
 
     # Contains the id of the most recently sent request (for testing)
     @last-sent-id = null
@@ -29,7 +26,7 @@ class WebSocketConnector extends EventEmitter
   # Closes the port that ExoRelay is communicating on
   close: ->
     return unless @socket
-    debug "no longer istening at port #{@exocom-port}"
+    debug "no longer connected at 'ws://#{@exocom-host}/#{@exocom-port}'"
     @socket?.close!
     @emit 'offline'
 
@@ -38,8 +35,7 @@ class WebSocketConnector extends EventEmitter
   reply-method-for: (id) ->
     | !id  =>  return @emit 'error', new Error 'WebSocketConnector.replyMethodFor needs an id'
 
-    (message-name, payload) ~>
-      @send message-name, payload, response-to: id
+    @send _, _, response-to: id
 
 
   send: (message-name, payload, options = {}) ->
@@ -58,21 +54,24 @@ class WebSocketConnector extends EventEmitter
     @last-sent-id = request-data.id
 
 
-  listen: ~>
+  connect: ~>
     @socket = new WebSocket "ws://#{@exocom-host}:#{@exocom-port}/services"
-      ..on 'open', ~>
-        @emit 'online'
-      ..on 'message', @_on-message
+      ..on 'open', @_on-socket-open
+      ..on 'message', @_on-socket-message
       ..on 'error', @_on-socket-error
+
+
+  _on-socket-open: ~>
+    @emit 'online'
 
 
   _on-socket-error: (error) ~>
     | error.errno is 'EADDRINUSE'   =>  @emit 'error', "port #{@exocom-port} is already in use"
-    | error.errno is 'ECONNREFUSED' =>  wait 1_000, @listen
+    | error.errno is 'ECONNREFUSED' =>  wait 1_000, @connect
     | otherwise                     =>  @emit 'error', error
 
 
-  _on-message: (data) ~>
+  _on-socket-message: (data) ~>
     request-data = data |> JSON.parse |> @_parse-request
     @_log-received request-data
     switch (result = @listeners('message')[0] request-data)

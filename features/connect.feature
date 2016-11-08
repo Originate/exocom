@@ -1,4 +1,4 @@
-Feature: Listening
+Feature: Connecting
 
   As a developer building Exosphere applications
   I want to be able to add an Exosphere communication relay to any code base

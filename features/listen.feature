@@ -10,9 +10,15 @@ Feature: Listening
 
   Background:
     Given ExoCom runs at port 4100
-    And a new ExoRelay instance
 
 
   Scenario: Setting up the ExoRelay instance
+    Given a new ExoRelay instance connecting to port 4100
     When I take it online
     Then it connects to the given ExoCom host and port
+
+
+  Scenario: Attempting to set up ExoRelay at an invalid port
+    Given a new ExoRelay instance connecting to port 4000
+    When I try to take it online
+    Then ExoRelay emits an "error" event with the error "connect ECONNREFUSED 127.0.0.1:4000"

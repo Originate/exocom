@@ -14,33 +14,31 @@ require! {
 module.exports = ->
 
   @Given /^a running "([^"]*)" instance$/, (name, done) ->
-    @create-mock-service-at-port {name, port: @exocom-port, namespace: null}, ->
+    @create-mock-service-at-port {name, port: @exocom-port}, ->
       wait 200, done
 
 
-  @Given /^a running "([^"]*)" instance with namespace "([^"]*)"$/ (name, namespace, done) ->
-    @create-mock-service-at-port {name, port: @exocom-port, namespace}, ->
-      wait 200, done
-
-
-  @Given /^an ExoCom instance(?: with routing information "([^"]*)")?$/, (service-messages, done) ->
+  @Given /^an ExoCom instance$/, (done) ->
     port-reservation
       ..base-port = 5000
       ..get-port N (@exocom-port) ~>
-        @create-exocom-instance @exocom-port, service-messages, done
+        @create-exocom-instance port: @exocom-port, done
+
+
+  @Given /^an ExoCom instance configured with the routes:?$/, (service-messages, done) ->
+    service-messages = service-messages |> (.replace /\s/g, '') |> (.replace /"/g, '')
+    port-reservation
+      ..base-port = 5000
+      ..get-port N (@exocom-port) ~>
+        @create-exocom-instance port: @exocom-port, service-messages: service-messages, done
 
 
   @Given /^an ExoCom instance managing the service landscape:$/ (table, done) ->
     port-reservation
       ..base-port = 5000
       ..get-port N (@exocom-port) ~>
-        @create-exocom-instance @exocom-port, service-messages: '{}', ~>
-          data = for service in table.hashes!
-            {
-              name: service.NAME
-              internal-namespace: service['INTERNAL NAMESPACE']
-            }
-            @create-mock-service-at-port {name: service.NAME, port: @exocom-port, namespace: service['INTERNAL NAMESPACE']}, ->
+        @create-exocom-instance port: @exocom-port, ~>
+          @create-mock-service-at-port {name: service.NAME, port: @exocom-port}, ->
           done!
 
 
@@ -61,8 +59,8 @@ module.exports = ->
     wait 200, done
 
 
-  @When /^a new "([^"]*)" service with namespace "([^"]*)" comes online$/ (name, namespace, done) ->
-    @create-mock-service-at-port {name, port: @exocom-port, namespace}, done
+  @When /^a new "([^"]*)" service$/ (name, done) ->
+    @create-mock-service-at-port {name, port: @exocom-port}, done
 
 
   @When /^(I try )?starting ExoCom at port (\d+)$/, (!!expect-error, +port, done) ->
@@ -108,6 +106,10 @@ module.exports = ->
         name: row.NAME
         internal-namespace: row['INTERNAL NAMESPACE']
     @verify-service-setup services, done
+
+
+  @Then /^ExoCom signals the error "([^"]*)"$/, (message, done) ->
+    @process.wait message, done
 
 
   @Then /^ExoCom signals "([^"]*)"$/, (message, done) ->

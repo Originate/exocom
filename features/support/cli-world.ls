@@ -16,7 +16,7 @@ require! {
 # Provides steps for end-to-end testing of the service as a stand-alone binary
 CliWorld = !->
 
-  @create-exocom-instance = (port, service-messages = '{}', done) ->
+  @create-exocom-instance = ({port, service-messages = '{}'}, done) ->
     env =
       PORT : port
       SERVICE_MESSAGES : service-messages

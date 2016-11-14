@@ -10,7 +10,7 @@ class ClientRegistry
   ({@service-messages = '{}'} = {}) ->
 
     # List of messages that are received by the applications services
-    @receives = {[service.name, service.receives] for service in jsonic(@service-messages)}
+    @routing = {[service.name, {receives: service.receives, sends: service.sends, internal-namespace: service.namespace}] for service in jsonic(@service-messages)}
 
     # List of clients that are currently registered
     #
@@ -52,18 +52,18 @@ class ClientRegistry
   add-routing-config: (service) ->
     @clients[service.name] =
       name: service.name
-      internal-namespace: service.internal-namespace
-    for message in (@receives[service.name] or {})
-      external-message = @external-message-name {message, service-name: service.name, internal-namespace: service.internal-namespace}
+      internal-namespace: @routing[service.name].internal-namespace
+    for message in (@routing[service.name].receives or {})
+      external-message = @external-message-name {message, service-name: service.name, internal-namespace: @routing[service.name].internal-namespace}
       @routes[external-message] or= {}
       @routes[external-message].receivers or= []
       @routes[external-message].receivers.push do
         name: service.name
-        internal-namespace: service.internal-namespace
+        internal-namespace: @routing[service.name].internal-namespace
 
 
   remove-routing-config: ({service-name}) ->
-    for message in (@receives[service-name] or {})
+    for message in (@routing[service-name].receives or {})
       external-message = @external-message-name {message, service-name, internal-namespace: @clients[service-name].internal-namespace}
       delete @routes[external-message]
     delete @clients[service-name]
@@ -73,6 +73,10 @@ class ClientRegistry
   subscribers-to: (message-name) ->
     | !@routes[message-name]  =>  throw new Error "No receivers for message '#{message-name}' registered"
     @routes[message-name].receivers
+
+
+  can-send: (sender, message) ->
+    @routing[sender].sends |> (.includes message)
 
 
   # Returns the message name to which the given service would have to subscribe

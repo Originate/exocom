@@ -56,10 +56,10 @@ class WebSocketSubsystem extends EventEmitter
   on-message: (message, websocket) ->
     request-data = @_parse-request JSON.parse(message)
     @_log-received request-data
-    if request-data.name is "exocom.register-service"
-      @on-registration-receive request-data.payload, websocket
-    else
-      @on-message-receive request-data
+    switch
+      | request-data.name is \exocom.register-service           =>  @on-registration-receive request-data.payload, websocket
+      | @invalid-sender request-data.sender, request-data.name  =>  @emit 'error', "Service '#{request-data.sender}' is not allowed to broadcast the message '#{request-data.name}'"
+      | otherwise                                               =>  @on-message-receive request-data
 
 
   on-registration-receive: (payload, websocket) ->
@@ -110,14 +110,15 @@ class WebSocketSubsystem extends EventEmitter
 
 
   # Returns the relevant data from a request
-  _parse-request: (req) ->
-    sender = req.sender
-    name = req.name
-    payload = req.payload
-    response-to = req.response-to
-    timestamp = req.timestamp
-    id = req.id
-    {id, name, payload, response-to, sender, timestamp}
+  _parse-request: (req) ~>
+    {
+      sender: req.sender
+      name: req.name
+      payload: req.payload
+      response-to: req.response-to
+      timestamp: req.timestamp
+      id: req.id
+    }
 
 
   # Translates outgoing message into one that the receiving service will understand
@@ -128,6 +129,11 @@ class WebSocketSubsystem extends EventEmitter
       | message-parts.length is 1                       =>  message-name
       | message-parts[0] is service.internal-namespace  =>  message-name
       | otherwise                                       => "#{service.internal-namespace}.#{message-parts[1]}"
+
+
+  invalid-sender: (sender, message) ->
+    !@exocom.client-registry.can-send sender, message
+
 
 
 module.exports = WebSocketSubsystem

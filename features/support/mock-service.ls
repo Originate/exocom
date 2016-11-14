@@ -8,23 +8,15 @@ debug = require('debug')('mock-service')
 # that can send, receive, and track messages using WebSockets.
 class MockService
 
-  ({port, name, namespace} = {}) ->
+  ({@port, @name, @namespace} = {}) ->
     @received-messages = []
 
 
-    if port
-      @socket = new WebSocket "ws://localhost:#{port}/services"
-        ..on 'message', @_on-message
-        ..on 'error', (error) ~>
-          console.log error
-        ..on 'open', ~>
-          @send do
-            name: 'exocom.register-service'
-            sender: name
-            payload:
-              name: name
-              internal-namespace: namespace
-            id: '123'
+    if @port
+      @socket = new WebSocket "ws://localhost:#{@port}/services"
+        ..on 'message', @_on-socket-message
+        ..on 'error', @_on-socket-error
+        ..on 'open', @_on-socket-open
 
 
   close: ~>
@@ -36,8 +28,23 @@ class MockService
   send: (request-data) ~>
     @socket.send JSON.stringify request-data
 
-  _on-message: (data) ~>
+
+  _on-socket-error: (error) ~>
+    console.log error
+
+
+  _on-socket-message: (data) ~>
     @received-messages.unshift(JSON.parse data.to-string!)
+
+
+  _on-socket-open: ~>
+    @send do
+      name: 'exocom.register-service'
+      sender: @name
+      payload:
+        name: @name
+      id: '123'
+
 
 
 module.exports = MockService

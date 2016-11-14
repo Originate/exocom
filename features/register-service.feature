@@ -10,18 +10,37 @@ Feature: Manage new instances of services
 
 
   Scenario: a new service comes online
-    Given an ExoCom instance with routing information "[{name: users-service, receives: [users.create]}]"
-    When a new "users" service with namespace "foo" comes online
+    Given an ExoCom instance configured with the routes:
+    """
+    [
+      {
+      "name": "users",
+      "namespace": "foo"
+      }
+    ]
+    """
+    And a new "users" service
     Then ExoCom now knows about these services:
       | NAME  | INTERNAL NAMESPACE |
       | users | foo                |
 
 
   Scenario: deregister a service once it goes offline
-    Given an ExoCom instance managing the service landscape:
-      | NAME   | INTERNAL NAMESPACE |
-      | users  | foo                |
-      | tweets | bar                |
+    Given an ExoCom instance configured with the routes
+    """
+    [
+      {
+      "name": "users",
+      "namespace": "foo"
+      },
+      {
+      "name": "tweets",
+      "namespace": "bar"
+      }
+    ]
+    """
+    And a running "users" instance
+    And a running "tweets" instance
     When the "tweets" service goes offline
     Then ExoCom now knows about these services:
       | NAME  | INTERNAL NAMESPACE |

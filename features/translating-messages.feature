@@ -11,9 +11,24 @@ Feature: Translating messages
 
 
   Background:
-    Given an ExoCom instance with routing information "[{name: web, receives: [tweets.created]}, {name: tweets, receives: [text-snippet.create]}]"
+    Given an ExoCom instance configured with the routes:
+    """
+    [
+      {
+        "name": "web",
+        "receives": ["tweets.created"],
+        "sends": ["tweets.create"],
+      },
+      {
+        "name": "tweets",
+        "receives": ["text-snippets.create"],
+        "sends": ["text-snippets.created"],
+        "namespace": "text-snippets"
+      }
+    ]
+    """
     And a running "web" instance
-    And a running "tweets" instance with namespace "text-snippets"
+    And a running "tweets" instance
 
 
   Scenario: translating a message

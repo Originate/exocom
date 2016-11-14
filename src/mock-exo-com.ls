@@ -56,7 +56,7 @@ class MockExoCom
 
 
   _on-server-connection: (websocket) ~>
-     websocket.on 'message', @_on-socket-message(_, websocket)
+    websocket.on 'message', @_on-socket-message(_, websocket)
 
 
   _on-server-error: (error) ->
@@ -66,7 +66,7 @@ class MockExoCom
   _on-socket-message: (message, websocket) ~>
     switch (request-data = JSON.parse message).name
     | 'exocom.register-service'  =>  @register-service {name: request-data.sender, websocket}
-    | otherwise                  =>  @_on-message request-data
+    @_on-message request-data
 
 
 

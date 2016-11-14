@@ -51,7 +51,6 @@ class ExoRelay extends EventEmitter
   _send-routing-config: ~>
     @send 'exocom.register-service' do
       name: @config.service-name
-      internal-namespace: @config.internal-namespace
     @emit 'online', @websocket-connector.exocom-port
 
 

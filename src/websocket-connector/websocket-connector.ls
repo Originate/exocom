@@ -93,11 +93,12 @@ class WebSocketConnector extends EventEmitter
 
   # Returns the relevant data from a request
   _parse-request: (req) ->
-    message-name = req.name
-    payload = req.payload
-    response-to = req.response-to
-    id = req.id
-    {message-name, response-to, payload, id}
+    {
+      message-name: req.name
+      payload: req.payload
+      response-to: req.response-to
+      id: req.id
+    }
 
 
 

@@ -17,7 +17,7 @@
     "cucumber-snippets-livescript": "1.0.1",
     "dependency-lint": "4.2.0",
     "ejs": "2.5.2",
-    "exocom-mock": "0.9.2",
+    "exocom-mock": "0.9.3",
     "ip": "1.1.4",
     "jsdiff-console": "2.2.1",
     "livescript": "1.5.0",

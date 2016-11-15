@@ -18,14 +18,16 @@ module.exports = ->
     port-reservation.get-port N (@exocom-port) ~>
       @exocom = new ExoComMock
         ..listen @exocom-port
-        done!
+      done!
+
+  @Given /^an ExoCom instance running at port (\d+)$/, (@exocom-port) ->
+    @exocom = new ExoComMock
+      ..listen @exocom-port
 
 
   @Given /^an instance of the "([^"]*)" service$/, (@service-name, done) ->
-    port-reservation.get-port N (@exorelay-port) ~>
-      @exocom.register-service name: @service-name, port: @exorelay-port
-      @create-exoservice-instance {@service-name, @exorelay-port, @exocom-port}, ~>
-        @remove-register-service-message @exocom, done
+    @create-exoservice-instance {@service-name, @exocom-port}, ~>
+      @remove-register-service-message @exocom, done
 
 
   @Given /^ports (\d+) and (\d+) are used$/, (port1, port2, done) ->
@@ -53,22 +55,25 @@ module.exports = ->
 
 
   @When /^starting a service$/, (done) ->
-    @service-name = 'test'
-    @exocom.register-service name: @service-name, port: 4000
-    @create-exoservice-instance {@service-name, exorelay-port: 4000, @exocom-port}, done
+    @service-name = 'test service'
+    @create-exoservice-instance {@service-name, @exocom-port}, ~>
+      @remove-register-service-message @exocom, done
 
 
-  @When /^starting a service at port (\d+)$/, (exorelay-port, done) ->
-    @service-name = 'test'
-    @exocom.register-service {name: @service-name, port: exorelay-port}
-    @create-exoservice-instance {@service-name, exorelay-port, @exocom-port}, ~>
+  @When /^starting a service configured for ExoCom port (\d+)$/, (port, done) ->
+    @service-name = 'test service'
+    @create-exoservice-instance {@service-name, exocom-port: port}, ~>
       @remove-register-service-message @exocom, done
 
 
   @When /^starting the "([^"]*)" service$/, (@service-name, done) ->
-    @exocom.register-service name: @service-name, port: 4000
-    @create-exoservice-instance {@service-name, exorelay-port: 4000, @exocom-port}, ~>
+    @create-exoservice-instance {@service-name, @exocom-port}, ~>
       @remove-register-service-message @exocom, done
+
+
+  @When /^trying to start a service configured for ExoCom port (\d+)$/, (port) ->
+    @service-name = 'test service'
+    @create-exoservice-instance {@service-name, exocom-port: port}
 
 
   @Then /^after a while it sends the "([^"]*)" message$/, (reply-message-name, done) ->
@@ -93,8 +98,7 @@ module.exports = ->
 
 
   @Then /^it can run the "([^"]*)" service$/, (@service-name, done) ->
-    port-reservation.get-port N (@exorelay-port) ~>
-      @create-exoservice-instance {@service-name, @exorelay-port, @exocom-port}, done
+    @create-exoservice-instance {@service-name, @exocom-port}, done
 
 
   @Then /^it runs the "([^"]*)" hook$/, (hook-name, done) ->
@@ -106,8 +110,12 @@ module.exports = ->
         done!
 
 
-  @Then /^the service runs at port (\d+)$/, (port, done) ->
-    @exocom.send service: 'test', name: '__status' , id: '123'
+  @Then /^it connects to the ExoCom instance$/, (done) ->
+    @exocom.send service: @service-name, name: '__status' , id: '123'
     wait-until (~> @exocom.received-messages[0]), 1, ~>
       if @exocom.received-messages[0].name is "__status-ok"
         done!
+
+  @Then /^it aborts with the error message "([^"]*)"$/ (error-message, done) ->
+    #TODO: implement this
+    done!

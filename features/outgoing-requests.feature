@@ -10,7 +10,7 @@ Feature: Sending outgoing requests
 
   Background:
     Given an ExoCom instance
-    And an instance of the "test" service
+    And an instance of the "test service" service
 
 
   Scenario: a service sends out a message

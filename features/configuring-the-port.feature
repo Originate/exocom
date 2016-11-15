@@ -6,16 +6,17 @@ Feature: Defining the port at which the server listens
 
 
   Rules:
-  - call "exo-js run" in the directory of an Exosphere service
-    to run the service at the default port 3000
-  - if port 3000 is taken, it chooses the next available port above that
-  - the port can be customized via the "--port" command-line switch
+  - call "exo-js run" in the directory of an Exosphere service to start up that service
+  - provide the ExoCom address via the environment variables EXOCOM_HOST and EXOCOM_PORT
 
 
   Background:
-    Given an ExoCom instance
+    Given an ExoCom instance running at port 3001
 
+  Scenario: an ExoService instance connects to ExoCom
+    When starting a service configured for ExoCom port 3001
+    Then it connects to the ExoCom instance
 
-  Scenario: Running at a custom port
-    When starting a service at port 3001
-    Then the service runs at port 3001
+  Scenario: a wrong Exocom port is given
+    When trying to start a service configured for ExoCom port 3002
+    Then it aborts with the error message "Cannot find ExoCom at port 3002"

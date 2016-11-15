@@ -13,5 +13,5 @@ Feature: Before-All hook
 
 
   Scenario: code with beforeAll hook
-    When starting the "with-before-all-hook" service
+    When starting the "example service with before-all hook" service
     Then it runs the "before-all" hook

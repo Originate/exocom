@@ -11,7 +11,7 @@ Feature: Outgoing replies
 
   Background:
     Given an ExoCom instance
-    And an instance of the "test" service
+    And an instance of the "test service" service
 
 
   Scenario: A message replies

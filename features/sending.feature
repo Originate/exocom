@@ -4,7 +4,6 @@ Feature: Sending requests to services
   I want to be able to send it messages in my tests
   So that I can trigger desired activities in my service and observe its behavior.
 
-
   Rules:
   - you must register services with the mock exocomm instance before you can send messages to them
   - call "exocomm.sendMessage service: <service-name>, name: <message name>, payload: <payload>"

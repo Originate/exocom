@@ -35,7 +35,8 @@ class WebSocketConnector extends EventEmitter
   reply-method-for: (id) ->
     | !id  =>  return @emit 'error', new Error 'WebSocketConnector.replyMethodFor needs an id'
 
-    @send _, _, response-to: id
+    (message-name, payload = {}) ~>
+      @send message-name, payload, response-to: id
 
 
   send: (message-name, payload, options = {}) ->

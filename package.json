@@ -2,6 +2,10 @@
   "name": "exoservice",
   "version": "0.17.2",
   "author": "Kevin Goslar",
+  "bin": {
+    "exo-js": "bin/exo-js",
+    "exo-js.cmd": "bin/exo-js.cmd"
+  },
   "dependencies": {
     "chalk": "1.1.3",
     "debug": "2.3.2",

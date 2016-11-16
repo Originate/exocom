@@ -14,7 +14,7 @@ CliWorld = !->
     command = "#{process.cwd!}/bin/exo-js"
     if process.platform is 'win32' then command += '.cmd'
     @process = new ObservableProcess(command,
-                                     env: {EXOCOM_PORT: exocom-port},
+                                     env: {EXOCOM_PORT: exocom-port, SERVICE_NAME: service-name},
                                      cwd: path.join(process.cwd!, 'features', 'example-services', service-name),
                                      verbose: yes,
                                      stdout: process.stdout,

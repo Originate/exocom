@@ -24,5 +24,5 @@ new ExoService parse-options!
 function parse-options
   exocom-host: process.env.EXOCOM_HOST ? "localhost"
   exocom-port: process.env.EXOCOM_PORT
-  service-name: service-data.name
+  service-name: process.env.SERVICE_NAME
   internal-namespace: service-data.namespace

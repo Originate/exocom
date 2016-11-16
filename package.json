@@ -25,7 +25,7 @@
     "dependency-lint": "4.2.0",
     "dim-console": "0.4.4",
     "exocom-mock": "0.9.3",
-    "exosphere-shared": "0.8.18",
+    "exosphere-shared": "0.8.19",
     "o-tools": "0.7.0",
     "o-tools-livescript": "1.2.3",
     "observable-process": "3.2.0",

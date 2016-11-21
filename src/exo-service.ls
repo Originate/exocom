@@ -21,7 +21,7 @@ class ExoService extends EventEmitter
     delegate-event \online \offline \error, from: @exo-relay, to: @
 
 
-  listen: ->
+  connect: ->
     service = service-loader @root
     service.handlers.before-all ~>
       @exo-relay

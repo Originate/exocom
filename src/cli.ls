@@ -18,7 +18,7 @@ new ExoService parse-options!
     console.log "online at port #{cyan port}"
   ..on 'error', (err) -> console.log red err
   ..on 'offline', -> console.log red 'SERVER CLOSED'
-  ..listen!
+  ..connect!
 
 
 function parse-options

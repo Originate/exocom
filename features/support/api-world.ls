@@ -17,7 +17,7 @@ ApiWorld = !->
       service-name
       }
       ..on 'online', (port) -> done!
-      ..listen!
+      ..connect!
 
 
   @remove-register-service-message = (@exocom, done) ->

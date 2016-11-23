@@ -5,7 +5,7 @@
   "description": "A mock implementation of the ExoCom development server in JavaScript, for testing",
   "dependencies": {
     "debug": "2.3.2",
-    "node-uuid": "1.4.7",
+    "uuid": "^3.0.0",
     "ws": "1.1.1"
   },
   "devDependencies": {

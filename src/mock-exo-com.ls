@@ -1,5 +1,5 @@
 require! {
-  'node-uuid' : uuid
+  'uuid' : uuid
   'ws' : {Server: WebSocketServer}
 }
 debug = require('debug')('exocom-mock')

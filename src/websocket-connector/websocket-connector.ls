@@ -1,6 +1,6 @@
 require! {
   'events' : {EventEmitter}
-  'node-uuid' : uuid
+  'uuid' : uuid
   'wait' : {wait}
   'ws' : WebSocket
 }

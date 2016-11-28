@@ -3,7 +3,7 @@
 ## Install
 
 * `npm i`
-* add `./bin/` to your PATH
+* add `./bin/` and `./node_modules/.bin/` to your PATH
 
 
 ## Development
@@ -15,12 +15,12 @@ That's not necessary when running tests via `spec`
 ## Testing
 
 * run all tests: `spec`
-* run unit tests: `tests`
 
 
-## Update
+## Update Dependencies
 
-* `update`
+* `update-check`: checks whether dependencies need to be updated
+* `update`: updates the dependencies to the latest version
 
 
 ## Deploy a new version

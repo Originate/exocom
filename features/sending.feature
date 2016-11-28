@@ -11,7 +11,7 @@ Feature: Sending requests to services
 
 
   Background:
-    Given an ExoComMock instance listening at port 4100
+    Given a listening ExoComMock instance
 
 
   Scenario: sending a message to a registered service

@@ -8,7 +8,8 @@
 
 ## Development
 
-* run `watch` in a separate terminal to auto-compile changes
+You can run `watch` in a separate terminal to auto-compile changes.
+That's not necessary when running tests via `spec`
 
 
 ## Testing

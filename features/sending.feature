@@ -12,10 +12,10 @@ Feature: Sending requests to services
 
   Background:
     Given an ExoComMock instance
+    And a known "users" service
 
 
   Scenario: sending a message to a registered service
-    Given a known "users" service
     When sending a "users.create" message to the "users" service with the payload:
       """
       name: 'Jean-Luc Picard'
@@ -26,5 +26,5 @@ Feature: Sending requests to services
 
 
   Scenario: sending a message to an unknown service
-    When trying to send a "users.create" message to the "users" service
-    Then I get the error "unknown service: 'users'"
+    When trying to send a "users.create" message to the "zonk" service
+    Then I get the error "unknown service: 'zonk'"

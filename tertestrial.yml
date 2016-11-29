@@ -1,1 +1,17 @@
-actions: js-cucumber-mocha
+# This is an example Tertestrial configuration file.
+# Please adapt it to your project, and then delete this comment.
+
+name: 'JS: Cucumber + Mocha'
+actions:
+
+  - match:
+    command: 'bin/spec'
+
+  - match:
+      filename: '\.feature$'
+    command: 'cucumber-js {{filename}}'
+
+  - match:
+      filename: '\.feature$'
+      line: '\d+'
+    command: 'cucumber-js {{filename}}:{{line}}'

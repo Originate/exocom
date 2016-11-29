@@ -15,7 +15,7 @@ Feature: Listing receiving messages
 
 
   Scenario: calls received
-    Given an ExoComMock instance listening at port 4100
+    Given a listening ExoComMock instance
     And somebody sends it a "hello" message with payload "world"
     And somebody sends it a "foo" message with payload "bar"
     Then it has received the messages
@@ -25,7 +25,7 @@ Feature: Listing receiving messages
 
 
   Scenario: resetting the calls list after calls have been received
-    Given an ExoComMock instance listening at port 4100
+    Given a listening ExoComMock instance
     And somebody sends it a message
     When resetting the ExoComMock instance
     Then it has received no messages

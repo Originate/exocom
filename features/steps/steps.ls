@@ -28,11 +28,6 @@ module.exports = ->
     @exocom = new MockExoCom
 
 
-  @Given /^an ExoComMock instance listening at port (\d+)$/, (@exocom-port, done) ->
-    @exocom = new MockExoCom
-      ..listen @exocom-port, done
-
-
   @Given /^a known "([^"]*)" service$/, (name, done) ->
     @create-named-websocket-endpoint {name, port: @exocom-port}, done
 
@@ -40,14 +35,14 @@ module.exports = ->
   @Given /^somebody sends it a message$/, (done) ->
     @create-websocket-endpoint @exocom-port, ~>
       old-length = @exocom.received-messages.length
-      @service-send-message {name: \foo, payload: '', id: \123}
+      @service-send-message name: \foo, payload: '', id: \123
       wait-until (~> @exocom.received-messages.length > old-length), 1, done
 
 
   @Given /^somebody sends it a "([^"]*)" message with payload "([^"]*)"$/, (name, payload, done) ->
     @create-websocket-endpoint @exocom-port, ~>
       old-length = @exocom.received-messages.length
-      @service-send-message {name: name, payload: payload, id: \123}
+      @service-send-message name: name, payload: payload, id: \123
       wait-until (~> @exocom.received-messages.length > old-length), 1, done
 
 
@@ -120,14 +115,14 @@ module.exports = ->
       jsdiff-console service-messages, expected-messages, done
 
 
-  @Then /^it is no longer listening at port (\d+)$/, (port, done) ->
+  @Then /^it is no longer listening$/, (done) ->
     request-data =
-      url: "http://localhost:#{port}/send/foo"
+      url: "http://localhost:#{@exocom-port}/send/foo"
       method: 'POST'
       body:
         payload: ''
       json: yes
-    request request-data, (err) ->
+    request request-data, (err) ~>
       expect(err).to.not.be.undefined
-      expect(err.message).to.equal "connect ECONNREFUSED 127.0.0.1:#{port}"
+      expect(err.message).to.equal "connect ECONNREFUSED 127.0.0.1:#{@exocom-port}"
       done!

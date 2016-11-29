@@ -9,7 +9,7 @@ Feature: Waiting until a message is received
 
 
   Background:
-    Given an ExoComMock instance listening at port 4200
+    Given a listening ExoComMock instance
 
 
   Scenario: a call is about to be received

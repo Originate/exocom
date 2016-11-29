@@ -9,9 +9,9 @@ Feature: Closing the instance
 
 
   Scenario: closing an active instance
-    Given an ExoComMock instance listening at port 4100
+    Given a listening ExoComMock instance
     When closing it
-    Then it is no longer listening at port 4100
+    Then it is no longer listening
 
 
   Scenario: closing an inactive instance

@@ -1,5 +1,6 @@
 require! {
   'uuid' : uuid
+  'wait' : {wait-until}
   'ws' : {Server: WebSocketServer}
 }
 debug = require('debug')('exocom-mock')
@@ -15,12 +16,18 @@ class MockExoCom
     @received-messages = []
     @receive-callback = null
 
-  close: ~>
-    @server?.close!
+  close: (done) ~>
+    | @server  =>  @server.close done
+    | _        =>  done!
 
 
-  listen: (+@port) ~>
-    @server = new WebSocketServer {@port}
+  # returns whether this server knows about an instance of the service with the given name
+  knows-service: (name) ->
+    !!@service-sockets[name]
+
+
+  listen: (+@port, done) ~>
+    @server = new WebSocketServer {@port}, done
       ..on 'error', @_on-server-error
       ..on 'connection', @_on-server-connection
 
@@ -48,6 +55,10 @@ class MockExoCom
       id: message-id or uuid.v1!
     request-data.response-to = response-to if response-to
     @service-sockets[service].send JSON.stringify request-data
+
+
+  wait-until-knows-service: (name, done) ->
+    wait-until (~> @knows-service name), 1, done
 
 
   _on-message: (data) ~>

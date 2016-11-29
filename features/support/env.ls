@@ -3,6 +3,6 @@ module.exports = ->
   @set-default-timeout 1000
 
 
-  @After ->
-    @exocom?.close!
+  @After (_scenario, done) ->
     @service?.close!
+    @exocom?.close done

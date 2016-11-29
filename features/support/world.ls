@@ -6,28 +6,25 @@ require! {
 
 World = !->
 
-  @create-websocket-endpoint = (port) ->
-    unless @service
-      @service = new WebSocketEndpoint
-        ..connect port
+  @create-websocket-endpoint = (port, done) ->
+    | @service  =>  return done!
+    @service = new WebSocketEndpoint
+      ..connect port, done
 
 
-  @create-named-websocket-endpoint = ({name, port}) ->
+  @create-named-websocket-endpoint = ({name, port}, done) ->
     @service = new WebSocketEndpoint name
-      ..connect port
+      ..connect port, ~>
+          @exocom.wait-until-knows-service name, done
 
 
-  @exocom-send-message = ({exocom, service, message-data}, done) ->
-    wait-until (~> @service.can-send), 10, ~>
-      exocom.send service: service, name: message-data.name, payload: message-data.payload
-      done!
+  @exocom-send-message = ({exocom, service, message-data}) ->
+    exocom.send service: service, name: message-data.name, payload: message-data.payload
 
 
 
-  @service-send-message = (message-data, done) ->
-    wait-until (~> @service.can-send), 10, ~>
-      @service.send message-data
-      done!
+  @service-send-message = (message-data) ->
+    @service.send message-data
 
 
   @verify-exocom-received-request = (expected-results) ->

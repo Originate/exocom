@@ -12,15 +12,11 @@ class WebSocketEndpoint
     @socket = null
 
 
-  connect: (@exocom-port) ~>
+  connect: (@exocom-port, done) ~>
     @socket = new WebSocket "ws://localhost:#{@exocom-port}"
       ..on 'error', @_on-socket-error
-      ..on 'open', @_on-socket-open
+      ..on 'open', ~> @_on-socket-open! ; done!
       ..on 'message', @_on-socket-message
-
-
-  can-send: ->
-    @socket.ready-state is WebSocket.OPEN
 
 
   close: ~>

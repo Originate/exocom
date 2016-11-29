@@ -6,6 +6,7 @@
   "dependencies": {
     "debug": "2.3.3",
     "uuid": "^3.0.0",
+    "wait": "0.1.0",
     "ws": "1.1.1"
   },
   "devDependencies": {
@@ -24,8 +25,7 @@
     "request": "2.79.0",
     "sinon": "1.17.6",
     "sinon-chai": "2.8.0",
-    "tertestrial": "0.3.2",
-    "wait": "0.1.0"
+    "tertestrial": "0.3.2"
   },
   "files": [
     "dist/"

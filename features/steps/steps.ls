@@ -21,35 +21,38 @@ module.exports = ->
   @Given /^a listening ExoComMock instance$/, (done) ->
     @exocom = new MockExoCom
     port-reservation.get-port N (@exocom-port) ~>
-      @exocom.listen @exocom-port
-      done!
+      @exocom.listen @exocom-port, done
 
 
   @Given /^an ExoComMock instance$/, ->
     @exocom = new MockExoCom
 
 
-  @Given /^an ExoComMock instance listening at port (\d+)$/, (@exocom-port) ->
+  @Given /^an ExoComMock instance listening at port (\d+)$/, (@exocom-port, done) ->
     @exocom = new MockExoCom
-      ..listen @exocom-port
+      ..listen @exocom-port, done
 
 
-  @Given /^a known "([^"]*)" service$/, (name) ->
-    @create-named-websocket-endpoint {name, port: @exocom-port}
+  @Given /^a known "([^"]*)" service$/, (name, done) ->
+    @create-named-websocket-endpoint {name, port: @exocom-port}, done
 
 
   @Given /^somebody sends it a message$/, (done) ->
-    @create-websocket-endpoint @exocom-port
-    @service-send-message {name: \foo, payload: '', id: \123}, done
+    @create-websocket-endpoint @exocom-port, ~>
+      old-length = @exocom.received-messages.length
+      @service-send-message {name: \foo, payload: '', id: \123}
+      wait-until (~> @exocom.received-messages.length > old-length), 1, done
 
 
   @Given /^somebody sends it a "([^"]*)" message with payload "([^"]*)"$/, (name, payload, done) ->
-    @create-websocket-endpoint @exocom-port
-    @service-send-message {name: name, payload: payload, id: \123}, done
+    @create-websocket-endpoint @exocom-port, ~>
+      old-length = @exocom.received-messages.length
+      @service-send-message {name: name, payload: payload, id: \123}
+      wait-until (~> @exocom.received-messages.length > old-length), 1, done
 
 
-  @When /^closing it$/, ->
-    @exocom.close!
+  @When /^closing it$/, (done) ->
+    @exocom.close done
 
 
   @When /^I tell it to wait for a call$/, ->
@@ -58,8 +61,9 @@ module.exports = ->
 
 
   @When /^a call comes in$/, (done) ->
-    @create-websocket-endpoint @exocom-port
-    @service-send-message {name: \foo, id: \123}, done
+    @create-websocket-endpoint @exocom-port, ~>
+      @service-send-message {name: \foo, id: \123}
+      done!
 
 
   @When /^trying to send a "([^"]*)" message to the "([^"]*)" service$/, (message-name, service-name, done) ->
@@ -74,8 +78,8 @@ module.exports = ->
     @exocom.reset!
 
 
-  @When /^sending a "([^"]*)" message to the "([^"]*)" service with the payload:$/, (message, service, payload, done) ->
-    @exocom-send-message {@exocom, service, message-data: {name: message, payload: payload}}, done
+  @When /^sending a "([^"]*)" message to the "([^"]*)" service with the payload:$/, (message, service, payload) ->
+    @exocom-send-message {@exocom, service, message-data: {name: message, payload: payload}}
 
 
 
@@ -83,8 +87,8 @@ module.exports = ->
     @verify-exocom-received-request table.rows-hash!
 
 
-  @Then /^I can close it without errors$/, ->
-    @exocom.close!
+  @Then /^I can close it without errors$/, (done) ->
+    @exocom.close done
 
 
   @Then /^I get the error "([^"]*)"$/, (expected-error) ->

@@ -11,7 +11,7 @@ Feature: Sending requests to services
 
 
   Background:
-    Given a listening ExoComMock instance
+    Given an ExoComMock instance
 
 
   Scenario: sending a message to a registered service

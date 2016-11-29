@@ -9,7 +9,7 @@ Feature: Waiting until a message is received
 
 
   Background:
-    Given a listening ExoComMock instance
+    Given an ExoComMock instance
 
 
   Scenario: a call is about to be received

@@ -9,7 +9,7 @@ Feature: Closing the instance
 
 
   Scenario: closing an active instance
-    Given a listening ExoComMock instance
+    Given an ExoComMock instance
     When closing it
     Then it is no longer listening
 

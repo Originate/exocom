@@ -18,14 +18,10 @@ chai.use sinon-chai
 
 module.exports = ->
 
-  @Given /^a listening ExoComMock instance$/, (done) ->
+  @Given /^an ExoComMock instance$/, (done) ->
     @exocom = new MockExoCom
     port-reservation.get-port N (@exocom-port) ~>
       @exocom.listen @exocom-port, done
-
-
-  @Given /^an ExoComMock instance$/, ->
-    @exocom = new MockExoCom
 
 
   @Given /^a known "([^"]*)" service$/, (name, done) ->

@@ -4,7 +4,7 @@
   "author": "Kevin Goslar",
   "description": "A mock implementation of the ExoCom development server in JavaScript, for testing",
   "dependencies": {
-    "debug": "2.3.2",
+    "debug": "2.3.3",
     "uuid": "^3.0.0",
     "ws": "1.1.1"
   },
@@ -21,7 +21,7 @@
     "port-reservation": "0.3.2",
     "prelude-ls": "1.1.2",
     "record-http": "0.6.1",
-    "request": "2.78.0",
+    "request": "2.79.0",
     "sinon": "1.17.6",
     "sinon-chai": "2.8.0",
     "wait": "0.1.0"

@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-build
+node_modules/o-tools-livescript/bin/build
 if [ "$#" == "0" ]; then
-  EXOCOM_TEST_DEPTH=CLI cucumber-js --tags ~@todo
+  EXOCOM_TEST_DEPTH=CLI node_modules/.bin/cucumber-js --tags ~@todo
 else
-  EXOCOM_TEST_DEPTH=CLI DEBUG='*,-express:*,-body-parser:*,-finalhandler,-text-stream-search' cucumber-js --tags ~@todo "$@"
+  EXOCOM_TEST_DEPTH=CLI DEBUG='*,-express:*,-body-parser:*,-finalhandler,-text-stream-search' node_modules/.bin/cucumber-js --tags ~@todo "$@"
 fi

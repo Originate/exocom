@@ -7,15 +7,15 @@ machine:
 dependencies:
 
   pre:
-    - curl -o morula -L https://github.com/Originate/morula/releases/download/0.0.4/morula-linux-amd64 && chmod +x morula
+    - curl --output morula --location --fail https://github.com/Originate/morula/releases/download/0.0.4/morula-linux-amd64 && chmod +x morula
 
   override:
-    - '[ "$CIRCLE_BRANCH" == "master" ] && ./morula all bin/setup || echo skipping'
-    - '[ "$CIRCLE_BRANCH" != "master" ] && ./morula changed bin/setup || echo skipping'
+    - 'if [ "$CIRCLE_BRANCH" == "master" ]; then ./morula all bin/setup; else echo skipping; fi'
+    - 'if [ "$CIRCLE_BRANCH" != "master" ]; then ./morula changed bin/setup; else echo skipping; fi'
 
 
 test:
 
   override:
-    - '[ "${CIRCLE_BRANCH}" == "master" ] && ./morula all bin/spec_circle || echo skipping'
-    - '[ "${CIRCLE_BRANCH}" != "master" ] && ./morula changed bin/spec_circle || echo skipping'
+    - 'if [ "${CIRCLE_BRANCH}" == "master" ]; then ./morula all bin/spec_circle; else echo skipping; fi'
+    - 'if [ "${CIRCLE_BRANCH}" != "master" ]; then ./morula changed bin/spec_circle; else echo skipping; fi'

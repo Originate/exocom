@@ -9,4 +9,4 @@ bin/lint
 
 # run Cucumber
 mkdir -p "$CIRCLE_TEST_REPORTS/cucumber"
-cucumber-js --format "json:$CIRCLE_TEST_REPORTS/cucumber/exocom-mock-javascript.cucumber" --format pretty
+node_modules/.bin/cucumber-js --format "json:$CIRCLE_TEST_REPORTS/cucumber/exocom-mock-javascript.cucumber" --format pretty

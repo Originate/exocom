@@ -1,0 +1,28 @@
+machine:
+
+  node:
+    version: 5.7.0
+
+
+dependencies:
+  pre:
+    - npm install exosphere-shared
+
+
+test:
+
+  pre:
+    - node_modules/o-tools-livescript/bin/build
+    - mkdir -p $CIRCLE_TEST_REPORTS/cucumber
+
+  override:
+    - bin/lint
+    - cucumber-js --format json:$CIRCLE_TEST_REPORTS/cucumber/tests.cucumber --format pretty
+
+
+deployment:
+  publish:
+    branch: release
+    commands:
+      - npm set //registry.npmjs.org/:_authToken $AUTH_TOKEN
+      - npm publish

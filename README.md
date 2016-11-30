@@ -1,6 +1,8 @@
 # ExoCom
 > A modern message bus for AI-native application ecosystems
 
+[![CircleCI](https://circleci.com/gh/Originate/exocom/tree/master.svg?style=shield)](https://circleci.com/gh/Originate/exocom/tree/master)
+
 This monorepository contains the different subprojects for ExoCom:
 
 * __server:__ [exocom-server](exocom-server) contains the actual bus implementation,

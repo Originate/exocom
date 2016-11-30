@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+set -e
+
+# transpile
+node_modules/o-tools-livescript/bin/build
+
+# run linter
+bin/lint
+
+# run Cucumber
+mkdir -p "$CIRCLE_TEST_REPORTS/cucumber"
+cucumber-js --format "json:$CIRCLE_TEST_REPORTS/cucumber/exocom-mock-javascript.cucumber" --format pretty

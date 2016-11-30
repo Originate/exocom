@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+set -e
+
+# transpile
+node_modules/o-tools-livescript/bin/build
+
+# run linter
+node_modules/o-tools/bin/lint
+
+# run unit tests
+MOCHA_FILE="$CIRCLE_TEST_REPORTS/Mocha/exocom-server-unit-tests.xml" mocha --compilers ls:livescript "**/*spec.ls" --reporter mocha-circleci-reporter
+
+# run integration tests
+mkdir -p "$CIRCLE_TEST_REPORTS/cucumber"
+bin/cuc-cli --format "json:$CIRCLE_TEST_REPORTS/cucumber/exocom-server-cucumber.cucumber" --format pretty

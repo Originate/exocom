@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+set -e
+
+# transpile
+node_modules/o-tools-livescript/bin/build
+
+# run linter
+node_modules/o-tools/bin/lint
+
+# run Cucumber
+mkdir -p "$CIRCLE_TEST_REPORTS/cucumber"
+bin/cuc-api --format "json:$CIRCLE_TEST_REPORTS/cucumber/exoservice-api.cucumber" --format pretty
+bin/cuc-cli --format "json:$CIRCLE_TEST_REPORTS/cucumber/exoservice-cli.cucumber" --format pretty

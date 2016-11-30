@@ -8,3 +8,7 @@ This monorepository contains the different subprojects for ExoCom:
 * __clients:__ are called _exorelays_.
   Implementations are available for a variety of languages.
 
+
+## Development
+
+See our [developer guidelines](CONTRIBUTING.md)

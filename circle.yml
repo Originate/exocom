@@ -1,0 +1,35 @@
+machine:
+
+  node:
+    version: 6.1.0
+
+  environment:
+    MOCHA_FILE: "$CIRCLE_TEST_REPORTS/Mocha/test-results.xml"
+
+
+dependencies:
+
+  pre:
+    - npm i npm -g
+    - npm install exosphere-shared
+
+
+test:
+
+  pre:
+    - node_modules/o-tools-livescript/bin/build
+    - mkdir -p $CIRCLE_TEST_REPORTS/cucumber
+
+  override:
+    - node_modules/o-tools/bin/lint
+    - mocha --compilers ls:livescript "**/*spec.ls" --reporter mocha-circleci-reporter
+    # - bin/cuc-api --format json:$CIRCLE_TEST_REPORTS/cucumber/api.cucumber --format pretty
+    - bin/cuc-cli --format json:$CIRCLE_TEST_REPORTS/cucumber/cli.cucumber --format pretty
+
+
+deployment:
+  publish:
+    branch: release
+    commands:
+      - npm set //registry.npmjs.org/:_authToken $AUTH_TOKEN
+      - npm publish

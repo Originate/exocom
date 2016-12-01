@@ -16,4 +16,3 @@ An example is the [template for a ping service](https://github.com/Originate/exo
 ## Development
 
 See your [developer guidelines](CONTRIBUTING.md)
->>>>>>> exoservice-js/master

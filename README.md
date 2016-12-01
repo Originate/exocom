@@ -1,18 +1,18 @@
-# ExoCom  [![Build Status](https://travis-ci.org/Originate/exocom.svg?branch=master)](https://travis-ci.org/Originate/exocom)
-> A modern message bus for AI-native application ecosystems
+<img src="documentation/logo.png" width="568" height="111" alt="logo">
 
+[![Build Status](https://travis-ci.org/Originate/exocom.svg?branch=master)](https://travis-ci.org/Originate/exocom)
 
-This monorepository contains the different subprojects for ExoCom:
+ExoCom is a modern message bus for AI-native application ecosystems.
+This monorepository contains the different subprojects for it:
 
-* __server:__ [exocom-server](exocom-server) contains the actual bus implementation,
-  _exocom-mock-*_ are mock implementations for testing in different languages
-
-* __clients:__ are called _exorelays_.
-  Implementations are available for a variety of languages.
-
-* __services:__ are full-stack frameworks that allow to define micro-services
-                as pure business logic, i.e. as _lambda functions_.
-                Implementations are available for a variety of languages.
+* __exocom-server:__ the actual bus implementation
+* __exocom-mock-*:__ mock implementations of the ExoCom server
+                     for testing
+* __exorelay-*:__ client SDKs for writing services that talk to ExoCom
+* __exoservice-*:__ full-stack frameworks
+                    for writing micro-services
+                    as pure business logic,
+                    i.e. as _lambda functions_
 
 
 ## Development

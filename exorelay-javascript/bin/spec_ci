@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -e
+
+node_modules/o-tools-livescript/bin/build
+bin/lint
+mocha --compilers ls:livescript "**/*spec.ls"
+node_modules/.bin/cucumber-js --format pretty

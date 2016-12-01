@@ -17,5 +17,5 @@ dependencies:
 test:
 
   override:
-    - 'if [ "${CIRCLE_BRANCH}" == "master" ]; then ./morula all bin/spec_circle; else echo skipping; fi'
-    - 'if [ "${CIRCLE_BRANCH}" != "master" ]; then ./morula changed bin/spec_circle; else echo skipping; fi'
+    - 'if [ "${CIRCLE_BRANCH}" == "master" ]; then ./morula all bin/spec_ci; else echo skipping; fi'
+    - 'if [ "${CIRCLE_BRANCH}" != "master" ]; then ./morula changed bin/spec_ci; else echo skipping; fi'

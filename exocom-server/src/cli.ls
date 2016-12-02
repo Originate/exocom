@@ -1,5 +1,5 @@
 require! {
-  'chalk' : {cyan, dim, green, red, magenta}
+  'chalk' : {cyan, dim, green, red, magenta, yellow}
   'docopt' : {docopt}
   'nitroglycerin' : N
   '../package.json' : {name, version}
@@ -32,12 +32,15 @@ on-error = (err) ->
   console.log red "Error: #{err}"
   process.exit 1
 
+on-warn = (warning) ->
+  console.log yellow "Warning: #{warning}"
 
 run = ->
   exocom = new ExoCom service-messages: process.env.SERVICE_MESSAGES
     ..on 'websocket-bound', on-websocket-bound
     ..on 'http-bound', on-http-bound
     ..on 'error', on-error
+    ..on 'warn', on-warn
     ..listen (+process.env.PORT or 3100)
     ..on 'routing-setup', ->
       console.log 'receiving routing setup:'

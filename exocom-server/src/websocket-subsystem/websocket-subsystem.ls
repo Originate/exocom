@@ -71,6 +71,7 @@ class WebSocketSubsystem extends EventEmitter
   on-message-receive: (data) ->
     switch (result = @exocom.send-message data)
       | 'success'             =>
+      | 'no receivers'        =>  @emit 'warn', "No receivers for message '#{data.name}' registered"
       | 'missing request id'  =>  @emit 'error', 'missing request id'
       | 'unknown message'     =>  @emit 'error', "unknown message: '#{request-data.message}'"
       | _                     =>  @emit 'error', "unknown result code: '#{@result}'"

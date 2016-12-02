@@ -15,7 +15,7 @@ Feature: Broadcasting messages
       {
         "name": "web",
         "receives": ["users.created"],
-        "sends": ["users.create"]
+        "sends": ["users.create", "users.list"]
       },
       {
         "name": "users",
@@ -46,3 +46,8 @@ Feature: Broadcasting messages
   Scenario: broadcasting an invalid message
     When the "web" service sends "users.get-SSN"
     Then ExoCom signals the error "Service 'web' is not allowed to broadcast the message 'users.get-SSN'"
+
+
+  Scenario: broadcasting a message with no receivers
+    When the "web" service sends "users.list"
+    Then ExoCom signals the error "Warning: No receivers for message 'users.list' registered"

@@ -21,7 +21,7 @@ class ExoCom extends EventEmitter
 
     delegate 'httpPort', from: @, to: @listener-subsystem
     delegate-event 'http-bound' 'error', from: @listener-subsystem, to: @
-    delegate-event 'websocket-bound' 'error', from: @websocket, to: @
+    delegate-event 'websocket-bound' 'error', 'warn', from: @websocket, to: @
 
 
   # returns the current configuration of this ExoCom instance
@@ -74,6 +74,7 @@ class ExoCom extends EventEmitter
     message-data.timestamp = nanoseconds process.hrtime!
     # determine the subscribers
     subscribers = @client-registry.subscribers-to external-message-name
+    return 'no receivers' unless subscribers
     subscriber-names = [subscriber.name for subscriber in subscribers]
 
     # calculate a message's response time if it is a reply

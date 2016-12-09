@@ -2,9 +2,10 @@ require! {
   '../..' : MockExoCom
   'chai'
   'jsdiff-console'
+  'lowercase-keys'
   'nitroglycerin': N
   'port-reservation'
-  'prelude-ls' : {filter}
+  'prelude-ls' : {filter, map}
   'record-http' : HttpRecorder
   'request'
   'sinon'
@@ -106,7 +107,7 @@ module.exports = ->
 
   @Then /^it has received the messages/, (table, done) ->
     wait-until (~> @exocom.received-messages.length > 1), 10, ~>
-      expected-messages = [{[key.to-lower-case!, value] for key, value of message} for message in table.hashes!]
+      expected-messages = table.hashes! |> map lowercase-keys
       service-messages = filter (.name is not "exocom.register-service"), @exocom.received-messages
       jsdiff-console service-messages, expected-messages, done
 

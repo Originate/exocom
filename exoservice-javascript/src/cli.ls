@@ -9,7 +9,7 @@ exo-js-data = require path.join(__dirname, '..', 'package.json')
 console.log dim "Exosphere Node.js service runner #{exo-js-data.version}\n"
 
 service-data = require path.resolve('./service.yml')
-console.log "Running #{green service-data.name}\n"
+console.log "Running #{green process.env.SERVICE_NAME}\n"
 
 
 new ExoService parse-options!

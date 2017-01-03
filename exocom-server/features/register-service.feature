@@ -11,14 +11,14 @@ Feature: Manage new instances of services
 
   Scenario: a new service comes online
     Given an ExoCom instance configured with the routes:
-    """
-    [
-      {
-      "name": "users",
-      "namespace": "foo"
-      }
-    ]
-    """
+      """
+      [
+        {
+          "name": "users",
+          "namespace": "foo"
+        }
+      ]
+      """
     And a new "users" service
     Then ExoCom now knows about these services:
       | NAME  | INTERNAL NAMESPACE |

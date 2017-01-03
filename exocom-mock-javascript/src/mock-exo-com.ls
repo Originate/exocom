@@ -16,6 +16,7 @@ class MockExoCom
     @received-messages = []
     @receive-callback = null
 
+
   close: (done) ~>
     | @server  =>  @server.close done
     | _        =>  done!

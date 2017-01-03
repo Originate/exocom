@@ -12,15 +12,22 @@ class WebSocketEndpoint
     @socket = null
 
 
-  connect: (@exocom-port, done) ~>
+  connect: ({@exocom-port, registration-message, registration-payload}, done) ~>
     @socket = new WebSocket "ws://localhost:#{@exocom-port}"
       ..on 'error', @_on-socket-error
-      ..on 'open', ~> @_on-socket-open! ; done!
+      ..on 'open', ~> @register {message-name: registration-message, payload: registration-payload} ; done!
       ..on 'message', @_on-socket-message
 
 
   close: ~>
     @socket?.close!
+
+
+  register: ({message-name = 'exocom.register-service', payload}) ->
+    @send do
+      name: message-name
+      sender: @name
+      payload: payload
 
 
   send: (request-data) ~>
@@ -33,12 +40,6 @@ class WebSocketEndpoint
 
   _on-socket-message: (data) ~>
     @received-messages.push JSON.parse data.to-string!
-
-
-  _on-socket-open: ~>
-    @send do
-      name: \exocom.register-service
-      sender: @name
 
 
 

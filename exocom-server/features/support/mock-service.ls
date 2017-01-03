@@ -12,17 +12,24 @@ class MockService
     @received-messages = []
 
 
-    if @port
-      @socket = new WebSocket "ws://localhost:#{@port}/services"
-        ..on 'message', @_on-socket-message
-        ..on 'error', @_on-socket-error
-        ..on 'open', @_on-socket-open
-
-
   close: ~>
     | @closed => return
     @socket?.close!
     @closed = yes
+
+
+  connect: ({payload}, done) ~>
+    payload ?= {@name}
+    @socket = new WebSocket "ws://localhost:#{@port}/services"
+      ..on 'message', @_on-socket-message
+      ..on 'error', @_on-socket-error
+      ..on 'open', ~>
+        @send do
+          name: 'exocom.register-service'
+          sender: @name
+          payload: payload
+          id: '123'
+        done!
 
 
   send: (request-data) ~>
@@ -35,15 +42,6 @@ class MockService
 
   _on-socket-message: (data) ~>
     @received-messages.unshift(JSON.parse data.to-string!)
-
-
-  _on-socket-open: ~>
-    @send do
-      name: 'exocom.register-service'
-      sender: @name
-      payload:
-        name: @name
-      id: '123'
 
 
 

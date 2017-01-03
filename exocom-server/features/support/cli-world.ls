@@ -27,7 +27,8 @@ CliWorld = !->
 
   @create-mock-service-at-port = ({name, port, namespace}, done) ->
     (@service-mocks or= {})[name] = new MockService {port, name, namespace}
-    wait 200, done
+    @service-mocks[name].connect {}, ->
+      wait 200, done
 
 
   @run-exocom-at-port = (port, _expect-error, done) ->

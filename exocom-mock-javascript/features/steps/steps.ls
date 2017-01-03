@@ -1,11 +1,12 @@
 require! {
   '../..' : MockExoCom
+  'async'
   'chai'
   'jsdiff-console'
   'lowercase-keys'
   'nitroglycerin': N
   'port-reservation'
-  'prelude-ls' : {filter, map}
+  'prelude-ls' : {filter, map, pairs-to-obj}
   'record-http' : HttpRecorder
   'request'
   'sinon'
@@ -26,18 +27,18 @@ module.exports = ->
 
 
   @Given /^a known "([^"]*)" service$/, (name, done) ->
-    @create-named-websocket-endpoint {name, port: @exocom-port}, done
+    @create-named-websocket-endpoint {name, @exocom-port}, done
 
 
   @Given /^somebody sends it a message$/, (done) ->
-    @create-websocket-endpoint @exocom-port, ~>
+    @create-websocket-endpoint {@exocom-port}, ~>
       old-length = @exocom.received-messages.length
       @service-send-message name: \foo, payload: '', id: \123
       wait-until (~> @exocom.received-messages.length > old-length), 1, done
 
 
   @Given /^somebody sends it a "([^"]*)" message with payload "([^"]*)"$/, (name, payload, done) ->
-    @create-websocket-endpoint @exocom-port, ~>
+    @create-websocket-endpoint {@exocom-port}, ~>
       old-length = @exocom.received-messages.length
       @service-send-message name: name, payload: payload, id: \123
       wait-until (~> @exocom.received-messages.length > old-length), 1, done
@@ -53,9 +54,15 @@ module.exports = ->
 
 
   @When /^a call comes in$/, (done) ->
-    @create-websocket-endpoint @exocom-port, ~>
+    @create-websocket-endpoint {@exocom-port}, ~>
       @service-send-message {name: \foo, id: \123}
       done!
+
+
+  @When /^a new service instance registers itself with it via the message:$/ (table, done) ->
+    table-data = table.raw! |> pairs-to-obj
+    payload = table-data.PAYLOAD |> JSON.parse
+    @create-named-websocket-endpoint {name: 'test instance', @exocom-port, registration-message: table-data.NAME, registration-payload: payload}, done
 
 
   @When /^trying to send a "([^"]*)" message to the "([^"]*)" service$/, (message-name, service-name, done) ->
@@ -73,6 +80,11 @@ module.exports = ->
   @When /^sending a "([^"]*)" message to the "([^"]*)" service with the payload:$/, (message, service, payload) ->
     @exocom-send-message {@exocom, service, message-data: {name: message, payload: payload}}
 
+
+
+  @Then /^ExoCom now knows about these services:$/ (table) ->
+    async.each table.raw!,
+               (~> @exocom.wait-until-knows-service &1, &2)
 
 
   @Then /^ExoComMock makes the request:$/, (table) ->

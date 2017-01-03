@@ -12,9 +12,9 @@ World = !->
       ..connect port, done
 
 
-  @create-named-websocket-endpoint = ({name, port}, done) ->
+  @create-named-websocket-endpoint = ({name, exocom-port, registration-message, registration-payload}, done) ->
     @service = new WebSocketEndpoint name
-      ..connect port, ~>
+      ..connect {exocom-port, registration-message, registration-payload}, ~>
           @exocom.wait-until-knows-service name, done
 
 

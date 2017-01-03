@@ -1,6 +1,3 @@
-# This is an example Tertestrial configuration file.
-# Please adapt it to your project, and then delete this comment.
-
 actions:
 
   - match:
@@ -8,9 +5,9 @@ actions:
 
   - match:
       filename: '\.feature$'
-    command: 'cucumber-js {{filename}}'
+    command: 'bin/spec {{filename}}'
 
   - match:
       filename: '\.feature$'
       line: '\d+'
-    command: 'cucumber-js {{filename}}:{{line}}'
+    command: 'bin/spec {{filename}}:{{line}}'

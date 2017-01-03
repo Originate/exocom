@@ -1,1 +1,18 @@
-actions: js-cucumber-mocha-api-cli
+actions:
+
+  - match:
+    command: 'bin/spec'
+
+  - match:
+      filename: '\.feature$'
+    command: 'bin/spec {{filename}}'
+
+  - match:
+      filename: '\.feature$'
+      line: '\d+'
+    command: 'bin/spec {{filename}}:{{line}}'
+
+
+  - match:
+      filename: '\.ls$'
+    command: 'mocha --compilers ls:livescript {{filename}}'

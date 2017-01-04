@@ -98,17 +98,17 @@ World = !->
 
 
   @verify-sent-calls = ({service-name, message-name, id = '123', response-to}, done) ->
-    wait-until (~> @service-mocks[service-name].received-messages[0]?.name is message-name), 1, ~>
+    service = @service-mocks[service-name]
+    wait-until (~> service.received-messages[0]?.name is message-name), 1, ~>
       expected =
         name: message-name
         id: id
         payload: ''
-      timestamp = @service-mocks[service-name].received-messages[0].timestamp
-      response-time = @service-mocks[service-name].received-messages[0].response-time
-      expected.timestamp = timestamp if timestamp
-      expected.response-time = response-time if response-time
-      expected.response-to = response-to if response-to
-      jsdiff-console @service-mocks[service-name].received-messages[0], expected, done
+      received-message = service.received-messages[0]
+      expected.timestamp = that if received-message.timestamp
+      expected.response-time = that if received-message.response-time
+      expected.response-to = that if response-to
+      jsdiff-console received-message, expected, done
 
 
   @verify-service-setup = (service-data, done) ->

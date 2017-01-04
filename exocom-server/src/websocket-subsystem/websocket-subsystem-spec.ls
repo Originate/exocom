@@ -13,7 +13,7 @@ require! {
 describe 'WebSocket', ->
 
 
-  describe 'send-to-service', (...) ->
+  describe 'send-message-to-service', (...) ->
 
     before-each (done) ->
       message =
@@ -23,15 +23,14 @@ describe 'WebSocket', ->
         'mock-service':
           name: 'mock-service'
           internal-namespace: 'mock-service'
-      service-messages = "[{name: mock-service, receives: [message-1]}]"
-      @exocom = new ExoCom {service-messages}
+      @exocom = new ExoCom service-messages: "[{name: mock-service, receives: [message-1]}]"
         ..listen 3001
-        ..on 'websocket-bound', ~>
+        ..on 'websockets-online', ~>
           @mock-service = new MockService {port: 3001, name: 'mock-service', namespace: 'mock-service'}
             ..connect {}, ~>
               wait 200, ~>
                 @exocom.websocket
-                  ..send-to-service message, services['mock-service']
+                  ..send-message-to-service message, services['mock-service']
                 done!
 
     after-each ->

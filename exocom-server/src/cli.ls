@@ -20,7 +20,7 @@ Usage:
   #{name} -v | --version
 """
 
-on-websocket-bound = (port) ->
+on-websockets-online = (port) ->
   console.log dim "Ctrl-C to stop"
   console.log "ExoCom #{version} WebSocket listener online at port #{cyan port}"
 
@@ -37,7 +37,7 @@ on-warn = (warning) ->
 
 run = ->
   exocom = new ExoCom service-messages: process.env.SERVICE_MESSAGES
-    ..on 'websocket-bound', on-websocket-bound
+    ..on 'websockets-online', on-websockets-online
     ..on 'http-online', on-http-online
     ..on 'error', on-error
     ..on 'warn', on-warn

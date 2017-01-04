@@ -9,8 +9,9 @@ debug = require('debug')('exocom:websocket-subsystem')
 # The web sockets endpoint that listens/sends messages from/to services
 #
 # Emits these events:
-# - error: when it cannot bind to the given port
-# - bound: when it listens at the given port
+# - online: when it is online and ready to go
+# - error: for critical issues
+# - warn: for non-critical issues
 class WebSocketSubsystem extends EventEmitter
 
   (@exocom) ->
@@ -21,7 +22,8 @@ class WebSocketSubsystem extends EventEmitter
     @service-sockets = {}
 
 
-  # Registers websocket to respective service name
+  # Registers the given websocket as a connection
+  # to an instance of the service with the given name
   register-service-instance: ({service-name, websocket}) ->
     @service-sockets[service-name] = websocket
       ..on 'close', ~>
@@ -36,39 +38,44 @@ class WebSocketSubsystem extends EventEmitter
 
   close: ->
     | !@server  =>  return
-    debug "WebSockets no longer bound at port #{@port}"
+    debug 'websockets going offline'
     @server.close!
 
 
-  listen: (@port, express-server) ->
-    @server = new WebSocketServer {server: express-server, path: '/services'}
+  # Listens at the given port
+  # by hooking into the given http server instance
+  listen: (@port, server) ->
+    @server = new WebSocketServer {server, path: '/services'}
       ..on 'connection', @on-connection
-      ..on 'listening', ~> @emit 'websocket-bound', @port
-      ..on 'error', (error) ~>
-        @emit 'error', error
+      ..on 'listening', ~> @emit 'online', @port
+      ..on 'error', (err) ~> @emit 'error', err
 
 
+  # called when a new service instance connects
   on-connection: (websocket) ~>
     websocket.on 'message', (message) ~>
       @on-message(message, websocket)
 
 
+  # called when a new message from a service instance arrives
   on-message: (message, websocket) ->
     request-data = @_parse-request JSON.parse(message)
     @_log-received request-data
     switch
-      | request-data.name is \exocom.register-service           =>  @on-registration-receive request-data.payload, websocket
+      | request-data.name is \exocom.register-service           =>  @on-service-instance-registration request-data.payload, websocket
       | @invalid-sender request-data.sender, request-data.name  =>  @emit 'error', "Service '#{request-data.sender}' is not allowed to broadcast the message '#{request-data.name}'"
-      | otherwise                                               =>  @on-message-receive request-data
+      | otherwise                                               =>  @on-normal-message-receive request-data
 
 
-  on-registration-receive: (payload, websocket) ->
+  # called when a service instance registers itself with Exocom
+  on-service-instance-registration: (payload, websocket) ->
     @exocom.add-routing-config payload, websocket
     @register-service-instance service-name: payload.name, websocket: websocket
 
 
-  # Relay message to Exocom class to be sent out to subscribing services
-  on-message-receive: (data) ->
+  # called when a service instance sends a normal message
+  # i.e. not a registration message
+  on-normal-message-receive: (data) ->
     switch (result = @exocom.send-message data)
       | 'success'             =>
       | 'no receivers'        =>  @emit 'warn', "No receivers for message '#{data.name}' registered"
@@ -77,13 +84,12 @@ class WebSocketSubsystem extends EventEmitter
       | _                     =>  @emit 'error', "unknown result code: '#{@result}'"
 
 
-  # Sends the given message to the given services
-  send-to-services: (message-data, services) ->
+  send-message-to-services: (message-data, services) ->
     for service in services
-      @send-to-service message-data, service
+      @send-message-to-service message-data, service
 
 
-  send-to-service: (message-data, service) ->
+  send-message-to-service: (message-data, service) ->
     translated-message-name = @_translate message-data.name, for: service
     request-data =
       name: translated-message-name

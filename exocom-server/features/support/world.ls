@@ -97,10 +97,10 @@ World = !->
                done
 
 
-  @verify-sent-calls = ({service-name, message, id = '123', response-to}, done) ->
-    wait-until (~> @service-mocks[service-name].received-messages[0]?.name is message), 1, ~>
+  @verify-sent-calls = ({service-name, message-name, id = '123', response-to}, done) ->
+    wait-until (~> @service-mocks[service-name].received-messages[0]?.name is message-name), 1, ~>
       expected =
-        name: message
+        name: message-name
         id: id
         payload: ''
       timestamp = @service-mocks[service-name].received-messages[0].timestamp

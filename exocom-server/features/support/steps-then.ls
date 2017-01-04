@@ -6,12 +6,12 @@ require! {
 
 module.exports = ->
 
-  @Then /^ExoCom broadcasts the message "([^"]*)" to the "([^"]+)" service$/, (message, service-name, done) ->
-    @verify-sent-calls {service-name, message: message, id: @last-sent-message-id}, done
+  @Then /^ExoCom broadcasts the message "([^"]*)" to the "([^"]+)" service$/, (message-name, service-name, done) ->
+    @verify-sent-calls {service-name, message-name, id: @last-sent-message-id}, done
 
 
-  @Then /^ExoCom broadcasts the reply "([^"]*)" to the "([^"]+)" service$/, (message, service-name, done) ->
-    @verify-sent-calls {service-name, message: message, response-to: '111'}, done
+  @Then /^ExoCom broadcasts the reply "([^"]*)" to the "([^"]+)" service$/, (message-name, service-name, done) ->
+    @verify-sent-calls {service-name, message-name, response-to: '111'}, done
 
 
   @Then /^ExoCom now knows about these services:$/ (table, done) ->

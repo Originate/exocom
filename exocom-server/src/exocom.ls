@@ -15,7 +15,7 @@ class ExoCom extends EventEmitter
 
   ({@service-messages} = {}) ->
 
-    @client-registry    = new ClientRegistry {@service-messages}
+    @client-registry = new ClientRegistry {@service-messages}
 
     @http-subsystem = new HttpSubsystem @
       ..on 'online', (port) ~> @emit 'http-online', port
@@ -49,25 +49,17 @@ class ExoCom extends EventEmitter
     debug "Listening at port #{port}"
 
 
-  # registers the services with the given data
-  # as a sender and receiver of messages
-  set-routing-config: (routing-config) ~>
-    debug 'receiving service setup'
-    @client-registry.set-routing-config routing-config
-    @emit 'routing-setup'
-    'success'
-
   # registers the service with the given data
   # as a sender and receiver of messages
-  add-routing-config: (routing-config) ~>
-    @client-registry.add-routing-config routing-config
-    'success'
+  register-client: (routing-config) ~>
+    @client-registry.register-client routing-config
+
 
   # deregisters a service with the given data
   # as a sender and receiver of messages
-  remove-routing-config: ({service-name}) ~>
-    @client-registry.remove-routing-config {service-name}
-    'success'
+  deregister-client: (service-name) ~>
+    @client-registry.deregister-client service-name
+
 
   # sends the given message to all subscribers of it.
   send-message: (message-data) ~>
@@ -78,7 +70,7 @@ class ExoCom extends EventEmitter
     message-data.name = external-message-name
     message-data.timestamp = nanoseconds process.hrtime!
     # determine the subscribers
-    subscribers = @client-registry.subscribers-to external-message-name
+    subscribers = @client-registry.subscribers-for external-message-name
     return 'no receivers' unless subscribers
     subscriber-names = [subscriber.name for subscriber in subscribers]
 

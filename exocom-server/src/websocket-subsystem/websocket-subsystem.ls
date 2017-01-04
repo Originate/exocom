@@ -19,21 +19,28 @@ class WebSocketSubsystem extends EventEmitter
     @port = null
 
     # Stores the service names and respective web socket
-    @service-sockets = {}
+    #
+    # format:
+    # {
+    #   'client 1 name': websocket,
+    #   'client 2 name': websocket,
+    #   ...
+    # }
+    @sockets = {}
 
 
   # Registers the given websocket as a connection
   # to an instance of the service with the given name
-  register-service-instance: ({service-name, websocket}) ->
-    @service-sockets[service-name] = websocket
+  register-client: ({service-name, websocket}) ->
+    @sockets[service-name] = websocket
       ..on 'close', ~>
-        @exocom.remove-routing-config {service-name}
-        @deregister-service-instance {service-name}
+        @exocom.deregister-client service-name
+        @deregister-client service-name
 
 
-  deregister-service-instance: ({service-name}) ->
-    @service-sockets[service-name]?.close!
-    delete @service-sockets[service-name]
+  deregister-client: (service-name) ->
+    @sockets[service-name]?.close!
+    delete @sockets[service-name]
 
 
   close: ->
@@ -69,8 +76,8 @@ class WebSocketSubsystem extends EventEmitter
 
   # called when a service instance registers itself with Exocom
   on-service-instance-registration: (payload, websocket) ->
-    @exocom.add-routing-config payload, websocket
-    @register-service-instance service-name: payload.name, websocket: websocket
+    @exocom.register-client payload, websocket
+    @register-client service-name: payload.name, websocket: websocket
 
 
   # called when a service instance sends a normal message
@@ -100,7 +107,7 @@ class WebSocketSubsystem extends EventEmitter
       request-data.response-time = message-data.response-time
       request-data.response-to = message-data.response-to
     @_log-sending message-data, service
-    @service-sockets[service.name].send JSON.stringify request-data
+    @sockets[service.name].send JSON.stringify request-data
     result = {[key, value] for key, value of message-data}
     result.name = translated-message-name
     result

@@ -13,37 +13,6 @@ require! {
 describe 'WebSocket', ->
 
 
-  describe 'send-message-to-service', (...) ->
-
-    before-each (done) ->
-      message =
-          name: 'message-1'
-          payload: 'payload-1'
-      services =
-        'mock-service':
-          name: 'mock-service'
-          internal-namespace: 'mock-service'
-      @exocom = new ExoCom service-messages: "[{name: mock-service, receives: [message-1]}]"
-        ..listen 3001
-        ..on 'websockets-online', ~>
-          @mock-service = new MockService {port: 3001, name: 'mock-service', namespace: 'mock-service'}
-            ..connect {}, ~>
-              wait 200, ~>
-                @exocom.websocket
-                  ..send-message-to-service message, services['mock-service']
-                done!
-
-    after-each ->
-      @exocom.close!
-
-    it 'sends the given message to the given service', (done) ->
-      wait-until (~> @mock-service.received-messages.length), 1, ~>
-        expected =
-          name: 'message-1'
-          payload: 'payload-1'
-        jsdiff-console @mock-service.received-messages[0], expected, done
-
-
   describe '_translate', (...) ->
 
     before-each ->

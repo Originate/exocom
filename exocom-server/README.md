@@ -1,6 +1,5 @@
 # Exosphere Communication Server
 
-[![Circle CI](https://circleci.com/gh/Originate/exocom-dev.svg?style=shield&circle-token=0f68f90da677a3c5bffc88d9d41910c00f10b81e)](https://circleci.com/gh/Originate/exocom-dev)
 [![Dependency Status](https://david-dm.org/originate/exocom-dev.svg)](https://david-dm.org/originate/exocom-dev)
 [![devDependency Status](https://david-dm.org/originate/exocom-dev/dev-status.svg)](https://david-dm.org/originate/exocom-dev#info=devDependencies)
 [![yarn compatibility](https://img.shields.io/badge/yarn-compatible-brightgreen.svg)](https://yarnpkg.com)

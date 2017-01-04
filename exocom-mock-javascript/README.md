@@ -1,6 +1,5 @@
 # Mock implementation of ExoCom in JavaScript
 
-[![Circle CI](https://circleci.com/gh/Originate/exocom-mock-js.svg?style=shield&circle-token=4f522d83e80f98f58b30cd1c9ad7f2e24f8e0b58)](https://circleci.com/gh/Originate/exocom-mock-js)
 [![Dependency Status](https://david-dm.org/originate/exocom-mock-js.svg)](https://david-dm.org/originate/exocom-mock-js)
 [![devDependency Status](https://david-dm.org/originate/exocom-mock-js/dev-status.svg)](https://david-dm.org/originate/exocom-mock-js#info=devDependencies)
 

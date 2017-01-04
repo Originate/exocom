@@ -14,11 +14,12 @@ module.exports = ->
     @verify-sent-calls {service-name, message-name, response-to: '111'}, done
 
 
-  @Then /^ExoCom now knows about these services:$/ (table, done) ->
+  @Then /^ExoCom now knows about these service instances:$/ (table, done) ->
     services = {}
     for row in table.hashes!
-      services[row.NAME] =
-        name: row.NAME
+      services[row['CLIENT NAME']] =
+        client-name: row['CLIENT NAME']
+        service-type: row['SERVICE TYPE']
         internal-namespace: row['INTERNAL NAMESPACE']
     @verify-service-setup services, done
 

@@ -22,12 +22,13 @@ class ClientRegistry
     #     ...
     @routing = @_parse-service-messages service-messages
 
-    # List of clients that are currently registered
+    # The main list of clients that are currently registered
     #
     # The format is:
     # {
     #   'client 1 name':
-    #     name: ...
+    #     client-name: ...
+    #     service-type: ...
     #     namespace: ...
     #   'client 2 name':
     #     ...
@@ -40,7 +41,8 @@ class ClientRegistry
   # Adds service routing configurations to the given setup
   register-client: (service) ->
     @clients[service.name] =
-      name: service.name
+      client-name: service.name
+      service-type: service.name
       internal-namespace: @routing[service.name].internal-namespace
 
     @subscriptions.add-all client-name: service.name, service-type: service.name
@@ -66,7 +68,7 @@ class ClientRegistry
     message-parts = message.split '.'
     switch
     | message-parts.length is 1                       =>  message
-    | message-parts[0] is service.internal-namespace  =>  "#{service.name}.#{message-parts[1]}"
+    | message-parts[0] is service.internal-namespace  =>  "#{service.service-type}.#{message-parts[1]}"
     | otherwise                                       =>  message
 
 

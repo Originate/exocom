@@ -32,7 +32,7 @@ class ExoCom extends EventEmitter
   # returns the current configuration of this ExoCom instance
   get-config: ~>
     {
-      services: @client-registry.clients
+      clients: @client-registry.clients
       routes: @client-registry.routes
     }
 

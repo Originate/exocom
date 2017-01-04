@@ -115,7 +115,7 @@ World = !->
     request "http://localhost:#{@port}/config.json", (err, result, body) ->
       expect(err).to.be.null
       expect(result.status-code).to.equal 200
-      jsdiff-console JSON.parse(body).services, service-data, done
+      jsdiff-console JSON.parse(body).clients, service-data, done
 
 
 

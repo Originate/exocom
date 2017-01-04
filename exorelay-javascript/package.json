@@ -24,10 +24,8 @@
     "lodash.isequal": "4.4.0",
     "mocha": "3.1.2",
     "mocha-circleci-reporter": "0.0.2",
-    "nitroglycerin": "1.1.2",
     "o-tools": "0.7.0",
     "o-tools-livescript": "1.2.3",
-    "portfinder": "1.0.10",
     "prelude-ls": "1.1.2",
     "sinon": "1.17.6",
     "tertestrial": "0.3.2"

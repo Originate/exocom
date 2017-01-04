@@ -31,7 +31,6 @@
     "observable-process": "3.2.0",
     "port-reservation": "0.3.2",
     "prelude-ls": "1.1.2",
-    "record-http": "0.6.1",
     "tertestrial": "0.3.2",
     "wait": "0.1.0"
   },

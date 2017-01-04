@@ -1,7 +1,7 @@
 require! {
   './client-registry/client-registry' : ClientRegistry
   'events' : {EventEmitter}
-  './listener-subsystem/listener-subsystem' : ListenerSubsystem
+  './http-subsystem/http-subsystem' : HttpSubsystem
   './message-cache/message-cache' : MessageCache
   'nanoseconds'
   'process'
@@ -15,12 +15,11 @@ class ExoCom extends EventEmitter
 
   ({@service-messages} = {}) ->
     @client-registry    = new ClientRegistry {@service-messages}
-    @listener-subsystem = new ListenerSubsystem @
+    @http-subsystem = new HttpSubsystem @
+      ..on 'online', (port) ~> @emit 'http-online', port
     @message-cache = new MessageCache!
     @websocket = new WebSocketSubsystem @
 
-    delegate 'httpPort', from: @, to: @listener-subsystem
-    delegate-event 'http-bound' 'error', from: @listener-subsystem, to: @
     delegate-event 'websocket-bound' 'error', 'warn', from: @websocket, to: @
 
 
@@ -33,13 +32,13 @@ class ExoCom extends EventEmitter
 
 
   close: ->
-    @listener-subsystem.close!
+    @http-subsystem.close!
     @websocket.close!
 
 
   # bind to the given port to send socket messages
   listen: (port) ->
-    express-server = @listener-subsystem.listen port
+    express-server = @http-subsystem.listen port
     @websocket.listen port, express-server
     debug "Listening at port #{port}"
 

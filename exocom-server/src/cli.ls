@@ -24,7 +24,7 @@ on-websocket-bound = (port) ->
   console.log dim "Ctrl-C to stop"
   console.log "ExoCom #{version} WebSocket listener online at port #{cyan port}"
 
-on-http-bound = (port) ->
+on-http-online = (port) ->
   console.log dim "Ctrl-C to stop"
   console.log "ExoCom #{version} HTTP service online at port #{magenta port}"
 
@@ -38,7 +38,7 @@ on-warn = (warning) ->
 run = ->
   exocom = new ExoCom service-messages: process.env.SERVICE_MESSAGES
     ..on 'websocket-bound', on-websocket-bound
-    ..on 'http-bound', on-http-bound
+    ..on 'http-online', on-http-online
     ..on 'error', on-error
     ..on 'warn', on-warn
     ..listen (+process.env.PORT or 3100)

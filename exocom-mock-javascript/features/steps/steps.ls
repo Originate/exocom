@@ -11,7 +11,7 @@ require! {
   'request'
   'sinon'
   'sinon-chai'
-  '../support/websocket-endpoint' : WebSocketEndpoint
+  '../support/mock-exorelay' : MockExorelay
   'wait' : {wait, wait-until}
 }
 expect = chai.expect

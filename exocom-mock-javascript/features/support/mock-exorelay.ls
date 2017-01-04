@@ -4,8 +4,8 @@ require! {
 debug = require('debug')('mock-websocket-endpoint')
 
 
-# Sends and receives WebSocket messages in tests
-class WebSocketEndpoint
+# A programmable Exorelay mock for testing MockExocom
+class MockExorelay
 
   (@name) ->
     @received-messages = []
@@ -34,6 +34,7 @@ class WebSocketEndpoint
     @socket.send JSON.stringify request-data
 
 
+
   _on-socket-error: (error) ->
     console.log error
 
@@ -43,4 +44,4 @@ class WebSocketEndpoint
 
 
 
-module.exports = WebSocketEndpoint
+module.exports = MockExorelay

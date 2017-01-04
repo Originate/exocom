@@ -1,13 +1,6 @@
 # Exocom Development Guidelines
 
 
-## APIs
-
-Exocom can be used via 2 separate APIs.
-
-
-### Command-line API
-
 To boot up Exocom by itself on the command line.
 
 ```
@@ -16,21 +9,6 @@ $ exocom [--port <port number>]
 
 The default port is 3100.
 More details around configuring the port [here](features/configuring-the-ports.feature).
-
-
-### JavaScript API
-
-You can integrate Exocom into your own NodeJS application through its JavaScript API.
-The [CLI](src/cli.ls) is implemented using the JavaScript API.
-
-```livescript
-ExoCom = require('exocom-dev')
-
-exocom = new ExoCom
-  ..on 'error', (err) -> # boo!
-  ..on 'listening', (port) -> # woohoo!
-  ..listen 3100
-```
 
 
 ## Architecture
@@ -68,10 +46,9 @@ with the payload described [here](features/configuring-services.feature).
 The tests run against the compiled output, so you need to run `watch` before executing them.
 
 - run all tests: `spec`
+- run feature tests: `features`
 - run unit tests: `tests`
 - run linter: `lint`
-- run JS API tests: `cuc_api`
-- run CLI tests: `cuc_cli`
 
 
 ## Publishing

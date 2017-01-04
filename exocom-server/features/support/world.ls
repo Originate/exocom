@@ -14,7 +14,7 @@ require! {
 
 
 # Provides steps for end-to-end testing of the service as a stand-alone binary
-CliWorld = !->
+World = !->
 
   @create-exocom-instance = ({port, service-messages = '{}'}, done) ->
     env =
@@ -120,4 +120,4 @@ CliWorld = !->
 
 
 module.exports = ->
-  @World = CliWorld if process.env.EXOCOM_TEST_DEPTH is 'CLI'
+  @World = World

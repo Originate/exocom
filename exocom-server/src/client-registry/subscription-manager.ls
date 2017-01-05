@@ -26,7 +26,7 @@ class SubscriptionManager
 
   # Adds the given client to the subscription list for the given message
   add: ({internal-message, client-name}) ->
-    external-message-name = @external-message-name {internal-message, service-name: client-name, internal-namespace: @routing[client-name].internal-namespace}
+    external-message-name = @external-message-name {internal-message, client-name: client-name, internal-namespace: @routing[client-name].internal-namespace}
     (@subscribers[external-message-name] or= []).push do
       name: client-name
       internal-namespace: @routing[client-name].internal-namespace
@@ -50,13 +50,13 @@ class SubscriptionManager
   # - service "tweets" has internal namespace "text-snippets"
   # - it only knows the "text-snippets.create" message
   # - the external message name that it has to subscribe to is "tweets.create"
-  external-message-name: ({internal-message, service-name, internal-namespace}) ->
+  external-message-name: ({internal-message, client-name, internal-namespace}) ->
     message-parts = internal-message.split '.'
     switch
-    | !internal-namespace               =>  internal-message
-    | message-parts.length is 1         =>  internal-message
-    | message-parts[0] is service-name  =>  internal-message
-    | otherwise                         =>  "#{service-name}.#{message-parts[1]}"
+    | !internal-namespace              =>  internal-message
+    | message-parts.length is 1        =>  internal-message
+    | message-parts[0] is client-name  =>  internal-message
+    | otherwise                        =>  "#{client-name}.#{message-parts[1]}"
 
 
 

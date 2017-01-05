@@ -34,8 +34,8 @@ module.exports = ->
     @set-service-landscape config, done
 
 
-  @When /^the "([^"]*)" service goes offline$/ (service-name, done) ->
-    @service-mocks[service-name].close!
+  @When /^the "([^"]*)" service goes offline$/ (client-name, done) ->
+    @service-mocks[client-name].close!
     wait 200, done
 
 

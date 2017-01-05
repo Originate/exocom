@@ -1,4 +1,5 @@
 require! {
+  'chalk' : {magenta}
   'body-parser'
   'events' : {EventEmitter}
   'express'
@@ -15,7 +16,7 @@ debug = require('debug')('exocom:http-subsystem')
 class HttpSubsystem extends EventEmitter
 
   # param @exocom: for making calls into the core
-  (@exocom) ->
+  ({@exocom, @logger}) ->
 
     # the Express instance that implements the HTTP interface
     @app = express!
@@ -37,14 +38,15 @@ class HttpSubsystem extends EventEmitter
 
 
   listen: (+@port) ->
-    | isNaN @port  =>  @emit 'error', 'Non-numerical port provided to ExoCom#listen'
+    | isNaN @port  =>  @logger.error 'Non-numerical port provided to ExoCom#listen'
     @server = http.create-server @app
       ..listen @port
       ..on 'error', (err) ~>
-        | err.code is 'EADDRINUSE'  =>  @emit 'error', "port #{err.port} is already in use"
-        | otherwise                 =>  @emit 'error', err
+        | err.code is 'EADDRINUSE'  =>  @logger.error "port #{err.port} is already in use"
+        | otherwise                 =>  @logger.error err
       ..on 'listening', ~>
         @online = yes
+        @logger.log "ExoCom HTTP service online at port #{magenta port}"
         @emit 'online', @port
 
 

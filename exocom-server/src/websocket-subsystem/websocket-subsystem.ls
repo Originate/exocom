@@ -1,4 +1,5 @@
 require! {
+  'chalk' : {cyan}
   'events' : {EventEmitter}
   '../message-cache/message-cache' : MessageCache
   'ws' : {Server: WebSocketServer}
@@ -14,7 +15,7 @@ debug = require('debug')('exocom:websocket-subsystem')
 # - warn: for non-critical issues
 class WebSocketSubsystem extends EventEmitter
 
-  (@exocom) ->
+  ({@exocom, @logger} = {}) ->
     @server = null
     @port = null
 
@@ -54,8 +55,10 @@ class WebSocketSubsystem extends EventEmitter
   listen: (@port, server) ->
     @server = new WebSocketServer {server, path: '/services'}
       ..on 'connection', @on-connection
-      ..on 'listening', ~> @emit 'online', @port
-      ..on 'error', (err) ~> @emit 'error', err
+      ..on 'listening', ~>
+        @logger.log "ExoCom WebSocket listener online at port #{cyan port}"
+        @emit 'online', @port
+      ..on 'error', (err) ~> @logger.error err
 
 
   # called when a new service instance connects
@@ -70,7 +73,7 @@ class WebSocketSubsystem extends EventEmitter
     @_log-received request-data
     switch
       | request-data.name is \exocom.register-service           =>  @on-service-instance-registration request-data.payload, websocket
-      | @invalid-sender request-data.sender, request-data.name  =>  @emit 'error', "Service '#{request-data.sender}' is not allowed to broadcast the message '#{request-data.name}'"
+      | @invalid-sender request-data.sender, request-data.name  =>  @logger.error "Service '#{request-data.sender}' is not allowed to broadcast the message '#{request-data.name}'"
       | otherwise                                               =>  @on-normal-message-receive request-data
 
 
@@ -85,10 +88,10 @@ class WebSocketSubsystem extends EventEmitter
   on-normal-message-receive: (data) ->
     switch (result = @exocom.send-message data)
       | 'success'             =>
-      | 'no receivers'        =>  @emit 'warn', "No receivers for message '#{data.name}' registered"
-      | 'missing request id'  =>  @emit 'error', 'missing request id'
-      | 'unknown message'     =>  @emit 'error', "unknown message: '#{request-data.message}'"
-      | _                     =>  @emit 'error', "unknown result code: '#{@result}'"
+      | 'no receivers'        =>  @logger.warning "No receivers for message '#{data.name}' registered"
+      | 'missing request id'  =>  @logger.error 'missing request id'
+      | 'unknown message'     =>  @logger.error "unknown message: '#{request-data.message}'"
+      | _                     =>  @logger.error "unknown result code: '#{@result}'"
 
 
   send-message-to-services: (message-data, services) ->

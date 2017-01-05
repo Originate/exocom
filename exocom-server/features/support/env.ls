@@ -13,6 +13,6 @@ module.exports = ->
     @exocom?.close!
     @exocom?.clearPorts!
     @process?.kill!
-    for name, mock of @service-mocks or {}
+    for _, mock of @service-mocks or {}
       mock.close!
     kill-child-processes done

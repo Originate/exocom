@@ -63,12 +63,12 @@ class ExoCom extends EventEmitter
   send-message: (message-data) ~>
     # convert the outgoing message name from its internal version to the public version
     sender = @client-registry.clients[message-data.sender]
-    external-message-name = @client-registry.outgoing-message-name message-data.name, sender
+    public-message-name = @client-registry.outgoing-message-name message-data.name, sender
     message-data.original-name = message-data.name
-    message-data.name = external-message-name
+    message-data.name = public-message-name
     message-data.timestamp = nanoseconds process.hrtime!
     # determine the subscribers
-    subscribers = @client-registry.subscribers-for external-message-name
+    subscribers = @client-registry.subscribers-for public-message-name
     return 'no receivers' unless subscribers
     subscriber-names = [subscriber.name for subscriber in subscribers]
 

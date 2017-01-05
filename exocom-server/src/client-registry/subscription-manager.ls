@@ -26,17 +26,17 @@ class SubscriptionManager
 
   # Adds the given client to the subscription list for the given message
   add: ({internal-message, client-name}) ->
-    external-message-name = @external-message-name {internal-message, client-name: client-name, internal-namespace: @routing[client-name].internal-namespace}
-    (@subscribers[external-message-name] or= []).push do
+    public-message-name = @public-message-name {internal-message, client-name: client-name, internal-namespace: @routing[client-name].internal-namespace}
+    (@subscribers[public-message-name] or= []).push do
       name: client-name
       internal-namespace: @routing[client-name].internal-namespace
 
 
   remove: (client-name) ->
     for message in (@routing[client-name].receives or {})
-      external-message = @external-message-name {message, client-name, internal-namespace: @subscribers[client-name].internal-namespace}
+      public-message-name = @public-message-name {message, client-name, internal-namespace: @subscribers[client-name].internal-namespace}
       # TODO: this is broken, make this remove only the client
-      delete @subscribers[external-message]
+      delete @subscribers[public-message-name]
 
 
   subscribers-for: (message-name) ->
@@ -50,7 +50,7 @@ class SubscriptionManager
   # - service "tweets" has internal namespace "text-snippets"
   # - it only knows the "text-snippets.create" message
   # - the external message name that it has to subscribe to is "tweets.create"
-  external-message-name: ({internal-message, client-name, internal-namespace}) ->
+  public-message-name: ({internal-message, client-name, internal-namespace}) ->
     message-parts = internal-message.split '.'
     switch
     | !internal-namespace              =>  internal-message

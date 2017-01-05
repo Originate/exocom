@@ -21,6 +21,8 @@ More details around configuring the port [here](features/configuring-the-ports.f
 - service instances (clients) can send __messages__ to each other.
   A service can only send messages of a __message type__ it is allowed to send,
   which is specified in the routing information.
+- services can use different __internal message names__ than what is used on the bus
+  (which are the __public message names__).
 
 
 ## Architecture

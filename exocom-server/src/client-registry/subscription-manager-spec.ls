@@ -10,24 +10,24 @@ describe 'SubscriptionManager', ->
     @subscription-manager = new SubscriptionManager
 
 
-  describe 'external-message-name', (...) ->
+  describe 'public-message-name', (...) ->
 
     it "does not convert messages that don't match the format", ->
-      result = @subscription-manager.external-message-name do
+      result = @subscription-manager.public-message-name do
         internal-message: 'foo bar'
         client-name: 'tweets'
         internal-namespace: 'text-snippets'
       expect(result).to.eql 'foo bar'
 
     it 'does not convert messages that have the same internal and external namespace', ->
-      result = @subscription-manager.external-message-name do
+      result = @subscription-manager.public-message-name do
         internal-message: 'users.create'
         client-name: 'users'
         internal-namespace: 'users'
       expect(result).to.eql 'users.create'
 
     it 'does not convert messages if the service has no internal namespace', ->
-      result = @subscription-manager.external-message-name do
+      result = @subscription-manager.public-message-name do
         internal-message: 'users.create'
         client-name: 'users'
         internal-namespace: ''
@@ -35,7 +35,7 @@ describe 'SubscriptionManager', ->
 
 
     it 'converts messages into the external namespace of the service', ->
-      result = @subscription-manager.external-message-name do
+      result = @subscription-manager.public-message-name do
         internal-message: 'text-snippets.create'
         client-name: 'tweets'
         internal-namespace: 'text-snippets'

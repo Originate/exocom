@@ -13,7 +13,7 @@ require! {
 describe 'WebSocket', ->
 
 
-  describe '_translate', (...) ->
+  describe '_internal-message-name', (...) ->
 
     before-each ->
       @exocom-websocket = new WebSocketSubsystem
@@ -22,7 +22,7 @@ describe 'WebSocket', ->
       service =
         name: 'tweets'
         internal-namespace: 'text-snippets'
-      result = @exocom-websocket._translate 'tweets.create', for: service
+      result = @exocom-websocket._internal-message-name 'tweets.create', for: service
       expect(result).to.eql 'text-snippets.create'
 
 
@@ -30,11 +30,11 @@ describe 'WebSocket', ->
       service =
         name: 'users'
         internal-namespace: 'users'
-      result = @exocom-websocket._translate 'users.create', for: service
+      result = @exocom-websocket._internal-message-name 'users.create', for: service
       expect(result).to.eql 'users.create'
 
 
 
     it 'does not translate the given message if it is not in a translatable format', ->
-      result = @exocom-websocket._translate 'foo bar', for: {}
+      result = @exocom-websocket._internal-message-name 'foo bar', for: {}
       expect(result).to.eql 'foo bar'

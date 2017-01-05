@@ -61,12 +61,12 @@ class WebSocketSubsystem extends EventEmitter
   # called when a new service instance connects
   on-connection: (websocket) ~>
     websocket.on 'message', (message) ~>
-      @on-message(message, websocket)
+      @on-message message, websocket
 
 
   # called when a new message from a service instance arrives
-  on-message: (message, websocket) ->
-    request-data = @_parse-request JSON.parse(message)
+  on-message: (message-text, websocket) ->
+    request-data = @_filter-incoming-message JSON.parse(message-text)
     @_log-received request-data
     switch
       | request-data.name is \exocom.register-service           =>  @on-service-instance-registration request-data.payload, websocket
@@ -97,9 +97,9 @@ class WebSocketSubsystem extends EventEmitter
 
 
   send-message-to-service: (message-data, service) ->
-    translated-message-name = @_translate message-data.name, for: service
+    internal-message-name = @_internal-message-name message-data.name, for: service
     request-data =
-      name: translated-message-name
+      name: internal-message-name
       id: message-data.id
       payload: message-data.payload
       timestamp: message-data.timestamp
@@ -109,7 +109,7 @@ class WebSocketSubsystem extends EventEmitter
     @_log-sending message-data, service
     @sockets[service.name].send JSON.stringify request-data
     result = {[key, value] for key, value of message-data}
-    result.name = translated-message-name
+    result.name = internal-message-name
     result
 
 
@@ -124,19 +124,19 @@ class WebSocketSubsystem extends EventEmitter
 
 
   # Returns the relevant data from a request
-  _parse-request: (req) ~>
+  _filter-incoming-message: (message) ~>
     {
-      sender: req.sender
-      name: req.name
-      payload: req.payload
-      response-to: req.response-to
-      timestamp: req.timestamp
-      id: req.id
+      sender: message.sender
+      name: message.name
+      payload: message.payload
+      response-to: message.response-to
+      timestamp: message.timestamp
+      id: message.id
     }
 
 
   # Translates outgoing message into one that the receiving service will understand
-  _translate: (message-name, {for: service}) ->
+  _internal-message-name: (message-name, {for: service}) ->
     message-parts = message-name.split '.'
     switch
       | !service.internal-namespace                     =>  message-name

@@ -12,7 +12,7 @@ logger.log-header "Exocom #{version}\n"
 doc = """
 Provides Exosphere communication infrastructure services in development mode.
 Expects the following environment variables:
-- SERVICE_MESSAGES: list of messages that the different service types are allowed to send and receive
+- SERVICE_ROUTES: list of messages that the different service types are allowed to send and receive
 - PORT: the port to listen on
 
 Usage:
@@ -29,7 +29,7 @@ switch options = docopt doc, help: no
 
 
 function run
-  exocom = new ExoCom service-messages: process.env.SERVICE_MESSAGES
+  exocom = new ExoCom service-routes: process.env.SERVICE_ROUTES
     ..on 'error', logger.log-error
     ..on 'http-online', logger.log-http-online
     ..on 'message', logger.log-message

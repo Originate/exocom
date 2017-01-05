@@ -16,10 +16,10 @@ require! {
 # Provides steps for end-to-end testing of the service as a stand-alone binary
 World = !->
 
-  @create-exocom-instance = ({port, service-messages = '{}'}, done) ->
+  @create-exocom-instance = ({port, service-routes = '{}'}, done) ->
     env =
       PORT : port
-      SERVICE_MESSAGES : service-messages
+      SERVICE_ROUTES : service-routes
     @port = port
     @process = new ObservableProcess "bin/exocom", stdout: dim-console.process.stdout, stderr: dim-console.process.stderr, env: env
       ..wait "WebSocket listener online at port #{@port}", done

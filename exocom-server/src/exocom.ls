@@ -67,7 +67,7 @@ class ExoCom extends EventEmitter
     # determine the subscribers
     subscribers = @client-registry.subscribers-for public-message-name
     return 'no receivers' unless subscribers
-    subscriber-names = [subscriber.name for subscriber in subscribers]
+    subscriber-names = [subscriber.client-name for subscriber in subscribers]
 
     # calculate a message's response time if it is a reply
     if message-data.response-to

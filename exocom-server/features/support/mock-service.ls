@@ -8,7 +8,7 @@ debug = require('debug')('mock-service')
 # that can send, receive, and track messages using WebSockets.
 class MockService
 
-  ({@port, @name, @namespace} = {}) ->
+  ({@port, @client-name, @namespace} = {}) ->
     @received-messages = []
 
 
@@ -19,14 +19,14 @@ class MockService
 
 
   connect: ({payload}, done) ~>
-    payload ?= {@name}
+    payload ?= {@client-name}
     @socket = new WebSocket "ws://localhost:#{@port}/services"
       ..on 'message', @_on-socket-message
       ..on 'error', @_on-socket-error
       ..on 'open', ~>
         @send do
           name: 'exocom.register-service'
-          sender: @name
+          sender: @client-name
           payload: payload
           id: '123'
         done!

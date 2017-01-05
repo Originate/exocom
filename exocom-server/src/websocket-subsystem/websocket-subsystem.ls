@@ -80,7 +80,7 @@ class WebSocketSubsystem extends EventEmitter
   # called when a service instance registers itself with Exocom
   on-service-instance-registration: (payload, websocket) ->
     @exocom.register-client payload, websocket
-    @register-client client-name: payload.name, websocket: websocket
+    @register-client client-name: payload.client-name, websocket: websocket
 
 
   # called when a service instance sends a normal message
@@ -110,7 +110,7 @@ class WebSocketSubsystem extends EventEmitter
       request-data.response-time = message-data.response-time
       request-data.response-to = message-data.response-to
     @_log-sending message-data, service
-    @sockets[service.name].send JSON.stringify request-data
+    @sockets[service.client-name].send JSON.stringify request-data
     result = {[key, value] for key, value of message-data}
     result.name = internal-message-name
     result

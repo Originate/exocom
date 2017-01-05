@@ -28,7 +28,7 @@ class SubscriptionManager
   add: ({internal-message, client-name}) ->
     public-message-name = @public-message-name {internal-message, client-name: client-name, internal-namespace: @routing[client-name].internal-namespace}
     (@subscribers[public-message-name] or= []).push do
-      name: client-name
+      client-name: client-name
       internal-namespace: @routing[client-name].internal-namespace
 
 

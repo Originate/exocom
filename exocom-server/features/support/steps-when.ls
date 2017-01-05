@@ -8,11 +8,11 @@ require! {
 
 module.exports = ->
 
-  @When /^a new "([^"]*)" service instance registers itself with it via the message:$/ (name, table, done) ->
+  @When /^a new "([^"]*)" service instance registers itself with it via the message:$/ (client-name, table, done) ->
     table-data = table.raw! |> pairs-to-obj
     payload = table-data.PAYLOAD |> JSON.parse
-    (@service-mocks or= {})[name] = new MockService name: table-data.NAME, port: @exocom-port
-    @service-mocks[name].connect {payload}, ->
+    (@service-mocks or= {})[client-name] = new MockService name: table-data.NAME, port: @exocom-port
+    @service-mocks[client-name].connect {payload}, ->
       wait 200, done
 
 

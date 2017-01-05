@@ -8,12 +8,12 @@ require! {
 
 module.exports = ->
 
-  @When /^a new "([^"]*)" service$/ (name, done) ->
-    @create-mock-service-at-port {name, port: @exocom-port}, done
+  @Given /^a new "([^"]*)" service$/ (client-name, done) ->
+    @create-mock-service-at-port {client-name, port: @exocom-port}, done
 
 
-  @Given /^a running "([^"]*)" instance$/, (name, done) ->
-    @create-mock-service-at-port {name, port: @exocom-port}, ->
+  @Given /^a running "([^"]*)" instance$/, (client-name, done) ->
+    @create-mock-service-at-port {client-name, port: @exocom-port}, ->
       wait 200, done
 
 
@@ -37,7 +37,7 @@ module.exports = ->
       ..base-port = 5000
       ..get-port N (@exocom-port) ~>
         @create-exocom-instance port: @exocom-port, ~>
-          @create-mock-service-at-port {name: service.NAME, port: @exocom-port}, ->
+          @create-mock-service-at-port {client-name: service.NAME, port: @exocom-port}, ->
           done!
 
 

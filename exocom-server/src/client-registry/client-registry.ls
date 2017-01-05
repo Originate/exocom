@@ -40,12 +40,12 @@ class ClientRegistry
 
   # registers the given service instance that just came online
   register-client: (client) ->
-    @clients[client.name] =
-      client-name: client.name
-      service-type: client.name
-      internal-namespace: @routing[client.name].internal-namespace
+    @clients[client.client-name] =
+      client-name: client.client-name
+      service-type: client.client-name
+      internal-namespace: @routing[client.client-name].internal-namespace
 
-    @subscriptions.add-all client-name: client.name, service-type: client.name
+    @subscriptions.add-all client-name: client.client-name, service-type: client.client-name
 
 
   # deregisters a service instance that went offline

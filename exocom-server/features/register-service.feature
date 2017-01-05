@@ -21,7 +21,7 @@ Feature: Manage new instances of services
       """
     When a new "users" service instance registers itself with it via the message:
       | NAME    | exocom.register-service |
-      | PAYLOAD | { "name": "users" }     |
+      | PAYLOAD | { "clientName": "users" }     |
     Then ExoCom now knows about these service instances:
       | CLIENT NAME | SERVICE TYPE | INTERNAL NAMESPACE |
       | users       | users        | foo                |

@@ -59,18 +59,19 @@ class ClientRegistry
     @subscriptions.subscribers-for message-name
 
 
-  can-send: (sender, message) ->
-    @routing[sender].sends |> (.includes message)
+  # returns whether the given sender is allowed to send messages with the given name
+  can-send: (sender, message-name) ->
+    @routing[sender].sends |> (.includes message-name)
 
 
   # Returns the external name for the given message sent by the given service,
   # i.e. how the sent message should appear to the other services.
-  outgoing-message-name: (message, service) ->
-    message-parts = message.split '.'
+  outgoing-message-name: (message-name, service) ->
+    message-parts = message-name.split '.'
     switch
-    | message-parts.length is 1                       =>  message
+    | message-parts.length is 1                       =>  message-name
     | message-parts[0] is service.internal-namespace  =>  "#{service.service-type}.#{message-parts[1]}"
-    | otherwise                                       =>  message
+    | otherwise                                       =>  message-name
 
 
   _parse-service-routes: (service-routes) ->

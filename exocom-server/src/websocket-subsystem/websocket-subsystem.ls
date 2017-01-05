@@ -69,12 +69,12 @@ class WebSocketSubsystem extends EventEmitter
 
   # called when a new message from a service instance arrives
   on-message: (message-text, websocket) ->
-    request-data = @_filter-incoming-message JSON.parse(message-text)
-    @_log-received request-data
+    message = @_filter-incoming-message JSON.parse(message-text)
+    @_log-received message
     switch
-      | request-data.name is \exocom.register-service           =>  @on-service-instance-registration request-data.payload, websocket
-      | @invalid-sender request-data.sender, request-data.name  =>  @logger.error "Service '#{request-data.sender}' is not allowed to broadcast the message '#{request-data.name}'"
-      | otherwise                                               =>  @on-normal-message-receive request-data
+      | message.name is \exocom.register-service      =>  @on-service-instance-registration message.payload, websocket
+      | @invalid-sender message.sender, message.name  =>  @logger.error "Service '#{message.sender}' is not allowed to broadcast the message '#{message.name}'"
+      | otherwise                                     =>  @on-normal-message-receive message
 
 
   # called when a service instance registers itself with Exocom
@@ -85,10 +85,10 @@ class WebSocketSubsystem extends EventEmitter
 
   # called when a service instance sends a normal message
   # i.e. not a registration message
-  on-normal-message-receive: (data) ->
-    switch (result = @exocom.send-message data)
+  on-normal-message-receive: (message) ->
+    switch (result = @exocom.send-message message)
       | 'success'             =>
-      | 'no receivers'        =>  @logger.warning "No receivers for message '#{data.name}' registered"
+      | 'no receivers'        =>  @logger.warning "No receivers for message '#{message.name}' registered"
       | 'missing request id'  =>  @logger.error 'missing request id'
       | 'unknown message'     =>  @logger.error "unknown message: '#{request-data.message}'"
       | _                     =>  @logger.error "unknown result code: '#{@result}'"
@@ -116,14 +116,14 @@ class WebSocketSubsystem extends EventEmitter
     result
 
 
-  _log-received: ({name, id, response-to}) ->
-    | response-to  =>  debug "received '#{name}' with id '#{id}' in response to '#{response-to}'"
-    | _            =>  debug "received '#{name}' with id '#{id}'"
+  _log-received: (message) ->
+    | message.response-to  =>  debug "received '#{message.name}' with id '#{message.id}' in response to '#{message.response-to}'"
+    | _                    =>  debug "received '#{message.name}' with id '#{message.id}'"
 
 
-  _log-sending: ({name, id, response-to}, service) ->
-    | response-to  =>  debug "sending '#{name}' with id '#{id}' in response to '#{response-to}' to '#{service.name}'"
-    | _            =>  debug "sending '#{name}' with id '#{id}' to '#{service.name}'"
+  _log-sending: (message, service) ->
+    | message.response-to  =>  debug "sending '#{message.name}' with id '#{message.id}' in response to '#{message.response-to}' to '#{service.name}'"
+    | _                    =>  debug "sending '#{message.name}' with id '#{message.id}' to '#{service.name}'"
 
 
   # Returns the relevant data from a request

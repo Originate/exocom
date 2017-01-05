@@ -45,7 +45,7 @@ class ClientRegistry
       service-type: client.client-name
       internal-namespace: @routing[client.client-name].internal-namespace
 
-    @subscriptions.add-all client-name: client.client-name, service-type: client.client-name
+    @subscriptions.add-all {client.client-name, service-type: client.client-name}
 
 
   # deregisters a service instance that went offline

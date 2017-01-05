@@ -20,7 +20,6 @@ describe 'WebSocket', ->
 
     it 'translates the given message to the internal format of the given sender', ->
       service =
-        name: 'tweets'
         internal-namespace: 'text-snippets'
       result = @exocom-websocket._internal-message-name 'tweets.create', for: service
       expect(result).to.eql 'text-snippets.create'
@@ -28,7 +27,6 @@ describe 'WebSocket', ->
 
     it 'does not translate the given message if the recipient has the same internal namespace as the message', ->
       service =
-        name: 'users'
         internal-namespace: 'users'
       result = @exocom-websocket._internal-message-name 'users.create', for: service
       expect(result).to.eql 'users.create'

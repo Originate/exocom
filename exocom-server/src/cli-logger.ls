@@ -50,7 +50,7 @@ class CliLogger
     for command, routing of exocom.client-registry.routes
       @write "  --[ #{command} ]-> "
       text = for receiver in routing.receivers
-        "#{receiver.name}"
+        "#{receiver.client-name}"
       @write "#{text.join ' + '}\n"
 
 

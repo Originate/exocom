@@ -38,24 +38,24 @@ World = !->
     done!
 
 
-  @service-sends-message = ({service, message}, done) ->
+  @service-sends-message = ({service-name, message-name}, done) ->
     request-data =
-      sender: service
+      sender: service-name
       payload: ''
       id: '123'
-      name: message
-    @service-mocks[service].send request-data
+      name: message-name
+    @service-mocks[service-name].send request-data
     done!
 
 
-  @service-sends-reply = ({service, message, response-to}, done) ->
+  @service-sends-reply = ({service-name, message-name, response-to}, done) ->
     request-data =
-      sender: service
+      sender: service-name
       payload: ''
       id: '123'
       response-to: response-to
-      name: message
-    @service-mocks[service].send request-data
+      name: message-name
+    @service-mocks[service-name].send request-data
     done!
 
 

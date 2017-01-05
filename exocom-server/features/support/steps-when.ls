@@ -39,11 +39,11 @@ module.exports = ->
     wait 200, done
 
 
-  @When /^the "([^"]+)" service sends "([^"]*)"$/, (service, message, done) ->
-    @last-sent-message = message
-    @service-sends-message {service, message}, done
+  @When /^the "([^"]+)" service sends "([^"]*)"$/, (service-name, message-name, done) ->
+    @last-sent-message = message-name
+    @service-sends-message {service-name, message-name}, done
 
 
-  @When /^the "([^"]+)" service sends "([^"]*)" in reply to "([^"]*)"$/, (service, reply-message, response-to, done) ->
+  @When /^the "([^"]+)" service sends "([^"]*)" in reply to "([^"]*)"$/, (service-name, reply-message, response-to, done) ->
     @last-sent-message = reply-message
-    @service-sends-reply {service, message: reply-message, response-to}, done
+    @service-sends-reply {service-name, message-name: reply-message, response-to}, done

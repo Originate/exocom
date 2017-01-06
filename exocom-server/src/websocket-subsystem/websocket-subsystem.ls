@@ -69,7 +69,7 @@ class WebSocketSubsystem extends EventEmitter
 
   # called when a new message from a service instance arrives
   on-message: (message-text, websocket) ->
-    message = @_filter-incoming-message JSON.parse(message-text)
+    message = JSON.parse(message-text)
     @_log-received message
     switch
       | message.name is \exocom.register-service      =>  @on-service-instance-registration message.payload, websocket
@@ -124,18 +124,6 @@ class WebSocketSubsystem extends EventEmitter
   _log-sending: (message, service) ->
     | message.response-to  =>  debug "sending '#{message.name}' with id '#{message.id}' in response to '#{message.response-to}' to '#{service.name}'"
     | _                    =>  debug "sending '#{message.name}' with id '#{message.id}' to '#{service.name}'"
-
-
-  # Returns the relevant data from a request
-  _filter-incoming-message: (message) ~>
-    {
-      sender: message.sender
-      name: message.name
-      payload: message.payload
-      response-to: message.response-to
-      timestamp: message.timestamp
-      id: message.id
-    }
 
 
   # Translates outgoing message into one that the receiving service will understand

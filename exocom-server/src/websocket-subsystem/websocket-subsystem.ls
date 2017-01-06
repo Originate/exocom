@@ -30,13 +30,10 @@ class WebSocketSubsystem extends EventEmitter
     @sockets = {}
 
 
-  # Registers the given websocket as a connection
-  # to an instance of the service with the given name
-  register-client: ({client-name, websocket}) ->
-    @sockets[client-name] = websocket
-      ..on 'close', ~>
-        @exocom.deregister-client client-name
-        @deregister-client client-name
+  close: ->
+    | !@server  =>  return
+    debug 'websockets going offline'
+    @server.close!
 
 
   deregister-client: (client-name) ->
@@ -44,10 +41,8 @@ class WebSocketSubsystem extends EventEmitter
     delete @sockets[client-name]
 
 
-  close: ->
-    | !@server  =>  return
-    debug 'websockets going offline'
-    @server.close!
+  invalid-sender: (sender, message-name) ->
+    !@exocom.client-registry.can-send sender, message-name
 
 
   # Listens at the given port
@@ -77,12 +72,6 @@ class WebSocketSubsystem extends EventEmitter
       | otherwise                                     =>  @on-normal-message-receive message
 
 
-  # called when a service instance registers itself with Exocom
-  on-service-instance-registration: (payload, websocket) ->
-    @exocom.register-client payload, websocket
-    @register-client client-name: payload.client-name, websocket: websocket
-
-
   # called when a service instance sends a normal message
   # i.e. not a registration message
   on-normal-message-receive: (message) ->
@@ -94,9 +83,19 @@ class WebSocketSubsystem extends EventEmitter
       | _                     =>  @logger.error "unknown result code: '#{@result}'"
 
 
-  send-message-to-services: (message-data, services) ->
-    for service in services
-      @send-message-to-service message-data, service
+  # called when a service instance registers itself with Exocom
+  on-service-instance-registration: (payload, websocket) ->
+    @exocom.register-client payload, websocket
+    @register-client client-name: payload.client-name, websocket: websocket
+
+
+  # Registers the given websocket as a connection
+  # to an instance of the service with the given name
+  register-client: ({client-name, websocket}) ->
+    @sockets[client-name] = websocket
+      ..on 'close', ~>
+        @exocom.deregister-client client-name
+        @deregister-client client-name
 
 
   send-message-to-service: (message, service) ->
@@ -116,14 +115,10 @@ class WebSocketSubsystem extends EventEmitter
     result
 
 
-  _log-received: (message) ->
-    | message.response-to  =>  debug "received '#{message.name}' with id '#{message.id}' in response to '#{message.response-to}'"
-    | _                    =>  debug "received '#{message.name}' with id '#{message.id}'"
+  send-message-to-services: (message-data, services) ->
+    for service in services
+      @send-message-to-service message-data, service
 
-
-  _log-sending: (message, service) ->
-    | message.response-to  =>  debug "sending '#{message.name}' with id '#{message.id}' in response to '#{message.response-to}' to '#{service.name}'"
-    | _                    =>  debug "sending '#{message.name}' with id '#{message.id}' to '#{service.name}'"
 
 
   # Translates outgoing message into one that the receiving service will understand
@@ -136,8 +131,14 @@ class WebSocketSubsystem extends EventEmitter
       | otherwise                                       => "#{service.internal-namespace}.#{message-parts[1]}"
 
 
-  invalid-sender: (sender, message-name) ->
-    !@exocom.client-registry.can-send sender, message-name
+  _log-received: (message) ->
+    | message.response-to  =>  debug "received '#{message.name}' with id '#{message.id}' in response to '#{message.response-to}'"
+    | _                    =>  debug "received '#{message.name}' with id '#{message.id}'"
+
+
+  _log-sending: (message, service) ->
+    | message.response-to  =>  debug "sending '#{message.name}' with id '#{message.id}' in response to '#{message.response-to}' to '#{service.name}'"
+    | _                    =>  debug "sending '#{message.name}' with id '#{message.id}' to '#{service.name}'"
 
 
 

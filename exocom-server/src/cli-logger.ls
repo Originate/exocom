@@ -6,14 +6,10 @@ require! {
 # Logs events in a human-friedly format to the CLI
 class CliLogger
 
-  # writes the given text to stdout with newline
-  log: (text) ~>
-    console.log text
-
-
-  # writes the given text to stdout without newline
-  write: (text) ~>
-    process.stdout.write text
+  # logs the given critical error message
+  error: (err) ~>
+    @log red "Error: #{err}"
+    process.exit 1
 
 
   # writes information about the application that comes before the actual application output
@@ -21,15 +17,9 @@ class CliLogger
     @log dim text
 
 
-  # logs the given critical error message
-  error: (err) ~>
-    @log red "Error: #{err}"
-    process.exit 1
-
-
-  # logs the given warning message
-  warning: (warning) ~>
-    @log yellow "Warning: #{warning}"
+  # writes the given text to stdout with newline
+  log: (text) ~>
+    console.log text
 
 
   # logs that messages were sent over the bus
@@ -52,6 +42,16 @@ class CliLogger
       text = for receiver in routing.receivers
         "#{receiver.client-name}"
       @write "#{text.join ' + '}\n"
+
+
+  # logs the given warning message
+  warning: (warning) ~>
+    @log yellow "Warning: #{warning}"
+
+
+  # writes the given text to stdout without newline
+  write: (text) ~>
+    process.stdout.write text
 
 
 

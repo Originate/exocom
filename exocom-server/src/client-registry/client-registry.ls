@@ -38,30 +38,15 @@ class ClientRegistry
 
 
 
-  # registers the given service instance that just came online
-  register-client: (client) ->
-    @clients[client.client-name] =
-      client-name: client.client-name
-      service-type: client.client-name
-      internal-namespace: @routing[client.client-name].internal-namespace
-
-    @subscriptions.add-all {client.client-name, service-type: client.client-name}
+  # returns whether the given sender is allowed to send messages with the given name
+  can-send: (sender-name, message-name) ->
+    @routing[sender-name].sends |> (.includes message-name)
 
 
   # deregisters a service instance that went offline
   deregister-client: (client-name) ->
     @subscriptions.remove client-name
     delete @clients[client-name]
-
-
-  # Returns the clients that are subscribed to the given message
-  subscribers-for: (message-name) ->
-    @subscriptions.subscribers-for message-name
-
-
-  # returns whether the given sender is allowed to send messages with the given name
-  can-send: (sender-name, message-name) ->
-    @routing[sender-name].sends |> (.includes message-name)
 
 
   # Returns the external name for the given message sent by the given service,
@@ -72,6 +57,22 @@ class ClientRegistry
     | message-parts.length is 1                       =>  message-name
     | message-parts[0] is service.internal-namespace  =>  "#{service.service-type}.#{message-parts[1]}"
     | otherwise                                       =>  message-name
+
+
+  # registers the given service instance that just came online
+  register-client: (client) ->
+    @clients[client.client-name] =
+      client-name: client.client-name
+      service-type: client.client-name
+      internal-namespace: @routing[client.client-name].internal-namespace
+
+    @subscriptions.add-all {client.client-name, service-type: client.client-name}
+
+
+  # Returns the clients that are subscribed to the given message
+  subscribers-for: (message-name) ->
+    @subscriptions.subscribers-for message-name
+
 
 
   _parse-service-routes: (service-routes) ->

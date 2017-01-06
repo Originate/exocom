@@ -23,16 +23,16 @@ class MessageCache
       @remove id
 
 
+  get-original-timestamp: (message-id) ~>
+    @cache[message-id]
+
+
   push: (message-id, timestamp) ~>
     @cache[message-id] = timestamp
 
 
   remove: (message-id) ~>
     delete @cache[message-id]
-
-
-  get-original-timestamp: (message-id) ~>
-    @cache[message-id]
 
 
 

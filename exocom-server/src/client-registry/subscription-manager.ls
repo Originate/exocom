@@ -18,12 +18,6 @@ class SubscriptionManager
     @subscribers = {}
 
 
-  # adds subscriptions for the client with the given name
-  add-all: ({client-name, service-type}) ->
-    for internal-message-name in @routing[service-type].receives or {}
-      @add {internal-message-name, client-name}
-
-
   # Adds the given client to the subscription list for the given message
   add: ({internal-message-name, client-name}) ->
     public-message-name = @public-message-name {internal-message-name, client-name, internal-namespace: @routing[client-name].internal-namespace}
@@ -32,15 +26,10 @@ class SubscriptionManager
       internal-namespace: @routing[client-name].internal-namespace
 
 
-  remove: (client-name) ->
-    for internal-message-name in (@routing[client-name].receives or {})
-      public-message-name = @public-message-name {internal-message-name, client-name, internal-namespace: @subscribers[client-name].internal-namespace}
-      # TODO: this is broken, make this remove only the client
-      delete @subscribers[public-message-name]
-
-
-  subscribers-for: (message-name) ->
-    @subscribers[message-name]
+  # adds subscriptions for the client with the given name
+  add-all: ({client-name, service-type}) ->
+    for internal-message-name in @routing[service-type].receives or {}
+      @add {internal-message-name, client-name}
 
 
   # Returns the message name to which the given service would have to subscribe
@@ -57,6 +46,17 @@ class SubscriptionManager
     | message-parts.length is 1        =>  internal-message-name
     | message-parts[0] is client-name  =>  internal-message-name
     | otherwise                        =>  "#{client-name}.#{message-parts[1]}"
+
+
+  remove: (client-name) ->
+    for internal-message-name in (@routing[client-name].receives or {})
+      public-message-name = @public-message-name {internal-message-name, client-name, internal-namespace: @subscribers[client-name].internal-namespace}
+      # TODO: this is broken, make this remove only the client
+      delete @subscribers[public-message-name]
+
+
+  subscribers-for: (message-name) ->
+    @subscribers[message-name]
 
 
 

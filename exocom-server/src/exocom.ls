@@ -26,17 +26,22 @@ class ExoCom extends EventEmitter
       ..on 'online', (port) ~> @emit 'websockets-online', port
 
 
+  close: ->
+    @http-subsystem.close!
+    @websocket.close!
+
+
+  # deregisters a service instance that went offline
+  deregister-client: (client-name) ~>
+    @client-registry.deregister-client client-name
+
+
   # returns the current configuration of this ExoCom instance
   get-config: ~>
     {
       clients: @client-registry.clients
       routes: @client-registry.routes
     }
-
-
-  close: ->
-    @http-subsystem.close!
-    @websocket.close!
 
 
   # bind to the given port to send socket messages
@@ -49,11 +54,6 @@ class ExoCom extends EventEmitter
   # registers the given service instance that just came online
   register-client: (client) ~>
     @client-registry.register-client client
-
-
-  # deregisters a service instance that went offline
-  deregister-client: (client-name) ~>
-    @client-registry.deregister-client client-name
 
 
   # sends the given message to all subscribers of it.

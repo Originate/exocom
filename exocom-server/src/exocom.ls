@@ -19,11 +19,14 @@ class ExoCom extends EventEmitter
 
     @http-subsystem = new HttpSubsystem {exocom: @, @logger}
       ..on 'online', (port) ~> @emit 'http-online', port
+      ..on 'config-request', (response-stream) ~> @handle-config-request response-stream
 
     @message-cache = new MessageCache!
 
     @websocket = new WebSocketSubsystem {exocom: @, @logger}
       ..on 'online', (port) ~> @emit 'websockets-online', port
+      ..on 'deregister-client', (client-name) ~> @deregister-client client-name
+      ..on 'message', (message) ~> @handle-incoming-message message
 
 
   close: ->
@@ -34,6 +37,7 @@ class ExoCom extends EventEmitter
   # deregisters a service instance that went offline
   deregister-client: (client-name) ~>
     @client-registry.deregister-client client-name
+    @websocket.deregister-client client-name
 
 
   # returns the current configuration of this ExoCom instance
@@ -44,6 +48,11 @@ class ExoCom extends EventEmitter
     }
 
 
+  # returns whether the given message contains an invalid sender
+  has-invalid-sender: (message) ->
+    !@client-registry.can-send message.sender, message.name
+
+
   # bind to the given port to send socket messages
   listen: (port) ->
     express-server = @http-subsystem.listen port
@@ -51,9 +60,22 @@ class ExoCom extends EventEmitter
     debug "Listening at port #{port}"
 
 
-  # registers the given service instance that just came online
-  register-client: (client) ~>
-    @client-registry.register-client client
+  # called when the HTTP subsystem emits a request for configuration data
+  handle-config-request: (response-stream) ->
+    @http-subsystem.send-configuration {configuration: @get-config!, response-stream}
+
+
+  # called when a new message from a service instance arrives
+  handle-incoming-message: ({message, websocket}) ->
+    | message.name is \exocom.register-service  =>  @register-client {message, websocket}
+    | @has-invalid-sender message               =>  @logger.error "Service '#{message.sender}' is not allowed to broadcast the message '#{message.name}'"
+    | otherwise                                 =>  @send-message message
+
+
+  # called when a new service instance registers with this Exocom instance
+  register-client: ({message, websocket}) ->
+    @client-registry.register-client message.payload
+    @websocket.register-client {client-name: message.payload.client-name, websocket}
 
 
   # sends the given message to all subscribers of it.
@@ -66,7 +88,7 @@ class ExoCom extends EventEmitter
     message-data.timestamp = nanoseconds process.hrtime!
     # determine the subscribers
     subscribers = @client-registry.subscribers-for public-message-name
-    return 'no receivers' unless subscribers
+    return @logger.warning "No receivers for message '#{message-data.name}' registered" unless subscribers
     subscriber-names = [subscriber.client-name for subscriber in subscribers]
 
     # calculate a message's response time if it is a reply

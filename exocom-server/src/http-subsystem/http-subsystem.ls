@@ -15,13 +15,12 @@ debug = require('debug')('exocom:http-subsystem')
 # - online: when it listens at the given port
 class HttpSubsystem extends EventEmitter
 
-  # param @exocom: for making calls into the core
-  ({@exocom, @logger}) ->
+  ({@logger}) ->
 
     # the Express instance that implements the HTTP interface
     @app = express!
       ..use body-parser.json!
-      ..get  '/config.json', @_on-config-request
+      ..get  '/config.json', (req, res) ~> @emit 'config-request', res
 
     # the port at which the HTTP server listens
     @port = null
@@ -50,10 +49,10 @@ class HttpSubsystem extends EventEmitter
         @emit 'online', @port
 
 
-
-  _on-config-request: (req, res) ~>
-    res
-      ..send @exocom.get-config!
+  # sends the given configuration via the given http-response
+  send-configuration: ({configuration, response-stream}) ->
+    response-stream
+      ..send configuration
       ..end!
 
 

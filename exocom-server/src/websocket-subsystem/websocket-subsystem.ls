@@ -15,7 +15,7 @@ debug = require('debug')('exocom:websocket-subsystem')
 # - warn: for non-critical issues
 class WebSocketSubsystem extends EventEmitter
 
-  ({@exocom, @logger} = {}) ->
+  ({@logger} = {}) ->
     @server = null
     @port = null
 
@@ -41,10 +41,6 @@ class WebSocketSubsystem extends EventEmitter
     delete @sockets[client-name]
 
 
-  invalid-sender: (sender, message-name) ->
-    !@exocom.client-registry.can-send sender, message-name
-
-
   # Listens at the given port
   # by hooking into the given http server instance
   listen: (@port, server) ->
@@ -58,44 +54,17 @@ class WebSocketSubsystem extends EventEmitter
 
   # called when a new service instance connects
   on-connection: (websocket) ~>
-    websocket.on 'message', (message) ~>
-      @on-message message, websocket
-
-
-  # called when a new message from a service instance arrives
-  on-message: (message-text, websocket) ->
-    message = JSON.parse(message-text)
-    @_log-received message
-    switch
-      | message.name is \exocom.register-service      =>  @on-service-instance-registration message.payload, websocket
-      | @invalid-sender message.sender, message.name  =>  @logger.error "Service '#{message.sender}' is not allowed to broadcast the message '#{message.name}'"
-      | otherwise                                     =>  @on-normal-message-receive message
-
-
-  # called when a service instance sends a normal message
-  # i.e. not a registration message
-  on-normal-message-receive: (message) ->
-    switch (result = @exocom.send-message message)
-      | 'success'             =>
-      | 'no receivers'        =>  @logger.warning "No receivers for message '#{message.name}' registered"
-      | 'missing request id'  =>  @logger.error 'missing request id'
-      | 'unknown message'     =>  @logger.error "unknown message: '#{request-data.message}'"
-      | _                     =>  @logger.error "unknown result code: '#{@result}'"
-
-
-  # called when a service instance registers itself with Exocom
-  on-service-instance-registration: (payload, websocket) ->
-    @exocom.register-client payload, websocket
-    @register-client client-name: payload.client-name, websocket: websocket
+    websocket.on 'message', (message-text) ~>
+      message = JSON.parse message-text
+      @_log-received message
+      @emit 'message', {message, websocket}
 
 
   # Registers the given websocket as a connection
   # to an instance of the service with the given name
   register-client: ({client-name, websocket}) ->
     @sockets[client-name] = websocket
-      ..on 'close', ~>
-        @exocom.deregister-client client-name
-        @deregister-client client-name
+      ..on 'close', ~> @emit 'deregister-client', client-name
 
 
   send-message-to-service: (message, service) ->

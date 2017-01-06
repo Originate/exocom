@@ -15,8 +15,8 @@ class ClientRegistry
     # the format is:
     # {
     #   'role 1':
-    #     receives: ['message 1', 'message 2']
-    #     sends: ['message 3', 'message 4']
+    #     receives: ['message 1 name', 'message 2 name']
+    #     sends: ['message 3 name', 'message 4 name']
     #     internal-namespace: 'my internal namespace'
     #   'role 2':
     #     ...
@@ -60,8 +60,8 @@ class ClientRegistry
 
 
   # returns whether the given sender is allowed to send messages with the given name
-  can-send: (sender, message-name) ->
-    @routing[sender].sends |> (.includes message-name)
+  can-send: (sender-name, message-name) ->
+    @routing[sender-name].sends |> (.includes message-name)
 
 
   # Returns the external name for the given message sent by the given service,

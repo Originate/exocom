@@ -99,19 +99,19 @@ class WebSocketSubsystem extends EventEmitter
       @send-message-to-service message-data, service
 
 
-  send-message-to-service: (message-data, service) ->
-    internal-message-name = @_internal-message-name message-data.name, for: service
+  send-message-to-service: (message, service) ->
+    internal-message-name = @_internal-message-name message.name, for: service
     request-data =
       name: internal-message-name
-      id: message-data.id
-      payload: message-data.payload
-      timestamp: message-data.timestamp
-    if message-data.response-to
-      request-data.response-time = message-data.response-time
-      request-data.response-to = message-data.response-to
-    @_log-sending message-data, service
+      id: message.id
+      payload: message.payload
+      timestamp: message.timestamp
+    if message.response-to
+      request-data.response-time = message.response-time
+      request-data.response-to = message.response-to
+    @_log-sending message, service
     @sockets[service.client-name].send JSON.stringify request-data
-    result = {[key, value] for key, value of message-data}
+    result = {[key, value] for key, value of message}
     result.name = internal-message-name
     result
 
@@ -148,8 +148,8 @@ class WebSocketSubsystem extends EventEmitter
       | otherwise                                       => "#{service.internal-namespace}.#{message-parts[1]}"
 
 
-  invalid-sender: (sender, message) ->
-    !@exocom.client-registry.can-send sender, message
+  invalid-sender: (sender, message-name) ->
+    !@exocom.client-registry.can-send sender, message-name
 
 
 

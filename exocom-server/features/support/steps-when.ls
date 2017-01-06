@@ -45,5 +45,5 @@ module.exports = ->
 
 
   @When /^the "([^"]+)" service sends "([^"]*)" in reply to "([^"]*)"$/, (service-name, reply-message, response-to, done) ->
-    @last-sent-message = reply-message
+    @last-sent-message-name = reply-message
     @service-sends-reply {service-name, message-name: reply-message, response-to}, done

@@ -59,26 +59,26 @@ World = !->
     done!
 
 
-  @verify-abort-with-message = (message, done) ->
-    @process.wait message, ~>
+  @verify-abort-with-message = (text, done) ->
+    @process.wait text, ~>
       wait-until (~> @process.ended), done
 
 
-  @verify-exocom-broadcasted-message = ({message, sender, receivers}, done) ->
-    @process.wait "#{sender} is broadcasting '#{message}' to the #{receivers.join ', '}", done
+  @verify-exocom-broadcasted-message = ({message-name, sender, receivers}, done) ->
+    @process.wait "#{sender} is broadcasting '#{message-name}' to the #{receivers.join ', '}", done
 
 
-  @verify-exocom-signaled-string = (message, done) ->
-    [...message-main, response-time-msg] = message.split '  '
-    @process.wait "#{message-main.join '  '}  ", done
+  @verify-exocom-signaled-string = (text, done) ->
+    [...main-parts, response-time-msg] = text.split '  '
+    @process.wait "#{main-parts.join '  '}  ", done
 
 
-  @verify-exocom-received-message = (message, done) ->
-    @process.wait "broadcasting '#{message}'", done
+  @verify-exocom-received-message = (message-name, done) ->
+    @process.wait "broadcasting '#{message-name}'", done
 
 
-  @verify-exocom-received-reply = (message, done) ->
-    @process.wait "broadcasting '#{message}'", done
+  @verify-exocom-received-reply = (message-name, done) ->
+    @process.wait "broadcasting '#{message-name}'", done
 
 
   @verify-routing-setup = (expected-routing, done) ->
@@ -93,7 +93,7 @@ World = !->
     messages.push "WebSocket listener online at port #{port}" if port
     messages.push "HTTP service online at port #{port}" if port
     async.each messages,
-               ((message, cb) ~> @process.wait message, cb),
+               ((text, cb) ~> @process.wait text, cb),
                done
 
 

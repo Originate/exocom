@@ -47,7 +47,7 @@ module.exports = ->
       @existing-server = http.create-server(handler).listen port, done
 
 
-  @Given /^the "([^"]+)" service sends "([^"]*)" with id "([^"]*)"$/, (service, message, id, done) ->
-    @last-sent-message = message
+  @Given /^the "([^"]+)" service sends "([^"]*)" with id "([^"]*)"$/, (service-name, message-name, id, done) ->
+    @last-sent-message-name = message-name
     @last-sent-message-id = id
-    @service-sends-message {service, message, id}, done
+    @service-sends-message {service-name, message-name, id}, done

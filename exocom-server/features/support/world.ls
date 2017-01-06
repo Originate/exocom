@@ -59,7 +59,7 @@ World = !->
     done!
 
 
-  @verify-abort-with-message = (text, done) ->
+  @verify-abort-with-notification = (text, done) ->
     @process.wait text, ~>
       wait-until (~> @process.ended), done
 

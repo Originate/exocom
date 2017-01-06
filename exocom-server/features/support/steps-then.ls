@@ -45,7 +45,7 @@ module.exports = ->
 
 
   @Then /^it aborts with the message "([^"]*)"$/, (text, done) ->
-    @verify-abort-with-message text, done
+    @verify-abort-with-notification text, done
 
 
   @Then /^it has this routing table:$/, (table, done) ->

@@ -12,7 +12,7 @@ class ExoRelay extends EventEmitter
   (@config) ->
     @config?.exocom-host or throw new Error 'ExoCom host not provided to Exorelay'
     @config?.exocom-port or throw new Error 'ExoCom port not provided to Exorelay'
-    @config?.service-name or throw new Error 'Service name not provided to Exorelay'
+    @config?.role or throw new Error 'Role not provided to Exorelay'
 
     # manages the request handlers for incoming messages
     @message-handler = new HandlerManager!
@@ -50,7 +50,7 @@ class ExoRelay extends EventEmitter
 
   _send-routing-config: ~>
     @send 'exocom.register-service' do
-      name: @config.service-name
+      name: @config.role
     @emit 'online', @websocket-connector.exocom-port
 
 

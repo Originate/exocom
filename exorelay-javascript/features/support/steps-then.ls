@@ -15,7 +15,7 @@ module.exports = ->
   @Then /^ExoRelay connects to ExoCom$/ (done) ->
     @exo-relay
       ..connect!
-    wait-until (~> @exocom.service-sockets[@service-name]), 1, ~>
+    wait-until (~> @exocom.service-sockets[@role]), 1, ~>
       done!
 
 
@@ -50,7 +50,7 @@ module.exports = ->
 
   @Then /^it connects to the given ExoCom host and port$/, (done) ->
     @exocom
-      ..send service: @service-name, name: '__status'
+      ..send service: @role, name: '__status'
     current-length = @exocom.received-messages.length
     wait-until (~> @exocom.received-messages.length > current-length), 1, ~>
       if @exocom.received-messages |> any (.name is "__status-ok")

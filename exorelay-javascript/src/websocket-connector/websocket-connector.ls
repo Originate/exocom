@@ -16,7 +16,7 @@ debug = require('debug')('exorelay:websocket-listener')
 # - error
 class WebSocketConnector extends EventEmitter
 
-  ({@exocom-host, @service-name, @exocom-port} = {}) ->
+  ({@exocom-host, @role, @exocom-port} = {}) ->
     @exocom-port = +@exocom-port
 
     # Contains the id of the most recently sent request (for testing)
@@ -47,7 +47,7 @@ class WebSocketConnector extends EventEmitter
     @_log-sending message-name, options
     request-data =
       name: message-name
-      sender: @service-name
+      sender: @role
       id: uuid.v1!
     request-data.payload = payload if payload?
     request-data.response-to = options.response-to if options.response-to

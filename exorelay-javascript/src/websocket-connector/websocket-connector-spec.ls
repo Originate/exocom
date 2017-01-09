@@ -7,7 +7,7 @@ require! {
 describe 'WebSocketConnector', ->
 
   before-each ->
-    @websocket-connector = new WebSocketConnector exocom-host: 'localhost', exocom-port: 4100, service-name: 'test'
+    @websocket-connector = new WebSocketConnector exocom-host: 'localhost', exocom-port: 4100, role: 'test'
       ..connect!
       ..on 'error', (@error) ~>
 

@@ -19,8 +19,8 @@ module.exports = ->
       done!
 
 
-  @When /^an ExoRelay instance running inside the "([^"]*)" service comes online$/ (@service-name, done) ->
-    @exo-relay = new ExoRelay {@service-name, @exocom-port, exocom-host: "localhost"}
+  @When /^an ExoRelay instance running inside the "([^"]*)" service comes online$/ (@role, done) ->
+    @exo-relay = new ExoRelay {@role, @exocom-port, exocom-host: "localhost"}
       ..connect!
       ..on 'online', ~>
         @message-id = @exo-relay.websocket-connector.last-sent-id
@@ -39,7 +39,7 @@ module.exports = ->
     @exo-relay = new ExoRelay do
       exocom-host: host
       exocom-port: port
-      service-name: 'test-service'
+      role: 'test-service'
 
 
   @When /^I create an ExoRelay instance .*: "([^"]*)"$/, (code) ->
@@ -123,7 +123,7 @@ module.exports = ->
     try
       @exo-relay = new ExoRelay do
         exocom-host: 'localhost'
-        service-name: 'test-service'
+        role: 'test-service'
     catch
       @error = e.message
 
@@ -132,7 +132,7 @@ module.exports = ->
     try
       @exo-relay = new ExoRelay do
         exocom-port: 4100
-        service-name: 'test-service'
+        role: 'test-service'
     catch
       @error = e.message
 

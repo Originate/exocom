@@ -10,12 +10,12 @@ require! {
 # Provides steps for end-to-end testing of the service as a stand-alone binary
 CliWorld = !->
 
-  @create-exoservice-instance = ({service-name, exocom-port}, done) ->
+  @create-exoservice-instance = ({role, exocom-port}, done) ->
     command = "#{process.cwd!}/bin/exo-js"
     if process.platform is 'win32' then command += '.cmd'
     @process = new ObservableProcess(command,
-                                     env: {EXOCOM_PORT: exocom-port, SERVICE_NAME: service-name},
-                                     cwd: path.join(process.cwd!, 'features', 'example-services', service-name),
+                                     env: {EXOCOM_PORT: exocom-port, ROLE: role},
+                                     cwd: path.join(process.cwd!, 'features', 'example-services', role),
                                      verbose: yes,
                                      stdout: process.stdout,
                                      stderr: process.stderr)

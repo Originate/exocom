@@ -8,7 +8,7 @@ Feature: Defining the port at which the server listens
   Rules:
   - call "exo-js run" in the directory of an Exosphere service to start up that service
   - provide the ExoCom address via the environment variables EXOCOM_HOST and EXOCOM_PORT
-  - provide the service name via the environment variable SERVICE_NAME
+  - provide the service name via the environment variable ROLE
 
 
   Background:

@@ -32,12 +32,12 @@ module.exports = ->
     wait-until (~> @exocom.received-messages.length), done
 
 
-  @Then /^it can run the "([^"]*)" service$/, (@service-name, done) ->
-    @create-exoservice-instance {@service-name, @exocom-port}, done
+  @Then /^it can run the "([^"]*)" service$/, (@role, done) ->
+    @create-exoservice-instance {@role, @exocom-port}, done
 
 
   @Then /^it connects to the ExoCom instance$/, (done) ->
-    @exocom.send service: @service-name, name: '__status' , id: '123'
+    @exocom.send service: @role, name: '__status' , id: '123'
     wait-until (~> @exocom.received-messages[0]), 1, ~>
       if @exocom.received-messages[0].name is "__status-ok"
         done!
@@ -46,7 +46,7 @@ module.exports = ->
   @Then /^it runs the "([^"]*)" hook$/, (hook-name, done) ->
     @exocom
       ..reset!
-      ..send name: 'which-hooks-ran', service: @service-name
+      ..send name: 'which-hooks-ran', service: @role
       ..on-receive ~>
         expect(@exocom.received-messages[0].payload).to.eql ['before-all']
         done!

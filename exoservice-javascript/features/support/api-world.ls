@@ -9,12 +9,12 @@ require! {
 # Provides steps for testing against the JS API
 ApiWorld = !->
 
-  @create-exoservice-instance = ({service-name, exocom-port}, done) ->
+  @create-exoservice-instance = ({role, exocom-port}, done) ->
     @exoservice = new ExoService {
-      root: path.join('features', 'example-services', service-name)
+      root: path.join('features', 'example-services', role)
       exocom-host: "localhost"
       exocom-port
-      service-name
+      role
       }
       ..on 'online', (port) -> done!
       ..connect!

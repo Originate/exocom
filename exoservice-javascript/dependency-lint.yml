@@ -19,6 +19,9 @@ ignoreErrors:
     - o-tools
     - o-tools-livescript
     - tertestrial
+    - json-loader
+    - livescript-loader
+    - webpack
 
 requiredModules:
   files:

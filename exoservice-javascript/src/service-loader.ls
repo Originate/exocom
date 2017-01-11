@@ -11,7 +11,7 @@ require! {
 
 service-loader = (root = '') ->
   server-file-path = _find-server-path root
-  handlers = require server-file-path
+  handlers = eval('require')(server-file-path) # 'eval' used to hide require statement from Webpack
   if not handlers.before-all? then handlers.before-all = -> it!
   {handlers}
 

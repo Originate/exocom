@@ -8,8 +8,8 @@
 
 ## Development
 
-* the CLI runs against the compiled JS, not the source LS,
-  so run `watch` in a separate terminal to auto-compile changes
+* the CLI runs against the Webpack build of exoservice, not the source LS,
+  so run `webpack --watch` in a separate terminal to auto-compile changes
 
 
 ## Testing

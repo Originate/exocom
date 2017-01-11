@@ -1,6 +1,6 @@
 require! {
   'events' : {EventEmitter}
-  'exorelay' : ExoRelay
+  '../../exorelay-javascript' : ExoRelay
   'nitroglycerin' : N
   'rails-delegate' : {delegate, delegate-event}
   './service-loader'

@@ -46,7 +46,7 @@
     "npm-shrinkwrap.json"
   ],
   "license": "ISC",
-  "main": "dist/exo-service.js",
+  "main": "dist/exo-js.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Originate/exoservice-js.git"

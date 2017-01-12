@@ -11,14 +11,15 @@ fs.readdir-sync('node_modules')
   .for-each((mod) -> node-modules[mod] = 'commonjs ' + mod)
 
 module.exports = { 
-  entry: ['./src/exo-service']
+  entry:
+    'exo-js': './src/exo-service.ls'
   target: 'node'
   node:
     __filename: yes
     __dirname: yes
   output:
     path: path.join process.cwd!, 'dist'
-    filename: 'exo-js.js'
+    filename: '[name].js'
     libraryTarget: 'commonjs2'
     library: 'ExoService'
   externals: node-modules

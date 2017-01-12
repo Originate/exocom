@@ -3,7 +3,7 @@ require! {
   'fs'
   'js-yaml' : yaml
   'path'
-  './exo-service' : ExoService
+  '../dist/exo-js' : ExoService
   '../package.json' : exo-js-data
 }
 

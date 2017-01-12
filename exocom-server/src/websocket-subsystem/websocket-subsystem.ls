@@ -2,6 +2,7 @@ require! {
   'chalk' : {cyan}
   'events' : {EventEmitter}
   '../message-cache/message-cache' : MessageCache
+  '../message-translator/message-translator' : MessageTranslator
   'ws' : {Server: WebSocketServer}
 }
 debug = require('debug')('exocom:websocket-subsystem')
@@ -16,6 +17,7 @@ debug = require('debug')('exocom:websocket-subsystem')
 class WebSocketSubsystem extends EventEmitter
 
   ({@logger} = {}) ->
+    @message-translator = new MessageTranslator
     @server = null
     @port = null
 
@@ -68,7 +70,7 @@ class WebSocketSubsystem extends EventEmitter
 
 
   send-message-to-service: (message, service) ->
-    internal-message-name = @_internal-message-name message.name, for: service
+    internal-message-name = @message-translator.internal-message-name message.name, for: service
     request-data =
       name: internal-message-name
       id: message.id
@@ -87,17 +89,6 @@ class WebSocketSubsystem extends EventEmitter
   send-message-to-services: (message-data, services) ->
     for service in services
       @send-message-to-service message-data, service
-
-
-
-  # Translates outgoing message into one that the receiving service will understand
-  _internal-message-name: (message-name, {for: service}) ->
-    message-parts = message-name.split '.'
-    switch
-      | !service.internal-namespace                     =>  message-name
-      | message-parts.length is 1                       =>  message-name
-      | message-parts[0] is service.internal-namespace  =>  message-name
-      | otherwise                                       => "#{service.internal-namespace}.#{message-parts[1]}"
 
 
   _log-received: (message) ->

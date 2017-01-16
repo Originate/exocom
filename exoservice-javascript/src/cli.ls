@@ -12,7 +12,6 @@ console.log dim "Exosphere Node.js service runner #{exo-js-data.version}\n"
 service-data = yaml.safe-load fs.read-file-sync(path.resolve('./service.yml'), 'utf8')
 console.log "Running #{green process.env.ROLE}\n"
 
-
 new ExoService parse-options!
   ..on 'online', (port) ->
     console.log dim "Ctrl-C to stop"

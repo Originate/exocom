@@ -1,11 +1,9 @@
 require! {
   'events' : {EventEmitter}
   '../../exorelay-javascript' : ExoRelay
-  'nitroglycerin' : N
   'rails-delegate' : {delegate, delegate-event}
   './service-loader'
 }
-debug = require('debug')('exocom:cli')
 
 
 class ExoService extends EventEmitter

@@ -37,7 +37,6 @@ class ClientRegistry
     @subscriptions = new SubscriptionManager @routing
 
 
-
   # returns whether the given sender is allowed to send messages with the given name
   can-send: (sender-name, message-name) ->
     @routing[sender-name].sends |> (.includes message-name)

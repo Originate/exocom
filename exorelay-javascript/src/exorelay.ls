@@ -50,7 +50,7 @@ class ExoRelay extends EventEmitter
 
   _send-routing-config: ~>
     @send 'exocom.register-service' do
-      name: @config.role
+      client-name: @config.role
     @emit 'online', @websocket-connector.exocom-port
 
 

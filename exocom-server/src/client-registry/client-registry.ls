@@ -77,7 +77,7 @@ class ClientRegistry
   _parse-service-routes: (service-routes) ->
     result = {}
     for service-route in jsonic(service-routes)
-      result[service-route.role] =
+      result[service-route.service-type] =
         receives: service-route.receives
         sends: service-route.sends
         internal-namespace: service-route.namespace

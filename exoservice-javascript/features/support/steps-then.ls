@@ -33,7 +33,7 @@ module.exports = ->
 
 
   @Then /^it can run the "([^"]*)" service$/, (@role, done) ->
-    @create-exoservice-instance {@role, @exocom-port}, done
+    @create-exoservice-instance {@role, @exocom-port, service-type: @role}, done
 
 
   @Then /^it connects to the ExoCom instance$/, (done) ->

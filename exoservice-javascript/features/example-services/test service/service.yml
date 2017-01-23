@@ -1,3 +1,3 @@
-name: test service
+type: test service
 description: larger service setup
 version: 1.0.0

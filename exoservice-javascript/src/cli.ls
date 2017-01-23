@@ -25,4 +25,5 @@ function parse-options
   exocom-host: process.env.EXOCOM_HOST ? "localhost"
   exocom-port: process.env.EXOCOM_PORT
   role: process.env.ROLE
+  service-type: service-data.type
   internal-namespace: service-data.namespace

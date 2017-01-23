@@ -8,11 +8,12 @@ require! {
 
 class ExoService extends EventEmitter
 
-  ({@root, exocom-host, exocom-port, role, internal-namespace}) ->
+  ({@root, exocom-host, exocom-port, role, service-type, internal-namespace}) ->
     @exo-relay = new ExoRelay {
       exocom-host
       exocom-port
       role
+      service-type
       internal-namespace
     }
     delegate \close, from: @, to: @exo-relay

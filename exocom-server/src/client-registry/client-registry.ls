@@ -60,12 +60,12 @@ class ClientRegistry
 
   # registers the given service instance that just came online
   register-client: (client) ->
-    @clients[client.client-name] =
-      client-name: client.client-name
+    @clients[client.service-type] =
+      client-name: client.service-type
       service-type: client.client-name
-      internal-namespace: @routing[client.client-name].internal-namespace
+      internal-namespace: @routing[client.service-type].internal-namespace
 
-    @subscriptions.add-all {client.client-name, service-type: client.client-name}
+    @subscriptions.add-all {client.client-name, service-type: client.service-type}
 
 
   # Returns the clients that are subscribed to the given message

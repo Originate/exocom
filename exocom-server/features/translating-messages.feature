@@ -15,12 +15,12 @@ Feature: Translating messages
     """
     [
       {
-        "role": "web",
+        "serviceType": "web",
         "receives": ["tweets.created"],
         "sends": ["tweets.create"],
       },
       {
-        "role": "tweets",
+        "serviceType": "tweets",
         "receives": ["text-snippets.create"],
         "sends": ["text-snippets.created"],
         "namespace": "text-snippets"

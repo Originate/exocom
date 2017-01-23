@@ -13,12 +13,12 @@ Feature: Broadcasting messages
     """
     [
       {
-        "role": "web",
+        "serviceType"": "web",
         "receives": ["users.created"],
         "sends": ["users.create", "users.list"]
       },
       {
-        "role": "users",
+        "serviceType": "users",
         "receives": ["mongo.create"],
         "sends": ["mongo.created"],
         "namespace": "mongo"

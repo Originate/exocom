@@ -13,7 +13,7 @@ module.exports = ->
 
 
   @Given /^a running "([^"]*)" instance$/, (client-name, done) ->
-    @create-mock-service-at-port {client-name, port: @exocom-port}, ->
+    @create-mock-service-at-port {client-name, service-type: client-name, port: @exocom-port}, ->
       wait 200, done
 
 

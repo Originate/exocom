@@ -16,11 +16,13 @@ module.exports = ->
 
 
   @Given /^a new ExoRelay instance connecting to port (\d+)$/ (@exocom-port) ->
-    @exo-relay = new ExoRelay {exocom-host: 'localhost', @exocom-port, role: @role = 'test-service'}
+    @role = 'test-service'
+    @exo-relay = new ExoRelay {exocom-host: 'localhost', @exocom-port, @role, service-type: @role}
 
 
   @Given /^an ExoRelay instance$/, (done) ->
-    @exo-relay = new ExoRelay {exocom-host: 'localhost', @exocom-port, role: @role = \test-service}
+    @role = 'test-service'
+    @exo-relay = new ExoRelay {exocom-host: 'localhost', @exocom-port, @role, service-type: @role}
       ..connect!
       ..on 'online', ~>
         wait-until (~> @exocom.received-messages.length), 10, ~>
@@ -31,7 +33,8 @@ module.exports = ->
 
 
   @Given /^an ExoRelay instance called "([^"]*)"$/, (instance-name, done) ->
-    @exo-relay = new ExoRelay {exocom-host: 'localhost', @exocom-port, role: @role = \test-service}
+    @role = 'test-service'
+    @exo-relay = new ExoRelay {exocom-host: 'localhost', @exocom-port, @role, service-type: @role}
       ..connect!
       ..on 'online', ~>
         wait-until (~> @exocom.received-messages.length), 10, ~>
@@ -42,7 +45,7 @@ module.exports = ->
 
 
   @Given /^an ExoRelay instance called "([^"]*)" running inside the "([^"]*)" service$/, (instance-name, @role, done) ->
-    @exo-relay = new ExoRelay {exocom-host: 'localhost', @role, @exocom-port}
+    @exo-relay = new ExoRelay {exocom-host: 'localhost', @role, @exocom-port, service-type: @role}
       ..connect!
       ..on 'online', ~>
         wait-until (~> @exocom.received-messages.length), 10, ~>

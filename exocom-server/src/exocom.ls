@@ -44,7 +44,7 @@ class ExoCom extends EventEmitter
   get-config: ~>
     {
       clients: @client-registry.clients
-      routes: @client-registry.routes
+      routes: @client-registry.routing
     }
 
 

@@ -13,7 +13,8 @@ executedModules:
 ignoreErrors:
   missing: []
   shouldBeDependency: []
-  shouldBeDevDependency: []
+  shouldBeDevDependency:
+    - wait
   unused:
     - cucumber
     - o-tools
@@ -22,6 +23,9 @@ ignoreErrors:
     - json-loader
     - livescript-loader
     - webpack
+    - debug
+    - uuid
+    - ws
 
 requiredModules:
   files:

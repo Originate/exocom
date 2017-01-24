@@ -8,7 +8,7 @@ debug = require('debug')('mock-service')
 # that can send, receive, and track messages using WebSockets.
 class MockService
 
-  ({@port, @client-name, @service-type, @namespace} = {}) ->
+  ({@port, @client-name, @namespace} = {}) ->
     @received-messages = []
 
 
@@ -19,10 +19,7 @@ class MockService
 
 
   connect: ({payload}, done) ~>
-    payload ?= {
-      @client-name
-      @service-type
-    }
+    payload ?= {@client-name}
     @socket = new WebSocket "ws://localhost:#{@port}/services"
       ..on 'message', @_on-socket-message
       ..on 'error', @_on-socket-error

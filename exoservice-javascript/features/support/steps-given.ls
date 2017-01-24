@@ -21,7 +21,7 @@ module.exports = ->
 
 
   @Given /^an instance of the "([^"]*)" service$/, (@role, done) ->
-    @create-exoservice-instance {@role, @exocom-port, service-type: @role}, ~>
+    @create-exoservice-instance {@role, @exocom-port}, ~>
       @remove-register-service-message @exocom, done
 
 

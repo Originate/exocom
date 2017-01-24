@@ -25,8 +25,8 @@ World = !->
       ..wait "WebSocket listener online at port #{@port}", done
 
 
-  @create-mock-service-at-port = ({client-name, service-type, port, namespace}, done) ->
-    (@service-mocks or= {})[client-name] = new MockService {port, client-name, service-type, namespace}
+  @create-mock-service-at-port = ({client-name, port, namespace}, done) ->
+    (@service-mocks or= {})[client-name] = new MockService {port, client-name, namespace}
     @service-mocks[client-name].connect {}, ->
       wait 200, done
 

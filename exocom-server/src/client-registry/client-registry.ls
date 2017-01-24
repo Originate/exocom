@@ -60,12 +60,12 @@ class ClientRegistry
 
   # registers the given service instance that just came online
   register-client: (client) ->
-    @clients[client.service-type] =
-      client-name: client.service-type
+    @clients[client.client-name] =
+      client-name: client.client-name
       service-type: client.client-name
-      internal-namespace: @routing[client.service-type].internal-namespace
+      internal-namespace: @routing[client.client-name].internal-namespace
 
-    @subscriptions.add-all {client.client-name, service-type: client.service-type}
+    @subscriptions.add-all {client.client-name, service-type: client.client-name}
 
 
   # Returns the clients that are subscribed to the given message
@@ -77,7 +77,7 @@ class ClientRegistry
   _parse-service-routes: (service-routes) ->
     result = {}
     for service-route in jsonic(service-routes)
-      result[service-route.service-type] =
+      result[service-route.role] =
         receives: service-route.receives
         sends: service-route.sends
         internal-namespace: service-route.namespace

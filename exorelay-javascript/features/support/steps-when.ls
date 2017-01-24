@@ -20,7 +20,7 @@ module.exports = ->
 
 
   @When /^an ExoRelay instance running inside the "([^"]*)" service comes online$/ (@role, done) ->
-    @exo-relay = new ExoRelay {@role, @exocom-port, exocom-host: "localhost", service-type: @role}
+    @exo-relay = new ExoRelay {@role, @exocom-port, exocom-host: "localhost"}
       ..connect!
       ..on 'online', ~>
         @message-id = @exo-relay.websocket-connector.last-sent-id
@@ -40,7 +40,6 @@ module.exports = ->
       exocom-host: host
       exocom-port: port
       role: 'test-service'
-      service-type: 'test-service'
 
 
   @When /^I create an ExoRelay instance .*: "([^"]*)"$/, (code) ->

@@ -1,4 +1,4 @@
-before-all: ""
+before-all: "exorelay-javascript"
 after-all: ""
 always: ""
 never: ""

@@ -2,7 +2,7 @@
 set -e
 
 node_modules/o-tools-livescript/bin/build
-webpack
+bin/build
 node_modules/o-tools/bin/lint
 bin/cuc-api --format pretty
 bin/cuc-cli --format pretty

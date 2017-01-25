@@ -17,7 +17,6 @@ before_install:
   - git checkout $TRAVIS_BRANCH
   - curl --output morula --location --fail https://github.com/Originate/morula/releases/download/0.1/morula-linux-amd64 && chmod +x morula
   - npm install -g yarn
-  - (cd exorelay-javascript && bin/setup && node_modules/.bin/build)
 
 
 install:

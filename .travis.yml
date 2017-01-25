@@ -21,13 +21,11 @@ before_install:
 
 
 install:
-  - 'if [ "$TRAVIS_BRANCH" == "master" ]; then ./morula all bin/setup; fi'
-  - 'if [ "$TRAVIS_BRANCH" != "master" ]; then ./morula changed bin/setup; fi'
+  - ./morula all bin/setup
 
 
 script:
-  - 'if [ "${TRAVIS_BRANCH}" == "master" ]; then ./morula all bin/spec_ci; else echo skipping; fi'
-  - 'if [ "${TRAVIS_BRANCH}" != "master" ]; then ./morula changed bin/spec_ci; else echo skipping; fi'
+  - ./morula all bin/spec_ci
 
 
 notifications:

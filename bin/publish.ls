@@ -6,7 +6,7 @@ require! {
   'shelljs/global'
 }
 
-{name, version} = jsonfile.readFileSync 'package.json'
+{name, version} = jsonfile.readFileSync './exocom-server/package.json' # not sure about this, using exocom-server b/c there is no root package.json
 
 if process.argv.length != 3
   display-help!
@@ -32,27 +32,25 @@ inquirer.prompt([question]).then (answer) ->
     process.exit!
 
   console.log!
-  check-exocom-dependencies!
+
+  # # Ensure no open files
+  # open-files = exec "git status --porcelain", {silent: true}
+  # if open-files then console.log red 'Please commit all files before releasing' ; process.exit 1
+  #
+  # # Ensure on master
+  # current-branch = exec "git rev-parse --abbrev-ref HEAD", {silent: true}
+  # if current-branch.trim! isnt 'master' then console.log red 'You must be on the master branch to publish' ; process.exit 1
+
   check-npm-dependencies!
-  run-tests!
+  # run-tests!
+  build-subprojects!
 
 
 published-directories =
-  'cli'
-  'exo-add'
-  'exo-clone'
-  'exo-create'
-  'exo-deploy'
-  'exo-lint'
-  'exo-run'
-  'exo-setup'
-  'exo-sync'
-  'exo-test'
-  'exosphere-shared'
-
-
-function check-exocom-dependencies
-  console.log \exocom
+  'exocom-mock-javascript'
+  'exocom-server'
+  'exorelay-javascript'
+  'exoservice-javascript'
 
 
 function check-npm-dependencies
@@ -67,12 +65,21 @@ function check-npm-dependencies
 
 
 function run-tests
-  console.log cyan "Running tests in all subprojects..."
+  console.log cyan "Running tests in subprojects..."
   run-command-in-subdirs do
     command: './bin/spec'
     command-message: 'Running tests'
     passing-message: 'tests passing'
     failing-message: 'tests failing'
+  console.log '\n'
+
+function build-subprojects
+  console.log cyan "Building subprojects..."
+  run-command-in-subdirs do
+    command: './bin/build'
+    command-message: 'Building'
+    passing-message: 'built'
+    failing-message: 'could not be built'
   console.log '\n'
 
 
@@ -88,5 +95,5 @@ function run-command-in-subdirs {command, command-message, passing-message, fail
 
 
 function display-help
-  console.log "\nUsage:\n\n  #{bold 'publish <patch|minor|major>'}\n" #update depending on how publish script is called
+  console.log "\nUsage:\n\n  #{bold 'publish-exocom <patch|minor|major>'}\n"
   process.exit 1

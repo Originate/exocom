@@ -25,7 +25,7 @@
     "cucumber-snippets-livescript": "1.0.1",
     "dependency-lint": "4.3.1",
     "dim-console": "0.4.4",
-    "exocom-mock": "0.21.1",
+    "exocom-mock": "0.21.2",
     "exosphere-shared": "0.9.4",
     "json-loader": "0.5.4",
     "livescript-loader": "0.1.6",

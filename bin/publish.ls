@@ -42,8 +42,13 @@ inquirer.prompt([question]).then (answer) ->
   # if current-branch.trim! isnt 'master' then console.log red 'You must be on the master branch to publish' ; process.exit 1
 
   check-npm-dependencies!
+  # build-subprojects!
   # run-tests!
-  build-subprojects!
+  bump-version-numbers!
+  # push-version-numbers!
+  # publish-to-npm!
+  push-git-tag!
+  push-exocom-docker-image!
 
 
 published-directories =
@@ -54,44 +59,76 @@ published-directories =
 
 
 function check-npm-dependencies
-  console.log cyan "Checking npm dependencies..."
+  console.log green "Checking npm dependencies...\n"
   run-command-in-subdirs do
     command: './node_modules/.bin/update-check'
     command-message: 'Checking dependencies'
-    passing-message: 'dependencies up to date'
-    failing-message: 'dependencies not up to date'
-    options: silent:true
-  console.log '\n'
+  console.log!
 
 
 function run-tests
-  console.log cyan "Running tests in subprojects..."
+  console.log green "Running tests in subprojects...\n"
   run-command-in-subdirs do
     command: './bin/spec'
-    command-message: 'Running tests'
-    passing-message: 'tests passing'
-    failing-message: 'tests failing'
-  console.log '\n'
+    command-message: 'Running tests in'
+  console.log!
 
 function build-subprojects
-  console.log cyan "Building subprojects..."
+  console.log green "Building subprojects...\n"
   run-command-in-subdirs do
     command: './bin/build'
     command-message: 'Building'
-    passing-message: 'built'
-    failing-message: 'could not be built'
-  console.log '\n'
+  console.log!
 
 
-function run-command-in-subdirs {command, command-message, passing-message, failing-message, options}
+function bump-version-numbers
+  console.log green "Bumping subproject version numbers...\n"
+  run-command-in-subdirs do
+    command: "npm version #{level}"
+    command-message: "Bumping"
+  console.log!
+
+
+function push-version-numbers
+  console.log green "Pushing version numbers...\n"
+  run-command "git add -u && git commit -m #{target-version} && git push"
+  console.log!
+
+
+function publish-to-npm
+  console.log green "Publishing to npm...\n"
+  run-command-in-subdirs do
+    command: 'npm publish'
+    command-message: 'Publishing'
+  console.log!
+
+
+function push-git-tag
+  console.log green "Pushing git release tag...\n"
+  run-command 'git tag -a v#{target-version} && git push --tags'
+  console.log!
+
+
+function push-exocom-docker-image
+  console.log green "Pushing ExoCom Docker image to DockerHub...\n"
+  cd 'exocom-server'
+  run-command "docker build --no-cache -t originate/exocom:#{target-version}"
+  run-command "docker push originate/exocom:#{target-version}"
+  cd '..'
+
+
+function run-command command
+  if exec(command).code > 0 then process.exit 1
+
+
+function run-command-in-subdirs {command, command-message}
   for directory in published-directories
-    console.log "  #{command-message} in subproject #{cyan directory}"
+    console.log "#{command-message} subproject #{cyan directory}"
     cd directory
-    if exec(command, options).code > 0
-      console.log red "    '#{directory}' #{failing-message}"
+    if exec(command).code > 0
       process.exit 1
-    console.log green "    '#{directory}' #{passing-message}"
     cd '..'
+    console.log!
 
 
 function display-help

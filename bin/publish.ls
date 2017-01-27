@@ -33,22 +33,23 @@ inquirer.prompt([question]).then (answer) ->
 
   console.log!
 
-  # # Ensure no open files
-  # open-files = exec "git status --porcelain", {silent: true}
-  # if open-files then console.log red 'Please commit all files before releasing' ; process.exit 1
-  #
-  # # Ensure on master
-  # current-branch = exec "git rev-parse --abbrev-ref HEAD", {silent: true}
-  # if current-branch.trim! isnt 'master' then console.log red 'You must be on the master branch to publish' ; process.exit 1
+  # Ensure no open files
+  open-files = exec "git status --porcelain", {silent: true}
+  if open-files then console.log red 'Please commit all files before releasing' ; process.exit 1
+
+  # Ensure on master
+  current-branch = exec "git rev-parse --abbrev-ref HEAD", {silent: true}
+  if current-branch.trim! isnt 'master' then console.log red 'You must be on the master branch to publish' ; process.exit 1
 
   check-npm-dependencies!
-  # build-subprojects!
-  # run-tests!
+  build-subprojects!
+  run-tests!
   bump-version-numbers!
-  # push-version-numbers!
-  # publish-to-npm!
-  push-git-tag!
+  push-version-numbers!
+  publish-to-npm!
   push-exocom-docker-image!
+  push-git-tag!
+
 
 
 published-directories =
@@ -66,13 +67,6 @@ function check-npm-dependencies
   console.log!
 
 
-function run-tests
-  console.log green "Running tests in subprojects...\n"
-  run-command-in-subdirs do
-    command: './bin/spec'
-    command-message: 'Running tests in'
-  console.log!
-
 function build-subprojects
   console.log green "Building subprojects...\n"
   run-command-in-subdirs do
@@ -81,11 +75,19 @@ function build-subprojects
   console.log!
 
 
+function run-tests
+  console.log green "Running tests in subprojects...\n"
+  run-command-in-subdirs do
+    command: './bin/spec'
+    command-message: 'Running tests in'
+  console.log!
+
+
 function bump-version-numbers
   console.log green "Bumping subproject version numbers...\n"
   run-command-in-subdirs do
     command: "npm version #{level}"
-    command-message: "Bumping"
+    command-message: 'Bumping'
   console.log!
 
 
@@ -103,18 +105,18 @@ function publish-to-npm
   console.log!
 
 
-function push-git-tag
-  console.log green "Pushing git release tag...\n"
-  run-command 'git tag -a v#{target-version} && git push --tags'
-  console.log!
-
-
 function push-exocom-docker-image
-  console.log green "Pushing ExoCom Docker image to DockerHub...\n"
+  console.log green "Pushing ExoCom image to DockerHub...\n"
   cd 'exocom-server'
   run-command "docker build --no-cache -t originate/exocom:#{target-version}"
   run-command "docker push originate/exocom:#{target-version}"
   cd '..'
+
+
+function push-git-tag
+  console.log green "Pushing git release tag...\n"
+  run-command 'git tag -a v#{target-version} && git push --tags'
+  console.log!
 
 
 function run-command command

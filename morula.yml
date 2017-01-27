@@ -1,5 +1,5 @@
 before-all: "exorelay-javascript"
 after-all: ""
 always: ""
-never: ""
+never: "bin"
 color: true

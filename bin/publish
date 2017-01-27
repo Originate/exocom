@@ -1,6 +1,6 @@
 #!/usr/bin/env lsc
 require! {
-  'chalk' : {bold, red, cyan, yellow, green, dim}
+  'chalk' : {bold, red, cyan, yellow, green}
   'inquirer'
   'semver'
   'shelljs/global'
@@ -19,23 +19,23 @@ function main
   if process.argv.length != 3
     display-help!
 
-  level = process.argv[2]
-  display-help! if level in ['-h, --help']
+  @level = process.argv[2]
+  display-help! if @level in ['-h, --help']
 
-  target-version = get-target-version version, level
+  @target-version = get-target-version version, @level
 
   <- confirm-target-version
   ensure-no-open-files!
   ensure-on-master!
 
-  # check-npm-dependencies!
-  # build-subprojects!
-  # run-tests!
-  # bump-version-numbers!
-  # push-version-numbers!
-  # publish-to-npm!
-  # push-exocom-docker-image!
-  # push-git-tags!
+  check-npm-dependencies!
+  build-subprojects!
+  run-tests!
+  bump-version-numbers!
+  push-version-numbers!
+  publish-to-npm!
+  push-exocom-docker-image!
+  push-git-tags!
 
 
 function check-npm-dependencies
@@ -46,53 +46,45 @@ function check-npm-dependencies
 
 function build-subprojects
   console.log green "Building subprojects...\n"
-  run-command-in-subdirs do
-    command: './bin/build'
-    command-message: 'Building'
+  run-command-in-subdirs './bin/build'
   console.log!
 
 
 function run-tests
   console.log green "Running tests in subprojects...\n"
-  run-command-in-subdirs do
-    command: './bin/spec'
-    command-message: 'Running tests in'
+  run-command-in-subdirs './bin/spec'
   console.log!
 
 
 function bump-version-numbers
   console.log green "Bumping subproject version numbers...\n"
-  run-command-in-subdirs do
-    command: "npm version #{level}"
-    command-message: 'Bumping'
+  run-command-in-subdirs "npm version #{@level}"
   console.log!
 
 
 function push-version-numbers
   console.log green "Pushing version numbers...\n"
-  run-command "git add -u && git commit -m #{target-version} && git push"
+  run-command "git add -u && git commit -m #{@target-version} && git push"
   console.log!
 
 
 function publish-to-npm
   console.log green "Publishing to npm...\n"
-  run-command-in-subdirs do
-    command: 'npm publish'
-    command-message: 'Publishing'
+  run-command-in-subdirs 'npm publish'
   console.log!
 
 
 function push-exocom-docker-image
   console.log green "Pushing ExoCom image to DockerHub...\n"
   cd 'exocom-server'
-  run-command "docker build --no-cache -t originate/exocom:#{target-version}"
-  run-command "docker push originate/exocom:#{target-version}"
+  run-command "docker build --no-cache -t originate/exocom:#{@target-version}"
+  run-command "docker push originate/exocom:#{@target-version}"
   cd '..'
 
 
 function push-git-tags
   console.log green "Pushing git release tag...\n"
-  run-command 'git tag -a v#{target-version} && git push --tags'
+  run-command 'git tag -a v#{@target-version} && git push --tags'
   console.log!
 
 
@@ -100,9 +92,9 @@ function run-command command
   if exec(command).code > 0 then process.exit 1
 
 
-function run-command-in-subdirs command, {message}
+function run-command-in-subdirs command
   for directory in SUBPROJECTS_TO_PUBLISH
-    console.log message ? "Running #{command} in subproject #{cyan directory}" #comment on this
+    console.log "Running #{yellow command} in subproject #{cyan directory}"
     cd directory
     run-command command
     cd '..'
@@ -118,7 +110,7 @@ function get-target-version version, level
 
 
 function confirm-target-version done
-  console.log "\nYou are about to bump #{green bold name} version #{cyan bold version} up to #{cyan bold target-version}\n"
+  console.log "\nYou are about to bump #{green bold name} version #{cyan bold version} up to #{cyan bold @target-version}\n"
   question =
     type: 'list'
     name: 'continue'

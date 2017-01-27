@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
+bin/build
 if [ "$#" == "0" ]; then
   node_modules/o-tools/bin/lint
   bin/cuc-api

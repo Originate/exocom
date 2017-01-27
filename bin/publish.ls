@@ -1,12 +1,21 @@
 require! {
-  'chalk' : {bold, red, cyan, yellow, green}
+  'chalk' : {bold, red, cyan, yellow, green, dim}
   'inquirer'
   'jsonfile'
   'semver'
   'shelljs/global'
 }
 
-{name, version} = jsonfile.readFileSync './exocom-server/package.json' # not sure about this, using exocom-server b/c there is no root package.json
+
+SUBPROJECTS_TO_PUBLISH =
+  'exocom-mock-javascript'
+  'exocom-server'
+  'exorelay-javascript'
+  'exoservice-javascript'
+
+# exocom-server is used because there is no root package.json
+# all node exocommunication services are in lock-step versioning
+{name, version} = jsonfile.readFileSync './exocom-server/package.json'
 
 if process.argv.length != 3
   display-help!
@@ -14,32 +23,11 @@ if process.argv.length != 3
 level = process.argv[2]
 display-help! if level in ['-h, --help']
 
-target-version = semver.inc version, level
-unless target-version
-  console.log "\n#{bold red 'Error:'} #{bold cyan level} #{red 'is not a valid version increment'}"
-  display-help!
+target-version = get-target-version version, level
 
-console.log "\nYou are about to bump #{green bold name} version #{cyan bold version} up to #{cyan bold target-version}\n"
-
-question =
-  type: 'list'
-  name: 'continue'
-  message: 'Are you sure?'
-  choices: ['yes', 'no']
-inquirer.prompt([question]).then (answer) ->
-  if answer.continue == 'no'
-    console.log '\nAborting ...\n'
-    process.exit!
-
-  console.log!
-
-  # Ensure no open files
-  open-files = exec "git status --porcelain", {silent: true}
-  if open-files then console.log red 'Please commit all files before releasing' ; process.exit 1
-
-  # Ensure on master
-  current-branch = exec "git rev-parse --abbrev-ref HEAD", {silent: true}
-  if current-branch.trim! isnt 'master' then console.log red 'You must be on the master branch to publish' ; process.exit 1
+confirm-target-version ->
+  ensure-no-open-files!
+  ensure-on-master!
 
   check-npm-dependencies!
   build-subprojects!
@@ -48,15 +36,7 @@ inquirer.prompt([question]).then (answer) ->
   push-version-numbers!
   publish-to-npm!
   push-exocom-docker-image!
-  push-git-tag!
-
-
-
-published-directories =
-  'exocom-mock-javascript'
-  'exocom-server'
-  'exorelay-javascript'
-  'exoservice-javascript'
+  push-git-tags!
 
 
 function check-npm-dependencies
@@ -113,7 +93,7 @@ function push-exocom-docker-image
   cd '..'
 
 
-function push-git-tag
+function push-git-tags
   console.log green "Pushing git release tag...\n"
   run-command 'git tag -a v#{target-version} && git push --tags'
   console.log!
@@ -124,15 +104,47 @@ function run-command command
 
 
 function run-command-in-subdirs {command, command-message}
-  for directory in published-directories
+  for directory in SUBPROJECTS_TO_PUBLISH
     console.log "#{command-message} subproject #{cyan directory}"
     cd directory
-    if exec(command).code > 0
-      process.exit 1
+    run-command command
     cd '..'
     console.log!
 
 
+function get-target-version version, level
+  target-version = semver.inc version, level
+  unless target-version
+    console.log "\n#{bold red 'Error:'} #{bold cyan level} #{red 'is not a valid version increment'}"
+    display-help!
+  target-version
+
+
+function confirm-target-version done
+  console.log "\nYou are about to bump #{green bold name} version #{cyan bold version} up to #{cyan bold target-version}\n"
+  question =
+    type: 'list'
+    name: 'continue'
+    message: 'Are you sure?'
+    choices: ['yes', 'no']
+  inquirer.prompt([question]).then (answer) ->
+    if answer.continue == 'no'
+      console.log '\nAborting ...\n'
+      process.exit!
+    console.log!
+    done!
+
+
+function ensure-no-open-files
+  open-files = exec "git status --porcelain", silent: yes
+  if open-files then console.log red 'Please commit all files before releasing' ; process.exit 1
+
+
+function ensure-on-master
+  current-branch = exec "git rev-parse --abbrev-ref HEAD", silent: yes
+  if current-branch.trim! isnt 'master' then console.log red 'You must be on the master branch to publish' ; process.exit 1
+
+
 function display-help
-  console.log "\nUsage:\n\n  #{bold 'publish-exocom <patch|minor|major>'}\n"
+  console.log "\nUsage:\n\n  #{bold 'publish <patch|minor|major>'}\n"
   process.exit 1

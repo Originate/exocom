@@ -1,4 +1,5 @@
 #!/usr/bin/env lsc
+
 require! {
   'chalk' : {bold, red, cyan, yellow, green}
   'inquirer'

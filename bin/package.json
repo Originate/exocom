@@ -1,8 +1,7 @@
 {
   "name": "exocom-publish-script-do-not-deploy",
-  "version": "0.0.0",
   "author": "Originate",
-  "description": "Do not deploy! This publishes the Exosphere comminication services",
+  "description": "Do not deploy! This publishes the Exosphere communication services",
   "devDependencies": {
     "chalk": "1.1.3",
     "inquirer": "3.0.1",

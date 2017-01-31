@@ -26,10 +26,10 @@ function main
   @target-version = get-target-version version, @level
 
   <- confirm-target-version
-  # ensure-no-open-files!
-  # ensure-on-master!
+  ensure-no-open-files!
+  ensure-on-master!
 
-  # check-npm-dependencies!
+  check-npm-dependencies!
   build-subprojects!
   run-tests!
   bump-version-numbers!

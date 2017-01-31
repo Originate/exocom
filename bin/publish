@@ -47,7 +47,6 @@ function check-npm-dependencies
 
 function build-subprojects
   console.log green "Building subprojects...\n"
-  run-command-in-subdirs 'rm -rf node_modules'
   run-command-in-subdirs './bin/build'
   console.log!
 

@@ -19,8 +19,8 @@ module.exports = ->
                (~> @exocom.wait-until-knows-service &1, &2)
 
 
-  @Then /^ExoComMock makes the request:$/, (table) ->
-    @verify-exocom-received-request table.rows-hash!
+  @Then /^ExoComMock makes the request:$/, (table, done) ->
+    @verify-exocom-received-request table.rows-hash!, done
 
 
   @Then /^I can close it without errors$/, (done) ->

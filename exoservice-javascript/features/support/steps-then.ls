@@ -23,11 +23,6 @@ module.exports = ->
       done!
 
 
-  @Then /^it aborts with the error message "([^"]*)"$/ (error-message, done) ->
-    #TODO: implement this
-    done!
-
-
   @Then /^it acknowledges the received message$/, (done) ->
     wait-until (~> @exocom.received-messages.length), done
 

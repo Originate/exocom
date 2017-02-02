@@ -17,7 +17,3 @@ Feature: Defining the port at which the server listens
   Scenario: an ExoService instance connects to ExoCom
     When starting a service configured for ExoCom port 3001
     Then it connects to the ExoCom instance
-
-  Scenario: a wrong Exocom port is given
-    When trying to start a service configured for ExoCom port 3002
-    Then it aborts with the error message "Cannot find ExoCom at port 3002"

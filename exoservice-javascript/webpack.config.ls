@@ -10,7 +10,7 @@ fs.readdir-sync('node_modules')
   .filter((x) -> x isnt '.bin')
   .for-each((mod) -> node-modules[mod] = 'commonjs ' + mod)
 
-module.exports = { 
+module.exports = {
   entry:
     'exo-js': './src/exo-service.ls'
   target: 'node'
@@ -24,12 +24,11 @@ module.exports = {
     library: 'ExoService'
   externals: node-modules
   module:
-    loaders:
+    rules:
       * test: /\.ls$/
-        loader: \livescript
+        use: <[ livescript-loader ]>
         exclude: /node_modules/
-      * test: /\.json$/
-        loader: \json
+      ...
   resolve:
-    extensions: ["", ".js", ".json", ".ls"]
+    extensions: [".js", ".json", ".ls"]
 }

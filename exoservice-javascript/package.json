@@ -36,7 +36,7 @@
     "port-reservation": "0.3.2",
     "prelude-ls": "1.1.2",
     "tertestrial": "0.3.2",
-    "webpack": "1.14.0"
+    "webpack": "2.2.1"
   },
   "engines": {
     "npm": ">= 3.0.0"

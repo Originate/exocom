@@ -16,7 +16,7 @@
     "rails-delegate": "0.6.2",
     "uuid": "3.0.1",
     "wait": "0.1.0",
-    "ws": "2.0.1"
+    "ws": "2.0.2"
   },
   "description": "Opinionated framework to create Exosphere micro-services in Node.js",
   "devDependencies": {
@@ -25,7 +25,7 @@
     "cucumber-snippets-livescript": "1.0.1",
     "dependency-lint": "4.3.1",
     "dim-console": "0.4.4",
-    "exocom-mock": "0.21.2",
+    "exocom-mock": "0.21.3",
     "exosphere-shared": "0.9.4",
     "json-loader": "0.5.4",
     "livescript-loader": "0.1.6",

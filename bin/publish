@@ -3,6 +3,7 @@
 require! {
   'chalk' : {bold, red, cyan, yellow, green}
   'inquirer'
+  'path'
   'semver'
   'shelljs/global'
 }
@@ -26,6 +27,7 @@ function main
   @target-version = get-target-version version, @level
 
   <- confirm-target-version
+  ensure-in-root-dir!
   ensure-no-open-files!
   ensure-on-master!
 
@@ -133,6 +135,11 @@ function ensure-no-open-files
 function ensure-on-master
   current-branch = exec "git rev-parse --abbrev-ref HEAD", silent: yes
   if current-branch.trim! isnt 'master' then console.log red 'You must be on the master branch to publish' ; process.exit 1
+
+
+function ensure-in-root-dir
+  if path.basename(process.cwd!) isnt 'exocom'
+    console.log red 'You must be in the root directory to publish' ; process.exit 1
 
 
 function display-help

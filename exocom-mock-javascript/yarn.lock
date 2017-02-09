@@ -2740,9 +2740,9 @@ write-file-atomic@^1.1.2, write-file-atomic@~1.2.0:
     imurmurhash "^0.1.4"
     slide "^1.1.5"
 
-ws@2.0.1:
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/ws/-/ws-2.0.1.tgz#0d3498dcb29dbee9fa229e61ebffeba67316a827"
+ws@2.0.3:
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/ws/-/ws-2.0.3.tgz#532fd499c3f7d7d720e543f1f807106cfc57d9cb"
   dependencies:
     ultron "~1.1.0"
 

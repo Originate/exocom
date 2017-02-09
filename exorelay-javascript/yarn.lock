@@ -695,14 +695,14 @@ exit@^0.1.2:
   version "0.1.2"
   resolved "https://registry.yarnpkg.com/exit/-/exit-0.1.2.tgz#0632638f8d877cc82107d30a0fff1a17cba1cd0c"
 
-exocom-mock@0.21.2:
-  version "0.21.2"
-  resolved "https://registry.yarnpkg.com/exocom-mock/-/exocom-mock-0.21.2.tgz#b867466f73eedb6627f35584e935d1943e1a70a8"
+exocom-mock@0.21.4:
+  version "0.21.4"
+  resolved "https://registry.yarnpkg.com/exocom-mock/-/exocom-mock-0.21.4.tgz#0f44aa2749eacc4b6e83b8ac68038c3c2a979fa1"
   dependencies:
     debug "2.6.0"
     uuid "3.0.1"
     wait "0.1.0"
-    ws "1.1.1"
+    ws "2.0.2"
 
 expand-brackets@^0.1.4:
   version "0.1.5"
@@ -2007,10 +2007,6 @@ optionator@~0.8.1:
     type-check "~0.3.2"
     wordwrap "~1.0.0"
 
-options@>=0.0.5:
-  version "0.0.6"
-  resolved "https://registry.yarnpkg.com/options/-/options-0.0.6.tgz#ec22d312806bb53e731773e7cdaefcf1c643128f"
-
 os-homedir@^1.0.0, os-homedir@^1.0.1:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/os-homedir/-/os-homedir-1.0.2.tgz#ffbc4988336e0e833de0c168c7ef152121aa7fb3"
@@ -2743,10 +2739,6 @@ uid-number@0.0.6, uid-number@~0.0.6:
   version "0.0.6"
   resolved "https://registry.yarnpkg.com/uid-number/-/uid-number-0.0.6.tgz#0ea10e8035e8eb5b8e4449f06da1c730663baa81"
 
-ultron@1.0.x:
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/ultron/-/ultron-1.0.2.tgz#ace116ab557cd197386a4e88f4685378c8b2e4fa"
-
 ultron@~1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/ultron/-/ultron-1.1.0.tgz#b07a2e6a541a815fc6a34ccd4533baec307ca864"
@@ -2887,16 +2879,15 @@ write-file-atomic@^1.1.2, write-file-atomic@~1.2.0:
     imurmurhash "^0.1.4"
     slide "^1.1.5"
 
-ws@1.1.1:
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/ws/-/ws-1.1.1.tgz#082ddb6c641e85d4bb451f03d52f06eabdb1f018"
+ws@2.0.2:
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/ws/-/ws-2.0.2.tgz#6257d1a679f0cb23658cba3dcad1316e2b1000c5"
   dependencies:
-    options ">=0.0.5"
-    ultron "1.0.x"
+    ultron "~1.1.0"
 
-ws@2.0.1:
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/ws/-/ws-2.0.1.tgz#0d3498dcb29dbee9fa229e61ebffeba67316a827"
+ws@2.0.3:
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/ws/-/ws-2.0.3.tgz#532fd499c3f7d7d720e543f1f807106cfc57d9cb"
   dependencies:
     ultron "~1.1.0"
 

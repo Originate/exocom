@@ -27,15 +27,24 @@ function main
   @target-version = get-target-version version, @level
 
   <- confirm-target-version
+
+  # verify workspace is clean
   ensure-in-root-dir!
   ensure-no-open-files!
   ensure-on-master!
 
+  # ensure up to date
   check-npm-dependencies!
+
+  # ensure tests pass
   build-subprojects!
   run-tests!
+
+  # update version
   bump-version-numbers!
   push-version-numbers!
+
+  # publish
   publish-to-npm!
   push-exocom-docker-image!
   push-git-tags!

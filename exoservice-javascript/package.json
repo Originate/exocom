@@ -1,6 +1,6 @@
 {
   "name": "exoservice",
-  "version": "0.21.4",
+  "version": "0.21.5",
   "author": "Kevin Goslar",
   "bin": {
     "exo-js": "bin/exo-js",

@@ -71,11 +71,11 @@ module.exports = ->
     wait-until (~> @done.called), 10, done
 
 
-  @Then /^my message handler (replies with|sends out) the message:$/ (request-data, done) ->
+  @Then /^my message handler (?:replies with|sends out) the message:$/ (request-data, done) ->
     # Wait until we get some call data, then wait another 50ms to let all the request data fill in
     wait-until (~> @exocom.received-messages.length), 10, ~>
       wait 50, ~>
-        rendered = ejs.render request-data, request_uuid: @exo-relay.message-sender.last-sent-id, ip_address: ip.address!
+        rendered = ejs.render request-data, request_uuid: @exo-relay.websocket-connector.last-sent-id, ip_address: ip.address!
         template = "compiled = {\n#{rendered}\n}"
         compiled-template = livescript.compile template, bare: yes, header: no
         parsed = eval compiled-template

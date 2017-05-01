@@ -82,9 +82,9 @@ class WebSocketConnector extends EventEmitter
       | _                     =>  @emit 'error', Error "unknown result code: '#{result}'"
 
 
-  _log-received: ({name, id, response-to}) ->
-    | response-to  =>  debug "received message '#{name}' with id '#{id}' in response to '#{response-to}'"
-    | _            =>  debug "received message '#{name}' with id '#{id}'"
+  _log-received: ({message-name, id, response-to}) ->
+    | response-to  =>  debug " received message '#{message-name}' with id '#{id}' in response to '#{response-to}'"
+    | _            =>  debug "received message '#{message-name}' with id '#{id}'"
 
 
   _log-sending: (message-name, options) ->

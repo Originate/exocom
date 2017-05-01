@@ -86,3 +86,10 @@ Exocom let's services of all protection levels communicate.
   ```
   $ morula changed bin/spec
   ```
+
+
+## Publish a new version
+
+* run `bin/publish <patch|minor|major>`
+* to use the new ExoCom version,
+  publish a new [Exosphere](https://github.com/Originate/exosphere) version

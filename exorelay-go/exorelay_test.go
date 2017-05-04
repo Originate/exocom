@@ -1,4 +1,4 @@
-package exorelay
+package exorelay_test
 
 import (
 	"encoding/json"
@@ -10,17 +10,18 @@ import (
 	"github.com/DATA-DOG/godog"
 	"github.com/DATA-DOG/godog/gherkin"
 	"github.com/Originate/exocom/exocom-mock-go"
+	exorelay "github.com/Originate/exocom/exorelay-go"
 )
 
 // Cucumber step definitions
 func FeatureContext(s *godog.Suite) {
-	var exoInstance *ExoRelay
+	var exoInstance *exorelay.ExoRelay
 	exocom := exocomMock.New()
 
 	s.Step(`^an ExoRelay with the configuration:$`, func(configStr *gherkin.DocString) error {
 		var config map[string]interface{}
 		err := json.Unmarshal([]byte(configStr.Content), &config)
-		exoInstance = New("ws://localhost:4100", config)
+		exoInstance = exorelay.New("ws://localhost:4100", config)
 		if err != nil {
 			return err
 		}

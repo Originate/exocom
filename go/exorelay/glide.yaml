@@ -1,4 +1,4 @@
-package: github.com/Originate/exocom/exorelay-go
+package: github.com/Originate/exocom/go/exorelay
 import:
 - package: github.com/DATA-DOG/godog
   version: v0.7.0

@@ -21,14 +21,9 @@ before_install:
   - nvm install 6 && nvm alias default 6
   - npm install -g yarn
 
+install: bin/setup_ci
 
-install:
-  - ./morula all bin/setup
-
-
-script:
-  - ./morula all bin/spec_ci
-
+script: bin/spec_ci
 
 notifications:
   email: false

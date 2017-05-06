@@ -1,6 +1,6 @@
 require! {
   'events' : {EventEmitter}
-  '../../exorelay-javascript' : ExoRelay
+  '../../exorelay' : ExoRelay
   'rails-delegate' : {delegate, delegate-event}
   './service-loader'
 }

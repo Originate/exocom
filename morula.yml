@@ -1,5 +1,0 @@
-before-all: "exorelay-javascript"
-after-all: ""
-always: ""
-never: "bin"
-color: true

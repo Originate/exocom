@@ -9,8 +9,8 @@ import (
 
 	"github.com/DATA-DOG/godog"
 	"github.com/DATA-DOG/godog/gherkin"
-	"github.com/Originate/exocom/exocom-mock-go"
-	exorelay "github.com/Originate/exocom/exorelay-go"
+	"github.com/Originate/exocom/go/exocom-mock"
+	"github.com/Originate/exocom/go/exorelay"
 )
 
 // Cucumber step definitions

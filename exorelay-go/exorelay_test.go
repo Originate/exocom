@@ -34,7 +34,10 @@ func FeatureContext(s *godog.Suite) {
 	})
 
 	s.Step(`^it registers by sending the message "([^"]*)" with payload:$`, func(expectedName string) error {
-		messages := exocom.ReceivedMessages()
+		messages := exocom.ReceivedMessages
+		if len(messages) != 1 {
+			return fmt.Errorf("Expected 1 received message but got %d", len(messages))
+		}
 		if messages[0].Name != expectedName {
 			return fmt.Errorf("Expected message name to match %s but got %s", expectedName, messages[0].Name)
 		}

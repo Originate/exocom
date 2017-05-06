@@ -1,6 +1,7 @@
 package exocomMock
 
 type ExoComMock struct {
+	ReceivedMessages []Message
 }
 
 type Message struct {
@@ -9,12 +10,9 @@ type Message struct {
 }
 
 func New() *ExoComMock {
-	return &ExoComMock{}
-}
-
-func (*ExoComMock) ReceivedMessages() []*Message {
-	return []*Message{&Message{
-		Name:    "exocom.register-service",
-		Payload: nil,
-	}}
+	return &ExoComMock{
+		ReceivedMessages: []Message{Message{
+			Name:    "exocom.register-service",
+			Payload: nil,
+		}}}
 }

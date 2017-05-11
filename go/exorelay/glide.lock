@@ -1,6 +1,18 @@
-hash: 2505a7dca1457c21ff3155c88d9a69940ba9bdb18a345d71f80782b20a210869
-updated: 2017-05-03T20:26:48.714310902-07:00
+hash: 9eae94d4bbd95fdb3b6aae2aa6e6c5797ba1a0b44f2c4ff383331ff9e930a1c3
+updated: 2017-05-10T08:47:00.908706416-07:00
 imports:
 - name: github.com/DATA-DOG/godog
   version: 38e3d1fb6df6a7b6c59c120ecd02141764d2c343
+  subpackages:
+  - colors
+  - gherkin
+- name: github.com/Originate/exocom
+  version: 30c7f513ced53c2817f0f41aac60322e7eeef069
+  subpackages:
+  - go/exorelay
+  - go/structs
+- name: golang.org/x/net
+  version: c9b681d35165f1995d6f3034e61f8761d4b90c99
+  subpackages:
+  - websocket
 testImports: []

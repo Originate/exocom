@@ -8,7 +8,8 @@ import (
 	"golang.org/x/net/websocket"
 )
 
-type ExoRelayConfig struct {
+// Config contains the configuration values for ExoRelay instances
+type Config struct {
 	Host string
 	Port string
 	Role string
@@ -16,12 +17,12 @@ type ExoRelayConfig struct {
 
 // ExoRelay is the Go API to talk to Exocom
 type ExoRelay struct {
-	config ExoRelayConfig
+	config Config
 	socket *websocket.Conn
 }
 
 // New creates a new ExoRelay instance
-func New(config ExoRelayConfig) *ExoRelay {
+func New(config Config) *ExoRelay {
 	return &ExoRelay{
 		config: config,
 	}

@@ -2,3 +2,5 @@
 set -e
 
 glide install
+go get -u gopkg.in/alecthomas/gometalinter.v1
+gometalinter.v1 --install

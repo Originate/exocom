@@ -26,7 +26,7 @@ func New() *ExoComMock {
 	return result
 }
 
-// Closes takes this ExoComMock instance offline
+// Close takes this ExoComMock instance offline
 func (exoCom *ExoComMock) Close() error {
 	return exoCom.server.Close()
 }
@@ -64,6 +64,7 @@ func (exoCom *ExoComMock) readMessage(socket *websocket.Conn) (structs.Message, 
 	return unmarshaled, nil
 }
 
+// WaitForReceivedMessage blocks until this instance receives the given message
 func (exoCom *ExoComMock) WaitForReceivedMessage() (structs.Message, error) {
 	c1 := make(chan structs.Message, 1)
 	numMessages := len(exoCom.ReceivedMessages)

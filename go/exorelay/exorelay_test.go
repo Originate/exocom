@@ -3,6 +3,7 @@ package exorelay
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"os"
 	"reflect"
 	"strings"
@@ -21,15 +22,23 @@ func FeatureContext(s *godog.Suite) {
 
 	s.BeforeScenario(func(interface{}) {
 		exocom = exocomMock.New()
-		go exocom.Listen(4100)
+		go func() {
+			err := exocom.Listen(4100)
+			if err != nil {
+				log.Fatal(err)
+			}
+		}()
 	})
 
 	s.AfterScenario(func(interface{}, error) {
-		exocom.Close()
+		err := exocom.Close()
+		if err != nil {
+			log.Fatal(err)
+		}
 	})
 
 	s.Step(`^an ExoRelay with the role "([^"]*)"$`, func(role string) error {
-		exoInstance = New(ExoRelayConfig{
+		exoInstance = New(Config{
 			Host: "localhost",
 			Port: "4100",
 			Role: role,

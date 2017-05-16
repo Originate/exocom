@@ -5,18 +5,25 @@ import (
 	"io"
 	"os"
 	"strconv"
+	"strings"
 
 	"github.com/DATA-DOG/godog/colors"
+)
+
+const (
+	exitSuccess int = iota
+	exitFailure
+	exitOptionError
 )
 
 type initializer func(*Suite)
 
 type runner struct {
-	randomSeed    int64
-	stopOnFailure bool
-	features      []*feature
-	fmt           Formatter
-	initializer   initializer
+	randomSeed            int64
+	stopOnFailure, strict bool
+	features              []*feature
+	fmt                   Formatter
+	initializer           initializer
 }
 
 func (r *runner) concurrent(rate int) (failed bool) {
@@ -34,6 +41,7 @@ func (r *runner) concurrent(rate int) (failed bool) {
 				fmt:           r.fmt,
 				randomSeed:    r.randomSeed,
 				stopOnFailure: r.stopOnFailure,
+				strict:        r.strict,
 				features:      []*feature{feat},
 			}
 			r.initializer(suite)
@@ -59,6 +67,7 @@ func (r *runner) run() bool {
 		fmt:           r.fmt,
 		randomSeed:    r.randomSeed,
 		stopOnFailure: r.stopOnFailure,
+		strict:        r.strict,
 		features:      r.features,
 	}
 	r.initializer(suite)
@@ -75,6 +84,15 @@ func (r *runner) run() bool {
 // This method is useful in case if you run
 // godog in for example TestMain function together
 // with go tests
+//
+// The exit codes may vary from:
+//  0 - success
+//  1 - failed
+//  2 - command line usage error
+//  128 - or higher, os signal related error exit codes
+//
+// If there are flag related errors they will
+// be directed to os.Stderr
 func RunWithOptions(suite string, contextInitializer func(suite *Suite), opt Options) int {
 	var output io.Writer = os.Stdout
 	if nil != opt.Output {
@@ -91,7 +109,7 @@ func RunWithOptions(suite string, contextInitializer func(suite *Suite), opt Opt
 		s := &Suite{}
 		contextInitializer(s)
 		s.printStepDefinitions(output)
-		return 0
+		return exitOptionError
 	}
 
 	if len(opt.Paths) == 0 {
@@ -102,13 +120,28 @@ func RunWithOptions(suite string, contextInitializer func(suite *Suite), opt Opt
 	}
 
 	if opt.Concurrency > 1 && !supportsConcurrency(opt.Format) {
-		fatal(fmt.Errorf("format \"%s\" does not support concurrent execution", opt.Format))
+		fmt.Fprintln(os.Stderr, fmt.Errorf("format \"%s\" does not support concurrent execution", opt.Format))
+		return exitOptionError
 	}
-	formatter, err := findFmt(opt.Format)
-	fatal(err)
+	formatter := findFmt(opt.Format)
+	if nil == formatter {
+		var names []string
+		for name := range AvailableFormatters() {
+			names = append(names, name)
+		}
+		fmt.Fprintln(os.Stderr, fmt.Errorf(
+			`unregistered formatter name: "%s", use one of: %s`,
+			opt.Format,
+			strings.Join(names, ", "),
+		))
+		return exitOptionError
+	}
 
 	features, err := parseFeatures(opt.Tags, opt.Paths)
-	fatal(err)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		return exitOptionError
+	}
 
 	r := runner{
 		fmt:           formatter(suite, output),
@@ -116,6 +149,7 @@ func RunWithOptions(suite string, contextInitializer func(suite *Suite), opt Opt
 		features:      features,
 		randomSeed:    opt.Randomize,
 		stopOnFailure: opt.StopOnFailure,
+		strict:        opt.Strict,
 	}
 
 	// store chosen seed in environment, so it could be seen in formatter summary report
@@ -128,9 +162,9 @@ func RunWithOptions(suite string, contextInitializer func(suite *Suite), opt Opt
 		failed = r.run()
 	}
 	if failed && opt.Format != "events" {
-		return 1
+		return exitFailure
 	}
-	return 0
+	return exitSuccess
 }
 
 // Run creates and runs the feature suite.
@@ -145,12 +179,23 @@ func RunWithOptions(suite string, contextInitializer func(suite *Suite), opt Opt
 //
 // contextInitializer must be able to register
 // the step definitions and event handlers.
+//
+// The exit codes may vary from:
+//  0 - success
+//  1 - failed
+//  2 - command line usage error
+//  128 - or higher, os signal related error exit codes
+//
+// If there are flag related errors they will
+// be directed to os.Stderr
 func Run(suite string, contextInitializer func(suite *Suite)) int {
 	var opt Options
 	opt.Output = colors.Colored(os.Stdout)
 	flagSet := FlagSet(&opt)
-	err := flagSet.Parse(os.Args[1:])
-	fatal(err)
+	if err := flagSet.Parse(os.Args[1:]); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		return exitOptionError
+	}
 
 	opt.Paths = flagSet.Args()
 
@@ -167,5 +212,5 @@ func supportsConcurrency(format string) bool {
 		return true // supports concurrency
 	}
 
-	return true // all custom formatters are treated as supporting concurrency
+	return false // does not support concurrency
 }

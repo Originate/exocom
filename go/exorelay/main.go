@@ -8,27 +8,33 @@ import (
 	"golang.org/x/net/websocket"
 )
 
+type ExoRelayConfig struct {
+	Host string
+	Port string
+	Role string
+}
+
 // ExoRelay is the Go API to talk to Exocom
 type ExoRelay struct {
-	url    string
+	config ExoRelayConfig
 	socket *websocket.Conn
 }
 
 // New creates a new ExoRelay instance
-func New(url string, config map[string]interface{}) *ExoRelay {
+func New(config ExoRelayConfig) *ExoRelay {
 	return &ExoRelay{
-		url: url,
+		config: config,
 	}
 }
 
 // Connect brings an ExoRelay instance online
 func (exoRelay *ExoRelay) Connect() error {
-	socket, err := websocket.Dial(exoRelay.url, "", "origin:")
+	socket, err := websocket.Dial("ws://"+exoRelay.config.Host+":"+exoRelay.config.Port, "", "origin:")
 	if err != nil {
 		return err
 	}
 	exoRelay.socket = socket
-	return exoRelay.Send("exocom.register-service", nil)
+	return exoRelay.Send("exocom.register-service", map[string]interface{}{"clientName": exoRelay.config.Role})
 }
 
 // Send sends the event with the given name and payload

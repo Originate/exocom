@@ -5,14 +5,11 @@ Feature: Connecting
   So that I can write Exosphere services without constraints on my code layout.
 
   Rules
-  - call "connect" on an ExoRelay instance to take it online
+  - call "Connect" on an ExoRelay instance to take it online
 
 
   Background:
-    Given an ExoRelay with the configuration:
-      """
-      { "role": "foo" }
-      """
+    Given an ExoRelay with the role "foo"
 
 
   Scenario: Setting up the ExoRelay instance

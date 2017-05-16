@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"reflect"
 	"strings"
 	"testing"
 
@@ -19,13 +20,12 @@ func FeatureContext(s *godog.Suite) {
 	exocom := exocomMock.New()
 	go exocom.Listen(4100)
 
-	s.Step(`^an ExoRelay with the configuration:$`, func(configStr *gherkin.DocString) error {
-		var config map[string]interface{}
-		err := json.Unmarshal([]byte(configStr.Content), &config)
-		exoInstance = New("ws://localhost:4100", config)
-		if err != nil {
-			return err
-		}
+	s.Step(`^an ExoRelay with the role "([^"]*)"$`, func(role string) error {
+		exoInstance = New(ExoRelayConfig{
+			Host: "localhost",
+			Port: "4100",
+			Role: role,
+		})
 		return nil
 	})
 
@@ -34,7 +34,7 @@ func FeatureContext(s *godog.Suite) {
 		return err
 	})
 
-	s.Step(`^it registers by sending the message "([^"]*)" with payload:$`, func(expectedName string) error {
+	s.Step(`^it registers by sending the message "([^"]*)" with payload:$`, func(expectedName string, payloadStr *gherkin.DocString) error {
 		var message structs.Message
 		message, err := exocom.WaitForReceivedMessage()
 		if err != nil {
@@ -42,6 +42,14 @@ func FeatureContext(s *godog.Suite) {
 		}
 		if message.Name != expectedName {
 			return fmt.Errorf("Expected message name to match %s but got %s", expectedName, message.Name)
+		}
+		var expectedPayload map[string]interface{}
+		err = json.Unmarshal([]byte(payloadStr.Content), &expectedPayload)
+		if err != nil {
+			return err
+		}
+		if !reflect.DeepEqual(message.Payload, expectedPayload) {
+			return fmt.Errorf("Expected message payload to equal %s but got %s", expectedPayload, message.Payload)
 		}
 		return nil
 	})

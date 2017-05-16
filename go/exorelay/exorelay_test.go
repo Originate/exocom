@@ -1,4 +1,4 @@
-package exorelay
+package exorelay_test
 
 import (
 	"encoding/json"
@@ -12,12 +12,13 @@ import (
 	"github.com/DATA-DOG/godog"
 	"github.com/DATA-DOG/godog/gherkin"
 	"github.com/Originate/exocom/go/exocom-mock"
+	"github.com/Originate/exocom/go/exorelay"
 	"github.com/Originate/exocom/go/structs"
 )
 
 // Cucumber step definitions
 func FeatureContext(s *godog.Suite) {
-	var exoInstance *ExoRelay
+	var exoInstance *exorelay.ExoRelay
 	var exocom *exocomMock.ExoComMock
 
 	s.BeforeScenario(func(interface{}) {
@@ -38,7 +39,7 @@ func FeatureContext(s *godog.Suite) {
 	})
 
 	s.Step(`^an ExoRelay with the role "([^"]*)"$`, func(role string) error {
-		exoInstance = New(Config{
+		exoInstance = exorelay.New(exorelay.Config{
 			Host: "localhost",
 			Port: "4100",
 			Role: role,

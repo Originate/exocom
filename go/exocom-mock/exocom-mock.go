@@ -70,7 +70,7 @@ func (exoCom *ExoComMock) WaitForReceivedMessage() (structs.Message, error) {
 
 	go func() {
 		for {
-			time.Sleep(time.Duration(10) * time.Millisecond)
+			time.Sleep(time.Millisecond)
 			if len(exoCom.ReceivedMessages) > numMessages {
 				c1 <- exoCom.ReceivedMessages[len(exoCom.ReceivedMessages)-1]
 				break

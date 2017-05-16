@@ -17,8 +17,16 @@ import (
 // Cucumber step definitions
 func FeatureContext(s *godog.Suite) {
 	var exoInstance *ExoRelay
-	exocom := exocomMock.New()
-	go exocom.Listen(4100)
+	var exocom *exocomMock.ExoComMock
+
+	s.BeforeScenario(func(interface{}) {
+		exocom = exocomMock.New()
+		go exocom.Listen(4100)
+	})
+
+	s.AfterScenario(func(interface{}, error) {
+		exocom.Close()
+	})
 
 	s.Step(`^an ExoRelay with the role "([^"]*)"$`, func(role string) error {
 		exoInstance = New(ExoRelayConfig{

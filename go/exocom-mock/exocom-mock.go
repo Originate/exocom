@@ -14,18 +14,27 @@ import (
 // to be used for testing
 type ExoComMock struct {
 	ReceivedMessages []structs.Message
+	server           http.Server
 }
 
 // New creates a new ExoComMock instance
 func New() *ExoComMock {
 	result := new(ExoComMock)
-	http.Handle("/", websocket.Handler(result.messageHandler))
+	result.server = http.Server{
+		Handler: websocket.Handler(result.messageHandler),
+	}
 	return result
+}
+
+// Closes takes this ExoComMock instance offline
+func (exoCom *ExoComMock) Close() error {
+	return exoCom.server.Close()
 }
 
 // Listen brings this ExoComMock instance online
 func (exoCom *ExoComMock) Listen(port int) error {
-	return http.ListenAndServe(fmt.Sprintf(":%d", port), nil)
+	exoCom.server.Addr = fmt.Sprintf(":%d", port)
+	return exoCom.server.ListenAndServe()
 }
 
 // messageHandler is called when the given socket receives a message.

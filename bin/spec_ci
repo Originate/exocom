@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -ex
 
 (cd exocom-server && bin/spec_ci)
 (cd go && ../morula all bin/spec_ci)

@@ -46,7 +46,7 @@ func (exoRelay *ExoRelay) Send(eventName string, payload map[string]interface{})
 		return errors.New("ExoRelay#Send cannot send empty messages")
 	}
 	serializedBytes, err := json.Marshal(&structs.Message{
-		Id:      uuid.NewV4().String(),
+		ID:      uuid.NewV4().String(),
 		Name:    eventName,
 		Payload: payload,
 		Sender:  exoRelay.config.Role,

@@ -28,6 +28,7 @@ func newExocom() *exocomMock.ExoComMock {
 }
 
 // Cucumber step definitions
+// nolint gocyclo
 func FeatureContext(s *godog.Suite) {
 	var exocom *exocomMock.ExoComMock
 	var exoInstance *exorelay.ExoRelay
@@ -42,7 +43,10 @@ func FeatureContext(s *godog.Suite) {
 	})
 
 	s.AfterSuite(func() {
-		exocom.Close()
+		err := exocom.Close()
+		if err != nil {
+			panic(err)
+		}
 	})
 
 	s.Step(`^an ExoRelay with the role "([^"]*)"$`, func(role string) error {
@@ -112,7 +116,7 @@ func FeatureContext(s *godog.Suite) {
 		if err != nil {
 			return err
 		}
-		expectedMessage.Id = actualMessage.Id
+		expectedMessage.ID = actualMessage.ID
 		if !reflect.DeepEqual(actualMessage, expectedMessage) {
 			return fmt.Errorf("Expected request to equal %s but got %s", expectedMessage, actualMessage)
 		}

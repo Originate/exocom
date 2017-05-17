@@ -16,26 +16,33 @@ import (
 	"github.com/Originate/exocom/go/structs"
 )
 
-// Cucumber step definitions
-func FeatureContext(s *godog.Suite) {
-	var exoInstance *exorelay.ExoRelay
-	var exocom *exocomMock.ExoComMock
-
-	s.BeforeScenario(func(interface{}) {
-		exocom = exocomMock.New()
-		go func() {
-			err := exocom.Listen(4100)
-			if err != nil {
-				log.Fatal(err)
-			}
-		}()
-	})
-
-	s.AfterScenario(func(interface{}, error) {
-		err := exocom.Close()
+func newExocom() *exocomMock.ExoComMock {
+	exocom := exocomMock.New()
+	go func() {
+		err := exocom.Listen(4100)
 		if err != nil {
 			log.Fatal(err)
 		}
+	}()
+	return exocom
+}
+
+// Cucumber step definitions
+func FeatureContext(s *godog.Suite) {
+	var exocom *exocomMock.ExoComMock
+	var exoInstance *exorelay.ExoRelay
+	var savedError error
+
+	s.BeforeSuite(func() {
+		exocom = newExocom()
+	})
+
+	s.AfterScenario(func(interface{}, error) {
+		exocom.Reset()
+	})
+
+	s.AfterSuite(func() {
+		exocom.Close()
 	})
 
 	s.Step(`^an ExoRelay with the role "([^"]*)"$`, func(role string) error {
@@ -53,11 +60,11 @@ func FeatureContext(s *godog.Suite) {
 	})
 
 	s.Step(`^it registers by sending the message "([^"]*)" with payload:$`, func(expectedName string, payloadStr *gherkin.DocString) error {
-		var message structs.Message
-		message, err := exocom.WaitForReceivedMessage()
+		err := exocom.WaitForReceivedMessageCount(1)
 		if err != nil {
 			return err
 		}
+		message := exocom.ReceivedMessages[0]
 		if message.Name != expectedName {
 			return fmt.Errorf("Expected message name to match %s but got %s", expectedName, message.Name)
 		}
@@ -68,6 +75,54 @@ func FeatureContext(s *godog.Suite) {
 		}
 		if !reflect.DeepEqual(message.Payload, expectedPayload) {
 			return fmt.Errorf("Expected message payload to equal %s but got %s", expectedPayload, message.Payload)
+		}
+		return nil
+	})
+
+	s.Step(`^sending the message "([^"]*)"$`, func(message string) error {
+		return exoInstance.Send(message, nil)
+	})
+
+	s.Step(`^sending the message "([^"]*)" with the payload:$`, func(message string, payloadStr *gherkin.DocString) error {
+		var payload map[string]interface{}
+		err := json.Unmarshal([]byte(payloadStr.Content), &payload)
+		if err != nil {
+			return err
+		}
+		return exoInstance.Send(message, payload)
+	})
+
+	s.Step(`^trying to send an empty message$`, func() error {
+		savedError = exoInstance.Send("", nil)
+		if savedError == nil {
+			return fmt.Errorf("Expected ExoRelay to error but it did not")
+		} else {
+			return nil
+		}
+	})
+
+	s.Step(`^ExoRelay makes the WebSocket request:$`, func(messageStr *gherkin.DocString) error {
+		err := exocom.WaitForReceivedMessageCount(2)
+		if err != nil {
+			return err
+		}
+		actualMessage := exocom.ReceivedMessages[1]
+		var expectedMessage structs.Message
+		err = json.Unmarshal([]byte(messageStr.Content), &expectedMessage)
+		if err != nil {
+			return err
+		}
+		expectedMessage.Id = actualMessage.Id
+		if !reflect.DeepEqual(actualMessage, expectedMessage) {
+			return fmt.Errorf("Expected request to equal %s but got %s", expectedMessage, actualMessage)
+		}
+		return nil
+	})
+
+	s.Step(`^ExoRelay errors with "([^"]*)"$`, func(expectedErrorMessage string) error {
+		actualErrorMessage := savedError.Error()
+		if actualErrorMessage != expectedErrorMessage {
+			return fmt.Errorf("Expected error to equal %s but got %s", expectedErrorMessage, actualErrorMessage)
 		}
 		return nil
 	})

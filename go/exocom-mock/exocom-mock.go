@@ -3,6 +3,7 @@ package exocomMock
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"time"
 
@@ -21,7 +22,7 @@ type ExoComMock struct {
 func New() *ExoComMock {
 	result := new(ExoComMock)
 	result.server = http.Server{
-		Handler: websocket.Handler(result.messageHandler),
+		Handler: websocket.Handler(result.websocketHandler),
 	}
 	return result
 }
@@ -37,14 +38,19 @@ func (exoCom *ExoComMock) Listen(port int) error {
 	return exoCom.server.ListenAndServe()
 }
 
-// messageHandler is called when the given socket receives a message.
-// It logs the received message.
-func (exoCom *ExoComMock) messageHandler(socket *websocket.Conn) {
-	message, err := exoCom.readMessage(socket)
-	if err != nil {
-		panic(err)
+// websocketHandler is called when the given socket connects
+func (exoCom *ExoComMock) websocketHandler(socket *websocket.Conn) {
+	for {
+		message, err := exoCom.readMessage(socket)
+		if err == io.EOF {
+			break
+		} else if err != nil {
+			fmt.Println("Error reading message from websocket:", err)
+			break
+		} else {
+			exoCom.ReceivedMessages = append(exoCom.ReceivedMessages, message)
+		}
 	}
-	exoCom.ReceivedMessages = append(exoCom.ReceivedMessages, message)
 }
 
 // readMessage reads the next message from the given socket
@@ -64,26 +70,29 @@ func (exoCom *ExoComMock) readMessage(socket *websocket.Conn) (structs.Message, 
 	return unmarshaled, nil
 }
 
-// WaitForReceivedMessage blocks until this instance receives the given message
-func (exoCom *ExoComMock) WaitForReceivedMessage() (structs.Message, error) {
-	c1 := make(chan structs.Message, 1)
-	numMessages := len(exoCom.ReceivedMessages)
+// Reset clears all received messages
+func (exoCom *ExoComMock) Reset() {
+	exoCom.ReceivedMessages = []structs.Message{}
+}
+
+// WaitForReceivedMessageCount blocks until this instance has received the given number of messages
+func (exoCom *ExoComMock) WaitForReceivedMessageCount(count int) error {
+	success := make(chan bool, 1)
 
 	go func() {
 		for {
 			time.Sleep(time.Millisecond)
-			if len(exoCom.ReceivedMessages) > numMessages {
-				c1 <- exoCom.ReceivedMessages[len(exoCom.ReceivedMessages)-1]
+			if len(exoCom.ReceivedMessages) >= count {
+				success <- true
 				break
 			}
 		}
 	}()
 
 	select {
-	case res := <-c1:
-		return res, nil
+	case <-success:
+		return nil
 	case <-time.After(time.Second * 10):
-		return structs.Message{}, fmt.Errorf("Wait for messages timed out")
+		return fmt.Errorf("Wait for messages timed out")
 	}
-
 }

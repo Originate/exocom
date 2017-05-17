@@ -2,8 +2,10 @@ package exorelay
 
 import (
 	"encoding/json"
+	"errors"
 
 	"github.com/Originate/exocom/go/structs"
+	uuid "github.com/satori/go.uuid"
 
 	"golang.org/x/net/websocket"
 )
@@ -40,9 +42,14 @@ func (exoRelay *ExoRelay) Connect() error {
 
 // Send sends the event with the given name and payload
 func (exoRelay *ExoRelay) Send(eventName string, payload map[string]interface{}) error {
+	if eventName == "" {
+		return errors.New("ExoRelay#Send cannot send empty messages")
+	}
 	serializedBytes, err := json.Marshal(&structs.Message{
+		Id:      uuid.NewV4().String(),
 		Name:    eventName,
 		Payload: payload,
+		Sender:  exoRelay.config.Role,
 	})
 	if err != nil {
 		return err

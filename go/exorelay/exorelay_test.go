@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 	"reflect"
 	"strings"
@@ -20,7 +21,7 @@ func newExocom() *exocomMock.ExoComMock {
 	exocom := exocomMock.New()
 	go func() {
 		err := exocom.Listen(4100)
-		if err != nil {
+		if err != nil && err != http.ErrServerClosed {
 			log.Fatal(err)
 		}
 	}()

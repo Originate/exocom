@@ -135,15 +135,18 @@ func FeatureContext(s *godog.Suite) {
 
 func TestMain(m *testing.M) {
 	var paths []string
+	var format string
 	if len(os.Args) == 2 {
+		format = "pretty"
 		paths = append(paths, strings.Split(os.Args[1], "=")[1])
 	} else {
+		format = "progress"
 		paths = append(paths, "features")
 	}
 	status := godog.RunWithOptions("godogs", func(s *godog.Suite) {
 		FeatureContext(s)
 	}, godog.Options{
-		Format:        "pretty",
+		Format:        format,
 		NoColors:      false,
 		StopOnFailure: true,
 		Paths:         paths,

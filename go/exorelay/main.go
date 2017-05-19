@@ -3,6 +3,8 @@ package exorelay
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
+	"io"
 
 	"github.com/Originate/exocom/go/structs"
 	uuid "github.com/satori/go.uuid"
@@ -19,14 +21,16 @@ type Config struct {
 
 // ExoRelay is the Go API to talk to Exocom
 type ExoRelay struct {
-	config Config
-	socket *websocket.Conn
+	config         Config
+	socket         *websocket.Conn
+	messageChannel chan structs.Message
 }
 
 // New creates a new ExoRelay instance
 func New(config Config) *ExoRelay {
 	return &ExoRelay{
-		config: config,
+		config:         config,
+		messageChannel: make(chan structs.Message),
 	}
 }
 
@@ -37,7 +41,13 @@ func (exoRelay *ExoRelay) Connect() error {
 		return err
 	}
 	exoRelay.socket = socket
+	go exoRelay.listenForMessages()
 	return exoRelay.Send("exocom.register-service", map[string]interface{}{"clientName": exoRelay.config.Role})
+}
+
+// GetMessageChannel returns a channel which can be used read incoming messages
+func (exoRelay *ExoRelay) GetMessageChannel() chan structs.Message {
+	return exoRelay.messageChannel
 }
 
 // Send sends the event with the given name and payload
@@ -56,4 +66,35 @@ func (exoRelay *ExoRelay) Send(eventName string, payload map[string]interface{})
 	}
 
 	return websocket.Message.Send(exoRelay.socket, serializedBytes)
+}
+
+// Helpers
+
+func (exoRelay *ExoRelay) listenForMessages() {
+	for {
+		message, err := exoRelay.readMessage()
+		if err == io.EOF {
+			break
+		} else if err != nil {
+			fmt.Println("Error reading message from websocket:", err)
+			break
+		} else {
+			exoRelay.messageChannel <- message
+		}
+	}
+}
+
+func (exoRelay *ExoRelay) readMessage() (structs.Message, error) {
+	var bytes []byte
+	if err := websocket.Message.Receive(exoRelay.socket, &bytes); err != nil {
+		return structs.Message{}, err
+	}
+
+	var unmarshaled structs.Message
+	err := json.Unmarshal(bytes, &unmarshaled)
+	if err != nil {
+		return structs.Message{}, err
+	}
+
+	return unmarshaled, nil
 }

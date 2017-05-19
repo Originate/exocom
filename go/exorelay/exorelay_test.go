@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"os"
 	"reflect"
-	"strings"
 	"testing"
 
 	"github.com/DATA-DOG/godog"
@@ -136,9 +135,9 @@ func FeatureContext(s *godog.Suite) {
 func TestMain(m *testing.M) {
 	var paths []string
 	var format string
-	if len(os.Args) == 2 {
+	if len(os.Args) == 3 && os.Args[1] == "--" {
 		format = "pretty"
-		paths = append(paths, strings.Split(os.Args[1], "=")[1])
+		paths = append(paths, os.Args[2])
 	} else {
 		format = "progress"
 		paths = append(paths, "features")

@@ -5,7 +5,7 @@ actions:
 
   - match:
       filename: '\.feature$'
-    command: 'go test {{filename}}'
+    command: 'go test -- {{filename}}'
 
   - match:
     command: 'go test'

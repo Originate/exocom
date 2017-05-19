@@ -47,6 +47,7 @@ The tests run against the compiled output, so you need to run `watch` before exe
 
 - run all tests: `spec`
 - run feature tests: `features`
+  - set environment variable `DEBUG_EXOCOM_SERVER=1` to print debug output
 - run unit tests: `tests`
 - run linter: `lint`
 

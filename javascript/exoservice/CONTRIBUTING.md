@@ -19,6 +19,8 @@ $ spec
 $ lint
 ```
 
+- set environment variable `DEBUG_EXOSERVICE=1` to print debug output
+
 ## Update
 
 ```

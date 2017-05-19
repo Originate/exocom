@@ -7,6 +7,16 @@ require! {
 }
 
 
+observableProcessOptions = if process.env.DEBUG_EXOSERVICE
+  verbose: yes
+  stdout: process.stdout
+  stderr: process.stderr
+else
+  verbose: no
+  stdout: no
+  stderr: no
+
+
 # Provides steps for end-to-end testing of the service as a stand-alone binary
 CliWorld = !->
 
@@ -16,9 +26,9 @@ CliWorld = !->
     @process = new ObservableProcess(command,
                                      env: {EXOCOM_PORT: exocom-port, ROLE: role},
                                      cwd: path.join(process.cwd!, 'features', 'example-services', role),
-                                     verbose: yes,
-                                     stdout: process.stdout,
-                                     stderr: process.stderr)
+                                     verbose: observableProcessOptions.verbose,
+                                     stdout: observableProcessOptions.stdout,
+                                     stderr: observableProcessOptions.stderr)
       ..wait 'online at port', done
 
 

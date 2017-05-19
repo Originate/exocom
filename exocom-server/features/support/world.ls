@@ -13,6 +13,14 @@ require! {
 }
 
 
+observableProcessOptions = if process.env.DEBUG_EXOCOM_SERVER
+  stdout: dim-console.process.stdout
+  stderr: dim-console.process.stderr
+else
+  stdout: no
+  stderr: no
+
+
 # Provides steps for end-to-end testing of the service as a stand-alone binary
 World = !->
 
@@ -21,7 +29,7 @@ World = !->
       PORT : port
       SERVICE_ROUTES : service-routes
     @port = port
-    @process = new ObservableProcess "bin/exocom", stdout: dim-console.process.stdout, stderr: dim-console.process.stderr, env: env
+    @process = new ObservableProcess "bin/exocom", stdout: observableProcessOptions.stdout, stderr: observableProcessOptions.stderr, env: env
       ..wait "WebSocket listener online at port #{@port}", done
 
 
@@ -34,7 +42,7 @@ World = !->
   @run-exocom-at-port = (port, _expect-error, done) ->
     env =
       PORT : port
-    @process = new ObservableProcess "bin/exocom", stdout: dim-console.process.stdout, stderr: dim-console.process.stderr, env: env
+    @process = new ObservableProcess "bin/exocom", stdout: observableProcessOptions.stdout, stderr: observableProcessOptions.stderr, env: env
     done!
 
 

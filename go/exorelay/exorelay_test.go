@@ -1,9 +1,11 @@
 package exorelay_test
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"html/template"
 	"log"
 	"net/http"
 	"os"
@@ -62,6 +64,7 @@ func WaitForReceivedMessagesCount(exocom *exocomMock.ExoComMock, count int) erro
 func FeatureContext(s *godog.Suite) {
 	var exocom *exocomMock.ExoComMock
 	var exoInstance *exorelay.ExoRelay
+	var outgoingMessageId string
 	var savedError error
 	var testFixture exorelay_test_fixtures.TestFixture
 
@@ -70,6 +73,7 @@ func FeatureContext(s *godog.Suite) {
 	})
 
 	s.BeforeScenario(func(interface{}) {
+		outgoingMessageId = ""
 		savedError = nil
 		testFixture = nil
 	})
@@ -120,7 +124,9 @@ func FeatureContext(s *godog.Suite) {
 	})
 
 	s.Step(`^sending the message "([^"]*)"$`, func(message string) error {
-		return exoInstance.Send(message, nil)
+		var err error
+		outgoingMessageId, err = exoInstance.Send(message, nil)
+		return err
 	})
 
 	s.Step(`^sending the message "([^"]*)" with the payload:$`, func(message string, payloadStr *gherkin.DocString) error {
@@ -129,11 +135,12 @@ func FeatureContext(s *godog.Suite) {
 		if err != nil {
 			return err
 		}
-		return exoInstance.Send(message, payload)
+		outgoingMessageId, err = exoInstance.Send(message, payload)
+		return err
 	})
 
 	s.Step(`^trying to send an empty message$`, func() error {
-		savedError = exoInstance.Send("", nil)
+		outgoingMessageId, savedError = exoInstance.Send("", nil)
 		if savedError == nil {
 			return fmt.Errorf("Expected ExoRelay to error but it did not")
 		} else {
@@ -147,12 +154,21 @@ func FeatureContext(s *godog.Suite) {
 			return err
 		}
 		actualMessage := exocom.ReceivedMessages[1]
-		var expectedMessage structs.Message
-		err = json.Unmarshal([]byte(messageStr.Content), &expectedMessage)
+		t := template.New("request")
+		t, err = t.Parse(messageStr.Content)
 		if err != nil {
 			return err
 		}
-		expectedMessage.ID = actualMessage.ID
+		var expectedMessageBuffer bytes.Buffer
+		err = t.Execute(&expectedMessageBuffer, map[string]interface{}{"outgoingMessageId": outgoingMessageId})
+		if err != nil {
+			return err
+		}
+		var expectedMessage structs.Message
+		err = json.Unmarshal(expectedMessageBuffer.Bytes(), &expectedMessage)
+		if err != nil {
+			return err
+		}
 		if !reflect.DeepEqual(actualMessage, expectedMessage) {
 			return fmt.Errorf("Expected request to equal %s but got %s", expectedMessage, actualMessage)
 		}

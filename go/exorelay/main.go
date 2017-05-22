@@ -42,7 +42,8 @@ func (exoRelay *ExoRelay) Connect() error {
 	}
 	exoRelay.socket = socket
 	go exoRelay.listenForMessages()
-	return exoRelay.Send("exocom.register-service", map[string]interface{}{"clientName": exoRelay.config.Role})
+	_, err = exoRelay.Send("exocom.register-service", map[string]interface{}{"clientName": exoRelay.config.Role})
+	return err
 }
 
 // GetMessageChannel returns a channel which can be used read incoming messages
@@ -51,21 +52,22 @@ func (exoRelay *ExoRelay) GetMessageChannel() chan structs.Message {
 }
 
 // Send sends the event with the given name and payload
-func (exoRelay *ExoRelay) Send(eventName string, payload map[string]interface{}) error {
+// returns the outgoing message id when sent successfully
+func (exoRelay *ExoRelay) Send(eventName string, payload map[string]interface{}) (string, error) {
+	id := uuid.NewV4().String()
 	if eventName == "" {
-		return errors.New("ExoRelay#Send cannot send empty messages")
+		return "", errors.New("ExoRelay#Send cannot send empty messages")
 	}
 	serializedBytes, err := json.Marshal(&structs.Message{
-		ID:      uuid.NewV4().String(),
+		ID:      id,
 		Name:    eventName,
 		Payload: payload,
 		Sender:  exoRelay.config.Role,
 	})
 	if err != nil {
-		return err
+		return "", err
 	}
-
-	return websocket.Message.Send(exoRelay.socket, serializedBytes)
+	return id, websocket.Message.Send(exoRelay.socket, serializedBytes)
 }
 
 // Helpers

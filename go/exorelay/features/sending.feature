@@ -9,6 +9,7 @@ Feature: Sending outgoing messages
   - provide the name of the message to send as the first parameter
   - provide payload for the message as the second parameter
   - the payload is a JSON structure
+  - returns the message id which can be used to check if a received message is a reply
 
 
   Background:
@@ -23,7 +24,7 @@ Feature: Sending outgoing messages
       {
         "name": "hello-world",
         "sender": "test-service",
-        "id": "{{request_uuid}}"
+        "id": "{{.outgoingMessageId}}"
       }
       """
 
@@ -40,7 +41,7 @@ Feature: Sending outgoing messages
           "name": "world"
         },
         "sender": "test-service",
-        "id": "{{request_uuid}}"
+        "id": "{{.outgoingMessageId}}"
       }
       """
 

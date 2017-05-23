@@ -2,8 +2,11 @@ package structs
 
 // Message defines the structure of websocket packets representing messages
 type Message struct {
-	ID      string                 `json:"id"`
-	Name    string                 `json:"name"`
-	Payload map[string]interface{} `json:"payload"`
-	Sender  string                 `json:"sender"`
+	ID      string         `json:"id"`
+	Name    string         `json:"name"`
+	Payload MessagePayload `json:"payload"`
+	Sender  string         `json:"sender"`
 }
+
+// MessagePayload defines the structure of Message.Payload
+type MessagePayload map[string]interface{}

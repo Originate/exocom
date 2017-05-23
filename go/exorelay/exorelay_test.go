@@ -3,7 +3,6 @@ package exorelay_test
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"html/template"
 	"log"
@@ -11,7 +10,6 @@ import (
 	"os"
 	"reflect"
 	"testing"
-	"time"
 
 	"github.com/DATA-DOG/godog"
 	"github.com/DATA-DOG/godog/gherkin"
@@ -21,10 +19,10 @@ import (
 	"github.com/Originate/exocom/go/structs"
 )
 
-func newExocom() *exocomMock.ExoComMock {
+func newExocom(port int) *exocomMock.ExoComMock {
 	exocom := exocomMock.New()
 	go func() {
-		err := exocom.Listen(4100)
+		err := exocom.Listen(port)
 		if err != nil && err != http.ErrServerClosed {
 			log.Fatal(err)
 		}
@@ -32,44 +30,18 @@ func newExocom() *exocomMock.ExoComMock {
 	return exocom
 }
 
-func WaitFor(condition func() bool, errorMessage string) error {
-	success := make(chan bool, 1)
-
-	go func() {
-		for {
-			time.Sleep(time.Millisecond)
-			if condition() {
-				success <- true
-				break
-			}
-		}
-	}()
-
-	select {
-	case <-success:
-		return nil
-	case <-time.After(time.Second * 10):
-		return errors.New(errorMessage)
-	}
-}
-
-func WaitForReceivedMessagesCount(exocom *exocomMock.ExoComMock, count int) error {
-	return WaitFor(func() bool {
-		return len(exocom.ReceivedMessages) >= count
-	}, fmt.Sprintf("Expected exocom to recieve %d messages but only has %d:\n%v", count, len(exocom.ReceivedMessages), exocom.ReceivedMessages))
-}
-
 // Cucumber step definitions
 // nolint gocyclo
 func FeatureContext(s *godog.Suite) {
 	var exocom *exocomMock.ExoComMock
 	var exoInstance *exorelay.ExoRelay
+	port := 4100
 	var outgoingMessageId string
 	var savedError error
-	var testFixture exorelay_test_fixtures.TestFixture
+	var testFixture exorelayTestFixtures.TestFixture
 
 	s.BeforeSuite(func() {
-		exocom = newExocom()
+		exocom = newExocom(port)
 	})
 
 	s.BeforeScenario(func(interface{}) {
@@ -92,7 +64,7 @@ func FeatureContext(s *godog.Suite) {
 	s.Step(`^an ExoRelay with the role "([^"]*)"$`, func(role string) error {
 		exoInstance = exorelay.New(exorelay.Config{
 			Host: "localhost",
-			Port: "4100",
+			Port: port,
 			Role: role,
 		})
 		return nil
@@ -104,7 +76,7 @@ func FeatureContext(s *godog.Suite) {
 	})
 
 	s.Step(`^it registers by sending the message "([^"]*)" with payload:$`, func(expectedName string, payloadStr *gherkin.DocString) error {
-		err := WaitForReceivedMessagesCount(exocom, 1)
+		err := exocom.WaitForReceivedMessagesCount(1)
 		if err != nil {
 			return err
 		}
@@ -112,7 +84,7 @@ func FeatureContext(s *godog.Suite) {
 		if message.Name != expectedName {
 			return fmt.Errorf("Expected message name to match %s but got %s", expectedName, message.Name)
 		}
-		var expectedPayload map[string]interface{}
+		var expectedPayload structs.MessagePayload
 		err = json.Unmarshal([]byte(payloadStr.Content), &expectedPayload)
 		if err != nil {
 			return err
@@ -130,7 +102,7 @@ func FeatureContext(s *godog.Suite) {
 	})
 
 	s.Step(`^sending the message "([^"]*)" with the payload:$`, func(message string, payloadStr *gherkin.DocString) error {
-		var payload map[string]interface{}
+		var payload structs.MessagePayload
 		err := json.Unmarshal([]byte(payloadStr.Content), &payload)
 		if err != nil {
 			return err
@@ -149,7 +121,7 @@ func FeatureContext(s *godog.Suite) {
 	})
 
 	s.Step(`^ExoRelay makes the WebSocket request:$`, func(messageStr *gherkin.DocString) error {
-		err := WaitForReceivedMessagesCount(exocom, 2)
+		err := exocom.WaitForReceivedMessagesCount(2)
 		if err != nil {
 			return err
 		}
@@ -184,7 +156,7 @@ func FeatureContext(s *godog.Suite) {
 	})
 
 	s.Step(`^I setup the "([^"]*)" test fixture$`, func(name string) error {
-		testFixture = exorelay_test_fixtures.Get(name)
+		testFixture = exorelayTestFixtures.Get(name)
 		testFixture.Setup(exoInstance)
 		return nil
 	})
@@ -195,7 +167,7 @@ func FeatureContext(s *godog.Suite) {
 		if err != nil {
 			return err
 		}
-		err = WaitFor(func() bool { return exocom.HasConnection() }, "nothing connected to exocom")
+		err = exocom.WaitForConnection()
 		if err != nil {
 			return err
 		}
@@ -203,7 +175,7 @@ func FeatureContext(s *godog.Suite) {
 	})
 
 	s.Step(`^the fixture receives a message with the name "([^"]*)" and the payload nil$`, func(messageName string) error {
-		err := WaitFor(func() bool { return len(testFixture.GetReceivedMessages()) == 1 }, "channel sent no messages")
+		err := testFixture.WaitForReceivedMessagesCount(1)
 		if err != nil {
 			return err
 		}
@@ -215,12 +187,12 @@ func FeatureContext(s *godog.Suite) {
 	})
 
 	s.Step(`^the fixture receives a message with the name "([^"]*)" and the payload:$`, func(messageName string, payloadStr *gherkin.DocString) error {
-		var expectedPayload map[string]interface{}
+		var expectedPayload structs.MessagePayload
 		err := json.Unmarshal([]byte(payloadStr.Content), &expectedPayload)
 		if err != nil {
 			return err
 		}
-		err = WaitFor(func() bool { return len(testFixture.GetReceivedMessages()) == 1 }, "channel sent no messages")
+		err = testFixture.WaitForReceivedMessagesCount(1)
 		if err != nil {
 			return err
 		}

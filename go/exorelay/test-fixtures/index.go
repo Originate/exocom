@@ -1,4 +1,4 @@
-package exorelay_test_fixtures
+package exorelayTestFixtures
 
 import (
 	"fmt"
@@ -8,11 +8,14 @@ import (
 	"github.com/Originate/exocom/go/structs"
 )
 
+// TestFixture is an interface used in feature tests
 type TestFixture interface {
 	GetReceivedMessages() []structs.Message
 	Setup(exoRelay *exorelay.ExoRelay)
+	WaitForReceivedMessagesCount(int) error
 }
 
+// Get returns the TestFixture for the given name
 func Get(name string) TestFixture {
 	switch name {
 	case "receiving-messages":

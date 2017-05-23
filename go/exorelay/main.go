@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"strconv"
 
 	"github.com/Originate/exocom/go/structs"
 	uuid "github.com/satori/go.uuid"
@@ -15,7 +16,7 @@ import (
 // Config contains the configuration values for ExoRelay instances
 type Config struct {
 	Host string
-	Port string
+	Port int
 	Role string
 }
 
@@ -35,25 +36,25 @@ func New(config Config) *ExoRelay {
 }
 
 // Connect brings an ExoRelay instance online
-func (exoRelay *ExoRelay) Connect() error {
-	socket, err := websocket.Dial("ws://"+exoRelay.config.Host+":"+exoRelay.config.Port, "", "origin:")
+func (e *ExoRelay) Connect() error {
+	socket, err := websocket.Dial("ws://"+e.config.Host+":"+strconv.Itoa(e.config.Port), "", "origin:")
 	if err != nil {
 		return err
 	}
-	exoRelay.socket = socket
-	go exoRelay.listenForMessages()
-	_, err = exoRelay.Send("exocom.register-service", map[string]interface{}{"clientName": exoRelay.config.Role})
+	e.socket = socket
+	go e.listenForMessages()
+	_, err = e.Send("exocom.register-service", map[string]interface{}{"clientName": e.config.Role})
 	return err
 }
 
 // GetMessageChannel returns a channel which can be used read incoming messages
-func (exoRelay *ExoRelay) GetMessageChannel() chan structs.Message {
-	return exoRelay.messageChannel
+func (e *ExoRelay) GetMessageChannel() chan structs.Message {
+	return e.messageChannel
 }
 
 // Send sends the event with the given name and payload
 // returns the outgoing message id when sent successfully
-func (exoRelay *ExoRelay) Send(eventName string, payload map[string]interface{}) (string, error) {
+func (e *ExoRelay) Send(eventName string, payload map[string]interface{}) (string, error) {
 	id := uuid.NewV4().String()
 	if eventName == "" {
 		return "", errors.New("ExoRelay#Send cannot send empty messages")
@@ -62,33 +63,33 @@ func (exoRelay *ExoRelay) Send(eventName string, payload map[string]interface{})
 		ID:      id,
 		Name:    eventName,
 		Payload: payload,
-		Sender:  exoRelay.config.Role,
+		Sender:  e.config.Role,
 	})
 	if err != nil {
 		return "", err
 	}
-	return id, websocket.Message.Send(exoRelay.socket, serializedBytes)
+	return id, websocket.Message.Send(e.socket, serializedBytes)
 }
 
 // Helpers
 
-func (exoRelay *ExoRelay) listenForMessages() {
+func (e *ExoRelay) listenForMessages() {
 	for {
-		message, err := exoRelay.readMessage()
+		message, err := e.readMessage()
 		if err == io.EOF {
 			break
 		} else if err != nil {
 			fmt.Println("Error reading message from websocket:", err)
 			break
 		} else {
-			exoRelay.messageChannel <- message
+			e.messageChannel <- message
 		}
 	}
 }
 
-func (exoRelay *ExoRelay) readMessage() (structs.Message, error) {
+func (e *ExoRelay) readMessage() (structs.Message, error) {
 	var bytes []byte
-	if err := websocket.Message.Receive(exoRelay.socket, &bytes); err != nil {
+	if err := websocket.Message.Receive(e.socket, &bytes); err != nil {
 		return structs.Message{}, err
 	}
 

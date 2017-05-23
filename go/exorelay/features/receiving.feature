@@ -5,7 +5,7 @@ Feature: Receiving messages
   So that I can create Exoservices.
 
   Rules:
-  - you can listen for messages on a channel
+  - Incoming messages are provided via a channel
 
 
   Background:

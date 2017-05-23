@@ -4,9 +4,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 
 	"github.com/Originate/exocom/go/structs"
+	"github.com/Originate/exocom/go/utils"
 	"golang.org/x/net/websocket"
 )
 
@@ -28,42 +30,62 @@ func New() *ExoComMock {
 }
 
 // Close takes this ExoComMock instance offline
-func (exoCom *ExoComMock) Close() error {
-	return exoCom.server.Close()
+func (e *ExoComMock) Close() error {
+	return e.server.Close()
 }
 
 // Listen brings this ExoComMock instance online
-func (exoCom *ExoComMock) Listen(port int) error {
-	exoCom.server.Addr = fmt.Sprintf(":%d", port)
-	return exoCom.server.ListenAndServe()
+func (e *ExoComMock) Listen(port int) error {
+	e.server.Addr = fmt.Sprintf(":%d", port)
+	return e.server.ListenAndServe()
 }
 
 // HasConnection returns whether or not a socket is connected
-func (exoCom *ExoComMock) HasConnection() bool {
-	return exoCom.socket != nil
+func (e *ExoComMock) HasConnection() bool {
+	return e.socket != nil
 }
 
-// Reset nils the socket and clears all received messages
-func (exoCom *ExoComMock) Reset() {
-	exoCom.socket = nil
-	exoCom.ReceivedMessages = []structs.Message{}
+// Reset closes and nils the socket and clears all received messages
+func (e *ExoComMock) Reset() {
+	if e.HasConnection() {
+		err := e.socket.Close()
+		if err != nil {
+			log.Fatal(err)
+		}
+		e.socket = nil
+	}
+	e.ReceivedMessages = []structs.Message{}
 }
 
 // Send sends the given message to the connected socket
-func (exoCom *ExoComMock) Send(message structs.Message) error {
-	if !exoCom.HasConnection() {
+func (e *ExoComMock) Send(message structs.Message) error {
+	if !e.HasConnection() {
 		return fmt.Errorf("Nothing connected to exocom")
 	}
 	serializedBytes, err := json.Marshal(message)
 	if err != nil {
 		return err
 	}
-	return websocket.Message.Send(exoCom.socket, serializedBytes)
+	return websocket.Message.Send(e.socket, serializedBytes)
+}
+
+// WaitForConnection waits for a socket to connect
+func (e *ExoComMock) WaitForConnection() error {
+	return utils.WaitFor(func() bool {
+		return e.HasConnection()
+	}, "Expected a socket to connect to exocom")
+}
+
+// WaitForReceivedMessagesCount waits the received messages count to equal the given count
+func (e *ExoComMock) WaitForReceivedMessagesCount(count int) error {
+	return utils.WaitFor(func() bool {
+		return len(e.ReceivedMessages) >= count
+	}, fmt.Sprintf("Expected exocom to recieve %d messages but only has %d:\n%v", count, len(e.ReceivedMessages), e.ReceivedMessages))
 }
 
 // Helpers
 
-func (exoCom *ExoComMock) readMessage(socket *websocket.Conn) (structs.Message, error) {
+func (e *ExoComMock) readMessage(socket *websocket.Conn) (structs.Message, error) {
 	var bytes []byte
 	if err := websocket.Message.Receive(socket, &bytes); err != nil {
 		return structs.Message{}, err
@@ -78,18 +100,19 @@ func (exoCom *ExoComMock) readMessage(socket *websocket.Conn) (structs.Message, 
 	return unmarshaled, nil
 }
 
-// websocketHandler is called when the given socket connects
-func (exoCom *ExoComMock) websocketHandler(socket *websocket.Conn) {
-	exoCom.socket = socket
+func (e *ExoComMock) websocketHandler(socket *websocket.Conn) {
+	e.socket = socket
 	for {
-		message, err := exoCom.readMessage(socket)
-		if err == io.EOF {
+		message, err := e.readMessage(socket)
+		if socket != e.socket {
+			break // socket was closed via the Reset function
+		} else if err == io.EOF {
 			break
 		} else if err != nil {
 			fmt.Println("Error reading message from websocket:", err)
 			break
 		} else {
-			exoCom.ReceivedMessages = append(exoCom.ReceivedMessages, message)
+			e.ReceivedMessages = append(e.ReceivedMessages, message)
 		}
 	}
 }

@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"strconv"
 
 	"github.com/Originate/exocom/go/structs"
 	uuid "github.com/satori/go.uuid"
@@ -20,30 +19,33 @@ type Config struct {
 	Role string
 }
 
-// ExoRelay is the Go API to talk to Exocom
+// MessageOptions contains the configuration values for ExoRelay instances
+type MessageOptions struct {
+	Name       string
+	Payload    structs.MessagePayload
+	ResponseTo string
+}
+
+// ExoRelay is the low level Go API to talk to Exocom
 type ExoRelay struct {
-	config         Config
+	Config         Config
 	socket         *websocket.Conn
 	messageChannel chan structs.Message
 }
 
-// New creates a new ExoRelay instance
-func New(config Config) *ExoRelay {
-	return &ExoRelay{
-		config:         config,
-		messageChannel: make(chan structs.Message),
-	}
-}
-
 // Connect brings an ExoRelay instance online
 func (e *ExoRelay) Connect() error {
-	socket, err := websocket.Dial("ws://"+e.config.Host+":"+strconv.Itoa(e.config.Port), "", "origin:")
+	socket, err := websocket.Dial(fmt.Sprintf("ws://%s:%d", e.Config.Host, e.Config.Port), "", "origin:")
 	if err != nil {
 		return err
 	}
 	e.socket = socket
+	e.messageChannel = make(chan structs.Message)
 	go e.listenForMessages()
-	_, err = e.Send("exocom.register-service", map[string]interface{}{"clientName": e.config.Role})
+	_, err = e.Send(MessageOptions{
+		Name:    "exocom.register-service",
+		Payload: map[string]interface{}{"clientName": e.Config.Role},
+	})
 	return err
 }
 
@@ -52,19 +54,20 @@ func (e *ExoRelay) GetMessageChannel() chan structs.Message {
 	return e.messageChannel
 }
 
-// Send sends the event with the given name and payload
-// returns the outgoing message id when sent successfully
-func (e *ExoRelay) Send(eventName string, payload map[string]interface{}) (string, error) {
+// Send sends a message with the given options
+func (e *ExoRelay) Send(options MessageOptions) (string, error) {
 	id := uuid.NewV4().String()
-	if eventName == "" {
+	if options.Name == "" {
 		return "", errors.New("ExoRelay#Send cannot send empty messages")
 	}
-	serializedBytes, err := json.Marshal(&structs.Message{
-		ID:      id,
-		Name:    eventName,
-		Payload: payload,
-		Sender:  e.config.Role,
-	})
+	message := &structs.Message{
+		ID:         id,
+		Name:       options.Name,
+		Payload:    options.Payload,
+		ResponseTo: options.ResponseTo,
+		Sender:     e.Config.Role,
+	}
+	serializedBytes, err := json.Marshal(message)
 	if err != nil {
 		return "", err
 	}

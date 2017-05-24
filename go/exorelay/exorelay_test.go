@@ -62,11 +62,13 @@ func FeatureContext(s *godog.Suite) {
 	})
 
 	s.Step(`^an ExoRelay with the role "([^"]*)"$`, func(role string) error {
-		exoInstance = exorelay.New(exorelay.Config{
-			Host: "localhost",
-			Port: port,
-			Role: role,
-		})
+		exoInstance = &exorelay.ExoRelay{
+			Config: exorelay.Config{
+				Host: "localhost",
+				Port: port,
+				Role: role,
+			},
+		}
 		return nil
 	})
 
@@ -95,24 +97,24 @@ func FeatureContext(s *godog.Suite) {
 		return nil
 	})
 
-	s.Step(`^sending the message "([^"]*)"$`, func(message string) error {
+	s.Step(`^sending the message "([^"]*)"$`, func(name string) error {
 		var err error
-		outgoingMessageId, err = exoInstance.Send(message, nil)
+		outgoingMessageId, err = exoInstance.Send(exorelay.MessageOptions{Name: name})
 		return err
 	})
 
-	s.Step(`^sending the message "([^"]*)" with the payload:$`, func(message string, payloadStr *gherkin.DocString) error {
+	s.Step(`^sending the message "([^"]*)" with the payload:$`, func(name string, payloadStr *gherkin.DocString) error {
 		var payload structs.MessagePayload
 		err := json.Unmarshal([]byte(payloadStr.Content), &payload)
 		if err != nil {
 			return err
 		}
-		outgoingMessageId, err = exoInstance.Send(message, payload)
+		outgoingMessageId, err = exoInstance.Send(exorelay.MessageOptions{Name: name, Payload: payload})
 		return err
 	})
 
 	s.Step(`^trying to send an empty message$`, func() error {
-		outgoingMessageId, savedError = exoInstance.Send("", nil)
+		outgoingMessageId, savedError = exoInstance.Send(exorelay.MessageOptions{Name: ""})
 		if savedError == nil {
 			return fmt.Errorf("Expected ExoRelay to error but it did not")
 		} else {

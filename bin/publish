@@ -8,10 +8,10 @@ require! {
   'shelljs/global'
 }
 
-SUBPROJECTS_TO_PUBLISH = <[ exocom-mock-javascript
-                            exocom-server
-                            exorelay-javascript
-                            exoservice-javascript  ]>
+SUBPROJECTS_TO_PUBLISH = <[ exocom-server
+                            javascript/exocom-mock
+                            javascript/exorelay
+                            javascript/exoservice  ]>
 
 # exocom-server is used because there is no root package.json
 # all node exocommunication services are in lock-step versioning
@@ -24,6 +24,7 @@ function main
   @level = process.argv[2]
   display-help! if @level in ['-h, --help']
 
+  @root-dir = process.cwd!
   @target-version = get-target-version version, @level
 
   <- confirm-target-version
@@ -91,7 +92,7 @@ function push-exocom-docker-image
   cd 'exocom-server'
   run-command "docker build --no-cache -t originate/exocom:#{@target-version} ."
   run-command "docker push originate/exocom:#{@target-version}"
-  cd '..'
+  cd @root-dir 
 
 
 function push-git-tags
@@ -109,7 +110,7 @@ function run-command-in-subdirs command
     console.log "Running #{yellow command} in subproject #{cyan directory}"
     cd directory
     run-command command
-    cd '..'
+    cd @root-dir 
     console.log!
 
 

@@ -8,20 +8,20 @@ import (
 	"github.com/Originate/exocom/go/structs"
 )
 
-// PingTextFixture is a test fixture which responds to "ping" messages with "pong" messages
-type PingTextFixture struct {
+// SendTextFixture is a test fixture which sends "ping_received" messages when it receives "ping" messages
+type SendTextFixture struct {
 	ReceivedMessages []structs.Message
 }
 
 // Setup creates an ExoService instance for the given config
-func (r *PingTextFixture) Setup(config exorelay.Config) *exoservice.ExoService {
+func (r *SendTextFixture) Setup(config exorelay.Config) *exoservice.ExoService {
 	return &exoservice.ExoService{
 		Config: config,
 		MessageHandlers: exoservice.MessageHandlerMapping{
 			"ping": func(_ structs.MessagePayload, helpers exoservice.SendHelpers) {
-				err := helpers.Reply(exorelay.MessageOptions{Name: "pong"})
+				err := helpers.Send(exorelay.MessageOptions{Name: "ping_received"})
 				if err != nil {
-					panic(fmt.Sprintf("Failed to send reply: %v", err))
+					panic(fmt.Sprintf("Failed to send message: %v", err))
 				}
 			},
 		},

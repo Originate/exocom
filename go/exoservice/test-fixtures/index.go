@@ -18,6 +18,8 @@ func Get(name string) TestFixture {
 	switch name {
 	case "ping":
 		return &PingTextFixture{}
+	case "send":
+		return &SendTextFixture{}
 	}
 	log.Fatal(fmt.Sprintf("Cannot find text fixture: %s", name))
 	return nil

@@ -8,6 +8,7 @@ import (
 // SendHelpers contains helper functions for sending messages
 type SendHelpers struct {
 	Reply func(exorelay.MessageOptions) error
+	Send  func(exorelay.MessageOptions) error
 }
 
 // MessageHandler is the function signature for handling a message
@@ -56,6 +57,7 @@ func (e *ExoService) receiveMessage(message structs.Message) {
 	}
 	e.MessageHandlers[message.Name](message.Payload, SendHelpers{
 		Reply: e.buildSendHelper(message.ID),
+		Send:  e.buildSendHelper(""),
 	})
 }
 

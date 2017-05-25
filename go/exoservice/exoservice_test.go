@@ -58,7 +58,7 @@ func FeatureContext(s *godog.Suite) {
 		return exoService.Connect()
 	})
 
-	s.Step(`^receiving a "([^"]*)" message with id "([^"]*)"$`, func(name, id string) error {
+	s.Step(`^receiving a "([^"]*)" message(?: with id "([^"]*)")?$`, func(name, id string) error {
 		message := structs.Message{
 			ID:   id,
 			Name: name,
@@ -70,7 +70,7 @@ func FeatureContext(s *godog.Suite) {
 		return exocom.Send(message)
 	})
 
-	s.Step(`^it sends a "([^"]*)" message as a reply to the message with id "([^"]*)"$`, func(name, id string) error {
+	s.Step(`^it sends a "([^"]*)" message(?: as a reply to the message with id "([^"]*)")?$`, func(name, id string) error {
 		err := exocom.WaitForReceivedMessagesCount(2)
 		if err != nil {
 			return err

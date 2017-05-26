@@ -99,6 +99,7 @@ module.exports = ->
 
   @When /^receiving this message:$/, (request-data) ->
     eval livescript.compile "data = {\n#{request-data}\n}", bare: yes, header: no
+    data.message-id = data.id
     data.service = 'test-service'
     @exocom.send data
 

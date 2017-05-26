@@ -26,7 +26,7 @@ Feature: Sending outgoing replies to incoming messages
       name: 'users.create'
       payload:
         name: 'Will Riker'
-      message-id: '123'
+      id: '123'
       """
     Then my message handler replies with the message:
       """
@@ -49,7 +49,7 @@ Feature: Sending outgoing replies to incoming messages
     When receiving this message:
       """
       name: 'ping'
-      message-id: '123'
+      id: '123'
       """
     Then my message handler replies with the message:
       """

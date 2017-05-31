@@ -50,12 +50,13 @@ func FeatureContext(s *godog.Suite) {
 
 	s.Step(`^I connect the "([^"]*)" test fixture$`, func(name string) error {
 		testFixture = exoserviceTestFixtures.Get(name)
-		exoService = testFixture.Setup(exorelay.Config{
+		config := exorelay.Config{
 			Host: "localhost",
 			Port: port,
 			Role: "test-service",
-		})
-		return exoService.Connect()
+		}
+		exoService = &exoservice.ExoService{}
+		return exoService.Connect(config, testFixture.GetMessageHandler())
 	})
 
 	s.Step(`^receiving a "([^"]*)" message(?: with id "([^"]*)")?$`, func(name, id string) error {

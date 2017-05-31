@@ -13,17 +13,14 @@ type PingTextFixture struct {
 	ReceivedMessages []structs.Message
 }
 
-// Setup creates an ExoService instance for the given config
-func (r *PingTextFixture) Setup(config exorelay.Config) *exoservice.ExoService {
-	return &exoservice.ExoService{
-		Config: config,
-		MessageHandlers: exoservice.MessageHandlerMapping{
-			"ping": func(_ structs.MessagePayload, helpers exoservice.SendHelpers) {
-				err := helpers.Reply(exorelay.MessageOptions{Name: "pong"})
-				if err != nil {
-					panic(fmt.Sprintf("Failed to send reply: %v", err))
-				}
-			},
+// GetMessageHandler returns a message hangler
+func (r *PingTextFixture) GetMessageHandler() exoservice.MessageHandlerMapping {
+	return exoservice.MessageHandlerMapping{
+		"ping": func(request exoservice.Request) {
+			err := request.Reply(exorelay.MessageOptions{Name: "pong"})
+			if err != nil {
+				panic(fmt.Sprintf("Failed to send reply: %v", err))
+			}
 		},
 	}
 }

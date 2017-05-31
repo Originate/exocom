@@ -15,4 +15,4 @@ Feature: Outgoing messages
 
   Scenario: replying to a message
     When receiving a "ping" message
-    Then it sends a "ping_received" message
+    Then it sends a "pong" message

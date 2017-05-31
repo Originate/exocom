@@ -1,32 +1,57 @@
 package exoservice
 
 import (
+	"fmt"
+	"os"
+	"strconv"
+
 	"github.com/Originate/exocom/go/exorelay"
 	"github.com/Originate/exocom/go/structs"
 )
 
-// SendHelpers contains helper functions for sending messages
-type SendHelpers struct {
-	Reply func(exorelay.MessageOptions) error
-	Send  func(exorelay.MessageOptions) error
+// Request contains payload and helper functions for sending messages
+type Request struct {
+	Payload structs.MessagePayload
+	Reply   func(exorelay.MessageOptions) error
+	Send    func(exorelay.MessageOptions) error
 }
 
 // MessageHandler is the function signature for handling a message
-type MessageHandler func(structs.MessagePayload, SendHelpers)
+type MessageHandler func(Request)
 
 // MessageHandlerMapping is a map from message name to MessageHandler
 type MessageHandlerMapping map[string]MessageHandler
 
+// Bootstrap brings an ExoService online using environment variables and the
+// given messageHandlers
+func Bootstrap(messageHandlers MessageHandlerMapping) {
+	port, err := strconv.Atoi(os.Getenv("EXOCOM_PORT"))
+	if err != nil {
+		panic(fmt.Sprintf("Invalid port: %s", os.Getenv("EXOCOM_PORT")))
+	}
+	config := exorelay.Config{
+		Host: os.Getenv("EXOCOM_HOST"),
+		Port: port,
+		Role: os.Getenv("ROLE"),
+	}
+	service := ExoService{}
+	err = service.Connect(config, messageHandlers)
+	if err != nil {
+		panic(fmt.Sprintf("Failed to connect: %v", err))
+	}
+	fmt.Println("online at port", port)
+}
+
 // ExoService is the high level Go API to talk to Exocom
 type ExoService struct {
-	Config          exorelay.Config
-	MessageHandlers MessageHandlerMapping
 	exoRelay        exorelay.ExoRelay
+	messageHandlers MessageHandlerMapping
 }
 
 // Connect brings an ExoService instance online
-func (e *ExoService) Connect() error {
-	e.exoRelay = exorelay.ExoRelay{Config: e.Config}
+func (e *ExoService) Connect(config exorelay.Config, messageHandlers MessageHandlerMapping) error {
+	e.exoRelay = exorelay.ExoRelay{Config: config}
+	e.messageHandlers = messageHandlers
 	err := e.exoRelay.Connect()
 	if err != nil {
 		return err
@@ -49,15 +74,16 @@ func (e *ExoService) listenForMessages() {
 }
 
 func (e *ExoService) receiveMessage(message structs.Message) {
-	if e.MessageHandlers == nil {
+	if e.messageHandlers == nil {
 		return
 	}
-	if e.MessageHandlers[message.Name] == nil {
+	if e.messageHandlers[message.Name] == nil {
 		return
 	}
-	e.MessageHandlers[message.Name](message.Payload, SendHelpers{
-		Reply: e.buildSendHelper(message.ID),
-		Send:  e.buildSendHelper(""),
+	e.messageHandlers[message.Name](Request{
+		Payload: message.Payload,
+		Reply:   e.buildSendHelper(message.ID),
+		Send:    e.buildSendHelper(""),
 	})
 }
 

@@ -56,7 +56,17 @@ func FeatureContext(s *godog.Suite) {
 			Role: "test-service",
 		}
 		exoService = &exoservice.ExoService{}
-		return exoService.Connect(config, testFixture.GetMessageHandler())
+		err := exoService.Connect(config)
+		if err != nil {
+			return err
+		}
+		go func() {
+			err := exoService.ListenForMessages(testFixture.GetMessageHandler())
+			if err != nil {
+				panic(err)
+			}
+		}()
+		return nil
 	})
 
 	s.Step(`^receiving a "([^"]*)" message(?: with id "([^"]*)")?$`, func(name, id string) error {

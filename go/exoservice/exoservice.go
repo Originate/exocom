@@ -1,6 +1,7 @@
 package exoservice
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"strconv"
@@ -35,11 +36,15 @@ func Bootstrap(messageHandlers MessageHandlerMapping) {
 		Role: os.Getenv("ROLE"),
 	}
 	service := ExoService{}
-	err = service.Connect(config, messageHandlers)
+	err = service.Connect(config)
 	if err != nil {
-		panic(fmt.Sprintf("Failed to connect: %v", err))
+		panic(fmt.Sprintf("Error connecting: %v", err))
 	}
 	fmt.Println("online at port", port)
+	err = service.ListenForMessages(messageHandlers)
+	if err != nil {
+		panic(fmt.Sprintf("Error listening for messages: %v", err))
+	}
 }
 
 // ExoService is the high level Go API to talk to Exocom
@@ -49,29 +54,29 @@ type ExoService struct {
 }
 
 // Connect brings an ExoService instance online
-func (e *ExoService) Connect(config exorelay.Config, messageHandlers MessageHandlerMapping) error {
+func (e *ExoService) Connect(config exorelay.Config) error {
 	e.exoRelay = exorelay.ExoRelay{Config: config}
-	e.messageHandlers = messageHandlers
-	err := e.exoRelay.Connect()
-	if err != nil {
-		return err
-	}
-	go e.listenForMessages()
-	return nil
+	return e.exoRelay.Connect()
 }
 
-// Helpers
-
-func (e *ExoService) listenForMessages() {
+// ListenForMessages blocks while the instance listens for and responds to messages
+// returns when the message channel closes
+func (e *ExoService) ListenForMessages(messageHandlers MessageHandlerMapping) error {
+	if &e.exoRelay == nil {
+		return errors.New("Please call Connect() first")
+	}
+	e.messageHandlers = messageHandlers
 	messageChannel := e.exoRelay.GetMessageChannel()
 	for {
 		message, ok := <-messageChannel
 		if !ok {
-			break // channel closed
+			return nil
 		}
 		e.receiveMessage(message)
 	}
 }
+
+// Helpers
 
 func (e *ExoService) receiveMessage(message structs.Message) {
 	if e.messageHandlers == nil {

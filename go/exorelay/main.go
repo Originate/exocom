@@ -88,6 +88,7 @@ func (e *ExoRelay) listenForMessages() {
 			e.messageChannel <- message
 		}
 	}
+	close(e.messageChannel)
 }
 
 func (e *ExoRelay) readMessage() (structs.Message, error) {

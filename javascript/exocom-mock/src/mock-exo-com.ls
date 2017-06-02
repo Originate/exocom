@@ -6,7 +6,7 @@ require! {
 debug = require('debug')('exocom-mock')
 
 
-# ASends and receives ZMQ messages in tests
+# Sends and receives messages in tests
 class MockExoCom
 
   ->

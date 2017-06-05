@@ -15,11 +15,11 @@ Feature: Broadcasting messages
       {
         "role": "web",
         "receives": ["users.created"],
-        "sends": ["users.create", "users.list"]
+        "sends": ["users.create", "users.list", "delete user"]
       },
       {
         "role": "users",
-        "receives": ["mongo.create"],
+        "receives": ["mongo.create", "delete user"],
         "sends": ["mongo.created"],
         "namespace": "mongo"
       }
@@ -40,6 +40,11 @@ Feature: Broadcasting messages
     And the "users" service sends "mongo.created" in reply to "111"
     Then ExoCom signals "users  --[ mongo.created ]-[ users.created ]->  web  (XX ms)"
     And ExoCom broadcasts the reply "users.created" to the "web" service
+
+
+  Scenario: broadcasting a message with whitespace
+    When the "web" service sends "delete user"
+    Then ExoCom signals "web  --[ delete user ]->  users"
 
 
   # ERROR HANDLING

@@ -13,7 +13,6 @@ import (
 	"github.com/Originate/exocom/go/exoservice"
 	"github.com/Originate/exocom/go/exoservice/test-fixtures"
 	"github.com/Originate/exocom/go/structs"
-	"github.com/Originate/exocom/go/utils"
 )
 
 func newExocom(port int) *exocomMock.ExoComMock {
@@ -74,7 +73,7 @@ func FeatureContext(s *godog.Suite) {
 			ID:   id,
 			Name: name,
 		}
-		err := utils.WaitFor(func() bool { return exocom.HasConnection() }, "nothing connected to exocom")
+		err := exocom.WaitForConnection()
 		if err != nil {
 			return err
 		}

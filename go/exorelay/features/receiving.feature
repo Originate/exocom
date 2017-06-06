@@ -47,7 +47,7 @@ Feature: Receiving messages
         "id": "123"
       }
       """
-    Then the fixture receives a message with the name "hello-world" and the payload:
+    Then the fixture receives a message with the name "hello" and the payload:
       """
       {
         "name": "world"

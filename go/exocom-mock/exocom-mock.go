@@ -40,6 +40,11 @@ func (e *ExoComMock) Listen(port int) error {
 	return e.server.ListenAndServe()
 }
 
+// GetReceivedMessages returns the received messages
+func (e *ExoComMock) GetReceivedMessages() []structs.Message {
+	return e.ReceivedMessages
+}
+
 // HasConnection returns whether or not a socket is connected
 func (e *ExoComMock) HasConnection() bool {
 	return e.socket != nil
@@ -76,11 +81,9 @@ func (e *ExoComMock) WaitForConnection() error {
 	}, "Expected a socket to connect to exocom")
 }
 
-// WaitForReceivedMessagesCount waits the received messages count to equal the given count
-func (e *ExoComMock) WaitForReceivedMessagesCount(count int) error {
-	return utils.WaitFor(func() bool {
-		return len(e.ReceivedMessages) >= count
-	}, fmt.Sprintf("Expected exocom to recieve %d messages but only has %d:\n%v", count, len(e.ReceivedMessages), e.ReceivedMessages))
+// WaitForMessageWithName waits to receive a message with the given name
+func (e *ExoComMock) WaitForMessageWithName(name string) (structs.Message, error) {
+	return utils.WaitForMessageWithName(e, name)
 }
 
 // Helpers

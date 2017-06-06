@@ -81,13 +81,9 @@ func FeatureContext(s *godog.Suite) {
 	})
 
 	s.Step(`^it sends a "([^"]*)" message(?: as a reply to the message with id "([^"]*)")?$`, func(name, id string) error {
-		err := exocom.WaitForReceivedMessagesCount(2)
+		actualMessage, err := exocom.WaitForMessageWithName(name)
 		if err != nil {
 			return err
-		}
-		actualMessage := exocom.ReceivedMessages[1]
-		if actualMessage.Name != name {
-			return fmt.Errorf("Expected message to have name %s but got %s", name, actualMessage.Name)
 		}
 		if actualMessage.ResponseTo != id {
 			return fmt.Errorf("Expected message to be a response to %s but got %s", id, actualMessage.ResponseTo)

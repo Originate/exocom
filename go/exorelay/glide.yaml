@@ -5,3 +5,7 @@ import:
 - package: golang.org/x/net
 - package: github.com/satori/go.uuid
   version: v1.1.0
+ignore:
+- github.com/Originate/exocom/go/exocom-mock
+- github.com/Originate/exocom/go/structs
+- github.com/Originate/exocom/go/utils

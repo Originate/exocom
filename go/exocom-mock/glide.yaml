@@ -1,8 +1,0 @@
-package: github.com/Originate/exocom/go/exocom-mock
-import:
-- package: golang.org/x/net
-  subpackages:
-  - websocket
-ignore:
-- github.com/Originate/exocom/go/structs
-- github.com/Originate/exocom/go/utils

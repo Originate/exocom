@@ -1,0 +1,15 @@
+hash: 4d8ba1951df0c6df9f80720acc67d81a84ef7ca6a6020faa591eccaf389595c2
+updated: 2017-06-09T14:24:24.880999988-07:00
+imports:
+- name: github.com/DATA-DOG/godog
+  version: 92fbee719c9593813b24a6ef042bcad40324ede4
+  subpackages:
+  - colors
+  - gherkin
+- name: github.com/satori/go.uuid
+  version: 879c5887cd475cd7864858769793b2ceb0d44feb
+- name: golang.org/x/net
+  version: 55a3084c9119aeb9ba2437d595b0a7e9cb635da9
+  subpackages:
+  - websocket
+testImports: []

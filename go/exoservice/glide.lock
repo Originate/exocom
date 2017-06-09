@@ -1,9 +1,0 @@
-hash: 4f810227a5a04093b7e926198e7aa4c3552428ee25efeaec4e1467f188f59ced
-updated: 2017-06-07T12:26:57.99288927-07:00
-imports:
-- name: github.com/DATA-DOG/godog
-  version: 92fbee719c9593813b24a6ef042bcad40324ede4
-  subpackages:
-  - colors
-  - gherkin
-testImports: []

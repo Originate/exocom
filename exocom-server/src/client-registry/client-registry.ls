@@ -79,7 +79,7 @@ class ClientRegistry
     for service-route in jsonic(service-routes)
       result[service-route.role] =
         receives: service-route.receives
-        sends: service-route.sends
+        sends: service-route.sends or []
         internal-namespace: service-route.namespace
     result
 

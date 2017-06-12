@@ -22,11 +22,16 @@ Feature: Broadcasting messages
         "receives": ["mongo.create", "delete user"],
         "sends": ["mongo.created"],
         "namespace": "mongo"
+      },
+      {
+        "role": "log",
+        "receives": ["users.create"]
       }
     ]
     """
     And a running "web" instance
     And a running "users" instance
+    And a running "log" instance
 
 
   Scenario: broadcasting a message
@@ -51,6 +56,11 @@ Feature: Broadcasting messages
   Scenario: broadcasting an invalid message
     When the "web" service sends "users.get-SSN"
     Then ExoCom signals the error "Service 'web' is not allowed to broadcast the message 'users.get-SSN'"
+
+
+  Scenario: broadcasting an invalid message
+    When the "log" service sends "users.get-SSN"
+    Then ExoCom signals the error "Service 'log' is not allowed to broadcast the message 'users.get-SSN'"
 
 
   Scenario: broadcasting a message with no receivers

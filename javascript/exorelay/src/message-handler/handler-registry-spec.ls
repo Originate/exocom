@@ -24,4 +24,3 @@ describe 'HandlerRegistry', ->
       handler-registry.register-handler '1234', handler
       handler-registry.handle-reply message-name: '1234'
       expect(handler-registry.has-handler '1234').to.be.true
-

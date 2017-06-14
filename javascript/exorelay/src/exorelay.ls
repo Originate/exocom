@@ -15,7 +15,7 @@ class ExoRelay extends EventEmitter
     @config?.role or throw new Error 'Role not provided to Exorelay'
 
     # manages the request handlers for incoming messages
-    @message-handler = new HandlerManager!
+    @message-manager = new HandlerManager!
 
     # send and receives messages from Exosphere
     @websocket-connector = new WebSocketConnector config
@@ -24,8 +24,8 @@ class ExoRelay extends EventEmitter
 
 
     delegate \close \connect from: @, to: @websocket-connector
-    delegate \hasHandler \registerHandler \registerHandlers from: @, to: @message-handler
-    delegate-event 'error', from: [@websocket-connector, @message-handler], to: @
+    delegate \hasHandler \registerHandler \registerHandlers from: @, to: @message-manager
+    delegate-event 'error', from: [@websocket-connector, @message-manager], to: @
     delegate-event 'offline', from: @websocket-connector, to: @
 
 
@@ -34,7 +34,7 @@ class ExoRelay extends EventEmitter
 
     message-id = @websocket-connector.send message-name, payload
     if reply-handler
-      @message-handler.register-reply-handler message-id, reply-handler
+      @message-manager.register-reply-handler message-id, reply-handler
     message-id
 
 
@@ -43,7 +43,7 @@ class ExoRelay extends EventEmitter
       @websocket-connector.send "__status-ok"
       return 'success'
 
-    @message-handler.handle-request request-data,
+    @message-manager.handle-request request-data,
                                     reply: @websocket-connector.reply-method-for request-data.id
                                     send: @send
 

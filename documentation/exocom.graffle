@@ -14,7 +14,7 @@
 	<key>BackgroundGraphic</key>
 	<dict>
 		<key>Bounds</key>
-		<string>{{0, 0}, {1529, 956}}</string>
+		<string>{{0, 0}, {1162, 725}}</string>
 		<key>Class</key>
 		<string>SolidGraphic</string>
 		<key>ID</key>
@@ -38,7 +38,7 @@
 	<key>CanvasOrigin</key>
 	<string>{0, 0}</string>
 	<key>CanvasSize</key>
-	<string>{1529, 956}</string>
+	<string>{1162, 725}</string>
 	<key>ColumnAlign</key>
 	<integer>1</integer>
 	<key>ColumnSpacing</key>
@@ -53,69 +53,6 @@
 	<integer>8</integer>
 	<key>GraphicsList</key>
 	<array>
-		<dict>
-			<key>Bounds</key>
-			<string>{{93.698564596946412, 300.00000076180135}, {37, 24}}</string>
-			<key>Class</key>
-			<string>ShapedGraphic</string>
-			<key>FitText</key>
-			<string>YES</string>
-			<key>Flow</key>
-			<string>Resize</string>
-			<key>FontInfo</key>
-			<dict>
-				<key>Color</key>
-				<dict>
-					<key>w</key>
-					<string>0</string>
-				</dict>
-				<key>Font</key>
-				<string>Helvetica</string>
-				<key>Size</key>
-				<real>12</real>
-			</dict>
-			<key>ID</key>
-			<integer>41</integer>
-			<key>Line</key>
-			<dict>
-				<key>ID</key>
-				<integer>10</integer>
-				<key>Position</key>
-				<real>0.47428572177886963</real>
-				<key>RotationType</key>
-				<integer>2</integer>
-			</dict>
-			<key>Rotation</key>
-			<real>89.725860595703125</real>
-			<key>Shape</key>
-			<string>Rectangle</string>
-			<key>Style</key>
-			<dict>
-				<key>shadow</key>
-				<dict>
-					<key>Draws</key>
-					<string>NO</string>
-				</dict>
-				<key>stroke</key>
-				<dict>
-					<key>Draws</key>
-					<string>NO</string>
-				</dict>
-			</dict>
-			<key>Text</key>
-			<dict>
-				<key>Text</key>
-				<string>{\rtf1\ansi\ansicpg1252\cocoartf1504\cocoasubrtf830
-\cocoascreenfonts1{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
-{\colortbl;\red255\green255\blue255;}
-{\*\expandedcolortbl;;}
-\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\qc
-
-\f0\fs24 \cf0 push}</string>
-			</dict>
-			<key>Wrap</key>
-			<string>NO</string>
-		</dict>
 		<dict>
 			<key>Bounds</key>
 			<string>{{154.7067760953172, 301.42298001661032}, {37, 24}}</string>
@@ -181,7 +118,7 @@
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{471.47513042111831, 465.74607780444956}, {29, 24}}</string>
+			<string>{{471.53994864679652, 465.74606721627401}, {29, 24}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FitText</key>
@@ -212,7 +149,7 @@
 				<integer>2</integer>
 			</dict>
 			<key>Rotation</key>
-			<real>89.82147216796875</real>
+			<real>89.770050048828125</real>
 			<key>Shape</key>
 			<string>Rectangle</string>
 			<key>Style</key>
@@ -890,8 +827,8 @@ auto-scaling)}</string>
 			<integer>15</integer>
 			<key>Points</key>
 			<array>
-				<string>{485.88243684143816, 447.99999757113807}</string>
-				<string>{486.0771970015989, 510.50002584044961}</string>
+				<string>{485.92056729590507, 447.99999598550852}</string>
+				<string>{486.17140161582296, 510.50000533940744}</string>
 			</array>
 			<key>Style</key>
 			<dict>
@@ -1023,20 +960,20 @@ service}</string>
 			<key>Points</key>
 			<array>
 				<string>{112, 270.5}</string>
-				<string>{112.41866031445923, 358.00000572198041}</string>
+				<string>{112.23457344188, 285.52387043407327}</string>
 			</array>
 			<key>Style</key>
 			<dict>
 				<key>stroke</key>
 				<dict>
 					<key>HeadArrow</key>
-					<string>FilledArrow</string>
+					<string>0</string>
 					<key>Legacy</key>
 					<true/>
 					<key>LineType</key>
 					<integer>1</integer>
 					<key>TailArrow</key>
-					<string>FilledArrow</string>
+					<string>0</string>
 				</dict>
 			</dict>
 		</dict>
@@ -1102,7 +1039,7 @@ service}</string>
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{96, 358.5}, {33, 33}}</string>
+			<string>{{96, 286.02380950218429}, {33, 33}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>ID</key>
@@ -1354,7 +1291,7 @@ service}</string>
 	<key>MasterSheets</key>
 	<array/>
 	<key>ModificationDate</key>
-	<string>2017-05-25 13:22:17 +0000</string>
+	<string>2017-06-14 15:39:31 +0000</string>
 	<key>Modifier</key>
 	<string>Kevin Goslar</string>
 	<key>NotesVisible</key>
@@ -1422,7 +1359,7 @@ service}</string>
 	<key>UseEntirePage</key>
 	<false/>
 	<key>VPages</key>
-	<integer>2</integer>
+	<integer>1</integer>
 	<key>WindowInfo</key>
 	<dict>
 		<key>CurrentSheet</key>
@@ -1435,7 +1372,7 @@ service}</string>
 			</dict>
 		</array>
 		<key>Frame</key>
-		<string>{{-0, 5}, {1647, 1052}}</string>
+		<string>{{0, 4}, {1280, 773}}</string>
 		<key>ListView</key>
 		<true/>
 		<key>OutlineWidth</key>
@@ -1447,15 +1384,15 @@ service}</string>
 		<key>SidebarWidth</key>
 		<integer>120</integer>
 		<key>VisibleRegion</key>
-		<string>{{0.5, 331.75}, {763.5, 477.5}}</string>
+		<string>{{0.95238099563149026, 0.95238099563149026}, {1104.7619549325286, 643.80955304688734}}</string>
 		<key>Zoom</key>
-		<real>2</real>
+		<real>1.0499999523162842</real>
 		<key>ZoomValues</key>
 		<array>
 			<array>
 				<string>Canvas 1</string>
-				<real>2</real>
-				<real>1</real>
+				<real>1.0499999523162842</real>
+				<real>2.0999999046325684</real>
 			</array>
 		</array>
 	</dict>

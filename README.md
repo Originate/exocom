@@ -41,6 +41,8 @@ __optimized for heterogenous micro-service architectures__
   ExoCom discards messages from all queues<sup>*</sup>
 - [omnipresent](frontend_bridge.md): connects back-end, front-end,
   mobile, and IoT services into a real-time connectivity layer<sup>*</sup>
+- heterogeneous: supports different types of service APIs:
+  bi-directional web sockets or pairs of unidirectional REST APIs<sup>*</sup>
 
 __ultra effective__
 - client SDKs optimized for developer ergonomics and efficiency
@@ -51,6 +53,27 @@ __ultra effective__
   then efficiently and seamlessly evolve it
   into a production-grade AI-native cloud application
 - real-time inspection and tracing<sup>*</sup>
+
+
+## Benefits
+
+Business owners benefit from
+faster innovation and
+seamless scaling of prototypes into maintainable production-grade solutions.
+This happens at lower overall cost and risk,
+giving you a competitive advantage in today's fast-moving markets.
+[[read more]](website/benefits.md#business)
+
+Developers benefit from
+easy and intuitive access to a modern, productive technology stack.
+It offers pain free micro-services,
+more productivity and fun for a wider degree of talent and experience levels,
+amazing testing
+and first-class cloud support,
+and you can use your favorite language.
+[[read more]](website/benefits.md#developers)
+
+
 
 
 ## Related projects

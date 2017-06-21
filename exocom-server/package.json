@@ -8,7 +8,6 @@
     "debug": "2.6.6",
     "docopt": "0.6.2",
     "express": "4.15.2",
-    "jsonic": "0.3.0",
     "nanoseconds": "0.1.0",
     "rails-delegate": "0.6.2",
     "remove-value": "1.0.0",

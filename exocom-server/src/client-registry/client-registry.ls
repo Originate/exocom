@@ -1,5 +1,4 @@
 require! {
-  'jsonic'
   'remove-value'
   'require-yaml'
   './subscription-manager' : SubscriptionManager
@@ -76,7 +75,7 @@ class ClientRegistry
 
   _parse-service-routes: (service-routes) ->
     result = {}
-    for service-route in jsonic(service-routes)
+    for service-route in JSON.parse(service-routes)
       result[service-route.role] =
         receives: service-route.receives
         sends: service-route.sends or []

@@ -183,7 +183,7 @@
 				</dict>
 				<dict>
 					<key>Bounds</key>
-					<string>{{471.54555884755604, 465.74606663671904}, {29, 24}}</string>
+					<string>{{471.54604442621985, 465.74606657664026}, {29, 24}}</string>
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>FitText</key>
@@ -214,7 +214,7 @@
 						<integer>2</integer>
 					</dict>
 					<key>Rotation</key>
-					<real>89.765594482421875</real>
+					<real>89.765228271484375</real>
 					<key>Shape</key>
 					<string>Rectangle</string>
 					<key>Style</key>
@@ -943,8 +943,8 @@ auto-scaling)}</string>
 					<integer>15</integer>
 					<key>Points</key>
 					<array>
-						<string>{485.9238675940739, 447.99999582586497}</string>
-						<string>{486.17955529218762, 510.50000429748042}</string>
+						<string>{485.92415324412281, 447.99999579485927}</string>
+						<string>{486.18026101587259, 510.50000420538879}</string>
 					</array>
 					<key>Style</key>
 					<dict>
@@ -2893,8 +2893,8 @@ service}</string>
 					<integer>1</integer>
 					<key>Points</key>
 					<array>
-						<string>{227.38770976095415, 168.47234622779925}</string>
-						<string>{228.87081192814654, 207.78600291431482}</string>
+						<string>{227.37234449669393, 168.47106742923012}</string>
+						<string>{228.83181061724713, 207.78605826523608}</string>
 					</array>
 					<key>Style</key>
 					<dict>
@@ -3295,8 +3295,8 @@ service}</string>
 					<integer>2</integer>
 					<key>Points</key>
 					<array>
-						<string>{400.82971316695483, 178.01401003003664}</string>
-						<string>{606.59526779105704, 270.1904374704373}</string>
+						<string>{400.82971316695472, 178.01401003003662}</string>
+						<string>{605.68265369947983, 269.78161536827821}</string>
 					</array>
 					<key>Style</key>
 					<dict>
@@ -3582,8 +3582,8 @@ service}</string>
 					<integer>2</integer>
 					<key>Points</key>
 					<array>
-						<string>{373.90472908995235, 124.47632505380952}</string>
-						<string>{373.90472908995235, 153.595335078402}</string>
+						<string>{373.90472908995235, 124.4763250538096}</string>
+						<string>{373.90472908995235, 153.5953350784072}</string>
 					</array>
 					<key>Style</key>
 					<dict>
@@ -4486,7 +4486,7 @@ service}</string>
 	<key>WindowInfo</key>
 	<dict>
 		<key>CurrentSheet</key>
-		<integer>1</integer>
+		<integer>0</integer>
 		<key>ExpandedCanvases</key>
 		<array/>
 		<key>Frame</key>

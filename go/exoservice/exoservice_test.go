@@ -37,7 +37,10 @@ func FeatureContext(s *godog.Suite) {
 	})
 
 	s.AfterScenario(func(interface{}, error) {
-		exocom.Reset()
+		err := exocom.Reset()
+		if err != nil {
+			panic(err)
+		}
 	})
 
 	s.AfterSuite(func() {

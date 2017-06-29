@@ -3,13 +3,11 @@ package exocomMock
 import (
 	"encoding/json"
 	"fmt"
-	"io"
-	"log"
 	"net/http"
 
 	"github.com/Originate/exocom/go/structs"
 	"github.com/Originate/exocom/go/utils"
-	"golang.org/x/net/websocket"
+	"github.com/gorilla/websocket"
 )
 
 // ExoComMock is a mock implementation of ExoRelay,
@@ -20,17 +18,32 @@ type ExoComMock struct {
 	socket           *websocket.Conn
 }
 
+var upgrader = websocket.Upgrader{}
+
 // New creates a new ExoComMock instance
 func New() *ExoComMock {
 	result := new(ExoComMock)
-	result.server = http.Server{
-		Handler: websocket.Handler(result.websocketHandler),
+	var handler http.HandlerFunc = func(w http.ResponseWriter, r *http.Request) {
+		conn, err := upgrader.Upgrade(w, r, nil)
+		if err != nil {
+			fmt.Println("Error upgrading request to websocket:", err)
+			return
+		}
+		result.websocketHandler(conn)
 	}
+	result.server = http.Server{Handler: handler}
 	return result
 }
 
 // Close takes this ExoComMock instance offline
 func (e *ExoComMock) Close() error {
+	if e.HasConnection() {
+		err := e.socket.Close()
+		if err != nil {
+			return err
+		}
+		e.socket = nil
+	}
 	return e.server.Close()
 }
 
@@ -51,15 +64,16 @@ func (e *ExoComMock) HasConnection() bool {
 }
 
 // Reset closes and nils the socket and clears all received messages
-func (e *ExoComMock) Reset() {
+func (e *ExoComMock) Reset() error {
 	if e.HasConnection() {
 		err := e.socket.Close()
-		if err != nil {
-			log.Fatal(err)
-		}
 		e.socket = nil
+		if err != nil {
+			return err
+		}
 	}
 	e.ReceivedMessages = []structs.Message{}
+	return nil
 }
 
 // Send sends the given message to the connected socket
@@ -71,7 +85,7 @@ func (e *ExoComMock) Send(message structs.Message) error {
 	if err != nil {
 		return err
 	}
-	return websocket.Message.Send(e.socket, serializedBytes)
+	return e.socket.WriteMessage(websocket.TextMessage, serializedBytes)
 }
 
 // WaitForConnection waits for a socket to connect
@@ -88,34 +102,12 @@ func (e *ExoComMock) WaitForMessageWithName(name string) (structs.Message, error
 
 // Helpers
 
-func (e *ExoComMock) readMessage(socket *websocket.Conn) (structs.Message, error) {
-	var bytes []byte
-	if err := websocket.Message.Receive(socket, &bytes); err != nil {
-		return structs.Message{}, err
-	}
-
-	var unmarshaled structs.Message
-	err := json.Unmarshal(bytes, &unmarshaled)
-	if err != nil {
-		return structs.Message{}, err
-	}
-
-	return unmarshaled, nil
-}
-
 func (e *ExoComMock) websocketHandler(socket *websocket.Conn) {
 	e.socket = socket
-	for {
-		message, err := e.readMessage(socket)
-		if socket != e.socket {
-			break // socket was closed via the Reset function
-		} else if err == io.EOF {
-			break
-		} else if err != nil {
-			fmt.Println("Error reading message from websocket:", err)
-			break
-		} else {
-			e.ReceivedMessages = append(e.ReceivedMessages, message)
-		}
+	err := utils.ListenForMessages(e.socket, func(message structs.Message) {
+		e.ReceivedMessages = append(e.ReceivedMessages, message)
+	})
+	if err != nil {
+		fmt.Println("Exocom error listening for messages", err)
 	}
 }

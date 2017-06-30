@@ -1,10 +1,15 @@
-hash: 01a915f62545e8d1f3fb682d7ab9baa4a54ab1e23dfe8e8c0406bf085b8071d1
-updated: 2017-06-28T11:56:17.374745455-07:00
+hash: 727aa01b0d75299db377915e43bf946eaa023cad61e0a17f55cdb7dad3483b7d
+updated: 2017-06-29T11:38:36.554335998-07:00
 imports:
 - name: github.com/DATA-DOG/godog
   version: 92fbee719c9593813b24a6ef042bcad40324ede4
+  subpackages:
+  - colors
+  - gherkin
 - name: github.com/gorilla/websocket
   version: ea4d1f681babbce9545c9c5f3d5194a789c89f5b
+- name: github.com/phayes/freeport
+  version: e7681b37614941bf73b404e0caa37f19e33b5fed
 - name: github.com/satori/go.uuid
   version: 879c5887cd475cd7864858769793b2ceb0d44feb
 testImports: []

@@ -35,7 +35,12 @@ type ExoRelay struct {
 
 // Connect brings an ExoRelay instance online
 func (e *ExoRelay) Connect() error {
-	socket, _, err := websocket.DefaultDialer.Dial(fmt.Sprintf("ws://%s:%d", e.Config.Host, e.Config.Port), nil)
+	var socket *websocket.Conn
+	var err error
+	utils.Retry(5, func() bool {
+		socket, _, err = websocket.DefaultDialer.Dial(fmt.Sprintf("ws://%s:%d", e.Config.Host, e.Config.Port), nil)
+		return err == nil
+	})
 	if err != nil {
 		return err
 	}
@@ -51,6 +56,9 @@ func (e *ExoRelay) Connect() error {
 
 // Close takes this ExoRelay instance offline
 func (e *ExoRelay) Close() error {
+	if e.socket == nil {
+		return nil
+	}
 	err := e.socket.Close()
 	e.socket = nil
 	return err
@@ -87,8 +95,13 @@ func (e *ExoRelay) listenForMessages() {
 	err := utils.ListenForMessages(e.socket, func(message structs.Message) {
 		e.messageChannel <- message
 	})
-	close(e.messageChannel)
 	if err != nil {
 		fmt.Println("Exorelay error listening for messages", err)
+	}
+	if e.socket != nil {
+		err := e.Connect()
+		if err != nil {
+			fmt.Println("Disconnected from exocom and unable to reconnect", err)
+		}
 	}
 }

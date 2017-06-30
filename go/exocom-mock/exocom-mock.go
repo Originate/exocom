@@ -37,12 +37,9 @@ func New() *ExoComMock {
 
 // Close takes this ExoComMock instance offline
 func (e *ExoComMock) Close() error {
-	if e.HasConnection() {
-		err := e.socket.Close()
-		if err != nil {
-			return err
-		}
-		e.socket = nil
+	err := e.CloseConnection()
+	if err != nil {
+		return err
 	}
 	return e.server.Close()
 }
@@ -61,6 +58,18 @@ func (e *ExoComMock) GetReceivedMessages() []structs.Message {
 // HasConnection returns whether or not a socket is connected
 func (e *ExoComMock) HasConnection() bool {
 	return e.socket != nil
+}
+
+// CloseConnection closes any open connection
+func (e *ExoComMock) CloseConnection() error {
+	if e.HasConnection() {
+		err := e.socket.Close()
+		if err != nil {
+			return err
+		}
+		e.socket = nil
+	}
+	return nil
 }
 
 // Reset closes and nils the socket and clears all received messages

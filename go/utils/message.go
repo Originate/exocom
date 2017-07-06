@@ -6,29 +6,33 @@ import (
 
 	"github.com/Originate/exocom/go/structs"
 	"github.com/gorilla/websocket"
+	"github.com/pkg/errors"
 )
 
 // ListenForMessages continuously reads from the given websocket calling the
 // given function on each received message
-func ListenForMessages(socket *websocket.Conn, onMessage func(structs.Message)) error {
+func ListenForMessages(socket *websocket.Conn, onMessage func(structs.Message) error, onError func(error)) {
 	for {
 		_, bytes, err := socket.ReadMessage()
 		if err != nil {
 			if opErr, ok := err.(*net.OpError); ok {
 				if opErr.Err.Error() == "use of closed network connection" {
-					return nil
+					return
 				}
 			}
 			if websocket.IsCloseError(err, websocket.CloseAbnormalClosure) {
-				return nil
+				return
 			}
-			return err
+			onError(errors.Wrap(err, "Error reading from socket"))
 		}
 		message, err := messageFromJSON(bytes)
 		if err != nil {
-			return err
+			onError(errors.Wrap(err, "Error unmarshaling message"))
 		}
-		onMessage(message)
+		err = onMessage(message)
+		if err != nil {
+			onError(errors.Wrap(err, "Error returned by on message handler"))
+		}
 	}
 }
 

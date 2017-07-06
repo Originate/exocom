@@ -8,6 +8,7 @@ import (
 	"github.com/Originate/exocom/go/structs"
 	"github.com/Originate/exocom/go/utils"
 	"github.com/gorilla/websocket"
+	"github.com/pkg/errors"
 )
 
 // ExoComMock is a mock implementation of ExoRelay,
@@ -29,7 +30,7 @@ func New() *ExoComMock {
 			fmt.Println("Error upgrading request to websocket:", err)
 			return
 		}
-		result.websocketHandler(conn)
+		go result.websocketHandler(conn)
 	}
 	result.server = http.Server{Handler: handler}
 	return result
@@ -113,10 +114,10 @@ func (e *ExoComMock) WaitForMessageWithName(name string) (structs.Message, error
 
 func (e *ExoComMock) websocketHandler(socket *websocket.Conn) {
 	e.socket = socket
-	err := utils.ListenForMessages(e.socket, func(message structs.Message) {
+	utils.ListenForMessages(e.socket, func(message structs.Message) error {
 		e.ReceivedMessages = append(e.ReceivedMessages, message)
+		return nil
+	}, func(err error) {
+		fmt.Println(errors.Wrap(err, "Exocom listening for messages"))
 	})
-	if err != nil {
-		fmt.Println("Exocom error listening for messages", err)
-	}
 }

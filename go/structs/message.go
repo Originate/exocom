@@ -7,6 +7,7 @@ type Message struct {
 	Payload    MessagePayload `json:"payload"`
 	ResponseTo string         `json:"reponseTo"`
 	Sender     string         `json:"sender"`
+	SessionID  string         `json:"sessionId"`
 }
 
 // MessagePayload defines the structure of Message.Payload

@@ -5,7 +5,7 @@ type Message struct {
 	ID         string         `json:"id"`
 	Name       string         `json:"name"`
 	Payload    MessagePayload `json:"payload"`
-	ResponseTo string         `json:"reponseTo"`
+	ResponseTo string         `json:"responseTo"`
 	Sender     string         `json:"sender"`
 	SessionID  string         `json:"sessionId"`
 }

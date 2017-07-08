@@ -18,6 +18,13 @@ When /^an ExoCom instance comes online at port (\d+), (\d+) second(?:s)? later$/
     done!
 
 
+When /^ExoCom goes down for (\d+) second(?:s)? and comes back online$/ timeout:10_000, (seconds, done) ->
+  @exocom.close ~>
+    wait seconds * 1000, ~>
+      @exocom = new MockExoCom
+        ..listen @exocom-port, done
+
+
 When /^an ExoRelay instance running inside the "([^"]*)" service comes online$/ (@role, done) ->
   @exo-relay = new ExoRelay {@role, @exocom-port, exocom-host: "localhost"}
     ..connect!
@@ -78,8 +85,8 @@ When /^I take it online$/, (done) ->
 When /^I try to take it online$/, (done) ->
   @exo-relay
     ..connect!
-      ..on 'error', (@error) ~>
-        done!
+    ..on 'error', (@error) ~>
+      done!
 
 
 When /^receiving the "([^"]*)" message with payload "([^"]*)" as a reply to the "(?:[^"]*)" message$/, (message-name, payload, done) ->

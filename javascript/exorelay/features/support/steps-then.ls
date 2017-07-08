@@ -18,6 +18,10 @@ Then /^ExoRelay connects to ExoCom$/ (done) ->
     done!
 
 
+Then /^ExoRelay is connected to ExoCom$/ (done) ->
+  wait-until (~>@exocom.service-sockets[@role]), 1, done
+
+
 Then /^ExoRelay emits an "error" event with the error "([^"]*)"$/, (error-message, done) ->
   wait-until (~> @error), 1, ~>
     expect(@error.message).to.equal error-message

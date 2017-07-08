@@ -22,7 +22,7 @@ func ListenForMessages(socket *websocket.Conn, onMessage func(structs.Message) e
 			onError(errors.Wrap(err, "Error reading from socket"))
 			continue
 		}
-		message, err := messageFromJSON(bytes)
+		message, err := MessageFromJSON(bytes)
 		if err != nil {
 			onError(errors.Wrap(err, fmt.Sprintf("Error unmarshaling message: '%s'", bytes)))
 		}
@@ -33,9 +33,8 @@ func ListenForMessages(socket *websocket.Conn, onMessage func(structs.Message) e
 	}
 }
 
-// Helpers
-
-func messageFromJSON(bytes []byte) (structs.Message, error) {
+// MessageFromJSON unmarshals bytes into a message
+func MessageFromJSON(bytes []byte) (structs.Message, error) {
 	var unmarshaled structs.Message
 	err := json.Unmarshal(bytes, &unmarshaled)
 	if err != nil {

@@ -11,12 +11,19 @@ import (
 	"github.com/pkg/errors"
 )
 
+// MockReplyData defines the data needed to mock a reply to a specific request
+type MockReplyData struct {
+	Name    string
+	Payload structs.MessagePayload
+}
+
 // ExoComMock is a mock implementation of ExoRelay,
 // to be used for testing
 type ExoComMock struct {
 	ReceivedMessages []structs.Message
 	server           http.Server
 	socket           *websocket.Conn
+	mockReplyMapping map[string]MockReplyData
 }
 
 var upgrader = websocket.Upgrader{}
@@ -24,6 +31,7 @@ var upgrader = websocket.Upgrader{}
 // New creates a new ExoComMock instance
 func New() *ExoComMock {
 	result := new(ExoComMock)
+	result.mockReplyMapping = map[string]MockReplyData{}
 	var handler http.HandlerFunc = func(w http.ResponseWriter, r *http.Request) {
 		conn, err := upgrader.Upgrade(w, r, nil)
 		if err != nil {
@@ -34,6 +42,11 @@ func New() *ExoComMock {
 	}
 	result.server = http.Server{Handler: handler}
 	return result
+}
+
+// AddMockReply adds a mock reply for the given message
+func (e *ExoComMock) AddMockReply(requestName string, data MockReplyData) {
+	e.mockReplyMapping[requestName] = data
 }
 
 // Close takes this ExoComMock instance offline
@@ -117,6 +130,13 @@ func (e *ExoComMock) websocketHandler(socket *websocket.Conn) {
 	e.socket = socket
 	utils.ListenForMessages(e.socket, func(message structs.Message) error {
 		e.ReceivedMessages = append(e.ReceivedMessages, message)
+		if replyData, hasReplyData := e.mockReplyMapping[message.Name]; hasReplyData {
+			return e.Send(structs.Message{
+				Name:       replyData.Name,
+				ResponseTo: message.ID,
+				Payload:    replyData.Payload,
+			})
+		}
 		return nil
 	}, func(err error) {
 		fmt.Println(errors.Wrap(err, "Exocom listening for messages"))

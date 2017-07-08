@@ -2,7 +2,8 @@ package utils
 
 import (
 	"encoding/json"
-	"net"
+	"fmt"
+	"strings"
 
 	"github.com/Originate/exocom/go/structs"
 	"github.com/gorilla/websocket"
@@ -15,19 +16,15 @@ func ListenForMessages(socket *websocket.Conn, onMessage func(structs.Message) e
 	for {
 		_, bytes, err := socket.ReadMessage()
 		if err != nil {
-			if opErr, ok := err.(*net.OpError); ok {
-				if opErr.Err.Error() == "use of closed network connection" {
-					return
-				}
-			}
-			if websocket.IsCloseError(err, websocket.CloseAbnormalClosure) {
+			if isCloseError(err) {
 				return
 			}
 			onError(errors.Wrap(err, "Error reading from socket"))
+			continue
 		}
 		message, err := messageFromJSON(bytes)
 		if err != nil {
-			onError(errors.Wrap(err, "Error unmarshaling message"))
+			onError(errors.Wrap(err, fmt.Sprintf("Error unmarshaling message: '%s'", bytes)))
 		}
 		err = onMessage(message)
 		if err != nil {
@@ -46,4 +43,10 @@ func messageFromJSON(bytes []byte) (structs.Message, error) {
 	}
 
 	return unmarshaled, nil
+}
+
+func isCloseError(err error) bool {
+	return websocket.IsCloseError(err, websocket.CloseAbnormalClosure) ||
+		strings.Contains(err.Error(), "connection reset by peer") ||
+		strings.Contains(err.Error(), "use of closed network connection")
 }

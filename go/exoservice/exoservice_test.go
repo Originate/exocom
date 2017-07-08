@@ -75,7 +75,7 @@ func FeatureContext(s *godog.Suite) {
 			ID:   id,
 			Name: name,
 		}
-		err := exocom.WaitForConnection()
+		_, err := exocom.WaitForConnection()
 		if err != nil {
 			return err
 		}

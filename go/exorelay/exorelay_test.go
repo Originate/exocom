@@ -164,7 +164,7 @@ func FeatureContext(s *godog.Suite) {
 		if err != nil {
 			return err
 		}
-		err = exocom.WaitForConnection()
+		_, err = exocom.WaitForConnection()
 		if err != nil {
 			return err
 		}
@@ -218,7 +218,7 @@ func FeatureContext(s *godog.Suite) {
 	})
 
 	s.Step(`^ExoRelay should (?:re)?connect to Exocom$`, func() error {
-		err := exocom.WaitForConnection()
+		_, err := exocom.WaitForConnection()
 		if err != nil {
 			return err
 		}

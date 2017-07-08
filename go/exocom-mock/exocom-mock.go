@@ -75,12 +75,9 @@ func (e *ExoComMock) CloseConnection() error {
 
 // Reset closes and nils the socket and clears all received messages
 func (e *ExoComMock) Reset() error {
-	if e.HasConnection() {
-		err := e.socket.Close()
-		e.socket = nil
-		if err != nil {
-			return err
-		}
+	err := e.CloseConnection()
+	if err != nil {
+		return err
 	}
 	e.ReceivedMessages = []structs.Message{}
 	return nil
@@ -99,10 +96,14 @@ func (e *ExoComMock) Send(message structs.Message) error {
 }
 
 // WaitForConnection waits for a socket to connect
-func (e *ExoComMock) WaitForConnection() error {
-	return utils.WaitFor(func() bool {
+func (e *ExoComMock) WaitForConnection() (structs.Message, error) {
+	err := utils.WaitFor(func() bool {
 		return e.HasConnection()
 	}, "Expected a socket to connect to exocom")
+	if err != nil {
+		return structs.Message{}, err
+	}
+	return e.WaitForMessageWithName("exocom.register-service")
 }
 
 // WaitForMessageWithName waits to receive a message with the given name

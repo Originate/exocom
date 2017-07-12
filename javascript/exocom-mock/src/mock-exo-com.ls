@@ -28,7 +28,7 @@ class MockExoCom
 
 
   listen: (+@port, done) ~>
-    @server = new WebSocketServer {@port}, done
+    @server = new WebSocketServer {@port, path: '/services'}, done
       ..on 'error', @_on-server-error
       ..on 'connection', @_on-server-connection
 

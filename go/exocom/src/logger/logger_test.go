@@ -76,7 +76,7 @@ var _ = Describe("Logger", func() {
 		It("prints the routing setup received", func() {
 			usersRoute := clientRegistry.Route{}
 			usersRoute.Receives = []string{"users.create"}
-			routes := map[string]clientRegistry.Route{
+			routes := clientRegistry.Routes{
 				"users": usersRoute,
 			}
 			result := GetOutput(func(testLogger *logger.Logger) {

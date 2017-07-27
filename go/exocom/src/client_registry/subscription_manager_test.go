@@ -11,7 +11,7 @@ var _ = Describe("SubscriptionManager", func() {
 	var manager *clientRegistry.SubscriptionManager
 
 	BeforeEach(func() {
-		table := map[string]clientRegistry.Route{
+		table := clientRegistry.Routes{
 			"user": clientRegistry.Route{
 				Receives: []string{"users.create"},
 			},

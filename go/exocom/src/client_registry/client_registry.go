@@ -9,6 +9,9 @@ type Client struct {
 	InternalNamespace string `json:"internalNamespace"`
 }
 
+// Clients is a map from client name to Client
+type Clients map[string]Client
+
 // Route is an entry in the routes
 type Route struct {
 	Receives          []string `json:"receives"`
@@ -16,18 +19,21 @@ type Route struct {
 	InternalNamespace string   `json:"internalNamespace"`
 }
 
+// Routes is a map from client name to Route
+type Routes map[string]Route
+
 // ClientRegistry manages which clients are connected to exocom,
 // and what messages each client can send and receive
 type ClientRegistry struct {
-	Routing       map[string]Route
-	Clients       map[string]Client
+	Routing       Routes
+	Clients       Clients
 	subscriptions *SubscriptionManager
 }
 
 // NewClientRegistry returns a new ClientRegistry with the given routing
 func NewClientRegistry(serviceRoutes string) (*ClientRegistry, error) {
 	result := new(ClientRegistry)
-	result.Clients = map[string]Client{}
+	result.Clients = Clients{}
 	var err error
 	result.Routing, err = parseServiceRoutes([]byte(serviceRoutes))
 	result.subscriptions = NewSubscriptionManager(result.Routing)
@@ -74,13 +80,13 @@ type rawRoute struct {
 	Namespace string
 }
 
-func parseServiceRoutes(bytes []byte) (map[string]Route, error) {
+func parseServiceRoutes(bytes []byte) (Routes, error) {
 	var unmarshaled []rawRoute
 	err := json.Unmarshal(bytes, &unmarshaled)
 	if err != nil {
-		return map[string]Route{}, err
+		return Routes{}, err
 	}
-	parsed := map[string]Route{}
+	parsed := Routes{}
 	for _, data := range unmarshaled {
 		if data.Sends == nil {
 			data.Sends = []string{}

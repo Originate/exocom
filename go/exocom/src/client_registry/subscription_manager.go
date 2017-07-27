@@ -13,11 +13,11 @@ type Subscriber struct {
 // SubscriptionManager manages what clients should be sent messages
 type SubscriptionManager struct {
 	MessageNameToSubscribers map[string][]Subscriber
-	Routing                  map[string]Route
+	Routing                  Routes
 }
 
 // NewSubscriptionManager returns a SubscriptionManager for the given routes
-func NewSubscriptionManager(routes map[string]Route) *SubscriptionManager {
+func NewSubscriptionManager(routes Routes) *SubscriptionManager {
 	result := new(SubscriptionManager)
 	result.MessageNameToSubscribers = map[string][]Subscriber{}
 	result.Routing = routes

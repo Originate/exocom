@@ -53,7 +53,7 @@ func (l *Logger) Header(text string) error {
 }
 
 // RoutingSetup prints the given routes
-func (l *Logger) RoutingSetup(routes map[string]clientRegistry.Route) error {
+func (l *Logger) RoutingSetup(routes clientRegistry.Routes) error {
 	err := l.Log("Receiving Routing Setup")
 	if err != nil {
 		return err

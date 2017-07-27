@@ -1,4 +1,5 @@
 require! {
+  'cucumber': {defineSupportCode}
   'livescript'
   'sinon'
   'wait' : {wait-until}

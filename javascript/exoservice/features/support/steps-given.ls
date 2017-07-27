@@ -1,6 +1,6 @@
 require! {
   'cucumber': {defineSupportCode}
-  'exocom-mock' : ExoComMock
+  '../../../exocom-mock' : ExoComMock
   'http'
   'nitroglycerin': N
   'port-reservation'

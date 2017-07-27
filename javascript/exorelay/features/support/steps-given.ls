@@ -4,7 +4,7 @@ require! {
   'sinon'
   'wait' : {wait-until}
   '../..' : ExoRelay
-  'exocom-mock': MockExoCom
+  '../../../exocom-mock': MockExoCom
   'prelude-ls' : {any}
   'cucumber': {Given}
 }

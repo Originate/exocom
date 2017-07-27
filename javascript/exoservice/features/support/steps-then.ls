@@ -7,11 +7,12 @@ require! {
 
 defineSupportCode ({Then}) ->
 
-  Then /^after a while it sends the "([^"]*)" message$/, (reply-message-name, done) ->
+  Then /^after a while it sends the "([^"]*)" message(?: with sessionId "([^"]*)")?$/, (reply-message-name, session-id, done) ->
     @exocom.on-receive ~>
       received-messages = @exocom.received-messages
       expect(received-messages).to.have.length 1
       expect(received-messages[0].name).to.equal reply-message-name
+      expect(received-messages[0].session-id).to.equal session-id
       done!
 
 

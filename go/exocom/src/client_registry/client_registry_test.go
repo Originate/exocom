@@ -11,16 +11,11 @@ var _ = Describe("ClientRegistry", func() {
 
 	Describe("can send", func() {
 		BeforeEach(func() {
-			serviceRoutes :=
-				`[
-					{
-						"role": "role 1",
-						"sends": ["message 3 name"]
-					}
-				]`
-			var err error
-			registry, err = clientRegistry.NewClientRegistry(serviceRoutes)
-			Expect(err).To(BeNil())
+			registry = clientRegistry.NewClientRegistry(clientRegistry.Routes{
+				"role 1": {
+					Sends: []string{"message 3 name"},
+				},
+			})
 		})
 		It("returns true if the routing table includes the message name", func() {
 			result := registry.CanSend("role 1", "message 3 name")
@@ -34,17 +29,12 @@ var _ = Describe("ClientRegistry", func() {
 	})
 	Describe("subscribers for", func() {
 		BeforeEach(func() {
-			serviceRoutes :=
-				`[
-					{
-						"role": "role 1",
-						"receives": ["message 3 name"],
-						"namespace": "namespace"
-					}
-				]`
-			var err error
-			registry, err = clientRegistry.NewClientRegistry(serviceRoutes)
-			Expect(err).To(BeNil())
+			registry = clientRegistry.NewClientRegistry(clientRegistry.Routes{
+				"role 1": {
+					Receives:          []string{"message 3 name"},
+					InternalNamespace: "namespace",
+				},
+			})
 		})
 		Describe("when there are no registered receivers of the message", func() {
 			It("returns an empty array", func() {
@@ -76,17 +66,12 @@ var _ = Describe("ClientRegistry", func() {
 	})
 	Describe("the clients", func() {
 		BeforeEach(func() {
-			serviceRoutes :=
-				`[
-					{
-						"role": "role 1",
-						"receives": ["message 3 name"],
-						"namespace": "namespace"
-					}
-				]`
-			var err error
-			registry, err = clientRegistry.NewClientRegistry(serviceRoutes)
-			Expect(err).To(BeNil())
+			registry = clientRegistry.NewClientRegistry(clientRegistry.Routes{
+				"role 1": {
+					Receives:          []string{"message 3 name"},
+					InternalNamespace: "namespace",
+				},
+			})
 		})
 		Describe("when there are no clients", func() {
 			It("is empty", func() {

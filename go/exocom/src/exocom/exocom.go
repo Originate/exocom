@@ -29,11 +29,11 @@ type ExoCom struct {
 var upgrader = websocket.Upgrader{}
 
 // New creates a new ExoCom instance
-func New(serviceRoutes string) (*ExoCom, error) {
+func New(serviceRoutes clientRegistry.Routes) (*ExoCom, error) {
 	result := new(ExoCom)
 	var err error
 	result.messageCache = messageCache.NewMessageCache(time.Minute)
-	result.clientRegistry, err = clientRegistry.NewClientRegistry(serviceRoutes)
+	result.clientRegistry = clientRegistry.NewClientRegistry(serviceRoutes)
 	result.logger = logger.NewLogger(os.Stdout)
 	result.sockets = map[string]*websocket.Conn{}
 	if err != nil {

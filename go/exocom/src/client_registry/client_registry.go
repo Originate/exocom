@@ -1,7 +1,5 @@
 package clientRegistry
 
-import "encoding/json"
-
 // Client is the combination of a client name, service type and internal namespace
 type Client struct {
 	ClientName        string `json:"clientName"`
@@ -31,13 +29,12 @@ type ClientRegistry struct {
 }
 
 // NewClientRegistry returns a new ClientRegistry with the given routing
-func NewClientRegistry(serviceRoutes string) (*ClientRegistry, error) {
+func NewClientRegistry(routes Routes) *ClientRegistry {
 	result := new(ClientRegistry)
 	result.Clients = Clients{}
-	var err error
-	result.Routing, err = parseServiceRoutes([]byte(serviceRoutes))
-	result.subscriptions = NewSubscriptionManager(result.Routing)
-	return result, err
+	result.Routing = routes
+	result.subscriptions = NewSubscriptionManager(routes)
+	return result
 }
 
 // CanSend returns whether or not the client can send a message with the given name
@@ -69,36 +66,4 @@ func (r *ClientRegistry) RegisterClient(clientName string) {
 func (r *ClientRegistry) DeregisterClient(clientName string) {
 	r.subscriptions.RemoveAll(clientName)
 	delete(r.Clients, clientName)
-}
-
-// Helpers
-
-type rawRoute struct {
-	Role      string
-	Receives  []string
-	Sends     []string
-	Namespace string
-}
-
-func parseServiceRoutes(bytes []byte) (Routes, error) {
-	var unmarshaled []rawRoute
-	err := json.Unmarshal(bytes, &unmarshaled)
-	if err != nil {
-		return Routes{}, err
-	}
-	parsed := Routes{}
-	for _, data := range unmarshaled {
-		if data.Sends == nil {
-			data.Sends = []string{}
-		}
-		if data.Receives == nil {
-			data.Receives = []string{}
-		}
-		parsed[data.Role] = Route{
-			Receives:          data.Receives,
-			Sends:             data.Sends,
-			InternalNamespace: data.Namespace,
-		}
-	}
-	return parsed, nil
 }

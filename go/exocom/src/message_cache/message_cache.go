@@ -6,9 +6,11 @@ import (
 )
 
 // MessageCache records the timestamp of each message.
-// The cache automitically deletes any message older then 1 minute
+// The cache automatically deletes any message older then 1 minute
 type MessageCache struct {
 	cache map[string]time.Time
+	// mutex is needed to prevent writes (Set) from occurring during
+	// iteration (clearCache) which is a runtime error
 	mutex *sync.Mutex
 }
 

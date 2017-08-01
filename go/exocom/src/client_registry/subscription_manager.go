@@ -6,7 +6,7 @@ import (
 
 // Subscriber is the combination of a client name and internal namesapce
 type Subscriber struct {
-	ClientName        string
+	Role              string
 	InternalNamespace string
 }
 
@@ -35,27 +35,27 @@ func (s *SubscriptionManager) GetSubscribersFor(messageName string) []Subscriber
 
 // AddAll adds subscriptions for all messages the given client receives
 // (as defined in the routes)
-func (s *SubscriptionManager) AddAll(clientName string) {
-	for _, messageName := range s.Routing[clientName].Receives {
-		s.add(messageName, clientName)
+func (s *SubscriptionManager) AddAll(role string) {
+	for _, messageName := range s.Routing[role].Receives {
+		s.add(messageName, role)
 	}
 }
 
 // RemoveAll removes subscriptions for all messages the given client receives
 // (as defined in the routes)
-func (s *SubscriptionManager) RemoveAll(clientName string) {
-	for _, messageName := range s.Routing[clientName].Receives {
-		s.remove(messageName, clientName)
+func (s *SubscriptionManager) RemoveAll(role string) {
+	for _, messageName := range s.Routing[role].Receives {
+		s.remove(messageName, role)
 	}
 }
 
 // Helpers
 
-func (s *SubscriptionManager) add(internalMessageName, clientName string) {
-	clientInternalNamespace := s.Routing[clientName].InternalNamespace
+func (s *SubscriptionManager) add(internalMessageName, role string) {
+	clientInternalNamespace := s.Routing[role].InternalNamespace
 	publicMessageName := messageTranslator.GetPublicMessageName(&messageTranslator.GetPublicMessageNameOptions{
 		InternalMessageName: internalMessageName,
-		ClientName:          clientName,
+		Role:                role,
 		Namespace:           clientInternalNamespace,
 	})
 	if s.MessageNameToSubscribers[publicMessageName] == nil {
@@ -63,21 +63,21 @@ func (s *SubscriptionManager) add(internalMessageName, clientName string) {
 	}
 	s.MessageNameToSubscribers[publicMessageName] = append(
 		s.MessageNameToSubscribers[publicMessageName],
-		Subscriber{ClientName: clientName, InternalNamespace: clientInternalNamespace})
+		Subscriber{Role: role, InternalNamespace: clientInternalNamespace})
 }
 
-func (s *SubscriptionManager) remove(messageName, clientName string) {
-	clientInternalNamespace := s.Routing[clientName].InternalNamespace
+func (s *SubscriptionManager) remove(messageName, role string) {
+	clientInternalNamespace := s.Routing[role].InternalNamespace
 	publicMessageName := messageTranslator.GetPublicMessageName(&messageTranslator.GetPublicMessageNameOptions{
 		InternalMessageName: messageName,
-		ClientName:          clientName,
+		Role:                role,
 		Namespace:           clientInternalNamespace,
 	})
 	if s.MessageNameToSubscribers[publicMessageName] == nil {
 		return
 	}
 	for index, subscription := range s.MessageNameToSubscribers[publicMessageName] {
-		if subscription.ClientName == clientName {
+		if subscription.Role == role {
 			s.MessageNameToSubscribers[publicMessageName] = append(s.MessageNameToSubscribers[publicMessageName][:index], s.MessageNameToSubscribers[publicMessageName][index+1:]...)
 			return
 		}

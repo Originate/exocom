@@ -25,7 +25,7 @@ Feature: Manage new instances of services
       {
         "clients": {
           "users": {
-            "clientName": "users",
+            "role": "users",
             "serviceType": "users",
             "internalNamespace": "foo"
           }
@@ -63,7 +63,7 @@ Feature: Manage new instances of services
       {
         "clients": {
           "users": {
-            "clientName": "users",
+            "role": "users",
             "serviceType": "users",
             "internalNamespace": "foo"
           }

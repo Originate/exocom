@@ -46,7 +46,7 @@ var _ = Describe("MessageTranslator", func() {
 		It("does not convert messages that don't match the format", func() {
 			input := messageTranslator.GetPublicMessageNameOptions{
 				Namespace:           "text-snippets",
-				ClientName:          "tweets",
+				Role:                "tweets",
 				InternalMessageName: "foo bar"}
 			result := messageTranslator.GetPublicMessageName(&input)
 			Expect(result).To(Equal("foo bar"))
@@ -54,7 +54,7 @@ var _ = Describe("MessageTranslator", func() {
 		It("does not convert messages that have the same internal and external namespace", func() {
 			input := messageTranslator.GetPublicMessageNameOptions{
 				Namespace:           "users",
-				ClientName:          "users",
+				Role:                "users",
 				InternalMessageName: "users.create"}
 			result := messageTranslator.GetPublicMessageName(&input)
 			Expect(result).To(Equal("users.create"))
@@ -62,7 +62,7 @@ var _ = Describe("MessageTranslator", func() {
 		It("does not convert messages if the service has no internal namespace", func() {
 			input := messageTranslator.GetPublicMessageNameOptions{
 				Namespace:           "",
-				ClientName:          "users",
+				Role:                "users",
 				InternalMessageName: "users.create"}
 			result := messageTranslator.GetPublicMessageName(&input)
 			Expect(result).To(Equal("users.create"))
@@ -70,7 +70,7 @@ var _ = Describe("MessageTranslator", func() {
 		It("converts messages into the external namespace of the service", func() {
 			input := messageTranslator.GetPublicMessageNameOptions{
 				Namespace:           "text-snippets",
-				ClientName:          "tweets",
+				Role:                "tweets",
 				InternalMessageName: "text-snippets.create"}
 			result := messageTranslator.GetPublicMessageName(&input)
 			Expect(result).To(Equal("tweets.create"))

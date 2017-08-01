@@ -38,7 +38,7 @@ var _ = Describe("SubscriptionManager", func() {
 
 			It("returns the subscriber", func() {
 				result := manager.GetSubscribersFor("users.create")
-				Expect(result).To(Equal([]clientRegistry.Subscriber{{ClientName: "user"}}))
+				Expect(result).To(Equal([]clientRegistry.Subscriber{{Role: "user"}}))
 			})
 		})
 
@@ -47,7 +47,7 @@ var _ = Describe("SubscriptionManager", func() {
 				manager.AddAll("tweet")
 				result := manager.GetSubscribersFor("tweet.create")
 				Expect(result).To(Equal([]clientRegistry.Subscriber{{
-					ClientName:        "tweet",
+					Role:              "tweet",
 					InternalNamespace: "text-snippets",
 				}}))
 			})

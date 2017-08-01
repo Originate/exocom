@@ -2,7 +2,7 @@ package clientRegistry
 
 // Client is the combination of a client name, service type and internal namespace
 type Client struct {
-	ClientName        string `json:"clientName"`
+	Role              string `json:"role"`
 	ServiceType       string `json:"serviceType"`
 	InternalNamespace string `json:"internalNamespace"`
 }
@@ -38,8 +38,8 @@ func NewClientRegistry(routes Routes) *ClientRegistry {
 }
 
 // CanSend returns whether or not the client can send a message with the given name
-func (r *ClientRegistry) CanSend(clientName, messageName string) bool {
-	for _, sendableMessageName := range r.Routing[clientName].Sends {
+func (r *ClientRegistry) CanSend(role, messageName string) bool {
+	for _, sendableMessageName := range r.Routing[role].Sends {
 		if sendableMessageName == messageName {
 			return true
 		}
@@ -53,17 +53,17 @@ func (r *ClientRegistry) GetSubscribersFor(messageName string) []Subscriber {
 }
 
 // RegisterClient adds the client with the given name
-func (r *ClientRegistry) RegisterClient(clientName string) {
-	r.subscriptions.AddAll(clientName)
-	r.Clients[clientName] = Client{
-		ClientName:        clientName,
-		ServiceType:       clientName,
-		InternalNamespace: r.Routing[clientName].InternalNamespace,
+func (r *ClientRegistry) RegisterClient(role string) {
+	r.subscriptions.AddAll(role)
+	r.Clients[role] = Client{
+		Role:              role,
+		ServiceType:       role,
+		InternalNamespace: r.Routing[role].InternalNamespace,
 	}
 }
 
 // DeregisterClient removes the client with the given name
-func (r *ClientRegistry) DeregisterClient(clientName string) {
-	r.subscriptions.RemoveAll(clientName)
-	delete(r.Clients, clientName)
+func (r *ClientRegistry) DeregisterClient(role string) {
+	r.subscriptions.RemoveAll(role)
+	delete(r.Clients, role)
 }

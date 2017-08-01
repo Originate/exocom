@@ -82,15 +82,15 @@ func (e *ExoCom) hasInvalidSender(message structs.Message) bool {
 }
 
 func (e *ExoCom) websocketHandler(socket *websocket.Conn) {
-	var clientName string
+	var role string
 	utils.ListenForMessages(socket, func(message structs.Message) error {
 		if message.Name == "exocom.register-service" {
 			var err error
-			clientName, err = parseRegisterMessagePayload(message)
+			role, err = parseRegisterMessagePayload(message)
 			if err == nil {
-				e.clientRegistry.RegisterClient(clientName)
-				e.sockets[clientName] = socket
-				printLogError(e.logger.Log(fmt.Sprintf("'%s' registered", clientName)))
+				e.clientRegistry.RegisterClient(role)
+				e.sockets[role] = socket
+				printLogError(e.logger.Log(fmt.Sprintf("'%s' registered", role)))
 			} else {
 				printLogError(e.logger.Error(err.Error()))
 			}
@@ -106,8 +106,9 @@ func (e *ExoCom) websocketHandler(socket *websocket.Conn) {
 	}, func(err error) {
 		fmt.Println(errors.Wrap(err, "Exocom listening for messages"))
 	})
-	if clientName != "" {
-		e.clientRegistry.DeregisterClient(clientName)
+	if role != "" {
+		e.clientRegistry.DeregisterClient(role)
+		e.sockets[role] = nil
 	}
 }
 
@@ -119,8 +120,8 @@ func printLogError(err error) {
 
 func parseRegisterMessagePayload(message structs.Message) (string, error) {
 	if objectPayload, ok := message.Payload.(map[string]interface{}); ok {
-		if clientName, ok := objectPayload["clientName"].(string); ok {
-			return clientName, nil
+		if role, ok := objectPayload["clientName"].(string); ok {
+			return role, nil
 		}
 	}
 	return "", fmt.Errorf("Invalid register message payload: %v", message.Payload)
@@ -129,7 +130,7 @@ func parseRegisterMessagePayload(message structs.Message) (string, error) {
 func (e *ExoCom) send(message structs.Message) error {
 	publicMessageName := messageTranslator.GetPublicMessageName(&messageTranslator.GetPublicMessageNameOptions{
 		Namespace:           e.clientRegistry.Clients[message.Sender].InternalNamespace,
-		ClientName:          message.Sender,
+		Role:                message.Sender,
 		InternalMessageName: message.Name,
 	})
 	originalName := message.Name
@@ -162,7 +163,7 @@ func (e *ExoCom) sendToServices(message structs.Message, publicMessageName strin
 		if err != nil {
 			return internalMessageNames, err
 		}
-		internalMessageNames[subscriber.ClientName] = internalMessageName
+		internalMessageNames[subscriber.Role] = internalMessageName
 	}
 	return internalMessageNames, nil
 }
@@ -186,7 +187,7 @@ func (e *ExoCom) sendToService(message structs.Message, publicMessageName string
 	if err != nil {
 		return "", err
 	}
-	err = e.sockets[subscriber.ClientName].WriteMessage(websocket.TextMessage, serializedBytes)
+	err = e.sockets[subscriber.Role].WriteMessage(websocket.TextMessage, serializedBytes)
 	if err != nil {
 		return "", err
 	}

@@ -49,7 +49,7 @@ var _ = Describe("ClientRegistry", func() {
 			It("returns the clients that are subscribed to the given message", func() {
 				result := registry.GetSubscribersFor("message 3 name")
 				Expect(result).To(Equal([]clientRegistry.Subscriber{{
-					ClientName:        "role 1",
+					Role:              "role 1",
 					InternalNamespace: "namespace",
 				}}))
 			})
@@ -82,7 +82,7 @@ var _ = Describe("ClientRegistry", func() {
 			It("has clients", func() {
 				registry.RegisterClient("role 1")
 				Expect(registry.Clients["role 1"]).To(Equal(clientRegistry.Client{
-					ClientName:        "role 1",
+					Role:              "role 1",
 					ServiceType:       "role 1",
 					InternalNamespace: "namespace",
 				}))

@@ -11,7 +11,7 @@ type GetInternalMessageNameOptions struct {
 // GetPublicMessageNameOptions are the options to the GetPublicMessageName func
 type GetPublicMessageNameOptions struct {
 	Namespace           string
-	ClientName          string
+	Role                string
 	InternalMessageName string
 }
 
@@ -28,5 +28,5 @@ func GetPublicMessageName(opts *GetPublicMessageNameOptions) string {
 	if !strings.Contains(opts.InternalMessageName, ".") || opts.Namespace == "" {
 		return opts.InternalMessageName
 	}
-	return opts.ClientName + "." + strings.Split(opts.InternalMessageName, ".")[1]
+	return opts.Role + "." + strings.Split(opts.InternalMessageName, ".")[1]
 }

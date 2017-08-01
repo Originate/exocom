@@ -14,15 +14,15 @@ import (
 // MockService is a mock of a real service that would connect to exocom
 type MockService struct {
 	exocomPort       int
-	clientName       string
+	role             string
 	socket           *websocket.Conn
 	ReceivedMessages []structs.Message
 }
 
 // NewMockService returns a new MockService
-func NewMockService(exocomPort int, clientName string) *MockService {
+func NewMockService(exocomPort int, role string) *MockService {
 	return &MockService{
-		clientName:       clientName,
+		role:             role,
 		exocomPort:       exocomPort,
 		ReceivedMessages: []structs.Message{},
 	}
@@ -39,7 +39,7 @@ func (m *MockService) Connect() error {
 	go m.websocketHandler()
 	serializedBytes, err := json.Marshal(structs.Message{
 		Name:    "exocom.register-service",
-		Payload: map[string]string{"clientName": m.clientName},
+		Payload: map[string]string{"clientName": m.role},
 	})
 	if err != nil {
 		return err

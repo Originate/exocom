@@ -29,9 +29,10 @@ type MessageOptions struct {
 
 // ExoRelay is the low level Go API to talk to Exocom
 type ExoRelay struct {
-	Config         Config
-	socket         *websocket.Conn
-	messageChannel chan structs.Message
+	Config                      Config
+	shouldReconnectOnDisconnect bool
+	socket                      *websocket.Conn
+	messageChannel              chan structs.Message
 }
 
 // Connect brings an ExoRelay instance online
@@ -41,6 +42,7 @@ func (e *ExoRelay) Connect() error {
 	if err != nil {
 		return err
 	}
+	e.shouldReconnectOnDisconnect = true
 	e.socket = socket
 	e.messageChannel = make(chan structs.Message)
 	go e.listenForMessages()
@@ -53,12 +55,8 @@ func (e *ExoRelay) Connect() error {
 
 // Close takes this ExoRelay instance offline
 func (e *ExoRelay) Close() error {
-	if e.socket == nil {
-		return nil
-	}
-	err := e.socket.Close()
-	e.socket = nil
-	return err
+	e.shouldReconnectOnDisconnect = false
+	return e.socket.Close()
 }
 
 // GetMessageChannel returns a channel which can be used read incoming messages
@@ -99,7 +97,7 @@ func (e *ExoRelay) listenForMessages() {
 	}, func(err error) {
 		fmt.Println(errors.Wrap(err, "Exorelay listening for messages"))
 	})
-	if e.socket != nil {
+	if e.shouldReconnectOnDisconnect {
 		fmt.Println("Disconnected from exocom reconnecting...")
 		err := e.Connect()
 		if err != nil {

@@ -19,13 +19,13 @@ var _ = Describe("MessageCache", func() {
 		timestamp = time.Now()
 	})
 	Describe("Get / Set", func() {
-		It("returns the timestamp of the message with the given messageId", func() {
+		It("returns the timestamp of the message with the given activityId", func() {
 			cache.Set("message1", timestamp)
 			result, ok := cache.Get("message1")
 			Expect(ok).To(BeTrue())
 			Expect(result).To(Equal(timestamp))
 		})
-		It("returns not ok if the messageid does not exist", func() {
+		It("returns not ok if the activityId does not exist", func() {
 			_, ok := cache.Get("foo-bar")
 			Expect(ok).To(BeFalse())
 		})

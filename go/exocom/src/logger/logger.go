@@ -77,7 +77,7 @@ func (l *Logger) Messages(message structs.Message, originalName string, internal
 			text += fmt.Sprintf("--[ %s ]-[ %s ]->", originalName, internalMessageName)
 		}
 		text += "  " + receiver
-		if message.ResponseTo != "" {
+		if message.ResponseTime > 0 {
 			text += fmt.Sprintf("  ( %v )", message.ResponseTime)
 		}
 		err := l.Log(text)

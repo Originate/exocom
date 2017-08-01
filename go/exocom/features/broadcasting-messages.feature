@@ -42,9 +42,9 @@ Feature: Broadcasting messages
 
   Scenario: broadcasting a reply
     When the "web" service sends "users.create"
-    And the "users" service sends "mongo.created" in reply to "111"
+    And the "users" service sends "mongo.created" for activity "111"
     Then ExoCom signals "users  --[ mongo.created ]-[ users.created ]->  web"
-    And ExoCom broadcasts the reply "users.created" to the "web" service
+    And ExoCom broadcasts the message "users.created" to the "web" service
 
 
   Scenario: broadcasting a message with whitespace

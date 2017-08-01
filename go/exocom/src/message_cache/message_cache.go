@@ -40,17 +40,17 @@ func (c *MessageCache) clearCache() {
 	return
 }
 
-// Get returns the timestamp for the given messageId and whether or not data exists for that messageId
-func (c *MessageCache) Get(messageID string) (time.Time, bool) {
+// Get returns the timestamp for the given activityId and whether or not data exists for that messageId
+func (c *MessageCache) Get(activityID string) (time.Time, bool) {
 	c.mutex.Lock()
-	timestamp, ok := c.cache[messageID]
+	timestamp, ok := c.cache[activityID]
 	c.mutex.Unlock()
 	return timestamp, ok
 }
 
-// Set adds the given messageId and timestamp to the cache
-func (c *MessageCache) Set(messageID string, timestamp time.Time) {
+// Set adds the given activityId and timestamp to the cache
+func (c *MessageCache) Set(activityID string, timestamp time.Time) {
 	c.mutex.Lock()
-	c.cache[messageID] = timestamp
+	c.cache[activityID] = timestamp
 	c.mutex.Unlock()
 }

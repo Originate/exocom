@@ -140,14 +140,12 @@ func (e *ExoCom) send(message structs.Message) error {
 		printLogError(e.logger.Warning(fmt.Sprintf("Warning: No receivers for message '%s' registered", publicMessageName)))
 		return nil
 	}
-	if message.ResponseTo != "" {
-		originalTimestamp, ok := e.messageCache.Get(message.ID)
-		if ok {
-			message.ResponseTime = message.Timestamp.Sub(originalTimestamp)
-		}
-	} else {
-		e.messageCache.Set(message.ID, message.Timestamp)
+
+	originalTimestamp, ok := e.messageCache.Get(message.ActivityID)
+	if ok {
+		message.ResponseTime = message.Timestamp.Sub(originalTimestamp)
 	}
+	e.messageCache.Set(message.ActivityID, message.Timestamp)
 	internalMessageNameMapping, err := e.sendToServices(message, publicMessageName, subscribers)
 	if err != nil {
 		return err
@@ -174,14 +172,14 @@ func (e *ExoCom) sendToService(message structs.Message, publicMessageName string
 		PublicMessageName: publicMessageName,
 	})
 	serviceMessage := structs.Message{
-		Name:      internalMessageName,
-		ID:        message.ID,
-		Payload:   message.Payload,
-		Timestamp: message.Timestamp,
+		Name:       internalMessageName,
+		ID:         message.ID,
+		Payload:    message.Payload,
+		Timestamp:  message.Timestamp,
+		ActivityID: message.ActivityID,
 	}
-	if message.ResponseTo != "" {
+	if message.ResponseTime > 0 {
 		serviceMessage.ResponseTime = message.ResponseTime
-		serviceMessage.ResponseTo = message.ResponseTo
 	}
 	serializedBytes, err := json.Marshal(serviceMessage)
 	if err != nil {

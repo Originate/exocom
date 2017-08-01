@@ -39,6 +39,6 @@ Feature: Translating messages
 
   Scenario: translating a reply
     When the "web" service sends "tweets.create"
-    And the "tweets" service sends "text-snippets.created" in reply to "111"
+    And the "tweets" service sends "text-snippets.created" for activity "111"
     Then ExoCom signals "tweets  --[ text-snippets.created ]-[ tweets.created ]->  web"
-    And ExoCom broadcasts the reply "tweets.created" to the "web" service
+    And ExoCom broadcasts the message "tweets.created" to the "web" service

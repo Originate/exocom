@@ -201,13 +201,13 @@ func FeatureContext(s *godog.Suite) {
 		return err
 	})
 
-	s.Step(`^the "([^"]*)" service sends "([^"]*)" in reply to "([^"]*)"$`, func(serviceName, replyMessage, responseTo string) error {
+	s.Step(`^the "([^"]*)" service sends "([^"]*)" for activity "([^"]*)"$`, func(serviceName, replyMessage, activityId string) error {
 		return services[serviceName].Send(structs.Message{
 			Sender:     serviceName,
 			Payload:    "",
 			ID:         "123",
-			ResponseTo: responseTo,
 			Name:       replyMessage,
+			ActivityID: activityId,
 		})
 	})
 }

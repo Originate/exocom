@@ -94,7 +94,6 @@ var _ = Describe("Logger", func() {
 					Name:         "users.created",
 					Sender:       "users",
 					Payload:      map[string]interface{}{},
-					ResponseTo:   "users.create",
 					ResponseTime: 1000}
 				internalMessageNameMapping := map[string]string{"web": "users.created", "tweets": "users.created"}
 				result := GetOutput(func(testLogger *logger.Logger) {

@@ -1,7 +1,6 @@
 package messageCache
 
 import (
-	"errors"
 	"sync"
 	"time"
 )
@@ -9,7 +8,7 @@ import (
 // MessageCache records the timestamp of each message.
 // The cache automitically deletes any message older then 1 minute
 type MessageCache struct {
-	Cache map[string]time.Time
+	cache map[string]time.Time
 	mutex *sync.Mutex
 }
 
@@ -17,6 +16,7 @@ type MessageCache struct {
 // removing old messages with a frequency equal to the given duration
 func NewMessageCache(cleanupInterval time.Duration) *MessageCache {
 	result := new(MessageCache)
+	result.cache = map[string]time.Time{}
 	result.mutex = &sync.Mutex{}
 	go func() {
 		for {
@@ -30,30 +30,25 @@ func NewMessageCache(cleanupInterval time.Duration) *MessageCache {
 }
 
 func (c *MessageCache) clearCache() {
-	for id, timestamp := range c.Cache {
+	for id, timestamp := range c.cache {
 		if time.Since(timestamp) > time.Minute {
-			delete(c.Cache, id)
+			delete(c.cache, id)
 		}
 	}
 	return
 }
 
-// Get returns the timestamp for the given messageId returning an error if
-// no data is available
-func (c *MessageCache) Get(messageID string) (time.Time, error) {
+// Get returns the timestamp for the given messageId and whether or not data exists for that messageId
+func (c *MessageCache) Get(messageID string) (time.Time, bool) {
 	c.mutex.Lock()
-	timestamp, ok := c.Cache[messageID]
-	if ok {
-		c.mutex.Unlock()
-		return timestamp, nil
-	}
+	timestamp, ok := c.cache[messageID]
 	c.mutex.Unlock()
-	return timestamp, errors.New("MessageId does not exist")
+	return timestamp, ok
 }
 
 // Set adds the given messageId and timestamp to the cache
 func (c *MessageCache) Set(messageID string, timestamp time.Time) {
 	c.mutex.Lock()
-	c.Cache[messageID] = timestamp
+	c.cache[messageID] = timestamp
 	c.mutex.Unlock()
 }

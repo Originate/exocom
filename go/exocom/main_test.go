@@ -15,6 +15,7 @@ import (
 	"github.com/DATA-DOG/godog"
 	"github.com/DATA-DOG/godog/gherkin"
 	"github.com/Originate/exocom/go/exocom/test_helpers"
+	"github.com/Originate/exocom/go/structs"
 	"github.com/phayes/freeport"
 	"github.com/pkg/errors"
 )
@@ -156,6 +157,20 @@ func FeatureContext(s *godog.Suite) {
 		return services[serviceName].Close()
 	})
 
+	s.Step(`^the "([^"]+)" service sends "([^"]*)"$`, func(serviceName, messageName string) error {
+		message := structs.Message{
+			ID:      "123",
+			Payload: "",
+			Sender:  serviceName,
+			Name:    messageName,
+		}
+		return services[serviceName].Send(message)
+	})
+
+	s.Step(`ExoCom signals "([^"]*)"$`, func(messageName string) error {
+		return testHelpers.WaitForText(cmdStdout, messageName)
+	})
+
 	s.Step(`^ExoCom should have the config:$`, func(servicesDocString *gherkin.DocString) error {
 		var expected map[string]interface{}
 		err := json.Unmarshal([]byte(servicesDocString.Content), &expected)
@@ -179,6 +194,21 @@ func FeatureContext(s *godog.Suite) {
 			return fmt.Errorf("Expected to equal %s but got %s", expected, actual)
 		}
 		return nil
+	})
+
+	s.Step(`^ExoCom broadcasts the (?:message|reply) "([^"]*)" to the "([^"]*)" service$`, func(messageName, serviceName string) error {
+		_, err := services[serviceName].WaitForMessageWithName(messageName)
+		return err
+	})
+
+	s.Step(`^the "([^"]*)" service sends "([^"]*)" in reply to "([^"]*)"$`, func(serviceName, replyMessage, responseTo string) error {
+		return services[serviceName].Send(structs.Message{
+			Sender:     serviceName,
+			Payload:    "",
+			ID:         "123",
+			ResponseTo: responseTo,
+			Name:       replyMessage,
+		})
 	})
 }
 

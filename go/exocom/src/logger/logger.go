@@ -68,13 +68,19 @@ func (l *Logger) RoutingSetup(routes clientRegistry.Routes) error {
 }
 
 // Messages prints the given messages and who they were sent to
-func (l *Logger) Messages(messages []structs.Message, receivers []string) error {
-	for _, message := range messages {
-		responseTime := ""
-		if message.ResponseTo != "" {
-			responseTime = fmt.Sprintf("  ( %v )", message.ResponseTime)
+func (l *Logger) Messages(message structs.Message, originalName string, internalMessageNameMapping map[string]string) error {
+	for receiver, internalMessageName := range internalMessageNameMapping {
+		text := message.Sender + "  "
+		if originalName == internalMessageName {
+			text += fmt.Sprintf("--[ %s ]->", originalName)
+		} else {
+			text += fmt.Sprintf("--[ %s ]-[ %s ]->", originalName, internalMessageName)
 		}
-		err := l.Log(message.Sender + "  --[ " + message.Name + " ]->  " + strings.Join(receivers, "and") + responseTime)
+		text += "  " + receiver
+		if message.ResponseTo != "" {
+			text += fmt.Sprintf("  ( %v )", message.ResponseTime)
+		}
+		err := l.Log(text)
 		if err != nil {
 			return err
 		}

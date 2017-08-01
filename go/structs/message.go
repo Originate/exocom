@@ -11,6 +11,7 @@ type Message struct {
 	ResponseTo   string         `json:"responseTo"`
 	Sender       string         `json:"sender"`
 	SessionID    string         `json:"sessionId"`
+	Timestamp    time.Time      `json:"timestamp"`
 }
 
 // MessagePayload defines the structure of Message.Payload

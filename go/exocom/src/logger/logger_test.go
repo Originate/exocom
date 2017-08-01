@@ -87,20 +87,65 @@ var _ = Describe("Logger", func() {
 		})
 	})
 	Describe("Messages", func() {
-		It("prints the message that is sent, the response time, and the payload", func() {
-			message := structs.Message{
-				Name:         "users.created",
-				Sender:       "users",
-				Payload:      map[string]interface{}{},
-				ResponseTo:   "users.create",
-				ResponseTime: 1000}
-			receivers := []string{"users"}
-			messages := []structs.Message{message}
-			result := GetOutput(func(testLogger *logger.Logger) {
-				err := testLogger.Messages(messages, receivers)
-				Expect(err).To(BeNil())
+		Describe("outgoing message translation", func() {
+			It("prints the message that is sent, the response time, and the payload", func() {
+				originalName := "mongo.created"
+				message := structs.Message{
+					Name:         "users.created",
+					Sender:       "users",
+					Payload:      map[string]interface{}{},
+					ResponseTo:   "users.create",
+					ResponseTime: 1000}
+				internalMessageNameMapping := map[string]string{"web": "users.created", "tweets": "users.created"}
+				result := GetOutput(func(testLogger *logger.Logger) {
+					err := testLogger.Messages(message, originalName, internalMessageNameMapping)
+					Expect(err).To(BeNil())
+				})
+				Expect(result).To(ContainSubstring(
+					"users  --[ mongo.created ]-[ users.created ]->  web  ( 1µs )\n" +
+						"{}\n"))
+				Expect(result).To(ContainSubstring(
+					"users  --[ mongo.created ]-[ users.created ]->  tweets  ( 1µs )\n" +
+						"{}\n"))
 			})
-			Expect(result).To(Equal("users  --[ users.created ]->  users  ( 1µs )\n{}\n"))
+		})
+
+		Describe("incoming message translation", func() {
+			It("prints the message that is sent, the response time, and the payload", func() {
+				originalName := "users.create"
+				message := structs.Message{
+					Name:    "users.create",
+					Sender:  "web",
+					Payload: map[string]interface{}{},
+				}
+				internalMessageNameMapping := map[string]string{"users": "mongo.create"}
+				result := GetOutput(func(testLogger *logger.Logger) {
+					err := testLogger.Messages(message, originalName, internalMessageNameMapping)
+					Expect(err).To(BeNil())
+				})
+				Expect(result).To(Equal(
+					"web  --[ users.create ]-[ mongo.create ]->  users\n" +
+						"{}\n"))
+			})
+		})
+
+		Describe("no message translation", func() {
+			It("prints the message that is sent, the response time, and the payload", func() {
+				originalName := "users.create"
+				message := structs.Message{
+					Name:    "users.create",
+					Sender:  "web",
+					Payload: map[string]interface{}{},
+				}
+				internalMessageNameMapping := map[string]string{"users": "users.create"}
+				result := GetOutput(func(testLogger *logger.Logger) {
+					err := testLogger.Messages(message, originalName, internalMessageNameMapping)
+					Expect(err).To(BeNil())
+				})
+				Expect(result).To(Equal(
+					"web  --[ users.create ]->  users\n" +
+						"{}\n"))
+			})
 		})
 	})
 })

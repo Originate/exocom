@@ -9,7 +9,7 @@ Feature:
 
 
   Background:
-    Given a websocket bridge connected to Exocom
+    Given a frontend bridge connected to Exocom
 
 
   Scenario: receiving a message with a SessionId
@@ -28,7 +28,7 @@ Feature:
         "id": "456"
       }
       """
-    Then websocket bridge sends this to the client:
+    Then frontend bridge sends this to the client:
       """
       {
         "name": "pong",
@@ -52,4 +52,4 @@ Feature:
         "id": "456"
       }
       """
-    Then the websocket bridge does not send a message to the client
+    Then the frontend bridge does not send a message to the client

@@ -9,7 +9,7 @@ Feature:
 
 
   Background:
-    Given a websocket bridge connected to Exocom
+    Given a frontend bridge connected to Exocom
 
 
   Scenario: receiving a message without a SessionId
@@ -20,7 +20,7 @@ Feature:
         "id": "123"
       }
       """
-    Then websocket bridge makes the websocket request:
+    Then frontend bridge makes the websocket request:
       """
       {
         "name": "hello",

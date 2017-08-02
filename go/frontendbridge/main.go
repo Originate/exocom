@@ -1,4 +1,4 @@
-package websocketbridge
+package frontendbridge
 
 import (
 	"encoding/json"
@@ -16,9 +16,9 @@ import (
 
 var upgrader = websocket.Upgrader{}
 
-// WebsocketBridge handles communication between an Exosphere backend and
+// FrontendBridge handles communication between an Exosphere backend and
 // a browser front-end using websockets
-type WebsocketBridge struct {
+type FrontendBridge struct {
 	server    http.Server
 	socketMap map[string]*websocket.Conn
 	exoRelay  exorelay.ExoRelay
@@ -26,7 +26,7 @@ type WebsocketBridge struct {
 }
 
 // Open sets up connection to exocom and a server to listen for connections from clients
-func (w *WebsocketBridge) Open(config exorelay.Config, clientPort int) error {
+func (w *FrontendBridge) Open(config exorelay.Config, clientPort int) error {
 	err := w.connectToExocom(config)
 	if err != nil {
 		return err
@@ -40,7 +40,7 @@ func (w *WebsocketBridge) Open(config exorelay.Config, clientPort int) error {
 }
 
 // ConnectToExocom sets up an ExoRelay to communicate with exocom
-func (w *WebsocketBridge) connectToExocom(config exorelay.Config) error {
+func (w *FrontendBridge) connectToExocom(config exorelay.Config) error {
 	w.exoRelay = exorelay.ExoRelay{Config: config}
 	err := w.exoRelay.Connect()
 	if err != nil {
@@ -50,7 +50,7 @@ func (w *WebsocketBridge) connectToExocom(config exorelay.Config) error {
 	return nil
 }
 
-func (w *WebsocketBridge) listenForExocomMessages() {
+func (w *FrontendBridge) listenForExocomMessages() {
 	messageChannel := w.exoRelay.GetMessageChannel()
 	for {
 		message, ok := <-messageChannel
@@ -78,7 +78,7 @@ func (w *WebsocketBridge) listenForExocomMessages() {
 }
 
 // ListenForClients sets up a server to listen for incoming websocket connections
-func (w *WebsocketBridge) listenForClients(clientPort int) error {
+func (w *FrontendBridge) listenForClients(clientPort int) error {
 	var handler http.HandlerFunc = func(resWriter http.ResponseWriter, req *http.Request) {
 		conn, err := upgrader.Upgrade(resWriter, req, nil)
 		if err != nil {
@@ -97,7 +97,7 @@ func (w *WebsocketBridge) listenForClients(clientPort int) error {
 }
 
 // Close closes the server, all the open sockets, and nils the socketMap
-func (w *WebsocketBridge) Close() error {
+func (w *FrontendBridge) Close() error {
 	for _, socket := range w.socketMap {
 		if socket != nil {
 			err := socket.Close()
@@ -119,7 +119,7 @@ func (w *WebsocketBridge) Close() error {
 	return nil
 }
 
-func (w *WebsocketBridge) websocketHandler(socket *websocket.Conn) {
+func (w *FrontendBridge) websocketHandler(socket *websocket.Conn) {
 	sessionID := uuid.NewV4().String()
 	w.socketMap[sessionID] = socket
 	utils.ListenForMessages(socket, func(message structs.Message) error {
@@ -134,7 +134,7 @@ func (w *WebsocketBridge) websocketHandler(socket *websocket.Conn) {
 		}
 		return nil
 	}, func(err error) {
-		fmt.Println(errors.Wrap(err, "Websocketbridge listening for messages"))
+		fmt.Println(errors.Wrap(err, "FrontendBridge listening for messages"))
 	})
 	delete(w.socketMap, sessionID)
 	err := socket.Close()

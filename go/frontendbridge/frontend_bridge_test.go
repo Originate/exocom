@@ -1,4 +1,4 @@
-package websocketbridge_test
+package frontendbridge_test
 
 import (
 	"encoding/json"
@@ -15,9 +15,9 @@ import (
 	"github.com/DATA-DOG/godog/gherkin"
 	"github.com/Originate/exocom/go/exocom-mock"
 	"github.com/Originate/exocom/go/exorelay"
+	"github.com/Originate/exocom/go/frontendbridge"
 	"github.com/Originate/exocom/go/structs"
 	"github.com/Originate/exocom/go/utils"
-	"github.com/Originate/exocom/go/websocketbridge"
 	"github.com/phayes/freeport"
 	uuid "github.com/satori/go.uuid"
 
@@ -42,7 +42,7 @@ func FeatureContext(s *godog.Suite) {
 	var clientPort int
 	var clientURL string
 	var exocom *exocomMock.ExoComMock
-	var websocketBridgeInstance *websocketbridge.WebsocketBridge
+	var frontendBridgeInstance *frontendbridge.FrontendBridge
 	var clientWebsocket *websocket.Conn
 	var clientCount int
 	var outgoingMessageId string
@@ -59,7 +59,7 @@ func FeatureContext(s *godog.Suite) {
 	})
 
 	s.AfterScenario(func(interface{}, error) {
-		err := websocketBridgeInstance.Close()
+		err := frontendBridgeInstance.Close()
 		if err != nil {
 			panic(err)
 		}
@@ -69,11 +69,11 @@ func FeatureContext(s *godog.Suite) {
 		}
 	})
 
-	s.Step(`a websocket bridge connected to Exocom`, func() error {
+	s.Step(`a frontend bridge connected to Exocom`, func() error {
 		exocom = newExocom(exocomPort)
-		websocketBridgeInstance = &websocketbridge.WebsocketBridge{}
+		frontendBridgeInstance = &frontendbridge.FrontendBridge{}
 		config := exorelay.Config{Host: "localhost", Port: exocomPort, Role: "websocket-test"}
-		return websocketBridgeInstance.Open(config, clientPort)
+		return frontendBridgeInstance.Open(config, clientPort)
 	})
 
 	s.Step(`receiving this message from the client:`, func(payloadStr *gherkin.DocString) error {
@@ -150,7 +150,7 @@ func FeatureContext(s *godog.Suite) {
 		return nil
 	})
 
-	s.Step(`websocket bridge makes the websocket request:`, func(payloadStr *gherkin.DocString) error {
+	s.Step(`frontend bridge makes the websocket request:`, func(payloadStr *gherkin.DocString) error {
 		var expectedMessage structs.Message
 		err := json.Unmarshal([]byte(payloadStr.Content), &expectedMessage)
 		if err != nil {
@@ -170,7 +170,7 @@ func FeatureContext(s *godog.Suite) {
 		return nil
 	})
 
-	s.Step(`websocket bridge sends this to the client:`, func(payloadStr *gherkin.DocString) error {
+	s.Step(`frontend bridge sends this to the client:`, func(payloadStr *gherkin.DocString) error {
 		_, bytes, err := clientWebsocket.ReadMessage()
 		if err != nil {
 			return err
@@ -191,7 +191,7 @@ func FeatureContext(s *godog.Suite) {
 		return nil
 	})
 
-	s.Step(`^the websocket bridge does not send a message to the client$`, func() error {
+	s.Step(`^the frontend bridge does not send a message to the client$`, func() error {
 		var bytes []byte
 		clientWebsocket.SetReadDeadline(time.Now().Add(time.Second * time.Duration(1)))
 		_, bytes, err := clientWebsocket.ReadMessage()

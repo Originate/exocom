@@ -23,7 +23,7 @@ type Config struct {
 type MessageOptions struct {
 	Name       string
 	Payload    structs.MessagePayload
-	ResponseTo string
+	ActivityID string
 	SessionID  string
 }
 
@@ -65,27 +65,33 @@ func (e *ExoRelay) GetMessageChannel() chan structs.Message {
 }
 
 // Send sends a message with the given options
-func (e *ExoRelay) Send(options MessageOptions) (string, error) {
+func (e *ExoRelay) Send(options MessageOptions) (*structs.Message, error) {
+	var activityID string
 	if e.socket == nil {
-		return "", errors.New("ExoRelay#Send not connected to Exocom")
+		return &structs.Message{}, errors.New("ExoRelay#Send not connected to Exocom")
 	}
 	id := uuid.NewV4().String()
 	if options.Name == "" {
-		return "", errors.New("ExoRelay#Send cannot send empty messages")
+		return &structs.Message{}, errors.New("ExoRelay#Send cannot send empty messages")
+	}
+	if options.ActivityID == "" {
+		activityID = uuid.NewV4().String()
+	} else {
+		activityID = options.ActivityID
 	}
 	message := &structs.Message{
 		ID:         id,
 		Name:       options.Name,
 		Payload:    options.Payload,
-		ResponseTo: options.ResponseTo,
+		ActivityID: activityID,
 		Sender:     e.Config.Role,
 		SessionID:  options.SessionID,
 	}
 	serializedBytes, err := json.Marshal(message)
 	if err != nil {
-		return "", err
+		return &structs.Message{}, err
 	}
-	return id, e.socket.WriteMessage(websocket.TextMessage, serializedBytes)
+	return message, e.socket.WriteMessage(websocket.TextMessage, serializedBytes)
 }
 
 // Helpers

@@ -8,7 +8,6 @@ type Message struct {
 	ID           string         `json:"id"`
 	Name         string         `json:"name"`
 	Payload      MessagePayload `json:"payload"`
-	ResponseTo   string         `json:"responseTo"`
 	ResponseTime time.Duration  `json:"responseTime"`
 	Sender       string         `json:"sender"`
 	SessionID    string         `json:"sessionId"`

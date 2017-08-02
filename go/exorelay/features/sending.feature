@@ -24,7 +24,8 @@ Feature: Sending outgoing messages
       {
         "name": "hello-world",
         "sender": "test-service",
-        "id": "{{.outgoingMessageId}}"
+        "id": "{{.outgoingMessageId}}",
+        "activityId": "{{.outgoingActivityId}}"
       }
       """
 
@@ -36,7 +37,8 @@ Feature: Sending outgoing messages
       {
         "name": "hello world",
         "sender": "test-service",
-        "id": "{{.outgoingMessageId}}"
+        "id": "{{.outgoingMessageId}}",
+        "activityId": "{{.outgoingActivityId}}"
       }
       """
 
@@ -54,7 +56,8 @@ Feature: Sending outgoing messages
           "name": "world"
         },
         "sender": "test-service",
-        "id": "{{.outgoingMessageId}}"
+        "id": "{{.outgoingMessageId}}",
+        "activityId": "{{.outgoingActivityId}}"
       }
       """
 
@@ -71,6 +74,7 @@ Feature: Sending outgoing messages
         "name": "hello-world",
         "sender": "test-service",
         "id": "{{.outgoingMessageId}}",
+        "activityId": "{{.outgoingActivityId}}",
         "sessionId": "1"
       }
       """

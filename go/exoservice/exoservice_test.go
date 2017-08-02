@@ -14,6 +14,7 @@ import (
 	"github.com/Originate/exocom/go/exoservice/test-fixtures"
 	"github.com/Originate/exocom/go/structs"
 	"github.com/phayes/freeport"
+	uuid "github.com/satori/go.uuid"
 )
 
 func newExocom(port int) *exocomMock.ExoComMock {
@@ -70,11 +71,12 @@ func FeatureContext(s *godog.Suite) {
 		return nil
 	})
 
-	s.Step(`^receiving a "([^"]*)" message(?: with (?:id "([^"]*)")?(?:(?: and )?sessionId "([^"]*)")?)?$`, func(name, id, sessionId string) error {
+	s.Step(`^receiving a "([^"]*)" message(?: with (?:activityId "([^"]*)")?(?:(?: and )?sessionId "([^"]*)")?)?$`, func(name, activityId, sessionId string) error {
 		message := structs.Message{
-			ID:        id,
-			Name:      name,
-			SessionID: sessionId,
+			ActivityID: activityId,
+			ID:         uuid.NewV4().String(),
+			Name:       name,
+			SessionID:  sessionId,
 		}
 		_, err := exocom.WaitForConnection()
 		if err != nil {
@@ -83,13 +85,13 @@ func FeatureContext(s *godog.Suite) {
 		return exocom.Send(message)
 	})
 
-	s.Step(`^it sends a "([^"]*)" message(?: as a reply to the message with (?:id "([^"]*)")?(?:(?: and )?sessionId "([^"]*)")?)?$`, func(name, id, sessionId string) error {
+	s.Step(`^it sends a "([^"]*)" message(?: as a reply to the message with (?:activityId "([^"]*)")?(?:(?: and )?sessionId "([^"]*)")?)?$`, func(name, activityId, sessionId string) error {
 		actualMessage, err := exocom.WaitForMessageWithName(name)
 		if err != nil {
 			return err
 		}
-		if actualMessage.ResponseTo != id {
-			return fmt.Errorf("Expected message to be a response to %s but got %s", id, actualMessage.ResponseTo)
+		if actualMessage.ActivityID != activityId && activityId != "" {
+			return fmt.Errorf("Expected message to be a part of activity %s but got %s", activityId, actualMessage.ActivityID)
 		}
 		if actualMessage.SessionID != sessionId {
 			return fmt.Errorf("Expected message to be a response to have sessionId %s but got %s", sessionId, actualMessage.SessionID)

@@ -11,7 +11,7 @@ Feature: Mock replies
 
   Scenario: receiving a message for which a mock reply is registered
     When receiving a "request message" message with id "123"
-    Then it sends a "reply message" message as a reply "123" with the payload
+    Then it sends a "reply message" message as part of activity "123" with the payload
       """
       {
         "some": "data"

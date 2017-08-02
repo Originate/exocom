@@ -126,7 +126,7 @@ func (w *WebsocketBridge) websocketHandler(socket *websocket.Conn) {
 		_, err := w.exoRelay.Send(exorelay.MessageOptions{
 			Name:       message.Name,
 			Payload:    message.Payload,
-			ResponseTo: message.ResponseTo,
+			ActivityID: message.ActivityID,
 			SessionID:  sessionID,
 		})
 		if err != nil {

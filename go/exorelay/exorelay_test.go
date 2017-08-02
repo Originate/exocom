@@ -39,13 +39,13 @@ func FeatureContext(s *godog.Suite) {
 	var exocomPort int
 	var exocom *exocomMock.ExoComMock
 	var exoInstance *exorelay.ExoRelay
-	var outgoingMessageId string
+	var outgoingMessage *structs.Message
 	var savedError error
 	var testFixture exorelayTestFixtures.TestFixture
 
 	s.BeforeScenario(func(interface{}) {
 		exocomPort = freeport.GetPort()
-		outgoingMessageId = ""
+		outgoingMessage = &structs.Message{}
 		savedError = nil
 		testFixture = nil
 	})
@@ -95,7 +95,7 @@ func FeatureContext(s *godog.Suite) {
 
 	s.Step(`^sending the message "([^"]*)"$`, func(name string) error {
 		var err error
-		outgoingMessageId, err = exoInstance.Send(exorelay.MessageOptions{Name: name})
+		outgoingMessage, err = exoInstance.Send(exorelay.MessageOptions{Name: name})
 		return err
 	})
 
@@ -105,18 +105,18 @@ func FeatureContext(s *godog.Suite) {
 		if err != nil {
 			return err
 		}
-		outgoingMessageId, err = exoInstance.Send(exorelay.MessageOptions{Name: name, Payload: payload})
+		outgoingMessage, err = exoInstance.Send(exorelay.MessageOptions{Name: name, Payload: payload})
 		return err
 	})
 
 	s.Step(`^sending the message "([^"]*)" with sessionId "([^"]*)"$`, func(name, sessionId string) error {
 		var err error
-		outgoingMessageId, err = exoInstance.Send(exorelay.MessageOptions{Name: name, SessionID: sessionId})
+		outgoingMessage, err = exoInstance.Send(exorelay.MessageOptions{Name: name, SessionID: sessionId})
 		return err
 	})
 
 	s.Step(`^trying to send an empty message$`, func() error {
-		outgoingMessageId, savedError = exoInstance.Send(exorelay.MessageOptions{Name: ""})
+		outgoingMessage, savedError = exoInstance.Send(exorelay.MessageOptions{Name: ""})
 		if savedError == nil {
 			return fmt.Errorf("Expected ExoRelay to error but it did not")
 		} else {
@@ -131,7 +131,10 @@ func FeatureContext(s *godog.Suite) {
 			return err
 		}
 		var expectedMessageBuffer bytes.Buffer
-		err = t.Execute(&expectedMessageBuffer, map[string]interface{}{"outgoingMessageId": outgoingMessageId})
+		err = t.Execute(&expectedMessageBuffer, map[string]interface{}{
+			"outgoingMessageId":  outgoingMessage.ID,
+			"outgoingActivityId": outgoingMessage.ActivityID,
+		})
 		if err != nil {
 			return err
 		}

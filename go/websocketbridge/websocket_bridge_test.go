@@ -160,9 +160,10 @@ func FeatureContext(s *godog.Suite) {
 		if err != nil {
 			return err
 		}
-		//ID and SessionId get generated on the fly, so we can't know them beforehand
+		//ID, ActivityID, and SessionId get generated on the fly, so we can't know them beforehand
 		expectedMessage.ID = actualMessage.ID
 		expectedMessage.SessionID = actualMessage.SessionID
+		expectedMessage.ActivityID = actualMessage.ActivityID
 		if !reflect.DeepEqual(actualMessage, expectedMessage) {
 			return fmt.Errorf("Expected request to equal %s but got %s", expectedMessage, actualMessage)
 		}

@@ -74,8 +74,8 @@ func FeatureContext(s *godog.Suite) {
 			return err
 		}
 		serializedBytes, err := json.Marshal(structs.Message{
-			Name: name,
-			ID:   id,
+			Name:       name,
+			ActivityID: id,
 		})
 		if err != nil {
 			return err
@@ -83,7 +83,7 @@ func FeatureContext(s *godog.Suite) {
 		return socket.WriteMessage(websocket.TextMessage, serializedBytes)
 	})
 
-	s.Step(`^it sends a "([^"]*)" message as a reply "([^"]*)" with the payload$`, func(name, id string, payloadStr *gherkin.DocString) error {
+	s.Step(`^it sends a "([^"]*)" message as part of activity "([^"]*)" with the payload$`, func(name, id string, payloadStr *gherkin.DocString) error {
 		var expectedPayload structs.MessagePayload
 		err := json.Unmarshal([]byte(payloadStr.Content), &expectedPayload)
 		if err != nil {
@@ -105,8 +105,8 @@ func FeatureContext(s *godog.Suite) {
 		if message.Name != name {
 			return fmt.Errorf("Expected message name to equal '%s' but got '%s'", name, message.Name)
 		}
-		if message.ResponseTo != id {
-			return fmt.Errorf("Expected message responseTo to equal '%s' but got '%s'", id, message.ResponseTo)
+		if message.ActivityID != id {
+			return fmt.Errorf("Expected message ActivityID to equal '%s' but got '%s'", id, message.ActivityID)
 		}
 		if !reflect.DeepEqual(message.Payload, expectedPayload) {
 			return fmt.Errorf("Expected message payload to equal %s but got %s", expectedPayload, message.Payload)

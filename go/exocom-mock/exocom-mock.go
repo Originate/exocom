@@ -137,7 +137,7 @@ func (e *ExoComMock) websocketHandler(socket *websocket.Conn) {
 		if replyData, hasReplyData := e.mockReplyMapping[message.Name]; hasReplyData {
 			return e.Send(structs.Message{
 				Name:       replyData.Name,
-				ResponseTo: message.ID,
+				ActivityID: message.ActivityID,
 				Payload:    replyData.Payload,
 			})
 		}

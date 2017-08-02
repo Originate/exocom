@@ -20,7 +20,7 @@ class WebSocketConnector extends EventEmitter
     @exocom-port = +@exocom-port
 
     # Contains the id of the most recently sent request (for testing)
-    @last-sent-id = null
+    @last-sent-message = null
 
 
   # Closes the port that ExoRelay is communicating on
@@ -40,10 +40,10 @@ class WebSocketConnector extends EventEmitter
 
 
   # Returns a method that sends a reply to the message with the given request
-  reply-method-for: (id, session-id) ->
-    | !id  =>  return @emit 'error', new Error 'WebSocketConnector.replyMethodFor needs an id'
+  reply-method-for: (activity-id, session-id) ->
+    | !activity-id  =>  return @emit 'error', new Error 'WebSocketConnector.replyMethodFor needs an activity-id'
     (message-name, payload = {}) ~>
-      @send message-name, payload, response-to: id, session-id: session-id
+      @send message-name, payload, activity-id: activity-id, session-id: session-id
 
 
   send: (message-name, payload, options = {}) ->
@@ -56,11 +56,11 @@ class WebSocketConnector extends EventEmitter
       name: message-name
       sender: @role
       id: uuid.v1!
+      activity-id: options.activity-id or uuid.v1!
     request-data.payload = payload if payload?
-    request-data.response-to = options.response-to if options.response-to
     request-data.session-id = options.session-id if options.session-id
     @socket.send JSON.stringify request-data
-    @last-sent-id = request-data.id
+    @last-sent-message = request-data
 
 
   connect: ~>
@@ -97,14 +97,12 @@ class WebSocketConnector extends EventEmitter
       | _                     =>  @emit 'error', Error "unknown result code: '#{result}'"
 
 
-  _log-received: ({message-name, id, response-to}) ->
-    | response-to  =>  debug " received message '#{message-name}' with id '#{id}' in response to '#{response-to}'"
-    | _            =>  debug "received message '#{message-name}' with id '#{id}'"
+  _log-received: ({message-name, id, activity-id}) ->
+    debug "received message '#{message-name}' with id '#{id}' in discussion of '#{activity-id}'"
 
 
   _log-sending: (message-name, options) ->
-    | options.response-to  =>  debug "sending message '#{message-name}' in response to '#{options.response-to}'"
-    | _                    =>  debug "sending message '#{message-name}'"
+    debug "sending message '#{message-name}' in discussion of '#{options.activity-id}'"
 
 
   # Returns the relevant data from a request
@@ -112,7 +110,7 @@ class WebSocketConnector extends EventEmitter
     {
       message-name: req.name
       payload: req.payload
-      response-to: req.response-to
+      activity-id: req.activity-id
       id: req.id
       session-id: req.session-id
     }

@@ -24,14 +24,14 @@ describe 'WebSocketConnector', ->
     it 'returns a function that calls @send prebound to the response id', ->
       expect(@reply-method).to.be.a 'function'
       @reply-method 'reply-message', 'payload'
-      expect(@websocket-connector.send.first-call.args).to.eql [ 'reply-message', 'payload', {response-to: '123', "sessionId": '1'} ]
+      expect(@websocket-connector.send.first-call.args).to.eql [ 'reply-message', 'payload', {activity-id: '123', session-id: '1'} ]
 
 
-    context 'missing id', (...) ->
+    context 'missing activity-id', (...) ->
 
       before-each ->
         @websocket-connector.reply-method-for null
 
       it 'emits an error', (done) ->
-        expect(@error.message).to.eql 'WebSocketConnector.replyMethodFor needs an id'
+        expect(@error.message).to.eql 'WebSocketConnector.replyMethodFor needs an activity-id'
         done!

@@ -31,6 +31,7 @@ Feature: Sending from messages
       sender: 'test-service'
       payload: 'secret'
       id: '<%= request_uuid %>'
+      activity-id: '<%= request_activity_id %>'
       """
 
 
@@ -51,4 +52,5 @@ Feature: Sending from messages
       sender: 'test-service'
       payload: 'secret'
       id: '<%= request_uuid %>'
+      activity-id: '<%= request_activity_id %>'
       """

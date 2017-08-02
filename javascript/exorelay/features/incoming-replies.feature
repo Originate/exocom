@@ -27,7 +27,7 @@ Feature: Handling incoming replies to sent message
         id: 456
         name: 'Will Riker'
       id: '123'
-      response-to: '<%= request_uuid %>'
+      activity-id: '<%= request_activity_id %>'
       """
     Then the reply handler runs and calls my "print" method with "created user 456 via 'users.created'"
 
@@ -46,7 +46,7 @@ Feature: Handling incoming replies to sent message
         id: 456
         name: 'Will Riker'
       id: '123'
-      response-to: '<%= request_uuid %>'
+      activity-id: '<%= request_activity_id %>'
       """
     Then the reply handler runs and calls my "print" method with "created user 456 via 'users created'"
 

@@ -31,10 +31,10 @@ class ExoRelay extends EventEmitter
 
   send: (message-name, payload, reply-handler) ~>
     | reply-handler and typeof reply-handler isnt 'function'  =>  return @emit 'error', Error 'The reply handler given to ExoRelay#send must be a function'
-    message-id = @websocket-connector.send message-name, payload
+    message = @websocket-connector.send message-name, payload
     if reply-handler
-      @message-handler.register-reply-handler message-id, reply-handler
-    message-id
+      @message-handler.register-reply-handler message.activity-id, reply-handler
+    message
 
 
   _on-incoming-message: (request-data) ~>

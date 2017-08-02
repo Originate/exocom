@@ -26,6 +26,7 @@ Feature: Sending outgoing messages
       name: 'hello-world'
       sender: 'test-service'
       id: '<%= request_uuid %>'
+      activity-id: '<%= request_activity_id %>'
       """
 
 
@@ -41,6 +42,7 @@ Feature: Sending outgoing messages
       payload:
         name: 'world'
       id: '<%= request_uuid %>'
+      activity-id: '<%= request_activity_id %>'
       """
 
 
@@ -55,6 +57,7 @@ Feature: Sending outgoing messages
       sender: 'test-service'
       payload: {}
       id: '<%= request_uuid %>'
+      activity-id: '<%= request_activity_id %>'
       """
 
 
@@ -69,6 +72,7 @@ Feature: Sending outgoing messages
       sender: 'test-service'
       payload: 'world'
       id: '<%= request_uuid %>'
+      activity-id: '<%= request_activity_id %>'
       """
 
   Scenario: sending a message with an empty string as payload
@@ -82,6 +86,7 @@ Feature: Sending outgoing messages
       sender: 'test-service'
       payload: ''
       id: '<%= request_uuid %>'
+      activity-id: '<%= request_activity_id %>'
       """
 
 
@@ -96,6 +101,7 @@ Feature: Sending outgoing messages
       sender: 'test-service'
       payload: [1, 2, 3]
       id: '<%= request_uuid %>'
+      activity-id: '<%= request_activity_id %>'
       """
 
 
@@ -110,6 +116,7 @@ Feature: Sending outgoing messages
       sender: 'test-service'
       payload: []
       id: '<%= request_uuid %>'
+      activity-id: '<%= request_activity_id %>'
       """
 
 
@@ -123,6 +130,7 @@ Feature: Sending outgoing messages
       name: 'hello world'
       sender: 'test-service'
       id: '<%= request_uuid %>'
+      activity-id: '<%= request_activity_id %>'
       """
 
 

@@ -30,7 +30,7 @@ When /^an ExoRelay instance running inside the "([^"]*)" service comes online$/ 
   @exo-relay = new ExoRelay {@role, @exocom-port, exocom-host: "localhost"}
     ..connect!
     ..on 'online', ~>
-      @message-id = @exo-relay.websocket-connector.last-sent-id
+      {id: @message-id, activity-id: @message-activity-id} = @exo-relay.websocket-connector.last-sent-message
       done!
     ..on 'error', (@error) ~>
 
@@ -55,7 +55,9 @@ When /^I create an ExoRelay instance .*: "([^"]*)"$/, (code) ->
 
 When /^I send a .*message/, (code) ->
   code = code.replace /\bexo-relay\b/, '@exo-relay'
-  @message-id = eval livescript.compile(code, bare: yes, header: no)
+  message = eval livescript.compile(code, bare: yes, header: no)
+  @message-id = message.id
+  @message-activity-id = message.activity-id
   expect(@message-id).to.not.be.undefined
 
 
@@ -97,7 +99,7 @@ When /^receiving the "([^"]*)" message with payload "([^"]*)" as a reply to the 
       name: message-name
       payload: payload
       id: '123'
-      response-to: @exocom.received-messages[0].id
+      activity-id: @exocom.received-messages[0].activity-id
     @exocom
       ..reset!
       ..send exocom-data
@@ -117,11 +119,15 @@ When /^running this multi\-level request:$/, (code) ->
 
 
 When /^sending the message:$/, (code) ->
-  eval livescript.compile "@message-id = @#{code}", bare: yes, header: no
+  eval livescript.compile "message = @#{code}", bare: yes, header: no
+  @message-id = message.id
+  @message-activity-id = message.activity-id
 
 
 When /^the reply arrives via this message:$/, (request-data) ->
-  rendered = ejs.render request-data, request_uuid: @message-id
+  rendered = ejs.render request-data,
+    request_uuid: @message-id,
+    request_activity_id: @message-activity-id
   eval livescript.compile "data = {\n#{rendered}\n}", bare: yes, header: no
   data.service = 'test-service'
   @exocom.send data

@@ -38,9 +38,9 @@ class HandlerRegistry extends EventEmitter
 
   # Tries to handle the incoming reply.
   # Returns whether it was able to do that.
-  handle-reply: ({message-name, response-to, payload}) ->
-    if handler = @get-handler response-to
-      debug "handling message '#{message-name}' in response to '#{response-to}'"
+  handle-reply: ({message-name, activity-id, payload}) ->
+    if handler = @get-handler activity-id
+      debug "handling message '#{message-name}' in discussion of activity '#{activity-id}'"
       try
         handler payload, outcome: message-name
       catch

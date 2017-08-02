@@ -36,7 +36,7 @@ Feature: Sending outgoing replies to incoming messages
         id: 456
         name: 'Will Riker'
       id: '<%= request_uuid %>'
-      response-to: '123'
+      activity-id: '123'
       """
 
 
@@ -57,7 +57,7 @@ Feature: Sending outgoing replies to incoming messages
       sender: 'test-service'
       payload: 'from the test-service'
       id: '<%= request_uuid %>'
-      response-to: '123'
+      activity-id: '123'
       """
 
 
@@ -84,7 +84,7 @@ Feature: Sending outgoing replies to incoming messages
         id: 456
         name: 'Will Riker'
       id: '<%= request_uuid %>'
-      response-to: '123'
+      activity-id: '123'
       session-id: '1'
       """
 
@@ -107,6 +107,6 @@ Feature: Sending outgoing replies to incoming messages
       sender: 'test-service'
       payload: 'from the test-service'
       id: '<%= request_uuid %>'
-      response-to: '123'
+      activity-id: '123'
       session-id: '1'
       """

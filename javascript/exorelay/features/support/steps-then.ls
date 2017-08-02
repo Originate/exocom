@@ -1,7 +1,6 @@
 require! {
   'chai' : {expect}
   'cucumber': {defineSupportCode}
-  'ip'
   'jsdiff-console'
   'ejs'
   'livescript'
@@ -34,7 +33,7 @@ Then /^ExoRelay makes the WebSocket request:$/, (request-data, done) ->
   # Wait until we get some call data, then wait another 50ms to let all the request data fill in
   wait-until (~> @exocom.received-messages.length), 10, ~>
     wait 50, ~>
-      rendered = ejs.render request-data, request_uuid: @message-id
+      rendered = ejs.render request-data, request_uuid: @message-id, request_activity_id: @message-activity-id
       template = livescript.compile "compiled = {\n#{rendered}\n}", bare: yes, header: no
       eval template
       jsdiff-console @exocom.received-messages[0], compiled, done
@@ -79,7 +78,9 @@ Then /^my message handler (?:replies with|sends out) the message:$/ (request-dat
   # Wait until we get some call data, then wait another 50ms to let all the request data fill in
   wait-until (~> @exocom.received-messages.length), 10, ~>
     wait 50, ~>
-      rendered = ejs.render request-data, request_uuid: @exo-relay.websocket-connector.last-sent-id, ip_address: ip.address!
+      rendered = ejs.render request-data,
+        request_uuid: @exo-relay.websocket-connector.last-sent-message.id,
+        request_activity_id: @exo-relay.websocket-connector.last-sent-message.activity-id,
       template = "compiled = {\n#{rendered}\n}"
       compiled-template = livescript.compile template, bare: yes, header: no
       parsed = eval compiled-template

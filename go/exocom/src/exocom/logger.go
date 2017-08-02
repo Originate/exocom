@@ -1,4 +1,4 @@
-package logger
+package exocom
 
 import (
 	"encoding/json"

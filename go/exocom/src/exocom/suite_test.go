@@ -1,4 +1,4 @@
-package messageCache_test
+package exocom_test
 
 import (
 	. "github.com/onsi/ginkgo"
@@ -9,5 +9,5 @@ import (
 
 func TestMessageCache(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "MessageCache Suite")
+	RunSpecs(t, "Exocom Suite")
 }

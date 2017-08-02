@@ -1,4 +1,4 @@
-package messageCache
+package exocom
 
 import (
 	"sync"

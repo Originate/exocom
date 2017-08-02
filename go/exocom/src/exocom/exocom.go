@@ -8,8 +8,6 @@ import (
 	"time"
 
 	"github.com/Originate/exocom/go/exocom/src/client_registry"
-	"github.com/Originate/exocom/go/exocom/src/logger"
-	"github.com/Originate/exocom/go/exocom/src/message_cache"
 	"github.com/Originate/exocom/go/exocom/src/translation"
 	"github.com/Originate/exocom/go/structs"
 	"github.com/Originate/exocom/go/utils"
@@ -21,8 +19,8 @@ import (
 type ExoCom struct {
 	server         http.Server
 	clientRegistry *clientRegistry.ClientRegistry
-	logger         *logger.Logger
-	messageCache   *messageCache.MessageCache
+	logger         *Logger
+	messageCache   *MessageCache
 	sockets        map[string]*websocket.Conn
 }
 
@@ -32,9 +30,9 @@ var upgrader = websocket.Upgrader{}
 func New(serviceRoutes clientRegistry.Routes) (*ExoCom, error) {
 	result := new(ExoCom)
 	var err error
-	result.messageCache = messageCache.NewMessageCache(time.Minute)
+	result.messageCache = NewMessageCache(time.Minute)
 	result.clientRegistry = clientRegistry.NewClientRegistry(serviceRoutes)
-	result.logger = logger.NewLogger(os.Stdout)
+	result.logger = NewLogger(os.Stdout)
 	result.sockets = map[string]*websocket.Conn{}
 	if err != nil {
 		return result, err

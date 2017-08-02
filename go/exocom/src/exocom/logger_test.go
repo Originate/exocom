@@ -1,22 +1,22 @@
-package logger_test
+package exocom_test
 
 import (
 	"io"
 	"io/ioutil"
 
 	"github.com/Originate/exocom/go/exocom/src/client_registry"
-	"github.com/Originate/exocom/go/exocom/src/logger"
+	"github.com/Originate/exocom/go/exocom/src/exocom"
 	"github.com/Originate/exocom/go/structs"
 	"github.com/fatih/color"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
 
-func GetOutput(f func(*logger.Logger)) string {
+func GetOutput(f func(*exocom.Logger)) string {
 	pipeReader, pipeWriter := io.Pipe()
-	testLogger := logger.NewLogger(pipeWriter)
+	logger := exocom.NewLogger(pipeWriter)
 	go func() {
-		f(testLogger)
+		f(logger)
 		pipeWriter.Close()
 	}()
 	result, err := ioutil.ReadAll(pipeReader)
@@ -27,8 +27,8 @@ func GetOutput(f func(*logger.Logger)) string {
 var _ = Describe("Logger", func() {
 	Describe("Log", func() {
 		It("prints the text to the screen with a new line character appended", func() {
-			result := GetOutput(func(testLogger *logger.Logger) {
-				err := testLogger.Log("foo bar")
+			result := GetOutput(func(logger *exocom.Logger) {
+				err := logger.Log("foo bar")
 				Expect(err).To(BeNil())
 			})
 			Expect(result).To(Equal("foo bar\n"))
@@ -36,8 +36,8 @@ var _ = Describe("Logger", func() {
 	})
 	Describe("Write", func() {
 		It("prints the text to the screen without a new line character appended", func() {
-			result := GetOutput(func(testLogger *logger.Logger) {
-				err := testLogger.Write("foo bar")
+			result := GetOutput(func(logger *exocom.Logger) {
+				err := logger.Write("foo bar")
 				Expect(err).To(BeNil())
 			})
 			Expect(result).To(Equal("foo bar"))
@@ -45,8 +45,8 @@ var _ = Describe("Logger", func() {
 	})
 	Describe("Error", func() {
 		It("prints an error", func() {
-			result := GetOutput(func(testLogger *logger.Logger) {
-				err := testLogger.Error("error")
+			result := GetOutput(func(logger *exocom.Logger) {
+				err := logger.Error("error")
 				Expect(err).To(BeNil())
 			})
 			Expect(result).To(Equal(color.RedString("error\n")))
@@ -54,8 +54,8 @@ var _ = Describe("Logger", func() {
 	})
 	Describe("Header", func() {
 		It("prints a header", func() {
-			result := GetOutput(func(testLogger *logger.Logger) {
-				err := testLogger.Header("header")
+			result := GetOutput(func(logger *exocom.Logger) {
+				err := logger.Header("header")
 				Expect(err).To(BeNil())
 			})
 			expected := color.New(color.Faint).Sprint("header\n")
@@ -64,8 +64,8 @@ var _ = Describe("Logger", func() {
 	})
 	Describe("Warning", func() {
 		It("prints a warning", func() {
-			result := GetOutput(func(testLogger *logger.Logger) {
-				err := testLogger.Warning("warning")
+			result := GetOutput(func(logger *exocom.Logger) {
+				err := logger.Warning("warning")
 				Expect(err).To(BeNil())
 			})
 			Expect(result).To(Equal(color.YellowString("warning\n")))
@@ -79,8 +79,8 @@ var _ = Describe("Logger", func() {
 			routes := clientRegistry.Routes{
 				"users": usersRoute,
 			}
-			result := GetOutput(func(testLogger *logger.Logger) {
-				err := testLogger.RoutingSetup(routes)
+			result := GetOutput(func(logger *exocom.Logger) {
+				err := logger.RoutingSetup(routes)
 				Expect(err).To(BeNil())
 			})
 			Expect(result).To(Equal("Receiving Routing Setup\n  --[ users ]-> users.create\n"))
@@ -96,8 +96,8 @@ var _ = Describe("Logger", func() {
 					Payload:      map[string]interface{}{},
 					ResponseTime: 1000}
 				internalMessageNameMapping := map[string]string{"web": "users.created", "tweets": "users.created"}
-				result := GetOutput(func(testLogger *logger.Logger) {
-					err := testLogger.Messages(message, originalName, internalMessageNameMapping)
+				result := GetOutput(func(logger *exocom.Logger) {
+					err := logger.Messages(message, originalName, internalMessageNameMapping)
 					Expect(err).To(BeNil())
 				})
 				Expect(result).To(ContainSubstring(
@@ -118,8 +118,8 @@ var _ = Describe("Logger", func() {
 					Payload: map[string]interface{}{},
 				}
 				internalMessageNameMapping := map[string]string{"users": "mongo.create"}
-				result := GetOutput(func(testLogger *logger.Logger) {
-					err := testLogger.Messages(message, originalName, internalMessageNameMapping)
+				result := GetOutput(func(logger *exocom.Logger) {
+					err := logger.Messages(message, originalName, internalMessageNameMapping)
 					Expect(err).To(BeNil())
 				})
 				Expect(result).To(Equal(
@@ -137,8 +137,8 @@ var _ = Describe("Logger", func() {
 					Payload: map[string]interface{}{},
 				}
 				internalMessageNameMapping := map[string]string{"users": "users.create"}
-				result := GetOutput(func(testLogger *logger.Logger) {
-					err := testLogger.Messages(message, originalName, internalMessageNameMapping)
+				result := GetOutput(func(logger *exocom.Logger) {
+					err := logger.Messages(message, originalName, internalMessageNameMapping)
 					Expect(err).To(BeNil())
 				})
 				Expect(result).To(Equal(

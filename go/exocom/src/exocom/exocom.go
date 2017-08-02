@@ -10,7 +10,7 @@ import (
 	"github.com/Originate/exocom/go/exocom/src/client_registry"
 	"github.com/Originate/exocom/go/exocom/src/logger"
 	"github.com/Originate/exocom/go/exocom/src/message_cache"
-	"github.com/Originate/exocom/go/exocom/src/message_translator"
+	"github.com/Originate/exocom/go/exocom/src/translation"
 	"github.com/Originate/exocom/go/structs"
 	"github.com/Originate/exocom/go/utils"
 	"github.com/gorilla/websocket"
@@ -128,7 +128,7 @@ func parseRegisterMessagePayload(message structs.Message) (string, error) {
 }
 
 func (e *ExoCom) send(message structs.Message) error {
-	publicMessageName := messageTranslator.GetPublicMessageName(&messageTranslator.GetPublicMessageNameOptions{
+	publicMessageName := translation.GetPublicMessageName(&translation.GetPublicMessageNameOptions{
 		Namespace:           e.clientRegistry.Clients[message.Sender].InternalNamespace,
 		Role:                message.Sender,
 		InternalMessageName: message.Name,
@@ -167,7 +167,7 @@ func (e *ExoCom) sendToServices(message structs.Message, publicMessageName strin
 }
 
 func (e *ExoCom) sendToService(message structs.Message, publicMessageName string, subscriber clientRegistry.Subscriber) (string, error) {
-	internalMessageName := messageTranslator.GetInternalMessageName(&messageTranslator.GetInternalMessageNameOptions{
+	internalMessageName := translation.GetInternalMessageName(&translation.GetInternalMessageNameOptions{
 		Namespace:         subscriber.InternalNamespace,
 		PublicMessageName: publicMessageName,
 	})

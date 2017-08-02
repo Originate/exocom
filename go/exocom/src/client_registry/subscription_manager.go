@@ -1,8 +1,6 @@
 package clientRegistry
 
-import (
-	"github.com/Originate/exocom/go/exocom/src/message_translator"
-)
+import "github.com/Originate/exocom/go/exocom/src/translation"
 
 // Subscriber is the combination of a client name and internal namesapce
 type Subscriber struct {
@@ -53,7 +51,7 @@ func (s *SubscriptionManager) RemoveAll(role string) {
 
 func (s *SubscriptionManager) add(internalMessageName, role string) {
 	clientInternalNamespace := s.Routing[role].InternalNamespace
-	publicMessageName := messageTranslator.GetPublicMessageName(&messageTranslator.GetPublicMessageNameOptions{
+	publicMessageName := translation.GetPublicMessageName(&translation.GetPublicMessageNameOptions{
 		InternalMessageName: internalMessageName,
 		Role:                role,
 		Namespace:           clientInternalNamespace,
@@ -68,7 +66,7 @@ func (s *SubscriptionManager) add(internalMessageName, role string) {
 
 func (s *SubscriptionManager) remove(messageName, role string) {
 	clientInternalNamespace := s.Routing[role].InternalNamespace
-	publicMessageName := messageTranslator.GetPublicMessageName(&messageTranslator.GetPublicMessageNameOptions{
+	publicMessageName := translation.GetPublicMessageName(&translation.GetPublicMessageNameOptions{
 		InternalMessageName: messageName,
 		Role:                role,
 		Namespace:           clientInternalNamespace,

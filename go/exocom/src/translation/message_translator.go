@@ -1,19 +1,6 @@
-package messageTranslator
+package translation
 
 import "strings"
-
-// GetInternalMessageNameOptions are the options to the GetInternalMessageName func
-type GetInternalMessageNameOptions struct {
-	Namespace         string
-	PublicMessageName string
-}
-
-// GetPublicMessageNameOptions are the options to the GetPublicMessageName func
-type GetPublicMessageNameOptions struct {
-	Namespace           string
-	Role                string
-	InternalMessageName string
-}
 
 // GetInternalMessageName returns the internal message name for the given options
 func GetInternalMessageName(opts *GetInternalMessageNameOptions) string {

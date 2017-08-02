@@ -1,4 +1,4 @@
-package messageTranslator_test
+package translation_test
 
 import (
 	"testing"
@@ -9,5 +9,5 @@ import (
 
 func TestMessageTranslator(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "Message Translator Suite")
+	RunSpecs(t, "Connection Suite")
 }

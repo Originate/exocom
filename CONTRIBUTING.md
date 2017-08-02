@@ -69,6 +69,12 @@ while __private__ roles are located in a separate subnet not visible to the outs
 Exocom let's services of all protection levels communicate.
 
 
+## Implementing new languages
+
+There are some early versions of exorelay written in Haskall, Java, and Scala
+that may be useful for reference. See [here](https://github.com/Originate/exocom/tree/v0.22.1)
+
+
 ## Installation
 
 * set up dev environment:

@@ -8,14 +8,13 @@ require! {
   'shelljs/global'
 }
 
-SUBPROJECTS_TO_PUBLISH = <[ exocom-server
-                            javascript/exocom-mock
+EXOCOM_SUBPROJECT = 'go/exocom'
+
+JS_PROJECTS_TO_PUBLISH = <[ javascript/exocom-mock
                             javascript/exorelay
                             javascript/exoservice  ]>
 
-# exocom-server is used because there is no root package.json
-# all node exocommunication services are in lock-step versioning
-{name, version} = require '../exocom-server/package.json'
+ALL_PROJECTS_TO_PUBLISH = [EXOCOM_SUBPROJECT].concat(JS_PROJECTS_TO_PUBLISH)
 
 function main
   if process.argv.length != 3
@@ -25,7 +24,8 @@ function main
   display-help! if @level in ['-h, --help']
 
   @root-dir = process.cwd!
-  @target-version = get-target-version version, @level
+  @current-version = get-current-version!
+  @target-version = get-target-version @current-version, @level
 
   <- confirm-target-version
 
@@ -54,38 +54,46 @@ function main
   push-git-tags!
 
 
-function verify-subproject-versions
+function get-current-version
+  cd EXOCOM_SUBPROJECT
+  run-command './bin/build'
+  output = run-command 'exocom version', silent: true
+  cd @root-dir
+  output.trim()
+
+
+function verify-subproject-versions current-version
   console.log green "Verifying subproject version numbers...\n"
-  subproject-versions = {}
-  for subproject in SUBPROJECTS_TO_PUBLISH
-    subproject-versions[require("#{@root-dir}/#{subproject}/package.json").version] = null
-  if Object.keys(subproject-versions).length != 1
-    console.log red "Exocom subprojects are different versions. Ensure that each subproject has the same version number."
-    process.exit 1
+  for subproject in JS_PROJECTS_TO_PUBLISH
+    subproject-version = require("#{@root-dir}/#{subproject}/package.json").version
+    if subproject-version isnt @current-version
+      console.log red "'#{subproject}' subproject has version #{subproject-version} while exocom has version #{current-version}. Ensure all projects have the same version."
+      process.exit 1
   console.log!
 
 
 function check-npm-dependencies
   console.log green "Checking npm dependencies...\n"
-  run-command-in-subdirs './node_modules/.bin/update-check'
+  run-command-in-subdirs './node_modules/.bin/update-check', JS_PROJECTS_TO_PUBLISH
   console.log!
 
 
 function build-subprojects
   console.log green "Building subprojects...\n"
-  run-command-in-subdirs './bin/build'
+  run-command-in-subdirs './bin/build', ALL_PROJECTS_TO_PUBLISH
   console.log!
 
 
 function run-tests
   console.log green "Running tests in subprojects...\n"
-  run-command-in-subdirs './bin/spec'
+  run-command-in-subdirs './bin/spec', ALL_PROJECTS_TO_PUBLISH
   console.log!
 
 
 function bump-version-numbers
   console.log green "Bumping subproject version numbers...\n"
-  run-command-in-subdirs "npm version #{@level}"
+  run-command-in-subdirs "npm version #{@level}", JS_PROJECTS_TO_PUBLISH
+  run-command-in-subdir "sed -i '' 's/#{current-version}/#{target-version}/g' src/cmd/version.go", EXOCOM_SUBPROJECT
   console.log!
 
 
@@ -97,13 +105,14 @@ function push-version-numbers
 
 function publish-to-npm
   console.log green "Publishing to npm...\n"
-  run-command-in-subdirs 'npm publish'
+  run-command-in-subdirs 'npm publish', JS_PROJECTS_TO_PUBLISH
   console.log!
 
 
 function push-exocom-docker-image
   console.log green "Pushing ExoCom image to DockerHub...\n"
-  cd 'exocom-server'
+  cd 'go/exocom'
+  run-command "bin/build_linux_amd64"
   run-command "docker build --no-cache -t originate/exocom:#{@target-version} ."
   run-command "docker push originate/exocom:#{@target-version}"
   cd @root-dir
@@ -115,17 +124,27 @@ function push-git-tags
   console.log!
 
 
-function run-command command
-  if exec(command).code > 0 then process.exit 1
+function run-command command, options
+  {code, stdout} = exec command, options
+  if code > 0 then process.exit 1
+  stdout
 
 
-function run-command-in-subdirs command
-  for directory in SUBPROJECTS_TO_PUBLISH
-    console.log "Running #{yellow command} in subproject #{cyan directory}"
-    cd directory
-    run-command command
-    cd @root-dir
-    console.log!
+function run-command-in-subdirs command, subdirs
+  for directory in subdirs
+    run-command-in-subdir command, directory
+
+
+function run-command-in-subdir command, directory
+  console.log "Running #{yellow command} in subproject #{cyan directory}"
+  cd directory
+  run-command command
+  cd @root-dir
+  console.log!
+
+
+function run-command-in-exocom
+  run-command-in-subdir command, 'go/exocom'
 
 
 function get-target-version version, level
@@ -137,7 +156,7 @@ function get-target-version version, level
 
 
 function confirm-target-version done
-  console.log "\nYou are about to bump #{green bold name} version #{cyan bold version} up to #{cyan bold @target-version}\n"
+  console.log "\nYou are about to bump #{cyan bold @current-version} up to #{cyan bold @target-version}\n"
   question =
     type: 'list'
     name: 'continue'

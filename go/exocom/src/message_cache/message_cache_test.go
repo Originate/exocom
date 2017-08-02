@@ -39,7 +39,7 @@ var _ = Describe("MessageCache", func() {
 		})
 		It("keeps messages in the cache that are younger than a minute", func() {
 			cache.Set("message2", timestamp)
-			time.Sleep(time.Millisecond * 5)
+			time.Sleep(time.Millisecond * 10)
 			result, ok := cache.Get("message2")
 			Expect(ok).To(BeTrue())
 			Expect(result).To(Equal(timestamp))

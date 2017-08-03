@@ -96,5 +96,6 @@ that may be useful for reference. See [here](https://github.com/Originate/exocom
 
 ## Publish a new version
 
+* update the `CHANGELOG.md`
 * run `bin/publish <patch|minor|major>` - this will update the versions and add a tag
 * Travis-CI will publish to NPM and DockerHub

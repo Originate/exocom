@@ -96,7 +96,5 @@ that may be useful for reference. See [here](https://github.com/Originate/exocom
 
 ## Publish a new version
 
-* log into Docker using the `originate` account: `docker login`
-* run `bin/publish <patch|minor|major>`
-* to use the new ExoCom version,
-  publish a new [Exosphere](https://github.com/Originate/exosphere) version
+* run `bin/publish <patch|minor|major>` - this will update the versions and add a tag
+* Travis-CI will publish to NPM and DockerHub

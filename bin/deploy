@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+set -e
+
+# Publish NPM modules
+cd javascript
+npm set //registry.npmjs.org/:_authToken "$NPM_AUTH_TOKEN"
+../morula all npm publish
+cd ..
+
+# Publish Docker image
+cd go/exocom
+bin/build
+VERSION=$(exocom version)
+bin/build_linux_amd64
+docker build --no-cache -t "originate/exocom:$VERSION" .
+docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD"
+docker push "originate/exocom:$VERSION"

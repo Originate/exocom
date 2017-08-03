@@ -37,13 +37,6 @@ function main
   # ensure subprojects are the same version
   verify-subproject-versions!
 
-  # ensure up to date
-  check-npm-dependencies!
-
-  # ensure tests pass
-  build-subprojects!
-  run-tests!
-
   # update version and push tags, ci will publish
   bump-version-numbers!
   push-version-numbers!
@@ -65,24 +58,6 @@ function verify-subproject-versions current-version
     if subproject-version isnt @current-version
       console.log red "'#{subproject}' subproject has version #{subproject-version} while exocom has version #{current-version}. Ensure all projects have the same version."
       process.exit 1
-  console.log!
-
-
-function check-npm-dependencies
-  console.log green "Checking npm dependencies...\n"
-  run-command-in-subdirs './node_modules/.bin/update-check', JS_PROJECTS_TO_PUBLISH
-  console.log!
-
-
-function build-subprojects
-  console.log green "Building subprojects...\n"
-  run-command-in-subdirs './bin/build', ALL_PROJECTS_TO_PUBLISH
-  console.log!
-
-
-function run-tests
-  console.log green "Running tests in subprojects...\n"
-  run-command-in-subdirs './bin/spec', ALL_PROJECTS_TO_PUBLISH
   console.log!
 
 
@@ -122,10 +97,6 @@ function run-command-in-subdir command, directory
   run-command command
   cd @root-dir
   console.log!
-
-
-function run-command-in-exocom
-  run-command-in-subdir command, 'go/exocom'
 
 
 function get-target-version version, level

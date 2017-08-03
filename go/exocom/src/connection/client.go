@@ -1,7 +1,6 @@
 package connection
 
-// Client is the combination of a role and service type
+// Client represents a service connected to exocom
 type Client struct {
-	Role        string `json:"role"`
-	ServiceType string `json:"serviceType"`
+	Role string `json:"role"`
 }

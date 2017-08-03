@@ -33,10 +33,7 @@ func (m *Manager) AddWebsocket(socket *websocket.Conn) {
 // GetClients returns all the connections
 func (m *Manager) GetClients() (result []Client) {
 	for role := range m.services {
-		result = append(result, Client{
-			Role:        role,
-			ServiceType: role,
-		})
+		result = append(result, Client{Role: role})
 	}
 	return
 }

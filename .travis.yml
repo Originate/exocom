@@ -24,10 +24,11 @@ install: bin/setup_ci
 script: bin/spec_ci
 
 deploy:
-  provider: script
-  script: bin/deploy
   on:
     tags: true
+  provider: script
+  script: bin/deploy
+  skip_cleanup: true
 
 notifications:
   email: false

@@ -1,6 +1,10 @@
-package clientRegistry
+package exocom
 
-import "encoding/json"
+import (
+	"encoding/json"
+
+	"github.com/Originate/exocom/go/exocom/src/types"
+)
 
 type rawRoute struct {
 	Role      string
@@ -10,13 +14,13 @@ type rawRoute struct {
 }
 
 // ParseServiceRoutes parses the incoming routes and
-func ParseServiceRoutes(data string) (Routes, error) {
+func ParseServiceRoutes(data string) (types.Routes, error) {
 	var unmarshaled []rawRoute
 	err := json.Unmarshal([]byte(data), &unmarshaled)
 	if err != nil {
-		return Routes{}, err
+		return types.Routes{}, err
 	}
-	parsed := Routes{}
+	parsed := types.Routes{}
 	for _, data := range unmarshaled {
 		if data.Sends == nil {
 			data.Sends = []string{}
@@ -24,7 +28,7 @@ func ParseServiceRoutes(data string) (Routes, error) {
 		if data.Receives == nil {
 			data.Receives = []string{}
 		}
-		parsed[data.Role] = Route{
+		parsed[data.Role] = types.Route{
 			Receives:          data.Receives,
 			Sends:             data.Sends,
 			InternalNamespace: data.Namespace,

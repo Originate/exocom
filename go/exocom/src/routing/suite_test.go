@@ -1,4 +1,4 @@
-package clientRegistry_test
+package routing_test
 
 import (
 	. "github.com/onsi/ginkgo"
@@ -9,5 +9,5 @@ import (
 
 func TestClientRegistry(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "ClientRegistry Suite")
+	RunSpecs(t, "Routing Suite")
 }

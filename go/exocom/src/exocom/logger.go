@@ -4,9 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"strings"
 
-	"github.com/Originate/exocom/go/exocom/src/client_registry"
+	"github.com/Originate/exocom/go/exocom/src/types"
 	"github.com/Originate/exocom/go/structs"
 	"github.com/fatih/color"
 )
@@ -52,29 +51,14 @@ func (l *Logger) Header(text string) error {
 	return err
 }
 
-// RoutingSetup prints the given routes
-func (l *Logger) RoutingSetup(routes clientRegistry.Routes) error {
-	err := l.Log("Receiving Routing Setup")
-	if err != nil {
-		return err
-	}
-	for service, route := range routes {
-		err := l.Log("  --[ " + service + " ]-> " + strings.Join(route.Receives, " + "))
-		if err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
 // Messages prints the given messages and who they were sent to
-func (l *Logger) Messages(message structs.Message, originalName string, internalMessageNameMapping map[string]string) error {
-	for receiver, internalMessageName := range internalMessageNameMapping {
+func (l *Logger) Messages(message structs.Message, receiverMapping types.ReceiverMapping) error {
+	for receiver, internalMessageName := range receiverMapping {
 		text := message.Sender + "  "
-		if originalName == internalMessageName {
-			text += fmt.Sprintf("--[ %s ]->", originalName)
+		if message.Name == internalMessageName {
+			text += fmt.Sprintf("--[ %s ]->", message.Name)
 		} else {
-			text += fmt.Sprintf("--[ %s ]-[ %s ]->", originalName, internalMessageName)
+			text += fmt.Sprintf("--[ %s ]-[ %s ]->", message.Name, internalMessageName)
 		}
 		text += "  " + receiver
 		if message.ResponseTime > 0 {

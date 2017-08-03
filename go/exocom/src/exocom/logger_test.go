@@ -4,8 +4,8 @@ import (
 	"io"
 	"io/ioutil"
 
-	"github.com/Originate/exocom/go/exocom/src/client_registry"
 	"github.com/Originate/exocom/go/exocom/src/exocom"
+	"github.com/Originate/exocom/go/exocom/src/types"
 	"github.com/Originate/exocom/go/structs"
 	"github.com/fatih/color"
 	. "github.com/onsi/ginkgo"
@@ -72,32 +72,18 @@ var _ = Describe("Logger", func() {
 		})
 	})
 
-	Describe("Routing Setup", func() {
-		It("prints the routing setup received", func() {
-			usersRoute := clientRegistry.Route{}
-			usersRoute.Receives = []string{"users.create"}
-			routes := clientRegistry.Routes{
-				"users": usersRoute,
-			}
-			result := GetOutput(func(logger *exocom.Logger) {
-				err := logger.RoutingSetup(routes)
-				Expect(err).To(BeNil())
-			})
-			Expect(result).To(Equal("Receiving Routing Setup\n  --[ users ]-> users.create\n"))
-		})
-	})
 	Describe("Messages", func() {
 		Describe("outgoing message translation", func() {
 			It("prints the message that is sent, the response time, and the payload", func() {
-				originalName := "mongo.created"
 				message := structs.Message{
-					Name:         "users.created",
+					Name:         "mongo.created",
 					Sender:       "users",
 					Payload:      map[string]interface{}{},
-					ResponseTime: 1000}
-				internalMessageNameMapping := map[string]string{"web": "users.created", "tweets": "users.created"}
+					ResponseTime: 1000,
+				}
+				receiverMapping := types.ReceiverMapping{"web": "users.created", "tweets": "users.created"}
 				result := GetOutput(func(logger *exocom.Logger) {
-					err := logger.Messages(message, originalName, internalMessageNameMapping)
+					err := logger.Messages(message, receiverMapping)
 					Expect(err).To(BeNil())
 				})
 				Expect(result).To(ContainSubstring(
@@ -111,15 +97,14 @@ var _ = Describe("Logger", func() {
 
 		Describe("incoming message translation", func() {
 			It("prints the message that is sent, the response time, and the payload", func() {
-				originalName := "users.create"
 				message := structs.Message{
 					Name:    "users.create",
 					Sender:  "web",
 					Payload: map[string]interface{}{},
 				}
-				internalMessageNameMapping := map[string]string{"users": "mongo.create"}
+				receiverMapping := types.ReceiverMapping{"users": "mongo.create"}
 				result := GetOutput(func(logger *exocom.Logger) {
-					err := logger.Messages(message, originalName, internalMessageNameMapping)
+					err := logger.Messages(message, receiverMapping)
 					Expect(err).To(BeNil())
 				})
 				Expect(result).To(Equal(
@@ -130,15 +115,14 @@ var _ = Describe("Logger", func() {
 
 		Describe("no message translation", func() {
 			It("prints the message that is sent, the response time, and the payload", func() {
-				originalName := "users.create"
 				message := structs.Message{
 					Name:    "users.create",
 					Sender:  "web",
 					Payload: map[string]interface{}{},
 				}
-				internalMessageNameMapping := map[string]string{"users": "users.create"}
+				receiverMapping := types.ReceiverMapping{"users": "users.create"}
 				result := GetOutput(func(logger *exocom.Logger) {
-					err := logger.Messages(message, originalName, internalMessageNameMapping)
+					err := logger.Messages(message, receiverMapping)
 					Expect(err).To(BeNil())
 				})
 				Expect(result).To(Equal(

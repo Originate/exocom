@@ -1,7 +1,8 @@
-package clientRegistry_test
+package exocom_test
 
 import (
-	"github.com/Originate/exocom/go/exocom/src/client_registry"
+	"github.com/Originate/exocom/go/exocom/src/exocom"
+	"github.com/Originate/exocom/go/exocom/src/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
@@ -9,14 +10,14 @@ import (
 var _ = Describe("ParseServiceRoutes", func() {
 	Describe("with role only", func() {
 		It("returns the routes", func() {
-			routes, err := clientRegistry.ParseServiceRoutes(
+			routes, err := exocom.ParseServiceRoutes(
 				`[
 						{
 								"role": "role 1"
 						}
 				 ]`)
 			Expect(err).To(BeNil())
-			Expect(routes).To(Equal(clientRegistry.Routes{
+			Expect(routes).To(Equal(types.Routes{
 				"role 1": {
 					InternalNamespace: "",
 					Receives:          []string{},
@@ -28,7 +29,7 @@ var _ = Describe("ParseServiceRoutes", func() {
 
 	Describe("with sends / receives", func() {
 		It("returns the routes", func() {
-			routes, err := clientRegistry.ParseServiceRoutes(
+			routes, err := exocom.ParseServiceRoutes(
 				`[
 						{
 								"receives": ["message 1 name"],
@@ -37,7 +38,7 @@ var _ = Describe("ParseServiceRoutes", func() {
 						}
 				 ]`)
 			Expect(err).To(BeNil())
-			Expect(routes).To(Equal(clientRegistry.Routes{
+			Expect(routes).To(Equal(types.Routes{
 				"role 1": {
 					InternalNamespace: "",
 					Receives:          []string{"message 1 name"},
@@ -49,7 +50,7 @@ var _ = Describe("ParseServiceRoutes", func() {
 
 	Describe("with internal namespace", func() {
 		It("returns the routes", func() {
-			routes, err := clientRegistry.ParseServiceRoutes(
+			routes, err := exocom.ParseServiceRoutes(
 				`[
 						{
 								"role": "role 1",
@@ -57,7 +58,7 @@ var _ = Describe("ParseServiceRoutes", func() {
 						}
 				 ]`)
 			Expect(err).To(BeNil())
-			Expect(routes).To(Equal(clientRegistry.Routes{
+			Expect(routes).To(Equal(types.Routes{
 				"role 1": {
 					InternalNamespace: "tweets",
 					Receives:          []string{},
@@ -69,7 +70,7 @@ var _ = Describe("ParseServiceRoutes", func() {
 
 	Describe("with multiple roles", func() {
 		It("returns the routes", func() {
-			routes, err := clientRegistry.ParseServiceRoutes(
+			routes, err := exocom.ParseServiceRoutes(
 				`[
 						{
 								"role": "role 1"
@@ -79,7 +80,7 @@ var _ = Describe("ParseServiceRoutes", func() {
 						}
 				 ]`)
 			Expect(err).To(BeNil())
-			Expect(routes).To(Equal(clientRegistry.Routes{
+			Expect(routes).To(Equal(types.Routes{
 				"role 1": {
 					InternalNamespace: "",
 					Receives:          []string{},

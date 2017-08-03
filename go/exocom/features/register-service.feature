@@ -23,13 +23,12 @@ Feature: Manage new instances of services
     Then ExoCom should have the config:
       """
       {
-        "clients": {
-          "users": {
+        "clients": [
+          {
             "role": "users",
-            "serviceType": "users",
-            "internalNamespace": "foo"
+            "serviceType": "users"
           }
-        },
+        ],
         "routes": {
           "users": {
             "sends": [],
@@ -61,13 +60,12 @@ Feature: Manage new instances of services
     Then ExoCom should have the config:
       """
       {
-        "clients": {
-          "users": {
+        "clients": [
+          {
             "role": "users",
-            "serviceType": "users",
-            "internalNamespace": "foo"
+            "serviceType": "users"
           }
-        },
+        ],
         "routes": {
           "tweets": {
             "sends": [],

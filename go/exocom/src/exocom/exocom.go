@@ -7,36 +7,41 @@ import (
 	"os"
 	"time"
 
-	"github.com/Originate/exocom/go/exocom/src/client_registry"
-	"github.com/Originate/exocom/go/exocom/src/translation"
+	"github.com/Originate/exocom/go/exocom/src/connection"
+	"github.com/Originate/exocom/go/exocom/src/routing"
+	"github.com/Originate/exocom/go/exocom/src/types"
 	"github.com/Originate/exocom/go/structs"
-	"github.com/Originate/exocom/go/utils"
 	"github.com/gorilla/websocket"
-	"github.com/pkg/errors"
 )
 
 // ExoCom is the top level message broadcaster
 type ExoCom struct {
-	server         http.Server
-	clientRegistry *clientRegistry.ClientRegistry
-	logger         *Logger
-	messageCache   *MessageCache
-	sockets        map[string]*websocket.Conn
+	server            http.Server
+	logger            *Logger
+	messageCache      *MessageCache
+	connectionManager *connection.Manager
+	errorChannel      chan error
+	messageChannel    chan structs.Message
+	registerChannel   chan string
+	routingManager    *routing.Manager
 }
 
 var upgrader = websocket.Upgrader{}
 
 // New creates a new ExoCom instance
-func New(serviceRoutes clientRegistry.Routes) (*ExoCom, error) {
-	result := new(ExoCom)
-	var err error
-	result.messageCache = NewMessageCache(time.Minute)
-	result.clientRegistry = clientRegistry.NewClientRegistry(serviceRoutes)
-	result.logger = NewLogger(os.Stdout)
-	result.sockets = map[string]*websocket.Conn{}
-	if err != nil {
-		return result, err
+func New(serviceRoutes types.Routes) (*ExoCom, error) {
+	result := &ExoCom{
+		routingManager:  routing.NewManager(serviceRoutes),
+		messageCache:    NewMessageCache(time.Minute),
+		logger:          NewLogger(os.Stdout),
+		errorChannel:    make(chan error),
+		messageChannel:  make(chan structs.Message),
+		registerChannel: make(chan string),
 	}
+	result.connectionManager = connection.NewManager(result.errorChannel, result.messageChannel, result.registerChannel)
+	go result.listenForErrors()
+	go result.listenForMessages()
+	go result.listenForRegistrations()
 	var handler http.HandlerFunc = func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == "/services" {
 			conn, err := upgrader.Upgrade(w, r, nil)
@@ -44,11 +49,11 @@ func New(serviceRoutes clientRegistry.Routes) (*ExoCom, error) {
 				fmt.Println("Error upgrading request to websocket:", err)
 				return
 			}
-			go result.websocketHandler(conn)
+			result.connectionManager.AddWebsocket(conn)
 		} else if r.URL.Path == "/config.json" {
 			err := json.NewEncoder(w).Encode(map[string]interface{}{
-				"clients": result.clientRegistry.Clients,
-				"routes":  result.clientRegistry.Routing,
+				"clients": result.connectionManager.GetClients(),
+				"routes":  result.routingManager.GetRoutes(),
 			})
 			if err != nil {
 				http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
@@ -75,38 +80,31 @@ func (e *ExoCom) Listen(port int) error {
 
 // Helpers
 
-func (e *ExoCom) hasInvalidSender(message structs.Message) bool {
-	return !(e.clientRegistry.CanSend(message.Sender, message.Name))
+func (e *ExoCom) listenForErrors() {
+	for {
+		err := <-e.errorChannel
+		printLogError(e.logger.Error(err.Error()))
+	}
 }
 
-func (e *ExoCom) websocketHandler(socket *websocket.Conn) {
-	var role string
-	utils.ListenForMessages(socket, func(message structs.Message) error {
-		if message.Name == "exocom.register-service" {
-			var err error
-			role, err = parseRegisterMessagePayload(message)
-			if err == nil {
-				e.clientRegistry.RegisterClient(role)
-				e.sockets[role] = socket
-				printLogError(e.logger.Log(fmt.Sprintf("'%s' registered", role)))
-			} else {
-				printLogError(e.logger.Error(err.Error()))
-			}
-		} else if e.hasInvalidSender(message) {
-			printLogError(e.logger.Warning(fmt.Sprintf("Warning: Service '%s' is not allowed to broadcast the message '%s'", message.Sender, message.Name)))
-		} else {
+func (e *ExoCom) listenForMessages() {
+	for {
+		message := <-e.messageChannel
+		if e.routingManager.CanSend(message.Sender, message.Name) {
 			err := e.send(message)
 			if err != nil {
 				printLogError(e.logger.Error(err.Error()))
 			}
+		} else {
+			printLogError(e.logger.Warning(fmt.Sprintf("Warning: Service '%s' is not allowed to broadcast the message '%s'", message.Sender, message.Name)))
 		}
-		return nil
-	}, func(err error) {
-		fmt.Println(errors.Wrap(err, "Exocom listening for messages"))
-	})
-	if role != "" {
-		e.clientRegistry.DeregisterClient(role)
-		e.sockets[role] = nil
+	}
+}
+
+func (e *ExoCom) listenForRegistrations() {
+	for {
+		role := <-e.registerChannel
+		printLogError(e.logger.Log(fmt.Sprintf("'%s' registered", role)))
 	}
 }
 
@@ -116,59 +114,37 @@ func printLogError(err error) {
 	}
 }
 
-func parseRegisterMessagePayload(message structs.Message) (string, error) {
-	if objectPayload, ok := message.Payload.(map[string]interface{}); ok {
-		if role, ok := objectPayload["clientName"].(string); ok {
-			return role, nil
-		}
-	}
-	return "", fmt.Errorf("Invalid register message payload: %v", message.Payload)
-}
-
 func (e *ExoCom) send(message structs.Message) error {
-	publicMessageName := translation.GetPublicMessageName(&translation.GetPublicMessageNameOptions{
-		Namespace:           e.clientRegistry.Clients[message.Sender].InternalNamespace,
-		Role:                message.Sender,
-		InternalMessageName: message.Name,
-	})
-	originalName := message.Name
-	message.Timestamp = time.Now()
-	subscribers := e.clientRegistry.GetSubscribersFor(publicMessageName)
-	if len(subscribers) == 0 {
-		printLogError(e.logger.Warning(fmt.Sprintf("Warning: No receivers for message '%s' registered", publicMessageName)))
+	receiverMapping := e.routingManager.GetSubscribersFor(message)
+	if len(receiverMapping) == 0 {
+		printLogError(e.logger.Warning(fmt.Sprintf("Warning: No receivers for message '%s' registered", message.Name)))
 		return nil
 	}
-
+	message.Timestamp = time.Now()
 	originalTimestamp, ok := e.messageCache.Get(message.ActivityID)
 	if ok {
 		message.ResponseTime = message.Timestamp.Sub(originalTimestamp)
 	}
 	e.messageCache.Set(message.ActivityID, message.Timestamp)
-	internalMessageNameMapping, err := e.sendToServices(message, publicMessageName, subscribers)
+	err := e.sendToServices(message, receiverMapping)
 	if err != nil {
 		return err
 	}
-	printLogError(e.logger.Messages(message, originalName, internalMessageNameMapping))
+	printLogError(e.logger.Messages(message, receiverMapping))
 	return nil
 }
 
-func (e *ExoCom) sendToServices(message structs.Message, publicMessageName string, subscribers []clientRegistry.Subscriber) (map[string]string, error) {
-	internalMessageNames := map[string]string{}
-	for _, subscriber := range subscribers {
-		internalMessageName, err := e.sendToService(message, publicMessageName, subscriber)
+func (e *ExoCom) sendToServices(message structs.Message, receiverMapping types.ReceiverMapping) error {
+	for role, internalMessageName := range receiverMapping {
+		err := e.sendToService(message, internalMessageName, role)
 		if err != nil {
-			return internalMessageNames, err
+			return err
 		}
-		internalMessageNames[subscriber.Role] = internalMessageName
 	}
-	return internalMessageNames, nil
+	return nil
 }
 
-func (e *ExoCom) sendToService(message structs.Message, publicMessageName string, subscriber clientRegistry.Subscriber) (string, error) {
-	internalMessageName := translation.GetInternalMessageName(&translation.GetInternalMessageNameOptions{
-		Namespace:         subscriber.InternalNamespace,
-		PublicMessageName: publicMessageName,
-	})
+func (e *ExoCom) sendToService(message structs.Message, internalMessageName, role string) error {
 	serviceMessage := structs.Message{
 		Name:       internalMessageName,
 		ID:         message.ID,
@@ -179,13 +155,5 @@ func (e *ExoCom) sendToService(message structs.Message, publicMessageName string
 	if message.ResponseTime > 0 {
 		serviceMessage.ResponseTime = message.ResponseTime
 	}
-	serializedBytes, err := json.Marshal(serviceMessage)
-	if err != nil {
-		return "", err
-	}
-	err = e.sockets[subscriber.Role].WriteMessage(websocket.TextMessage, serializedBytes)
-	if err != nil {
-		return "", err
-	}
-	return internalMessageName, nil
+	return e.connectionManager.SendMessage(role, serviceMessage)
 }

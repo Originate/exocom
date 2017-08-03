@@ -5,7 +5,6 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/Originate/exocom/go/exocom/src/client_registry"
 	"github.com/Originate/exocom/go/exocom/src/exocom"
 	"github.com/spf13/cobra"
 )
@@ -14,7 +13,7 @@ var rootCmd = &cobra.Command{
 	Use:   "exocom",
 	Short: "",
 	Run: func(cmd *cobra.Command, args []string) {
-		serviceRoutes, err := clientRegistry.ParseServiceRoutes(os.Getenv("SERVICE_ROUTES"))
+		serviceRoutes, err := exocom.ParseServiceRoutes(os.Getenv("SERVICE_ROUTES"))
 		if err != nil {
 			panic(err)
 		}

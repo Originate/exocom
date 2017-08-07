@@ -43,7 +43,7 @@ class ExoRelay extends EventEmitter
       return 'success'
 
     @message-handler.handle-request request-data,
-                                    reply: @websocket-connector.reply-method-for request-data.id, request-data.session-id
+                                    reply: @websocket-connector.reply-method-for request-data.activity-id, request-data.session-id
                                     send: @send
 
 

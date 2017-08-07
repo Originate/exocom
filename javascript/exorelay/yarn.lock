@@ -600,15 +600,6 @@ exit-hook@^1.0.0:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/exit-hook/-/exit-hook-1.1.1.tgz#f05ca233b48c05d54fff07765df8507e95c02ff8"
 
-exocom-mock@0.21.4:
-  version "0.21.4"
-  resolved "https://registry.yarnpkg.com/exocom-mock/-/exocom-mock-0.21.4.tgz#0f44aa2749eacc4b6e83b8ac68038c3c2a979fa1"
-  dependencies:
-    debug "2.6.0"
-    uuid "3.0.1"
-    wait "0.1.0"
-    ws "2.0.2"
-
 expand-brackets@^0.1.4:
   version "0.1.5"
   resolved "https://registry.yarnpkg.com/expand-brackets/-/expand-brackets-0.1.5.tgz#df07284e342a807cd733ac5af72411e581d1177b"
@@ -2374,12 +2365,6 @@ write-file-atomic@^1.1.2:
     graceful-fs "^4.1.2"
     imurmurhash "^0.1.4"
     slide "^1.1.5"
-
-ws@2.0.2:
-  version "2.0.2"
-  resolved "https://registry.yarnpkg.com/ws/-/ws-2.0.2.tgz#6257d1a679f0cb23658cba3dcad1316e2b1000c5"
-  dependencies:
-    ultron "~1.1.0"
 
 ws@2.3.1:
   version "2.3.1"

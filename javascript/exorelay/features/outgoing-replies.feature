@@ -27,6 +27,7 @@ Feature: Sending outgoing replies to incoming messages
       payload:
         name: 'Will Riker'
       id: '123'
+      activity-id: '456'
       """
     Then my message handler replies with the message:
       """
@@ -36,7 +37,7 @@ Feature: Sending outgoing replies to incoming messages
         id: 456
         name: 'Will Riker'
       id: '<%= request_uuid %>'
-      activity-id: '123'
+      activity-id: '456'
       """
 
 
@@ -50,6 +51,7 @@ Feature: Sending outgoing replies to incoming messages
       """
       name: 'ping'
       id: '123'
+      activity-id: '456'
       """
     Then my message handler replies with the message:
       """
@@ -57,7 +59,7 @@ Feature: Sending outgoing replies to incoming messages
       sender: 'test-service'
       payload: 'from the test-service'
       id: '<%= request_uuid %>'
-      activity-id: '123'
+      activity-id: '456'
       """
 
 
@@ -74,6 +76,7 @@ Feature: Sending outgoing replies to incoming messages
       payload:
         name: 'Will Riker'
       id: '123'
+      activity-id: '456'
       session-id: '1'
       """
     Then my message handler replies with the message:
@@ -84,7 +87,7 @@ Feature: Sending outgoing replies to incoming messages
         id: 456
         name: 'Will Riker'
       id: '<%= request_uuid %>'
-      activity-id: '123'
+      activity-id: '456'
       session-id: '1'
       """
 
@@ -99,6 +102,7 @@ Feature: Sending outgoing replies to incoming messages
       """
       name: 'ping'
       id: '123'
+      activity-id: '456'
       session-id: '1'
       """
     Then my message handler replies with the message:
@@ -107,6 +111,6 @@ Feature: Sending outgoing replies to incoming messages
       sender: 'test-service'
       payload: 'from the test-service'
       id: '<%= request_uuid %>'
-      activity-id: '123'
+      activity-id: '456'
       session-id: '1'
       """

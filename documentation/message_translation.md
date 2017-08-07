@@ -17,15 +17,15 @@ we define a translation section in the configuration file of the service:
 __application.yml__
 ```yml
 services:
-  private
+  private:
     users-service:
       docker_image: xxx
       message-translation:
-        - domain: "new user"
+        - public: "new user"
           internal: "store record"
-        - domain: "user created"
+        - public: "user created"
           internal: "record stored"
-        - domain: "list users"
+        - public: "list users"
           internal: "list records"
 ```
 

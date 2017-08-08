@@ -3,14 +3,15 @@ package exocom
 import (
 	"encoding/json"
 
+	"github.com/Originate/exocom/go/exocom/src/translation"
 	"github.com/Originate/exocom/go/exocom/src/types"
 )
 
 type rawRoute struct {
-	Role      string
-	Receives  []string
-	Sends     []string
-	Namespace string
+	Role                string
+	Receives            []string
+	Sends               []string
+	MessageTranslations []translation.MessageTranslation
 }
 
 // ParseServiceRoutes parses the incoming routes and
@@ -28,10 +29,13 @@ func ParseServiceRoutes(data string) (types.Routes, error) {
 		if data.Receives == nil {
 			data.Receives = []string{}
 		}
+		if data.MessageTranslations == nil {
+			data.MessageTranslations = []translation.MessageTranslation{}
+		}
 		parsed[data.Role] = types.Route{
-			Receives:          data.Receives,
-			Sends:             data.Sends,
-			InternalNamespace: data.Namespace,
+			Receives:            data.Receives,
+			Sends:               data.Sends,
+			MessageTranslations: data.MessageTranslations,
 		}
 	}
 	return parsed, nil

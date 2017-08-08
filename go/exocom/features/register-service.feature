@@ -14,8 +14,7 @@ Feature: Manage new instances of services
       """
       [
         {
-          "role": "users",
-          "namespace": "foo"
+          "role": "users"
         }
       ]
       """
@@ -32,7 +31,7 @@ Feature: Manage new instances of services
           "users": {
             "sends": [],
             "receives": [],
-            "internalNamespace": "foo"
+            "messageTranslations": []
           }
         }
       }
@@ -44,12 +43,10 @@ Feature: Manage new instances of services
       """
       [
         {
-          "role": "users",
-          "namespace": "foo"
+          "role": "users"
         },
         {
-          "role": "tweets",
-          "namespace": "bar"
+          "role": "tweets"
         }
       ]
       """
@@ -68,12 +65,12 @@ Feature: Manage new instances of services
           "tweets": {
             "sends": [],
             "receives": [],
-            "internalNamespace": "bar"
+            "messageTranslations": []
           },
           "users": {
             "sends": [],
             "receives": [],
-            "internalNamespace": "foo"
+            "messageTranslations": []
           }
         }
       }

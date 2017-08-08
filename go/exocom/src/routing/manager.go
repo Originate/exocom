@@ -41,8 +41,7 @@ func (m *Manager) GetRoutes() types.Routes {
 // GetSubscribersFor returns a receiver mapping for the given mapping
 func (m *Manager) GetSubscribersFor(message structs.Message) types.ReceiverMapping {
 	publicMessageName := translation.GetPublicMessageName(&translation.GetPublicMessageNameOptions{
-		Namespace:           m.routes[message.Sender].InternalNamespace,
-		Role:                message.Sender,
+		MessageTranslations: m.routes[message.Sender].MessageTranslations,
 		InternalMessageName: message.Name,
 	})
 	roles, hasKey := m.messageNameToReceiverMapping[publicMessageName]
@@ -59,17 +58,12 @@ func (m *Manager) intitializeMessageNameToReceiverMapping() {
 		for _, messageName := range route.Receives {
 			publicMessageName := translation.GetPublicMessageName(&translation.GetPublicMessageNameOptions{
 				InternalMessageName: messageName,
-				Role:                role,
-				Namespace:           route.InternalNamespace,
-			})
-			internalMessageName := translation.GetInternalMessageName(&translation.GetInternalMessageNameOptions{
-				Namespace:         m.routes[role].InternalNamespace,
-				PublicMessageName: publicMessageName,
+				MessageTranslations: route.MessageTranslations,
 			})
 			if m.messageNameToReceiverMapping[publicMessageName] == nil {
 				m.messageNameToReceiverMapping[publicMessageName] = types.ReceiverMapping{}
 			}
-			m.messageNameToReceiverMapping[publicMessageName][role] = internalMessageName
+			m.messageNameToReceiverMapping[publicMessageName][role] = messageName
 		}
 	}
 }

@@ -2,7 +2,6 @@ package translation
 
 // GetPublicMessageNameOptions are the options to the GetPublicMessageName func
 type GetPublicMessageNameOptions struct {
-	Namespace           string
-	Role                string
+	MessageTranslations []MessageTranslation
 	InternalMessageName string
 }

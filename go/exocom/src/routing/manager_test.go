@@ -2,6 +2,7 @@ package routing_test
 
 import (
 	"github.com/Originate/exocom/go/exocom/src/routing"
+	"github.com/Originate/exocom/go/exocom/src/translation"
 	"github.com/Originate/exocom/go/exocom/src/types"
 	"github.com/Originate/exocom/go/structs"
 
@@ -40,7 +41,7 @@ var _ = Describe("Manager", func() {
 
 			It("returns an empty array", func() {
 				result := manager.GetSubscribersFor(structs.Message{
-					Name: "users.create",
+					Name: "users create",
 				})
 				Expect(result).To(BeEmpty())
 			})
@@ -50,34 +51,39 @@ var _ = Describe("Manager", func() {
 			BeforeEach(func() {
 				manager = routing.NewManager(types.Routes{
 					"user": types.Route{
-						Receives: []string{"users.create"},
+						Receives: []string{"users create"},
 					},
 				})
 			})
 
 			It("returns the subscriber", func() {
 				result := manager.GetSubscribersFor(structs.Message{
-					Name: "users.create",
+					Name: "users create",
 				})
 				Expect(result).To(Equal(types.ReceiverMapping{
-					"user": "users.create",
+					"user": "users create",
 				}))
 			})
 		})
 
-		Describe("with a subscriber with an internal namespace", func() {
+		Describe("with a subscriber with a translation table", func() {
 			It("returns the subscriber", func() {
 				manager = routing.NewManager(types.Routes{
 					"tweet": types.Route{
-						InternalNamespace: "text-snippets",
-						Receives:          []string{"text-snippets.create"},
+						MessageTranslations: []translation.MessageTranslation{
+							translation.MessageTranslation{
+								Public:   "tweets create",
+								Internal: "text-snippets create",
+							},
+						},
+						Receives: []string{"text-snippets create"},
 					},
 				})
 				result := manager.GetSubscribersFor(structs.Message{
-					Name: "tweet.create",
+					Name: "tweets create",
 				})
 				Expect(result).To(Equal(types.ReceiverMapping{
-					"tweet": "text-snippets.create",
+					"tweet": "text-snippets create",
 				}))
 			})
 		})

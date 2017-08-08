@@ -1,19 +1,27 @@
 package translation
 
-import "strings"
-
 // GetInternalMessageName returns the internal message name for the given options
 func GetInternalMessageName(opts *GetInternalMessageNameOptions) string {
-	if !strings.Contains(opts.PublicMessageName, ".") || opts.Namespace == "" {
+	if len(opts.MessageTranslations) == 0 {
 		return opts.PublicMessageName
 	}
-	return opts.Namespace + "." + strings.Split(opts.PublicMessageName, ".")[1]
+	for _, messageTranslation := range opts.MessageTranslations {
+		if opts.PublicMessageName == messageTranslation.Public {
+			return messageTranslation.Internal
+		}
+	}
+	return opts.PublicMessageName
 }
 
 // GetPublicMessageName returns the public message name for the given options
 func GetPublicMessageName(opts *GetPublicMessageNameOptions) string {
-	if !strings.Contains(opts.InternalMessageName, ".") || opts.Namespace == "" {
+	if len(opts.MessageTranslations) == 0 {
 		return opts.InternalMessageName
 	}
-	return opts.Role + "." + strings.Split(opts.InternalMessageName, ".")[1]
+	for _, messageTranslation := range opts.MessageTranslations {
+		if opts.InternalMessageName == messageTranslation.Internal {
+			return messageTranslation.Public
+		}
+	}
+	return opts.InternalMessageName
 }

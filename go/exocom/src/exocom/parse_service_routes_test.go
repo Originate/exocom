@@ -2,6 +2,7 @@ package exocom_test
 
 import (
 	"github.com/Originate/exocom/go/exocom/src/exocom"
+	"github.com/Originate/exocom/go/exocom/src/translation"
 	"github.com/Originate/exocom/go/exocom/src/types"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -19,9 +20,9 @@ var _ = Describe("ParseServiceRoutes", func() {
 			Expect(err).To(BeNil())
 			Expect(routes).To(Equal(types.Routes{
 				"role 1": {
-					InternalNamespace: "",
-					Receives:          []string{},
-					Sends:             []string{},
+					MessageTranslations: []translation.MessageTranslation{},
+					Receives:            []string{},
+					Sends:               []string{},
 				},
 			}))
 		})
@@ -40,29 +41,49 @@ var _ = Describe("ParseServiceRoutes", func() {
 			Expect(err).To(BeNil())
 			Expect(routes).To(Equal(types.Routes{
 				"role 1": {
-					InternalNamespace: "",
-					Receives:          []string{"message 1 name"},
-					Sends:             []string{"message 2 name"},
+					MessageTranslations: []translation.MessageTranslation{},
+					Receives:            []string{"message 1 name"},
+					Sends:               []string{"message 2 name"},
 				},
 			}))
 		})
 	})
 
-	Describe("with internal namespace", func() {
+	Describe("with sends / receives and translation", func() {
 		It("returns the routes", func() {
 			routes, err := exocom.ParseServiceRoutes(
 				`[
 						{
-								"role": "role 1",
-								"namespace": "tweets"
+								"role": "tweets",
+								"sends": ["text-snippets created"],
+								"receives": ["text-snippets create"],
+								"messageTranslations": [
+									{
+										"public": "tweets create",
+										"internal": "text-snippets create"
+									},
+									{
+										"public": "tweets created",
+										"internal": "text-snippets created"
+									}
+								]
 						}
 				 ]`)
 			Expect(err).To(BeNil())
 			Expect(routes).To(Equal(types.Routes{
-				"role 1": {
-					InternalNamespace: "tweets",
-					Receives:          []string{},
-					Sends:             []string{},
+				"tweets": {
+					MessageTranslations: []translation.MessageTranslation{
+						translation.MessageTranslation{
+							Public:   "tweets create",
+							Internal: "text-snippets create",
+						},
+						translation.MessageTranslation{
+							Public:   "tweets created",
+							Internal: "text-snippets created",
+						},
+					},
+					Receives: []string{"text-snippets create"},
+					Sends:    []string{"text-snippets created"},
 				},
 			}))
 		})
@@ -82,14 +103,14 @@ var _ = Describe("ParseServiceRoutes", func() {
 			Expect(err).To(BeNil())
 			Expect(routes).To(Equal(types.Routes{
 				"role 1": {
-					InternalNamespace: "",
-					Receives:          []string{},
-					Sends:             []string{},
+					MessageTranslations: []translation.MessageTranslation{},
+					Receives:            []string{},
+					Sends:               []string{},
 				},
 				"role 2": {
-					InternalNamespace: "",
-					Receives:          []string{},
-					Sends:             []string{},
+					MessageTranslations: []translation.MessageTranslation{},
+					Receives:            []string{},
+					Sends:               []string{},
 				},
 			}))
 		})

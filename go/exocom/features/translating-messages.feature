@@ -16,14 +16,23 @@ Feature: Translating messages
     [
       {
         "role": "web",
-        "receives": ["tweets.created"],
-        "sends": ["tweets.create"]
+        "receives": ["tweets created"],
+        "sends": ["tweets create"]
       },
       {
         "role": "tweets",
-        "receives": ["text-snippets.create"],
-        "sends": ["text-snippets.created"],
-        "namespace": "text-snippets"
+        "receives": ["text-snippets create"],
+        "sends": ["text-snippets created"],
+        "messageTranslations": [
+          {
+            "public":"tweets create",
+            "internal":"text-snippets create"
+          },
+          {
+            "public":"tweets created",
+            "internal":"text-snippets created"
+          }
+        ]
       }
     ]
     """
@@ -32,13 +41,13 @@ Feature: Translating messages
 
 
   Scenario: translating a message
-    When the "web" service sends "tweets.create"
-    Then ExoCom signals "web  --[ tweets.create ]-[ text-snippets.create ]->  tweets"
-    And ExoCom broadcasts the message "text-snippets.create" to the "tweets" service
+    When the "web" service sends "tweets create"
+    Then ExoCom signals "web  --[ tweets create ]-[ text-snippets create ]->  tweets"
+    And ExoCom broadcasts the message "text-snippets create" to the "tweets" service
 
 
   Scenario: translating a reply
-    When the "web" service sends "tweets.create"
-    And the "tweets" service sends "text-snippets.created" for activity "111"
-    Then ExoCom signals "tweets  --[ text-snippets.created ]-[ tweets.created ]->  web"
-    And ExoCom broadcasts the message "tweets.created" to the "web" service
+    When the "web" service sends "tweets create"
+    And the "tweets" service sends "text-snippets created" for activity "111"
+    Then ExoCom signals "tweets  --[ text-snippets created ]-[ tweets created ]->  web"
+    And ExoCom broadcasts the message "tweets created" to the "web" service

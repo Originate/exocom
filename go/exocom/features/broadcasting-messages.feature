@@ -14,18 +14,27 @@ Feature: Broadcasting messages
     [
       {
         "role": "web",
-        "receives": ["users.created"],
-        "sends": ["users.create", "users.list", "delete user"]
+        "receives": ["users created"],
+        "sends": ["users create", "users list", "delete user"]
       },
       {
         "role": "users",
-        "receives": ["mongo.create", "delete user"],
-        "sends": ["mongo.created"],
-        "namespace": "mongo"
+        "receives": ["mongo create", "delete user"],
+        "sends": ["mongo created"],
+        "messageTranslations": [
+          {
+            "public": "users create",
+            "internal": "mongo create"
+          },
+          {
+            "public": "users created",
+            "internal": "mongo created"
+          }
+        ]
       },
       {
         "role": "log",
-        "receives": ["users.create"]
+        "receives": ["users create"]
       }
     ]
     """
@@ -35,16 +44,16 @@ Feature: Broadcasting messages
 
 
   Scenario: broadcasting a message
-    When the "web" service sends "users.create"
-    Then ExoCom signals "web  --[ users.create ]-[ mongo.create ]->  users"
-    And ExoCom broadcasts the message "mongo.create" to the "users" service
+    When the "web" service sends "users create"
+    Then ExoCom signals "web  --[ users create ]-[ mongo create ]->  users"
+    And ExoCom broadcasts the message "mongo create" to the "users" service
 
 
   Scenario: broadcasting a reply
-    When the "web" service sends "users.create"
-    And the "users" service sends "mongo.created" for activity "111"
-    Then ExoCom signals "users  --[ mongo.created ]-[ users.created ]->  web"
-    And ExoCom broadcasts the message "users.created" to the "web" service
+    When the "web" service sends "users create"
+    And the "users" service sends "mongo created" for activity "111"
+    Then ExoCom signals "users  --[ mongo created ]-[ users created ]->  web"
+    And ExoCom broadcasts the message "users created" to the "web" service
 
 
   Scenario: broadcasting a message with whitespace
@@ -54,13 +63,13 @@ Feature: Broadcasting messages
 
   # ERROR HANDLING
   Scenario: broadcasting an invalid message
-    When the "web" service sends "users.get-SSN"
-    Then ExoCom signals "Warning: Service 'web' is not allowed to broadcast the message 'users.get-SSN'"
+    When the "web" service sends "users get-SSN"
+    Then ExoCom signals "Warning: Service 'web' is not allowed to broadcast the message 'users get-SSN'"
 
   Scenario: broadcasting an invalid message
-    When the "log" service sends "users.get-SSN"
-    Then ExoCom signals "Warning: Service 'log' is not allowed to broadcast the message 'users.get-SSN'"
+    When the "log" service sends "users get-SSN"
+    Then ExoCom signals "Warning: Service 'log' is not allowed to broadcast the message 'users get-SSN'"
 
   Scenario: broadcasting a message with no receivers
-    When the "web" service sends "users.list"
-    Then ExoCom signals "Warning: No receivers for message 'users.list' registered" 
+    When the "web" service sends "users list"
+    Then ExoCom signals "Warning: No receivers for message 'users list' registered" 

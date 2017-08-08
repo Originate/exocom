@@ -1,3 +1,13 @@
+# 0.24.0 (2017-08-08)
+
+#### BREAKING CHANGES
+
+* Update message translation to use a 1-1 mapping for message names instead of a namespace
+
+#### Bug fixes
+
+* `javascript/exorelay`: fix reply handlers
+
 # 0.23.0 (2017-08-03)
 
 #### BREAKING CHANGES

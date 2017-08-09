@@ -39,7 +39,7 @@ func (m *MockService) Connect() error {
 	go m.websocketHandler()
 	serializedBytes, err := json.Marshal(structs.Message{
 		Name:       "exocom.register-service",
-		Payload:    map[string]string{"clientName": m.role},
+		Sender:     m.role,
 		ActivityID: "123",
 	})
 	if err != nil {

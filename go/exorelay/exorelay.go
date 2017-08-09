@@ -47,8 +47,7 @@ func (e *ExoRelay) Connect() error {
 	e.messageChannel = make(chan structs.Message)
 	go e.listenForMessages()
 	_, err = e.Send(MessageOptions{
-		Name:    "exocom.register-service",
-		Payload: map[string]interface{}{"clientName": e.Config.Role},
+		Name: "exocom.register-service",
 	})
 	return err
 }

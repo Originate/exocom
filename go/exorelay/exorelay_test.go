@@ -77,18 +77,13 @@ func FeatureContext(s *godog.Suite) {
 		return exoInstance.Connect()
 	})
 
-	s.Step(`^it registers by sending the message "([^"]*)" with payload:$`, func(expectedName string, payloadStr *gherkin.DocString) error {
+	s.Step(`^it registers by sending the message "([^"]*)" with the sender "([^"]*)"`, func(expectedName, expectedSender string) error {
 		message, err := exocom.WaitForMessageWithName(expectedName)
 		if err != nil {
 			return err
 		}
-		var expectedPayload structs.MessagePayload
-		err = json.Unmarshal([]byte(payloadStr.Content), &expectedPayload)
-		if err != nil {
-			return err
-		}
-		if !reflect.DeepEqual(message.Payload, expectedPayload) {
-			return fmt.Errorf("Expected message payload to equal %s but got %s", expectedPayload, message.Payload)
+		if message.Sender != expectedSender {
+			return fmt.Errorf("Expected sender to equal %s but got %s", expectedSender, message.Sender)
 		}
 		return nil
 	})

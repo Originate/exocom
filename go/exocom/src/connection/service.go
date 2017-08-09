@@ -39,13 +39,8 @@ func (s *Service) Send(message structs.Message) error {
 // Helpers
 
 func (s *Service) handleRegisterMessage(message structs.Message) {
-	var err error
-	s.role, err = parseRegisterMessagePayload(message)
-	if err == nil {
-		s.manager.registerService(s)
-	} else {
-		s.manager.logError(err)
-	}
+	s.role = message.Sender
+	s.manager.registerService(s)
 }
 
 func (s *Service) listen() {
@@ -62,13 +57,4 @@ func (s *Service) listen() {
 	if s.role != "" {
 		s.manager.deregisterService(s)
 	}
-}
-
-func parseRegisterMessagePayload(message structs.Message) (string, error) {
-	if objectPayload, ok := message.Payload.(map[string]interface{}); ok {
-		if role, ok := objectPayload["clientName"].(string); ok {
-			return role, nil
-		}
-	}
-	return "", fmt.Errorf("Invalid register message payload: %v", message.Payload)
 }

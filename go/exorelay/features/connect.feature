@@ -14,7 +14,4 @@ Feature: Connecting
 
   Scenario: Setting up the ExoRelay instance
     When ExoRelay connects to Exocom
-    Then it registers by sending the message "exocom.register-service" with payload:
-      """
-      { "clientName": "foo" }
-      """
+    Then it registers by sending the message "exocom.register-service" with the sender "foo"

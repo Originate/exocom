@@ -36,10 +36,11 @@ var _ = Describe("MessageCache", func() {
 	Describe("clearCache", func() {
 		It("clears the messageCache from messages older than one minute", func() {
 			messageCache.Set("message1", time.Now().Add(time.Minute*-1))
-			utils.WaitFor(func() bool {
+			err := utils.WaitFor(func() bool {
 				_, ok := messageCache.Get("message1")
 				return !ok
 			}, "expected message1 to be cleared from the cache but it never was")
+			Expect(err).To(BeNil())
 		})
 
 		It("keeps messages in the messageCache that are younger than a minute", func() {

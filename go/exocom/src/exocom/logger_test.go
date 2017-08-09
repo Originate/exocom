@@ -17,7 +17,8 @@ func GetOutput(f func(*exocom.Logger)) string {
 	logger := exocom.NewLogger(pipeWriter)
 	go func() {
 		f(logger)
-		pipeWriter.Close()
+		err := pipeWriter.Close()
+		Expect(err).To(BeNil())
 	}()
 	result, err := ioutil.ReadAll(pipeReader)
 	Expect(err).To(BeNil())

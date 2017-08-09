@@ -1,5 +1,5 @@
-hash: 8e84a15d4f9fa679b08f3f70369a965c6b080380f60bb479ddea545e45372b76
-updated: 2017-07-25T14:51:09.716236046-07:00
+hash: cf016cbb6b68de82ed76e66cda25720fdbde40f602f82d364a98e959dd00609f
+updated: 2017-08-09T10:26:49.249807701-07:00
 imports:
 - name: github.com/DATA-DOG/godog
   version: 92fbee719c9593813b24a6ef042bcad40324ede4
@@ -18,6 +18,8 @@ imports:
 - name: github.com/mattn/go-isatty
   version: 57fdcb988a5c543893cc61bce354a6e24ab70022
   repo: https://github.com/mattn/go-isatty
+- name: github.com/Originate/go-execplus
+  version: bbc206c2b49072dc6114af34db9e33e7cf02e24c
 - name: github.com/phayes/freeport
   version: e7681b37614941bf73b404e0caa37f19e33b5fed
 - name: github.com/pkg/errors

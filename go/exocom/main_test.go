@@ -3,30 +3,26 @@ package main_test
 import (
 	"encoding/json"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"net/http"
 	"os"
-	"os/exec"
 	"reflect"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/DATA-DOG/godog"
 	"github.com/DATA-DOG/godog/gherkin"
 	"github.com/Originate/exocom/go/exocom/test_helpers"
 	"github.com/Originate/exocom/go/structs"
+	execplus "github.com/Originate/go-execplus"
 	"github.com/phayes/freeport"
 	"github.com/pkg/errors"
 )
 
 // nolint gocyclo
 func FeatureContext(s *godog.Suite) {
-	var cmd *exec.Cmd
-	var cmdOutput string
-	var cmdStdout io.ReadCloser
-	var cmdStderr io.ReadCloser
-	var shouldCmdBeKilled bool
+	var cmdPlus *execplus.CmdPlus
 	var server *http.Server
 	var exocomPort int
 	var services map[string]*testHelpers.MockService
@@ -37,7 +33,7 @@ func FeatureContext(s *godog.Suite) {
 		if err != nil {
 			return err
 		}
-		err = testHelpers.WaitForText(cmdStdout, fmt.Sprintf("'%s' registered", serviceName))
+		err = cmdPlus.WaitForText(fmt.Sprintf("'%s' registered", serviceName), time.Second*10)
 		if err != nil {
 			return err
 		}
@@ -46,34 +42,21 @@ func FeatureContext(s *godog.Suite) {
 	}
 
 	startExocom := func(env []string) error {
-		var err error
-		cmd = exec.Command("exocom")
-		cmd.Env = env
-		cmdStdout, err = cmd.StdoutPipe()
-		if err != nil {
-			return err
-		}
-		cmdStderr, err = cmd.StderrPipe()
-		if err != nil {
-			return err
-		}
-		return cmd.Start()
+		cmdPlus = execplus.NewCmdPlus("exocom")
+		cmdPlus.SetEnv(env)
+		return cmdPlus.Start()
 	}
 
 	s.BeforeScenario(func(arg1 interface{}) {
-		cmd = nil
-		cmdOutput = ""
-		cmdStdout = nil
-		cmdStderr = nil
-		shouldCmdBeKilled = true
+		cmdPlus = nil
 		server = nil
 		exocomPort = freeport.GetPort()
 		services = map[string]*testHelpers.MockService{}
 	})
 
 	s.AfterScenario(func(arg1 interface{}, arg2 error) {
-		if cmd != nil && cmd.Process != nil && shouldCmdBeKilled {
-			err := cmd.Process.Kill()
+		if cmdPlus != nil {
+			err := cmdPlus.Kill()
 			if err != nil {
 				panic(err)
 			}
@@ -104,12 +87,13 @@ func FeatureContext(s *godog.Suite) {
 	})
 
 	s.Step(`^I see "([^"]*)"$`, func(text string) error {
-		return testHelpers.WaitForText(cmdStdout, text)
+		return cmdPlus.WaitForText(text, time.Second*10)
 	})
 
 	s.Step(`^it aborts with the message "([^"]*)"$`, func(text string) error {
-		if !strings.Contains(cmdOutput, text) {
-			return fmt.Errorf("Expected '%s' to contain '%s'", cmdOutput, text)
+		output := cmdPlus.GetOutput()
+		if !strings.Contains(output, text) {
+			return fmt.Errorf("Expected '%s' to contain '%s'", output, text)
 		}
 		return nil
 	})
@@ -123,18 +107,15 @@ func FeatureContext(s *godog.Suite) {
 	})
 
 	s.Step(`^trying to start ExoCom at port (\d+)$`, func(port int) error {
-		var err error
-		cmd = exec.Command("exocom")
-		cmd.Env = []string{
+		cmdPlus = execplus.NewCmdPlus("exocom")
+		cmdPlus.SetEnv([]string{
 			fmt.Sprintf("PORT=%d", port),
 			fmt.Sprintf("SERVICE_ROUTES=%s", "[]"),
-		}
-		output, err := cmd.CombinedOutput()
+		})
+		err := cmdPlus.Run()
 		if err == nil {
 			return fmt.Errorf("Expected exocom to fail but it didn't")
 		}
-		cmdOutput = string(output)
-		shouldCmdBeKilled = false
 		return nil
 	})
 
@@ -154,7 +135,11 @@ func FeatureContext(s *godog.Suite) {
 	})
 
 	s.Step(`^the "([^"]*)" service goes offline$`, func(serviceName string) error {
-		return services[serviceName].Close()
+		err := services[serviceName].Close()
+		if err != nil {
+			return err
+		}
+		return cmdPlus.WaitForText(fmt.Sprintf("'%s' disconnected", serviceName), time.Second*10)
 	})
 
 	s.Step(`^the "([^"]+)" service sends "([^"]*)"$`, func(serviceName, messageName string) error {
@@ -168,7 +153,7 @@ func FeatureContext(s *godog.Suite) {
 	})
 
 	s.Step(`ExoCom signals "([^"]*)"$`, func(messageName string) error {
-		return testHelpers.WaitForText(cmdStdout, messageName)
+		return cmdPlus.WaitForText(messageName, time.Second*10)
 	})
 
 	s.Step(`^ExoCom should have the config:$`, func(servicesDocString *gherkin.DocString) error {

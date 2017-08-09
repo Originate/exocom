@@ -16,14 +16,15 @@ import (
 
 // ExoCom is the top level message broadcaster
 type ExoCom struct {
-	server            http.Server
+	connectionManager *connection.Manager
+	deregisterChannel chan string
+	errorChannel      chan error
 	logger            *Logger
 	messageCache      *MessageCache
-	connectionManager *connection.Manager
-	errorChannel      chan error
 	messageChannel    chan structs.Message
 	registerChannel   chan string
 	routingManager    *routing.Manager
+	server            http.Server
 }
 
 var upgrader = websocket.Upgrader{}
@@ -31,17 +32,24 @@ var upgrader = websocket.Upgrader{}
 // New creates a new ExoCom instance
 func New(serviceRoutes types.Routes) (*ExoCom, error) {
 	result := &ExoCom{
-		routingManager:  routing.NewManager(serviceRoutes),
-		messageCache:    NewMessageCache(time.Minute),
-		logger:          NewLogger(os.Stdout),
-		errorChannel:    make(chan error),
-		messageChannel:  make(chan structs.Message),
-		registerChannel: make(chan string),
+		deregisterChannel: make(chan string),
+		errorChannel:      make(chan error),
+		logger:            NewLogger(os.Stdout),
+		messageCache:      NewMessageCache(time.Minute),
+		messageChannel:    make(chan structs.Message),
+		registerChannel:   make(chan string),
+		routingManager:    routing.NewManager(serviceRoutes),
 	}
-	result.connectionManager = connection.NewManager(result.errorChannel, result.messageChannel, result.registerChannel)
+	result.connectionManager = connection.NewManager(connection.ManagerOptions{
+		DeregisterChannel: result.deregisterChannel,
+		ErrorChannel:      result.errorChannel,
+		MessageChannel:    result.messageChannel,
+		RegisterChannel:   result.registerChannel,
+	})
 	go result.listenForErrors()
 	go result.listenForMessages()
 	go result.listenForRegistrations()
+	go result.listenForDeregistrations()
 	var handler http.HandlerFunc = func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == "/services" {
 			conn, err := upgrader.Upgrade(w, r, nil)
@@ -105,6 +113,13 @@ func (e *ExoCom) listenForRegistrations() {
 	for {
 		role := <-e.registerChannel
 		printLogError(e.logger.Log(fmt.Sprintf("'%s' registered", role)))
+	}
+}
+
+func (e *ExoCom) listenForDeregistrations() {
+	for {
+		role := <-e.deregisterChannel
+		printLogError(e.logger.Log(fmt.Sprintf("'%s' disconnected", role)))
 	}
 }
 

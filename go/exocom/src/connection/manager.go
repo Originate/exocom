@@ -9,19 +9,21 @@ import (
 
 // Manager manages all websocket connections
 type Manager struct {
-	errorChannel    chan error
-	messageChannel  chan structs.Message
-	registerChannel chan string
-	services        map[string]*Service
+	deregisterChannel chan string
+	errorChannel      chan error
+	messageChannel    chan structs.Message
+	registerChannel   chan string
+	services          map[string]*Service
 }
 
 // NewManager returns a new Manager
-func NewManager(errorChannel chan error, messageChannel chan structs.Message, registerChannel chan string) *Manager {
+func NewManager(options ManagerOptions) *Manager {
 	return &Manager{
-		errorChannel:    errorChannel,
-		messageChannel:  messageChannel,
-		registerChannel: registerChannel,
-		services:        map[string]*Service{},
+		deregisterChannel: options.DeregisterChannel,
+		errorChannel:      options.ErrorChannel,
+		messageChannel:    options.MessageChannel,
+		registerChannel:   options.RegisterChannel,
+		services:          map[string]*Service{},
 	}
 }
 
@@ -63,4 +65,5 @@ func (m *Manager) registerService(service *Service) {
 
 func (m *Manager) deregisterService(service *Service) {
 	delete(m.services, service.role)
+	m.deregisterChannel <- service.role
 }

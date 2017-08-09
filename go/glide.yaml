@@ -17,3 +17,5 @@ import:
 - package: github.com/spf13/cobra
 - package: github.com/fatih/color
   version: v1.5.0
+- package: github.com/Originate/go-execplus
+  version: v0.4.0

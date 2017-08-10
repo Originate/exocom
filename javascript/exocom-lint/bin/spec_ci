@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+set -e
+
+bin/build
+bin/lint
+node_modules/.bin/cucumber-js

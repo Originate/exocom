@@ -23,6 +23,6 @@ Feature: Outgoing replies
     Then it sends a "pong it" message as a reply to the message with activityId "123"
 
 
-  Scenario: replying to a message with session id
-    When receiving a "ping" message with activityId "123" and sessionId "1"
-    Then it sends a "pong" message as a reply to the message with activityId "123" and sessionId "1"
+  Scenario: replying to a message with auth
+    When receiving a "ping" message with activityId "123" and auth "1"
+    Then it sends a "pong" message as a reply to the message with activityId "123" and auth "1"

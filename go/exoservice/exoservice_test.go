@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"reflect"
 	"testing"
 
 	"github.com/DATA-DOG/godog"
@@ -71,12 +72,12 @@ func FeatureContext(s *godog.Suite) {
 		return nil
 	})
 
-	s.Step(`^receiving a "([^"]*)" message(?: with (?:activityId "([^"]*)")?(?:(?: and )?sessionId "([^"]*)")?)?$`, func(name, activityId, sessionId string) error {
+	s.Step(`^receiving a "([^"]*)" message(?: with (?:activityId "([^"]*)")?(?:(?: and )?auth "([^"]*)")?)?$`, func(name, activityId, auth string) error {
 		message := structs.Message{
 			ActivityID: activityId,
 			ID:         uuid.NewV4().String(),
 			Name:       name,
-			SessionID:  sessionId,
+			Auth:       auth,
 		}
 		_, err := exocom.WaitForConnection()
 		if err != nil {
@@ -85,7 +86,7 @@ func FeatureContext(s *godog.Suite) {
 		return exocom.Send(message)
 	})
 
-	s.Step(`^it sends a "([^"]*)" message(?: as a reply to the message with (?:activityId "([^"]*)")?(?:(?: and )?sessionId "([^"]*)")?)?$`, func(name, activityId, sessionId string) error {
+	s.Step(`^it sends a "([^"]*)" message(?: as a reply to the message with (?:activityId "([^"]*)")?(?:(?: and )?auth "([^"]*)")?)?$`, func(name, activityId, auth string) error {
 		actualMessage, err := exocom.WaitForMessageWithName(name)
 		if err != nil {
 			return err
@@ -93,8 +94,8 @@ func FeatureContext(s *godog.Suite) {
 		if actualMessage.ActivityID != activityId && activityId != "" {
 			return fmt.Errorf("Expected message to be a part of activity %s but got %s", activityId, actualMessage.ActivityID)
 		}
-		if actualMessage.SessionID != sessionId {
-			return fmt.Errorf("Expected message to be a response to have sessionId %s but got %s", sessionId, actualMessage.SessionID)
+		if !reflect.DeepEqual(actualMessage.Auth, auth) {
+			return fmt.Errorf("Expected message to be a response to have auth %s but got %s", auth, actualMessage.Auth)
 		}
 		return nil
 	})

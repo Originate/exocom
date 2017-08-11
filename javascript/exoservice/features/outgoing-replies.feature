@@ -19,6 +19,6 @@ Feature: Outgoing replies
     Then after a while it sends the "pong" message
 
 
-  Scenario: A message replies with session id
-    When receiving the "ping" message with sessionId "1"
-    Then after a while it sends the "pong" message with sessionId "1"
+  Scenario: A message replies with auth
+    When receiving the "ping" message with auth "1"
+    Then after a while it sends the "pong" message with auth "1"

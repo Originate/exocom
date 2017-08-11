@@ -5,14 +5,14 @@ Feature:
   So that I can create a useful application
 
   Rules
-  - If a message does not have a SessionId, a new one is generated for that user
+  - If a message does not have an auth, a new one is generated for that user
 
 
   Background:
     Given a frontend bridge connected to Exocom
 
 
-  Scenario: receiving a message without a SessionId
+  Scenario: receiving a message without an auth
     When receiving this message from the client:
       """
       {
@@ -24,12 +24,12 @@ Feature:
       """
       {
         "name": "hello",
-        "sessionId": "{{.sessionId}}",
+        "auth": "{{.sessionId}}",
         "sender": "websocket-test"
       }
       """
 
 
-  Scenario: different clients get different sessionIds when they connnect
+  Scenario: different clients get different auths when they connnect
     When receiving a message "hello" from 2 different clients
-    Then those clients have different sessionIds
+    Then those clients have different auths

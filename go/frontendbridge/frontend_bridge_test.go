@@ -123,14 +123,14 @@ func FeatureContext(s *godog.Suite) {
 		if err != nil {
 			return err
 		}
-		if message.SessionID != "" {
+		if message.Auth != nil {
 			receivedMessages := exocom.GetReceivedMessages()
-			message.SessionID = receivedMessages[len(receivedMessages)-1].SessionID
+			message.Auth = receivedMessages[len(receivedMessages)-1].Auth
 		}
 		return exocom.Send(message)
 	})
 
-	s.Step(`^those clients have different sessionIds$`, func() error {
+	s.Step(`^those clients have different auths$`, func() error {
 		err := utils.WaitFor(func() bool {
 			return len(exocom.GetReceivedMessages()) == 3
 		}, "Expected exocom to receive 3 messages")
@@ -138,14 +138,23 @@ func FeatureContext(s *godog.Suite) {
 			return err
 		}
 		receivedMessages := exocom.GetReceivedMessages()
-		sessionIdSet := make(map[string]bool)
+		auths := []interface{}{}
 		for _, message := range receivedMessages {
 			if message.Name != "exocom.register-service" {
-				sessionIdSet[message.SessionID] = true
+				exists := false
+				for _, auth := range auths {
+					if reflect.DeepEqual(auth, message.Auth) {
+						exists = true
+						break
+					}
+				}
+				if !exists {
+					auths = append(auths, message.Auth)
+				}
 			}
 		}
-		if len(sessionIdSet) != clientCount {
-			return fmt.Errorf("Expected request to have %d clients but got %d", clientCount, len(sessionIdSet))
+		if len(auths) != clientCount {
+			return fmt.Errorf("Expected request to have %d clients but got %d", clientCount, len(auths))
 		}
 		return nil
 	})
@@ -160,9 +169,9 @@ func FeatureContext(s *godog.Suite) {
 		if err != nil {
 			return err
 		}
-		//ID, ActivityID, and SessionId get generated on the fly, so we can't know them beforehand
+		//ID, ActivityID, and Auth get generated on the fly, so we can't know them beforehand
 		expectedMessage.ID = actualMessage.ID
-		expectedMessage.SessionID = actualMessage.SessionID
+		expectedMessage.Auth = actualMessage.Auth
 		expectedMessage.ActivityID = actualMessage.ActivityID
 		if !reflect.DeepEqual(actualMessage, expectedMessage) {
 			return fmt.Errorf("Expected request to equal %s but got %s", expectedMessage, actualMessage)
@@ -196,7 +205,7 @@ func FeatureContext(s *godog.Suite) {
 		clientWebsocket.SetReadDeadline(time.Now().Add(time.Second * time.Duration(1)))
 		_, bytes, err := clientWebsocket.ReadMessage()
 		if err == nil {
-			return fmt.Errorf("Expected timeout error")
+			return fmt.Errorf("Expected timeout error got %s", string(bytes))
 		}
 		if strings.Contains(err.Error(), "i/o timeout") {
 			if bytes != nil {

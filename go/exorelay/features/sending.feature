@@ -66,8 +66,8 @@ Feature: Sending outgoing messages
     Then ExoRelay errors with "ExoRelay#Send cannot send empty messages"
 
 
-  Scenario: sending a message with session id
-    When sending the message "hello-world" with sessionId "1"
+  Scenario: sending a message with auth
+    When sending the message "hello-world" with auth "1"
     Then ExoRelay makes the WebSocket request:
       """
       {
@@ -75,6 +75,6 @@ Feature: Sending outgoing messages
         "sender": "test-service",
         "id": "{{.outgoingMessageId}}",
         "activityId": "{{.outgoingActivityId}}",
-        "sessionId": "1"
+        "auth": "1"
       }
       """

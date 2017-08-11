@@ -63,7 +63,7 @@ Feature: Sending outgoing replies to incoming messages
       """
 
 
-  Scenario: sending a reply with JSON data and session id
+  Scenario: sending a reply with JSON data and auth
     Given the "users.create" message has this handler:
       """
       exo-relay.register-handler 'users.create', (user-attributes, {reply}) ->
@@ -77,7 +77,7 @@ Feature: Sending outgoing replies to incoming messages
         name: 'Will Riker'
       id: '123'
       activity-id: '456'
-      session-id: '1'
+      auth: '1'
       """
     Then my message handler replies with the message:
       """
@@ -88,11 +88,11 @@ Feature: Sending outgoing replies to incoming messages
         name: 'Will Riker'
       id: '<%= request_uuid %>'
       activity-id: '456'
-      session-id: '1'
+      auth: '1'
       """
 
 
-  Scenario: sending a reply with string payload and session id
+  Scenario: sending a reply with string payload and auth
     Given the "users.create" message has this handler:
       """
       exo-relay.register-handler 'ping', (_payload, {reply}) ->
@@ -103,7 +103,7 @@ Feature: Sending outgoing replies to incoming messages
       name: 'ping'
       id: '123'
       activity-id: '456'
-      session-id: '1'
+      auth: '1'
       """
     Then my message handler replies with the message:
       """
@@ -112,5 +112,5 @@ Feature: Sending outgoing replies to incoming messages
       payload: 'from the test-service'
       id: '<%= request_uuid %>'
       activity-id: '456'
-      session-id: '1'
+      auth: '1'
       """

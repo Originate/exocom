@@ -54,13 +54,13 @@ Feature: Receiving messages
       }
       """
 
-  Scenario: receiving a message with session id
+  Scenario: receiving a message with auth
     When receiving this message:
       """
       {
         "name": "hello-world",
         "id": "123",
-        "sessionId": "1"
+        "auth": "1"
       }
       """
-    Then the fixture receives a message with the name "hello-world" and sessionId "1"
+    Then the fixture receives a message with the name "hello-world" and auth "1"

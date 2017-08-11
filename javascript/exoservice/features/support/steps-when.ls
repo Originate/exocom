@@ -7,10 +7,10 @@ require! {
 defineSupportCode ({Given, When, Then}) ->
 
 
-  When /^receiving the( unknown)? "([^"]*)" message(?: with sessionId "([^"]*)")?$/, (expect-error, message-name, session-id) ->
+  When /^receiving the( unknown)? "([^"]*)" message(?: with auth "([^"]*)")?$/, (expect-error, message-name, auth) ->
     @exocom
       ..reset!
-      ..send {service: @role, name: message-name, expect-error, session-id: session-id}
+      ..send {service: @role, name: message-name, expect-error, auth: auth}
 
 
   When /^receiving the( unknown)? "([^"]*)" message with the payload:$/, (expect-error, message-name, payload) ->

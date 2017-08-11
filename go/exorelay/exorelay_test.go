@@ -104,9 +104,9 @@ func FeatureContext(s *godog.Suite) {
 		return err
 	})
 
-	s.Step(`^sending the message "([^"]*)" with sessionId "([^"]*)"$`, func(name, sessionId string) error {
+	s.Step(`^sending the message "([^"]*)" with auth "([^"]*)"$`, func(name, auth string) error {
 		var err error
-		outgoingMessage, err = exoInstance.Send(exorelay.MessageOptions{Name: name, SessionID: sessionId})
+		outgoingMessage, err = exoInstance.Send(exorelay.MessageOptions{Name: name, Auth: auth})
 		return err
 	})
 
@@ -204,13 +204,13 @@ func FeatureContext(s *godog.Suite) {
 		return nil
 	})
 
-	s.Step(`^the fixture receives a message with the name "([^"]*)" and sessionId "([^"]*)"$`, func(messageName, sessionId string) error {
+	s.Step(`^the fixture receives a message with the name "([^"]*)" and auth "([^"]*)"$`, func(messageName, auth string) error {
 		message, err := testFixture.WaitForMessageWithName(messageName)
 		if err != nil {
 			return err
 		}
-		if message.SessionID != sessionId {
-			return fmt.Errorf("Expected session id %s but got %s", sessionId, message.SessionID)
+		if !reflect.DeepEqual(message.Auth, auth) {
+			return fmt.Errorf("Expected auth %s but got %s", auth, message.Auth)
 		}
 		return nil
 	})

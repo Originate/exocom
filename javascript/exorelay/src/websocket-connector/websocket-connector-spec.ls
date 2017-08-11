@@ -24,7 +24,7 @@ describe 'WebSocketConnector', ->
     it 'returns a function that calls @send prebound to the response id', ->
       expect(@reply-method).to.be.a 'function'
       @reply-method 'reply-message', 'payload'
-      expect(@websocket-connector.send.first-call.args).to.eql [ 'reply-message', 'payload', {activity-id: '123', session-id: '1'} ]
+      expect(@websocket-connector.send.first-call.args).to.eql [ 'reply-message', 'payload', {activity-id: '123', auth: '1'} ]
 
 
     context 'missing activity-id', (...) ->

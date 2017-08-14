@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"time"
 
 	"github.com/Originate/exocom/go/exorelay"
 	"github.com/Originate/exocom/go/structs"
@@ -12,9 +13,10 @@ import (
 
 // Request contains payload and helper functions for sending messages
 type Request struct {
-	Payload structs.MessagePayload
-	Reply   func(exorelay.MessageOptions) error
-	Send    func(exorelay.MessageOptions) error
+	Payload         structs.MessagePayload
+	Reply           func(exorelay.MessageOptions) error
+	Send            func(exorelay.MessageOptions) (string, error)
+	WaitForActivity func(string, time.Duration) (*structs.Message, error)
 }
 
 // MessageHandler is the function signature for handling a message
@@ -22,6 +24,9 @@ type MessageHandler func(Request)
 
 // MessageHandlerMapping is a map from message name to MessageHandler
 type MessageHandlerMapping map[string]MessageHandler
+
+// ReplyChannelMapping is a map from message activityId to a channel that should be sent messages
+type ReplyChannelMapping map[string]chan *structs.Message
 
 // Bootstrap brings an ExoService online using environment variables and the
 // given messageHandlers
@@ -49,23 +54,27 @@ func Bootstrap(messageHandlers MessageHandlerMapping) {
 
 // ExoService is the high level Go API to talk to Exocom
 type ExoService struct {
+	closed          bool
 	exoRelay        *exorelay.ExoRelay
 	messageHandlers MessageHandlerMapping
+	replyChannels   ReplyChannelMapping
 }
 
 // Connect brings an ExoService instance online
 func (e *ExoService) Connect(config exorelay.Config) error {
 	e.exoRelay = &exorelay.ExoRelay{Config: config}
-	return e.exoRelay.Connect()
+	err := e.exoRelay.Connect()
+	e.closed = false
+	return err
 }
 
 // Close takes this ExoService instance offline
 func (e *ExoService) Close() error {
-	if e.exoRelay == nil {
+	if e.closed {
 		return nil
 	}
 	err := e.exoRelay.Close()
-	e.exoRelay = nil
+	e.closed = true
 	return err
 }
 
@@ -76,13 +85,17 @@ func (e *ExoService) ListenForMessages(messageHandlers MessageHandlerMapping) er
 		return errors.New("Please call Connect() first")
 	}
 	e.messageHandlers = messageHandlers
+	e.replyChannels = map[string]chan *structs.Message{}
 	messageChannel := e.exoRelay.GetMessageChannel()
 	for {
 		message, ok := <-messageChannel
 		if !ok {
 			return nil
 		}
-		e.receiveMessage(message)
+		go e.receiveMessage(message)
+		if replyChannel, ok := e.replyChannels[message.ActivityID]; ok {
+			replyChannel <- &message
+		}
 	}
 }
 
@@ -97,19 +110,36 @@ func (e *ExoService) receiveMessage(message structs.Message) {
 	}
 	e.messageHandlers[message.Name](Request{
 		Payload: message.Payload,
-		Reply:   e.buildSendHelper(message.ActivityID, message.Auth),
-		Send:    e.buildSendHelper("", message.Auth),
+		Reply: func(options exorelay.MessageOptions) error {
+			_, err := e.exoRelay.Send(exorelay.MessageOptions{
+				Name:       options.Name,
+				Payload:    options.Payload,
+				ActivityID: message.ActivityID,
+				Auth:       message.Auth,
+			})
+			return err
+		},
+		Send: func(options exorelay.MessageOptions) (string, error) {
+			sentMessage, err := e.exoRelay.Send(exorelay.MessageOptions{
+				Name:    options.Name,
+				Payload: options.Payload,
+				Auth:    message.Auth,
+			})
+			if err != nil {
+				return "", err
+			}
+			return sentMessage.ActivityID, nil
+		},
+		WaitForActivity: func(activityID string, timeout time.Duration) (*structs.Message, error) {
+			messageChannel := make(chan *structs.Message)
+			e.replyChannels[activityID] = messageChannel
+			defer delete(e.replyChannels, activityID)
+			select {
+			case message := <-messageChannel:
+				return message, nil
+			case <-time.After(timeout):
+				return nil, fmt.Errorf("Did not receive a reply for '%s' after %s", activityID, timeout.String())
+			}
+		},
 	})
-}
-
-func (e *ExoService) buildSendHelper(activityID string, auth structs.MessageAuth) func(exorelay.MessageOptions) error {
-	return func(options exorelay.MessageOptions) error {
-		_, err := e.exoRelay.Send(exorelay.MessageOptions{
-			Name:       options.Name,
-			Payload:    options.Payload,
-			ActivityID: activityID,
-			Auth:       auth,
-		})
-		return err
-	}
 }

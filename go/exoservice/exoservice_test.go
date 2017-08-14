@@ -1,6 +1,7 @@
 package exoservice_test
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -9,6 +10,7 @@ import (
 	"testing"
 
 	"github.com/DATA-DOG/godog"
+	"github.com/DATA-DOG/godog/gherkin"
 	"github.com/Originate/exocom/go/exocom-mock"
 	"github.com/Originate/exocom/go/exorelay"
 	"github.com/Originate/exocom/go/exoservice"
@@ -29,6 +31,7 @@ func newExocom(port int) *exocomMock.ExoComMock {
 	return exocom
 }
 
+// nolint gocyclo
 func FeatureContext(s *godog.Suite) {
 	var exocomPort int
 	var exocom *exocomMock.ExoComMock
@@ -96,6 +99,48 @@ func FeatureContext(s *godog.Suite) {
 		}
 		if !reflect.DeepEqual(actualMessage.Auth, auth) {
 			return fmt.Errorf("Expected message to be a response to have auth %s but got %s", auth, actualMessage.Auth)
+		}
+		return nil
+	})
+
+	s.Step(`^receiving a "([^"]*)" message with the same activityId as the "([^"]*)" message and the payload:$`, func(messageName, sentMessageName string, payloadDocString *gherkin.DocString) error {
+		activityId := ""
+		for _, message := range exocom.ReceivedMessages {
+			if message.Name == sentMessageName {
+				activityId = message.ActivityID
+			}
+		}
+		if activityId == "" {
+			return fmt.Errorf("Expected exocom to have received a '%s' message. It recieved: %v", sentMessageName, exocom.ReceivedMessages)
+		}
+		var payload structs.MessagePayload
+		err := json.Unmarshal([]byte(payloadDocString.Content), &payload)
+		if err != nil {
+			return err
+		}
+		return exocom.Send(structs.Message{
+			ActivityID: activityId,
+			ID:         uuid.NewV4().String(),
+			Name:       messageName,
+			Payload:    payload,
+		})
+	})
+
+	s.Step(`^it sends a "([^"]*)" message with activityId "([^"]*)" and payload:$`, func(messageName, activityId string, payloadDocString *gherkin.DocString) error {
+		var expectedPayload structs.MessagePayload
+		err := json.Unmarshal([]byte(payloadDocString.Content), &expectedPayload)
+		if err != nil {
+			return err
+		}
+		actualMessage, err := exocom.WaitForMessageWithName(messageName)
+		if err != nil {
+			return err
+		}
+		if actualMessage.ActivityID != activityId && activityId != "" {
+			return fmt.Errorf("Expected message to be a part of activity %s but got %s", activityId, actualMessage.ActivityID)
+		}
+		if !reflect.DeepEqual(actualMessage.Payload, expectedPayload) {
+			return fmt.Errorf("Expected payload to %s but got %s", expectedPayload, actualMessage.Payload)
 		}
 		return nil
 	})

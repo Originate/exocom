@@ -16,9 +16,11 @@ type TestFixture interface {
 func Get(name string) TestFixture {
 	switch name {
 	case "ping":
-		return &PingTextFixture{}
+		return &PingTestFixture{}
+	case "ping with dependency":
+		return &PingWithDependencyTestFixture{}
 	case "send":
-		return &SendTextFixture{}
+		return &SendTestFixture{}
 	}
 	log.Fatal(fmt.Sprintf("Cannot find text fixture: %s", name))
 	return nil

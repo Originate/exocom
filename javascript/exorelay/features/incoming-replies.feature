@@ -17,8 +17,9 @@ Feature: Handling incoming replies to sent message
     Given a "print" message
     And I send a message with a reply handler:
       """
-      exo-relay.send 'users.create', name: 'Will Riker', (createdUser, {outcome}) ->
-        print "created user #{createdUser.id} via '#{outcome}'"
+      exo-relay.send 'users.create', name: 'Will Riker', (outcome, payload) ->
+        if outcome is 'users.created'
+          print "created user #{payload.id}"
       """
     When the reply arrives via this message:
       """
@@ -29,15 +30,16 @@ Feature: Handling incoming replies to sent message
       id: '123'
       activity-id: '<%= request_activity_id %>'
       """
-    Then the reply handler runs and calls my "print" method with "created user 456 via 'users.created'"
+    Then the reply handler runs and calls my "print" method with "created user 456"
 
 
   Scenario: handling replies to outgoing messages with spaces in message names
     Given a "print" message
     And I send a message with a reply handler:
       """
-      exo-relay.send 'create users', name: 'Will Riker', (createdUser, {outcome}) ->
-        print "created user #{createdUser.id} via '#{outcome}'"
+      exo-relay.send 'create users', name: 'Will Riker', (outcome, payload) ->
+        if outcome is 'users created'
+          print "created user #{payload.id}"
       """
     When the reply arrives via this message:
       """
@@ -48,7 +50,7 @@ Feature: Handling incoming replies to sent message
       id: '123'
       activity-id: '<%= request_activity_id %>'
       """
-    Then the reply handler runs and calls my "print" method with "created user 456 via 'users created'"
+    Then the reply handler runs and calls my "print" method with "created user 456"
 
 
   Scenario: multi-level workflow

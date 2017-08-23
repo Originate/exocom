@@ -42,7 +42,7 @@ class HandlerRegistry extends EventEmitter
     if handler = @get-handler activity-id
       debug "handling message '#{message-name}' in discussion of activity '#{activity-id}'"
       try
-        handler payload, outcome: message-name
+        handler message-name, payload
       catch
         console.log "\n#{red bold e.message}\n"
         console.log e.stack

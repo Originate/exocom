@@ -6,13 +6,10 @@ import (
 
 	"github.com/Originate/exocom/go/exorelay"
 	"github.com/Originate/exocom/go/exoservice"
-	"github.com/Originate/exocom/go/structs"
 )
 
 // PingWithDependencyTestFixture is a test fixture which responds to "ping" messages with "pong" messages
-type PingWithDependencyTestFixture struct {
-	ReceivedMessages []structs.Message
-}
+type PingWithDependencyTestFixture struct{}
 
 // GetMessageHandler returns a message hangler
 func (p *PingWithDependencyTestFixture) GetMessageHandler() exoservice.MessageHandlerMapping {

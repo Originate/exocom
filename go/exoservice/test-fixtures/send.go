@@ -5,13 +5,10 @@ import (
 
 	"github.com/Originate/exocom/go/exorelay"
 	"github.com/Originate/exocom/go/exoservice"
-	"github.com/Originate/exocom/go/structs"
 )
 
 // SendTestFixture is a test fixture which sends "ping_received" messages when it receives "ping" messages
-type SendTestFixture struct {
-	ReceivedMessages []structs.Message
-}
+type SendTestFixture struct{}
 
 // GetMessageHandler returns a message hangler
 func (r *SendTestFixture) GetMessageHandler() exoservice.MessageHandlerMapping {

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"sync"
 	"time"
 
 	"github.com/Originate/exocom/go/exorelay"
@@ -54,10 +55,11 @@ func Bootstrap(messageHandlers MessageHandlerMapping) {
 
 // ExoService is the high level Go API to talk to Exocom
 type ExoService struct {
-	closed          bool
-	exoRelay        *exorelay.ExoRelay
-	messageHandlers MessageHandlerMapping
-	replyChannels   ReplyChannelMapping
+	closed             bool
+	exoRelay           *exorelay.ExoRelay
+	messageHandlers    MessageHandlerMapping
+	replyChannels      ReplyChannelMapping
+	replyChannelsMutex sync.RWMutex
 }
 
 // Connect brings an ExoService instance online
@@ -93,7 +95,10 @@ func (e *ExoService) ListenForMessages(messageHandlers MessageHandlerMapping) er
 			return nil
 		}
 		go e.receiveMessage(message)
-		if replyChannel, ok := e.replyChannels[message.ActivityID]; ok {
+		e.replyChannelsMutex.RLock()
+		replyChannel, ok := e.replyChannels[message.ActivityID]
+		e.replyChannelsMutex.RUnlock()
+		if ok {
 			replyChannel <- &message
 		}
 	}
@@ -132,8 +137,14 @@ func (e *ExoService) receiveMessage(message structs.Message) {
 		},
 		WaitForActivity: func(activityID string, timeout time.Duration) (*structs.Message, error) {
 			messageChannel := make(chan *structs.Message)
+			e.replyChannelsMutex.Lock()
 			e.replyChannels[activityID] = messageChannel
-			defer delete(e.replyChannels, activityID)
+			e.replyChannelsMutex.Unlock()
+			defer func() {
+				e.replyChannelsMutex.Lock()
+				delete(e.replyChannels, activityID)
+				e.replyChannelsMutex.Unlock()
+			}()
 			select {
 			case message := <-messageChannel:
 				return message, nil

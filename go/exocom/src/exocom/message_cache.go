@@ -11,15 +11,13 @@ type MessageCache struct {
 	cache map[string]time.Time
 	// mutex is needed to prevent writes (Set) from occurring during
 	// iteration (clearCache) which is a runtime error
-	mutex *sync.Mutex
+	mutex sync.RWMutex
 }
 
 // NewMessageCache returns a new MessageCache
 // removing old messages with a frequency equal to the given duration
 func NewMessageCache(cleanupInterval time.Duration) *MessageCache {
-	result := new(MessageCache)
-	result.cache = map[string]time.Time{}
-	result.mutex = &sync.Mutex{}
+	result := &MessageCache{cache: map[string]time.Time{}}
 	go func() {
 		for {
 			time.Sleep(cleanupInterval)
@@ -42,9 +40,9 @@ func (c *MessageCache) clearCache() {
 
 // Get returns the timestamp for the given activityId and whether or not data exists for that messageId
 func (c *MessageCache) Get(activityID string) (time.Time, bool) {
-	c.mutex.Lock()
+	c.mutex.RLock()
 	timestamp, ok := c.cache[activityID]
-	c.mutex.Unlock()
+	c.mutex.RUnlock()
 	return timestamp, ok
 }
 

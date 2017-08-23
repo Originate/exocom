@@ -27,11 +27,13 @@ type Connection struct {
 // FrontendBridge handles communication between an Exosphere backend and
 // a browser front-end using websockets
 type FrontendBridge struct {
-	server           http.Server
-	connectionsMutex sync.Mutex
 	connections      []*Connection
+	connectionsMutex sync.RWMutex
 	exoRelay         exorelay.ExoRelay
+	exoRelayMutex    sync.Mutex
 	open             bool
+	openMutex        sync.RWMutex
+	server           http.Server
 }
 
 // Open sets up connection to exocom and a server to listen for connections from clients
@@ -69,7 +71,7 @@ func (w *FrontendBridge) addConnection(auth structs.MessageAuth, socket *websock
 }
 
 func (w *FrontendBridge) getConnection(auth structs.MessageAuth) *Connection {
-	w.connectionsMutex.Lock()
+	w.connectionsMutex.RLock()
 	var result *Connection
 	for _, connection := range w.connections {
 		if reflect.DeepEqual(auth, connection.auth) {
@@ -77,7 +79,7 @@ func (w *FrontendBridge) getConnection(auth structs.MessageAuth) *Connection {
 			break
 		}
 	}
-	w.connectionsMutex.Unlock()
+	w.connectionsMutex.RUnlock()
 	return result
 }
 
@@ -133,13 +135,13 @@ func (w *FrontendBridge) listenForClients(clientPort int) error {
 		Addr:    fmt.Sprintf(":%d", clientPort),
 	}
 	w.connections = []*Connection{}
-	w.connectionsMutex = sync.Mutex{}
 	go w.server.ListenAndServe()
 	return nil
 }
 
 // Close closes the server, all the open sockets, and nils the socketMap
 func (w *FrontendBridge) Close() error {
+	w.connectionsMutex.Lock()
 	for _, connection := range w.connections {
 		if connection.socket != nil {
 			err := connection.socket.Close()
@@ -148,6 +150,8 @@ func (w *FrontendBridge) Close() error {
 			}
 		}
 	}
+	w.connections = nil
+	w.connectionsMutex.Unlock()
 	err := w.server.Close()
 	if err != nil {
 		return err
@@ -156,8 +160,9 @@ func (w *FrontendBridge) Close() error {
 	if err != nil {
 		return err
 	}
-	w.connections = nil
+	w.openMutex.Lock()
 	w.open = false
+	w.openMutex.Unlock()
 	return nil
 }
 
@@ -165,12 +170,14 @@ func (w *FrontendBridge) websocketHandler(socket *websocket.Conn) {
 	auth := map[string]interface{}{"sessionId": uuid.NewV4().String()}
 	w.addConnection(auth, socket)
 	utils.ListenForMessages(socket, func(message structs.Message) error {
+		w.exoRelayMutex.Lock()
 		_, err := w.exoRelay.Send(exorelay.MessageOptions{
 			Name:       message.Name,
 			Payload:    message.Payload,
 			ActivityID: message.ActivityID,
 			Auth:       auth,
 		})
+		w.exoRelayMutex.Unlock()
 		if err != nil {
 			return errors.Wrap(err, "Error sending message to websocket:")
 		}
@@ -180,7 +187,11 @@ func (w *FrontendBridge) websocketHandler(socket *websocket.Conn) {
 	})
 	w.removeConnection(auth)
 	err := socket.Close()
-	if err != nil && w.open {
-		fmt.Println("Error closing websocket:", err)
+	if err != nil {
+		w.openMutex.RLock()
+		if w.open {
+			fmt.Println("Error closing websocket:", err)
+		}
+		w.openMutex.RUnlock()
 	}
 }

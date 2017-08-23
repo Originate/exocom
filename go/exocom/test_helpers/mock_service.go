@@ -3,6 +3,7 @@ package testHelpers
 import (
 	"encoding/json"
 	"fmt"
+	"sync"
 
 	"github.com/gorilla/websocket"
 	"github.com/pkg/errors"
@@ -13,10 +14,11 @@ import (
 
 // MockService is a mock of a real service that would connect to exocom
 type MockService struct {
-	exocomPort       int
-	role             string
-	socket           *websocket.Conn
-	ReceivedMessages []structs.Message
+	exocomPort            int
+	role                  string
+	socket                *websocket.Conn
+	receivedMessages      []structs.Message
+	receivedMessagesMutex sync.RWMutex
 }
 
 // NewMockService returns a new MockService
@@ -24,7 +26,7 @@ func NewMockService(exocomPort int, role string) *MockService {
 	return &MockService{
 		role:             role,
 		exocomPort:       exocomPort,
-		ReceivedMessages: []structs.Message{},
+		receivedMessages: []structs.Message{},
 	}
 }
 
@@ -69,10 +71,9 @@ func (m *MockService) Close() error {
 
 //GetReceivedMessages gets the messages this mock service has received
 func (m *MockService) GetReceivedMessages() []structs.Message {
-	if m.ReceivedMessages == nil {
-		return []structs.Message{}
-	}
-	return m.ReceivedMessages
+	m.receivedMessagesMutex.RLock()
+	defer m.receivedMessagesMutex.RUnlock()
+	return m.receivedMessages
 }
 
 //WaitForMessageWithName tells this mock service to wait to receive a message with the given name
@@ -82,7 +83,9 @@ func (m *MockService) WaitForMessageWithName(name string) (structs.Message, erro
 
 func (m *MockService) websocketHandler() {
 	utils.ListenForMessages(m.socket, func(message structs.Message) error {
-		m.ReceivedMessages = append(m.ReceivedMessages, message)
+		m.receivedMessagesMutex.Lock()
+		m.receivedMessages = append(m.receivedMessages, message)
+		m.receivedMessagesMutex.Unlock()
 		return nil
 	}, func(err error) {
 		fmt.Println(errors.Wrap(err, "Exocom listening for messages"))

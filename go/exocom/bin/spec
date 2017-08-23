@@ -2,5 +2,5 @@
 set -e
 
 bin/lint
-ginkgo src/...
-go test
+ginkgo --race src/...
+go test --race

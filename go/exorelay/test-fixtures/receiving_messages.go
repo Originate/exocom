@@ -1,6 +1,8 @@
 package exorelayTestFixtures
 
 import (
+	"sync"
+
 	"github.com/Originate/exocom/go/exorelay"
 	"github.com/Originate/exocom/go/structs"
 	"github.com/Originate/exocom/go/utils"
@@ -8,7 +10,8 @@ import (
 
 // ReceivingMessagesTestFixture is a test fixture which saves the messages it receives
 type ReceivingMessagesTestFixture struct {
-	ReceivedMessages []structs.Message
+	receivedMessages      []structs.Message
+	receivedMessagesMutex sync.RWMutex
 }
 
 // Setup setups up the test fixture for the given exorelay instance
@@ -20,14 +23,18 @@ func (r *ReceivingMessagesTestFixture) Setup(exoRelay *exorelay.ExoRelay) {
 			if !ok {
 				break // channel closed
 			}
-			r.ReceivedMessages = append(r.ReceivedMessages, message)
+			r.receivedMessagesMutex.Lock()
+			r.receivedMessages = append(r.receivedMessages, message)
+			r.receivedMessagesMutex.Unlock()
 		}
 	}()
 }
 
 // GetReceivedMessages return the received messages
 func (r *ReceivingMessagesTestFixture) GetReceivedMessages() []structs.Message {
-	return r.ReceivedMessages
+	r.receivedMessagesMutex.RLock()
+	defer r.receivedMessagesMutex.RUnlock()
+	return r.receivedMessages
 }
 
 // WaitForMessageWithName waits to receive a message with the given name

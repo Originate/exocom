@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"sync"
 
 	"github.com/Originate/exocom/go/structs"
 	"github.com/Originate/exocom/go/utils"
@@ -20,18 +21,23 @@ type MockReplyData struct {
 // ExoComMock is a mock implementation of ExoRelay,
 // to be used for testing
 type ExoComMock struct {
-	ReceivedMessages []structs.Message
-	server           http.Server
-	socket           *websocket.Conn
-	mockReplyMapping map[string]MockReplyData
+	receivedMessages      []structs.Message
+	receivedMessagesMutex sync.RWMutex
+	server                http.Server
+	socket                *websocket.Conn
+	socketMutex           sync.RWMutex
+	mockReplyMapping      map[string]MockReplyData
 }
 
 var upgrader = websocket.Upgrader{}
 
 // New creates a new ExoComMock instance
 func New() *ExoComMock {
-	result := new(ExoComMock)
-	result.mockReplyMapping = map[string]MockReplyData{}
+	result := &ExoComMock{
+		mockReplyMapping: map[string]MockReplyData{},
+		receivedMessages: []structs.Message{},
+		server:           http.Server{},
+	}
 	var handler http.HandlerFunc = func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == "/services" {
 			conn, err := upgrader.Upgrade(w, r, nil)
@@ -44,7 +50,7 @@ func New() *ExoComMock {
 			http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		}
 	}
-	result.server = http.Server{Handler: handler}
+	result.server.Handler = handler
 	return result
 }
 
@@ -70,22 +76,28 @@ func (e *ExoComMock) Listen(port int) error {
 
 // GetReceivedMessages returns the received messages
 func (e *ExoComMock) GetReceivedMessages() []structs.Message {
-	return e.ReceivedMessages
+	e.receivedMessagesMutex.RLock()
+	defer e.receivedMessagesMutex.RUnlock()
+	return e.receivedMessages
 }
 
 // HasConnection returns whether or not a socket is connected
 func (e *ExoComMock) HasConnection() bool {
+	e.socketMutex.RLock()
+	defer e.socketMutex.RUnlock()
 	return e.socket != nil
 }
 
 // CloseConnection closes any open connection
 func (e *ExoComMock) CloseConnection() error {
 	if e.HasConnection() {
+		e.socketMutex.Lock()
 		err := e.socket.Close()
 		if err != nil {
 			return err
 		}
 		e.socket = nil
+		e.socketMutex.Unlock()
 	}
 	return nil
 }
@@ -96,7 +108,9 @@ func (e *ExoComMock) Reset() error {
 	if err != nil {
 		return err
 	}
-	e.ReceivedMessages = []structs.Message{}
+	e.receivedMessagesMutex.Lock()
+	e.receivedMessages = []structs.Message{}
+	e.receivedMessagesMutex.Unlock()
 	return nil
 }
 
@@ -131,9 +145,13 @@ func (e *ExoComMock) WaitForMessageWithName(name string) (structs.Message, error
 // Helpers
 
 func (e *ExoComMock) websocketHandler(socket *websocket.Conn) {
+	e.socketMutex.Lock()
 	e.socket = socket
+	e.socketMutex.Unlock()
 	utils.ListenForMessages(e.socket, func(message structs.Message) error {
-		e.ReceivedMessages = append(e.ReceivedMessages, message)
+		e.receivedMessagesMutex.Lock()
+		e.receivedMessages = append(e.receivedMessages, message)
+		e.receivedMessagesMutex.Unlock()
 		if replyData, hasReplyData := e.mockReplyMapping[message.Name]; hasReplyData {
 			return e.Send(structs.Message{
 				Name:       replyData.Name,

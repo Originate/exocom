@@ -105,13 +105,14 @@ func FeatureContext(s *godog.Suite) {
 
 	s.Step(`^receiving a "([^"]*)" message with the same activityId as the "([^"]*)" message and the payload:$`, func(messageName, sentMessageName string, payloadDocString *gherkin.DocString) error {
 		activityId := ""
-		for _, message := range exocom.ReceivedMessages {
+		receivedMessages := exocom.GetReceivedMessages()
+		for _, message := range receivedMessages {
 			if message.Name == sentMessageName {
 				activityId = message.ActivityID
 			}
 		}
 		if activityId == "" {
-			return fmt.Errorf("Expected exocom to have received a '%s' message. It recieved: %v", sentMessageName, exocom.ReceivedMessages)
+			return fmt.Errorf("Expected exocom to have received a '%s' message. It recieved: %v", sentMessageName, receivedMessages)
 		}
 		var payload structs.MessagePayload
 		err := json.Unmarshal([]byte(payloadDocString.Content), &payload)

@@ -2,4 +2,4 @@
 set -e
 
 bin/lint
-go test
+go test --race

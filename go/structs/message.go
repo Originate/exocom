@@ -7,6 +7,7 @@ type Message struct {
 	ActivityID   string         `json:"activityId"`
 	Auth         MessageAuth    `json:"auth"`
 	ID           string         `json:"id"`
+	IsSecurity   bool           `json:"isSecurity"`
 	Name         string         `json:"name"`
 	Payload      MessagePayload `json:"payload"`
 	ResponseTime time.Duration  `json:"responseTime"`

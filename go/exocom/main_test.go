@@ -1,8 +1,10 @@
 package main_test
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
+	"html/template"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -26,6 +28,7 @@ func FeatureContext(s *godog.Suite) {
 	var server *http.Server
 	var exocomPort int
 	var services map[string]*testHelpers.MockService
+	var outgoingMessageActivityID string
 
 	createService := func(serviceName string) error {
 		service := testHelpers.NewMockService(exocomPort, serviceName)
@@ -52,6 +55,7 @@ func FeatureContext(s *godog.Suite) {
 		server = nil
 		exocomPort = freeport.GetPort()
 		services = map[string]*testHelpers.MockService{}
+		outgoingMessageActivityID = ""
 	})
 
 	s.AfterScenario(func(arg1 interface{}, arg2 error) {
@@ -150,6 +154,64 @@ func FeatureContext(s *godog.Suite) {
 			Name:    messageName,
 		}
 		return services[serviceName].Send(message)
+	})
+
+	s.Step(`^the "([^"]*)" service sends:$`, func(serviceName string, messageStr *gherkin.DocString) error {
+		t := template.New("request")
+		t, err := t.Parse(messageStr.Content)
+		if err != nil {
+			return err
+		}
+		var expectedMessageBuffer bytes.Buffer
+		err = t.Execute(&expectedMessageBuffer, map[string]interface{}{
+			"outgoingActivityID": outgoingMessageActivityID,
+		})
+		if err != nil {
+			return err
+		}
+		message := structs.Message{}
+		err = json.Unmarshal(expectedMessageBuffer.Bytes(), &message)
+		if err != nil {
+			return err
+		}
+		message.Sender = serviceName
+		return services[serviceName].Send(message)
+	})
+
+	s.Step(`^ExoCom broadcasts the following message to the "([^"]*)" service:$`, func(serviceName string, message *gherkin.DocString) error {
+		expectedMessage := structs.Message{}
+		err := json.Unmarshal([]byte(message.Content), &expectedMessage)
+		if err != nil {
+			return err
+		}
+		actualMessage, err := services[serviceName].WaitForMessageWithName(expectedMessage.Name)
+		if err != nil {
+			return fmt.Errorf("Expected to receive a message but got %v", err)
+		}
+		outgoingMessageActivityID = actualMessage.ActivityID
+		payload, ok := actualMessage.Payload.(map[string]interface{})
+		if !ok {
+			return errors.New("Error: cannot parse payload")
+		}
+		delete(payload, "sessionId")
+		delete(payload, "responseTime")
+		delete(payload, "sender")
+		delete(payload, "timestamp")
+		if !reflect.DeepEqual(expectedMessage.Payload, payload) {
+			return fmt.Errorf("Expected payload to equal %s but got %s", expectedMessage.Payload, actualMessage.Payload)
+		}
+		if expectedMessage.Name != actualMessage.Name {
+			return fmt.Errorf("Expected name to equal %s but got %s", expectedMessage.Name, actualMessage.Name)
+		}
+		return nil
+	})
+
+	s.Step(`^ExoCom does not send any message to the "([^"]*)" service$`, func(serviceName string) error {
+		receivedMessages := services[serviceName].GetReceivedMessages()
+		if len(receivedMessages) == 0 {
+			return nil
+		}
+		return fmt.Errorf("Expected the %v service to not have recived any messages but received %v", serviceName, receivedMessages)
 	})
 
 	s.Step(`ExoCom signals "([^"]*)"$`, func(messageName string) error {

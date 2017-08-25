@@ -9,6 +9,7 @@ import (
 
 	"github.com/Originate/exocom/go/exocom/src/connection"
 	"github.com/Originate/exocom/go/exocom/src/routing"
+	"github.com/Originate/exocom/go/exocom/src/security"
 	"github.com/Originate/exocom/go/exocom/src/types"
 	"github.com/Originate/exocom/go/structs"
 	"github.com/gorilla/websocket"
@@ -16,6 +17,7 @@ import (
 
 // ExoCom is the top level message broadcaster
 type ExoCom struct {
+	securityManager   *security.Manager
 	connectionManager *connection.Manager
 	deregisterChannel chan string
 	errorChannel      chan error
@@ -34,6 +36,7 @@ func New(serviceRoutes types.Routes) (*ExoCom, error) {
 	result := &ExoCom{
 		deregisterChannel: make(chan string),
 		errorChannel:      make(chan error),
+		securityManager:   security.NewSecurityManager(serviceRoutes.GetHasSecurity()),
 		logger:            NewLogger(os.Stdout),
 		messageCache:      NewMessageCache(time.Minute),
 		messageChannel:    make(chan structs.Message),
@@ -98,13 +101,19 @@ func (e *ExoCom) listenForErrors() {
 func (e *ExoCom) listenForMessages() {
 	for {
 		message := <-e.messageChannel
-		if e.routingManager.CanSend(message.Sender, message.Name) {
-			err := e.send(message)
-			if err != nil {
-				printLogError(e.logger.Error(err.Error()))
-			}
-		} else {
+		if !e.routingManager.CanSend(message.Sender, message.Name) {
 			printLogError(e.logger.Warning(fmt.Sprintf("Warning: Service '%s' is not allowed to broadcast the message '%s'", message.Sender, message.Name)))
+		} else {
+			securityResult := e.securityManager.ReceiveMessage(message)
+			if securityResult.MessageToSend != nil {
+				err := e.send(*securityResult.MessageToSend)
+				if err != nil {
+					printLogError(e.logger.Error(err.Error()))
+				}
+			}
+			if securityResult.WarningMessage != "" {
+				printLogError(e.logger.Warning(securityResult.WarningMessage))
+			}
 		}
 	}
 }

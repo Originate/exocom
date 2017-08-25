@@ -14,7 +14,7 @@ type rawRoute struct {
 	MessageTranslations []translation.MessageTranslation
 }
 
-// ParseServiceRoutes parses the incoming routes and
+// ParseServiceRoutes parses the incoming routes
 func ParseServiceRoutes(data string) (types.Routes, error) {
 	var unmarshaled []rawRoute
 	err := json.Unmarshal([]byte(data), &unmarshaled)
@@ -31,6 +31,10 @@ func ParseServiceRoutes(data string) (types.Routes, error) {
 		}
 		if data.MessageTranslations == nil {
 			data.MessageTranslations = []translation.MessageTranslation{}
+		}
+		if data.Role == "security" {
+			data.Sends = []string{"message authorized", "message unauthorized"}
+			data.Receives = []string{"authorize message"}
 		}
 		parsed[data.Role] = types.Route{
 			Receives:            data.Receives,

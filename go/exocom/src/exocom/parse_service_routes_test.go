@@ -115,4 +115,23 @@ var _ = Describe("ParseServiceRoutes", func() {
 			}))
 		})
 	})
+	Describe("with security", func() {
+		It("creates a service route for the security service", func() {
+			routes, err := exocom.ParseServiceRoutes(
+				`
+				[
+					{
+						"role": "security"
+					}
+				]`)
+			Expect(err).To(BeNil())
+			Expect(routes).To(Equal(types.Routes{
+				"security": {
+					MessageTranslations: []translation.MessageTranslation{},
+					Receives:            []string{"authorize message"},
+					Sends:               []string{"message authorized", "message unauthorized"},
+				},
+			}))
+		})
+	})
 })

@@ -4,15 +4,15 @@
   "author": "Kevin Goslar",
   "description": "A mock implementation of the ExoCom development server in JavaScript, for testing",
   "dependencies": {
-    "debug": "2.6.6",
-    "uuid": "3.0.1",
+    "debug": "3.0.1",
+    "uuid": "3.1.0",
     "wait": "0.1.0",
-    "ws": "2.3.1"
+    "ws": "3.1.0"
   },
   "devDependencies": {
-    "async": "2.4.0",
-    "chai": "3.5.0",
-    "cucumber": "2.3.0",
+    "async": "2.5.0",
+    "chai": "4.1.1",
+    "cucumber": "3.0.0",
     "cucumber-snippets-livescript": "1.0.1",
     "dependency-lint": "5.0.1",
     "jsdiff-console": "2.2.1",
@@ -24,8 +24,8 @@
     "port-reservation": "0.3.2",
     "prelude-ls": "1.1.2",
     "request": "2.81.0",
-    "sinon": "1.17.7",
-    "sinon-chai": "2.10.0",
+    "sinon": "3.2.1",
+    "sinon-chai": "2.13.0",
     "tertestrial": "0.3.2"
   },
   "files": [

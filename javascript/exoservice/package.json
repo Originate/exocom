@@ -7,26 +7,26 @@
     "exo-js.cmd": "bin/exo-js.cmd"
   },
   "dependencies": {
-    "chalk": "1.1.3",
-    "debug": "2.6.6",
+    "chalk": "2.1.0",
+    "debug": "3.0.1",
     "defaults": "1.0.3",
     "globby": "6.1.0",
-    "js-yaml": "3.8.3",
+    "js-yaml": "3.9.1",
     "livescript": "1.5.0",
     "rails-delegate": "0.6.2",
-    "uuid": "3.0.1",
+    "uuid": "3.1.0",
     "wait": "0.1.0",
-    "ws": "2.3.1"
+    "ws": "3.1.0"
   },
   "description": "Opinionated framework to create Exosphere micro-services in Node.js",
   "devDependencies": {
-    "chai": "3.5.0",
-    "cucumber": "2.3.0",
+    "chai": "4.1.1",
+    "cucumber": "3.0.0",
     "cucumber-snippets-livescript": "1.0.1",
     "dependency-lint": "5.0.1",
     "dim-console": "0.4.4",
     "exosphere-shared": "0.9.4",
-    "json-loader": "0.5.4",
+    "json-loader": "0.5.7",
     "livescript-loader": "0.1.6",
     "nitroglycerin": "1.1.2",
     "o-tools": "0.8.47",
@@ -35,7 +35,7 @@
     "port-reservation": "0.3.2",
     "prelude-ls": "1.1.2",
     "tertestrial": "0.3.2",
-    "webpack": "2.4.1"
+    "webpack": "3.5.5"
   },
   "engines": {
     "npm": ">= 3.0.0"

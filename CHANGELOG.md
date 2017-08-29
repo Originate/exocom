@@ -1,3 +1,18 @@
+# 0.25.0 (2017-08-29)
+
+#### BREAKING CHANGES
+
+* message structure: change `sessionId` to `auth`
+* `javascript/exorelay`: update the `send` method callback parameters to be `(messageName, payload)`
+
+#### New Features
+
+* add `javascript/exocom-lint`: a CLI tool for linting an exosphere application that uses exocom
+
+#### Bug fixes
+
+* `go/exocom`: fix race condition around registering services
+
 # 0.24.0 (2017-08-08)
 
 #### BREAKING CHANGES

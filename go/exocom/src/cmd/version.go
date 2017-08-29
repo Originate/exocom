@@ -10,7 +10,7 @@ var versionCmd = &cobra.Command{
 	Use:   "version",
 	Short: "Displays the version",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("0.24.0")
+		fmt.Println("0.25.0")
 	},
 }
 

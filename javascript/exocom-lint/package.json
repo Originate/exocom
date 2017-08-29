@@ -1,6 +1,6 @@
 {
   "name": "exocom-lint",
-  "version": "0.25.0",
+  "version": "0.25.1",
   "author": "Kevin Goslar",
   "dependencies": {
     "async": "2.1.5",

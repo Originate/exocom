@@ -1,3 +1,18 @@
+# 0.25.0 (2017-08-29)
+
+#### BREAKING CHANGES
+
+* change `sessionId` to `auth`
+* `js/exorelay`: update the `send` method callback parameters to be `(messageName, payload)`
+
+#### New Features
+
+* Add `exocom-lint`
+
+#### Bug fixes
+
+* `go/exocom`: fix race condition around registering services
+
 # 0.24.0 (2017-08-08)
 
 #### BREAKING CHANGES

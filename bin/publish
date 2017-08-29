@@ -10,8 +10,7 @@ require! {
 
 EXOCOM_SUBPROJECT = 'go/exocom'
 
-JS_PROJECTS_TO_PUBLISH = <[ javascript/exocom-lint
-                            javascript/exocom-mock
+JS_PROJECTS_TO_PUBLISH = <[ javascript/exocom-mock
                             javascript/exorelay
                             javascript/exoservice  ]>
 

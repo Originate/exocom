@@ -2,6 +2,7 @@ package connection
 
 import (
 	"fmt"
+	"sync"
 
 	"github.com/Originate/exocom/go/structs"
 	"github.com/gorilla/websocket"
@@ -14,6 +15,7 @@ type Manager struct {
 	messageChannel    chan structs.Message
 	registerChannel   chan string
 	services          map[string]*Service
+	servicesMutex     sync.RWMutex
 }
 
 // NewManager returns a new Manager
@@ -34,14 +36,18 @@ func (m *Manager) AddWebsocket(socket *websocket.Conn) {
 
 // GetClients returns all the connections
 func (m *Manager) GetClients() (result []Client) {
+	m.servicesMutex.RLock()
 	for role := range m.services {
 		result = append(result, Client{Role: role})
 	}
+	m.servicesMutex.RUnlock()
 	return
 }
 
 // SendMessage sends the given message to the service with the given role
 func (m *Manager) SendMessage(role string, message structs.Message) error {
+	m.servicesMutex.RLock()
+	defer m.servicesMutex.RUnlock()
 	if m.services[role] == nil {
 		return fmt.Errorf("No connected service for role '%s'", role)
 	}
@@ -59,11 +65,15 @@ func (m *Manager) onMessage(message structs.Message) {
 }
 
 func (m *Manager) registerService(service *Service) {
+	m.servicesMutex.Lock()
 	m.services[service.role] = service
+	m.servicesMutex.Unlock()
 	m.registerChannel <- service.role
 }
 
 func (m *Manager) deregisterService(service *Service) {
+	m.servicesMutex.Lock()
 	delete(m.services, service.role)
+	m.servicesMutex.Unlock()
 	m.deregisterChannel <- service.role
 }

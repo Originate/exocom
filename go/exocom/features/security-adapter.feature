@@ -56,7 +56,10 @@ Feature: Security Adapter
         "activityId": "333"
       }
       """
-    And ExoCom broadcasts the following message to the "security" service:
+    
+
+  Scenario: message is authorized
+    When ExoCom broadcasts the following message to the "security" service:
       """
       {
         "name": "authorize message",
@@ -68,16 +71,14 @@ Feature: Security Adapter
           "id": "111",
           "auth": "222",
           "isSecurity": false,
-          "activityId": "333"
+          "activityId": "333",
+          "sender": "web"
         },
         "id": "444",
         "activityId": "555"
       }
       """
-
-
-  Scenario: message is authorized
-    When the "security" service sends:
+    Then the "security" service sends:
       """
       {
         "name": "message authorized",
@@ -85,7 +86,7 @@ Feature: Security Adapter
         "activityId": "{{.outgoingActivityID}}"
       }
       """
-    Then ExoCom broadcasts the following message to the "users" service:
+    And ExoCom broadcasts the following message to the "users" service:
       """
       {
         "name": "create user",
@@ -100,7 +101,26 @@ Feature: Security Adapter
 
 
   Scenario: message is unauthorized
-    When the "security" service sends:
+    When ExoCom broadcasts the following message to the "security" service:
+      """
+      {
+        "name": "authorize message",
+        "payload": {
+          "name": "create user",
+          "payload": {
+            "name": "John Smith"
+          },
+          "id": "111",
+          "auth": "222",
+          "isSecurity": false,
+          "activityId": "333",
+          "sender": "web"
+        },
+        "id": "444",
+        "activityId": "555"
+      }
+      """
+    Then the "security" service sends:
       """
       {
         "name": "message unauthorized",
@@ -108,4 +128,81 @@ Feature: Security Adapter
         "activityId": "{{.outgoingActivityID}}"
       }
       """
-    Then ExoCom signals "Warning: Unauthorized message 'create user' from 'web' with activityId '333'"
+    And ExoCom signals "Warning: Unauthorized message 'create user' from 'web' with activityId '333'"
+
+
+  Scenario: security request
+    When the "security" service sends:
+      """
+      {
+        "name": "security request",
+        "payload": {
+          "name": "get session",
+          "payload": {
+            "id": "2"
+          },
+          "id": "3",
+          "activityId": "777"
+        },
+        "id": "666",
+        "activityId": "555"
+      }
+      """
+    Then ExoCom broadcasts the following message to the "sessions" service:
+      """
+      {
+        "name": "get session",
+        "payload": {
+          "id": "2"
+        },
+        "id": "3",
+        "activityId": "777",
+        "isSecurity": true
+      }
+      """
+    And the "sessions" service sends:
+      """
+      {
+        "name": "session data",
+        "payload": {
+          "isAdmin": true
+        },
+        "id": "888",
+        "activityId": "777",
+        "isSecurity": true
+      }
+      """
+    And ExoCom broadcasts the following message to the "security" service:
+      """
+      {
+        "name": "security response",
+        "payload": {
+          "name": "session data",
+          "payload": {
+            "isAdmin": true
+            },
+          "id": "888",
+          "activityId": "777",
+          "isSecurity": true,
+          "sender": "sessions"
+        },
+        "id": "999",
+        "activityId": "555"
+      }
+      """
+
+  Scenario: isSecurity flag cannot be used to bypass the security service
+    When the "web" service sends:
+      """
+      {
+        "name": "create user",
+        "payload": {
+          "name": "John Smith"
+        },
+        "id": "111",
+        "auth": "222",
+        "activityId": "333",
+        "isSecurity": true
+      }
+      """
+    Then ExoCom does not send any message to the "users" service

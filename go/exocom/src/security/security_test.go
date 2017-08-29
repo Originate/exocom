@@ -29,31 +29,78 @@ var _ = Describe("Security", func() {
 			})
 		})
 		Describe("with a security service", func() {
-			BeforeEach(func() {
-				manager = security.NewSecurityManager(true)
-				initialMessage = structs.Message{
-					Name:       "create user",
-					Sender:     "sender",
-					ActivityID: "2",
-				}
-				initialSecurityResult = manager.ReceiveMessage(initialMessage)
+			Describe("authorizing messages", func() {
+				BeforeEach(func() {
+					manager = security.NewSecurityManager(true)
+					initialMessage = structs.Message{
+						Name:       "create user",
+						Sender:     "sender",
+						ActivityID: "2",
+					}
+					initialSecurityResult = manager.ReceiveMessage(initialMessage)
+				})
+				It("finds and returns authorized messages", func() {
+					securityResult := manager.ReceiveMessage(structs.Message{
+						Name:       "message authorized",
+						ActivityID: initialSecurityResult.MessageToSend.ActivityID,
+					})
+					Expect(*securityResult.MessageToSend).To(Equal(initialMessage))
+					Expect(securityResult.WarningMessage).To(Equal(""))
+				})
+				It("does not allow unauthorized messages", func() {
+					securityResult := manager.ReceiveMessage(structs.Message{
+						Name:       "message unauthorized",
+						ActivityID: initialSecurityResult.MessageToSend.ActivityID,
+					})
+					Expect(securityResult.MessageToSend).To((BeNil()))
+					Expect(securityResult.WarningMessage).To(Equal("Warning: Unauthorized message 'create user' from 'sender' with activityId '2'"))
+				})
 			})
+			Describe("security messages", func() {
+				BeforeEach(func() {
+					manager = security.NewSecurityManager(true)
+					initialMessage = structs.Message{
+						Name: "security request",
+						Payload: structs.Message{
+							Name:       "create user",
+							Sender:     "sender",
+							ActivityID: "123",
+							ID:         "456",
+						},
+						ActivityID: "789",
+					}
+					initialSecurityResult = manager.ReceiveMessage(initialMessage)
+				})
 
-			It("finds and returns authorized messages", func() {
-				securityResult := manager.ReceiveMessage(structs.Message{
-					Name:       "message authorized",
-					ActivityID: initialSecurityResult.MessageToSend.ActivityID,
+				It("creates and sends security requests", func() {
+					Expect(*initialSecurityResult.MessageToSend).To(Equal(structs.Message{
+						Name:       "create user",
+						Sender:     "sender",
+						ActivityID: "123",
+						ID:         "456",
+					}))
 				})
-				Expect(*securityResult.MessageToSend).To(Equal(initialMessage))
-				Expect(securityResult.WarningMessage).To(Equal(""))
-			})
-			It("does not allow unauthorized messages", func() {
-				securityResult := manager.ReceiveMessage(structs.Message{
-					Name:       "message unauthorized",
-					ActivityID: initialSecurityResult.MessageToSend.ActivityID,
+				It("finds and returns security responses", func() {
+					securityResult := manager.ReceiveMessage(structs.Message{
+						Name:       "user created",
+						Sender:     "sender",
+						ActivityID: "123",
+						ID:         "012",
+					})
+					Expect(*securityResult.MessageToSend).To(Equal(structs.Message{
+						Name: "security response",
+						ID:   securityResult.MessageToSend.ID,
+						Payload: structs.Message{
+							Name:       "user created",
+							Sender:     "sender",
+							ActivityID: "123",
+							ID:         "012",
+						},
+						ActivityID: "789",
+						IsSecurity: true,
+					}))
+					Expect(securityResult.WarningMessage).To(Equal(""))
 				})
-				Expect(securityResult.MessageToSend).To((BeNil()))
-				Expect(securityResult.WarningMessage).To(Equal("Warning: Unauthorized message 'create user' from 'sender' with activityId '2'"))
 			})
 		})
 	})

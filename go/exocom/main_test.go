@@ -189,16 +189,27 @@ func FeatureContext(s *godog.Suite) {
 			return fmt.Errorf("Expected to receive a message but got %v", err)
 		}
 		outgoingMessageActivityID = actualMessage.ActivityID
-		payload, ok := actualMessage.Payload.(map[string]interface{})
-		if !ok {
-			return errors.New("Error: cannot parse payload")
+
+		expectedBytes, err := json.Marshal(expectedMessage.Payload)
+		if err != nil {
+			return err
 		}
-		delete(payload, "sessionId")
-		delete(payload, "responseTime")
-		delete(payload, "sender")
-		delete(payload, "timestamp")
-		if !reflect.DeepEqual(expectedMessage.Payload, payload) {
-			return fmt.Errorf("Expected payload to equal %s but got %s", expectedMessage.Payload, actualMessage.Payload)
+		actualBytes, err := json.Marshal(actualMessage.Payload)
+		if err != nil {
+			return err
+		}
+		actualMessagePayload := structs.Message{}
+		expectedMessagePayload := structs.Message{}
+		err = json.Unmarshal(actualBytes, &actualMessagePayload)
+		if err != nil {
+			return err
+		}
+		err = json.Unmarshal(expectedBytes, &expectedMessagePayload)
+		if err != nil {
+			return err
+		}
+		if !reflect.DeepEqual(expectedMessagePayload, actualMessagePayload) {
+			return fmt.Errorf("Expected payload to equal %s but got %s", expectedMessagePayload, actualMessagePayload)
 		}
 		if expectedMessage.Name != actualMessage.Name {
 			return fmt.Errorf("Expected name to equal %s but got %s", expectedMessage.Name, actualMessage.Name)

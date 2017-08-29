@@ -33,8 +33,8 @@ func ParseServiceRoutes(data string) (types.Routes, error) {
 			data.MessageTranslations = []translation.MessageTranslation{}
 		}
 		if data.Role == "security" {
-			data.Sends = []string{"message authorized", "message unauthorized"}
-			data.Receives = []string{"authorize message"}
+			data.Sends = []string{"message authorized", "message unauthorized", "security request"}
+			data.Receives = []string{"authorize message", "security response"}
 		}
 		parsed[data.Role] = types.Route{
 			Receives:            data.Receives,

@@ -128,8 +128,8 @@ var _ = Describe("ParseServiceRoutes", func() {
 			Expect(routes).To(Equal(types.Routes{
 				"security": {
 					MessageTranslations: []translation.MessageTranslation{},
-					Receives:            []string{"authorize message"},
-					Sends:               []string{"message authorized", "message unauthorized"},
+					Receives:            []string{"authorize message", "security response"},
+					Sends:               []string{"message authorized", "message unauthorized", "security request"},
 				},
 			}))
 		})

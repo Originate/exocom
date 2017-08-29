@@ -1,3 +1,9 @@
+# 0.25.1 (2017-08-29)
+
+#### Bug fixes
+
+* `javascript/exocom-lint`: fix package name
+
 # 0.25.0 (2017-08-29)
 
 #### BREAKING CHANGES

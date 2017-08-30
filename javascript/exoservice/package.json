@@ -2,17 +2,9 @@
   "name": "exoservice",
   "version": "0.25.1",
   "author": "Kevin Goslar",
-  "bin": {
-    "exo-js": "bin/exo-js",
-    "exo-js.cmd": "bin/exo-js.cmd"
-  },
   "dependencies": {
     "chalk": "2.1.0",
     "debug": "3.0.1",
-    "defaults": "1.0.3",
-    "globby": "6.1.0",
-    "js-yaml": "3.9.1",
-    "livescript": "1.5.0",
     "rails-delegate": "0.6.2",
     "uuid": "3.1.0",
     "wait": "0.1.0",
@@ -27,6 +19,7 @@
     "dim-console": "0.4.4",
     "exosphere-shared": "0.9.4",
     "json-loader": "0.5.7",
+    "livescript": "^1.5.0",
     "livescript-loader": "0.1.6",
     "nitroglycerin": "1.1.2",
     "o-tools": "0.8.47",
@@ -41,13 +34,10 @@
     "npm": ">= 3.0.0"
   },
   "files": [
-    "bin/exo-js",
-    "bin/exo-js.cmd",
-    "dist",
-    "npm-shrinkwrap.json"
+    "dist"
   ],
   "license": "ISC",
-  "main": "dist/exo-js.js",
+  "main": "dist/bundle.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Originate/exoservice-js.git"

@@ -12,7 +12,7 @@ fs.readdir-sync('node_modules')
 
 module.exports = {
   entry:
-    'exo-js': './src/exo-service.ls'
+    'bundle': './src/index.ls'
   target: 'node'
   node:
     __filename: yes

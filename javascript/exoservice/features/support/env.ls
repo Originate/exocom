@@ -1,14 +1,8 @@
 require! {
   'cucumber': {After, Before, set-default-timeout, set-world-constructor}
   'exosphere-shared' : {kill-child-processes}
-  './api-world': ApiWorld
-  './cli-world': CliWorld
+  './world': World
 }
-
-if process.env.EXOSERVICE_TEST_DEPTH is 'CLI'
-  World = CliWorld
-else if process.env.EXOSERVICE_TEST_DEPTH is 'API'
-  World = ApiWorld
 
 
 set-default-timeout 1000

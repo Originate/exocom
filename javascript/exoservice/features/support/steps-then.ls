@@ -29,10 +29,6 @@ defineSupportCode ({Then}) ->
     wait-until (~> @exocom.received-messages.length), done
 
 
-  Then /^it can run the "([^"]*)" service$/, (@role, done) ->
-    @create-exoservice-instance {@role, @exocom-port}, done
-
-
   Then /^it connects to the ExoCom instance$/, (done) ->
     @exocom.send service: @role, name: '__status' , id: '123'
     wait-until (~> @exocom.received-messages[0]), 1, ~>

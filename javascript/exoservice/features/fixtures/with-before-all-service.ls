@@ -1,7 +1,11 @@
+require! {
+  '../..': {bootstrap}
+}
+
 hooks-ran = []
 
 
-module.exports =
+bootstrap do
 
   before-all: (done) ->
     hooks-ran.push 'before-all'

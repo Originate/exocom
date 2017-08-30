@@ -15,7 +15,7 @@ Feature: Handling incoming messages
 
   Background:
     Given an ExoCom instance
-    And an instance of the "test service" service
+    And an instance of the "test-service" fixture
 
 
   Scenario: receiving a message

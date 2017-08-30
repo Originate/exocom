@@ -25,6 +25,7 @@ type MessageOptions struct {
 	Payload    structs.MessagePayload
 	ActivityID string
 	Auth       structs.MessageAuth
+	IsSecurity bool
 }
 
 // ExoRelay is the low level Go API to talk to Exocom
@@ -85,6 +86,7 @@ func (e *ExoRelay) Send(options MessageOptions) (*structs.Message, error) {
 		ActivityID: activityID,
 		Sender:     e.Config.Role,
 		Auth:       options.Auth,
+		IsSecurity: options.IsSecurity,
 	}
 	serializedBytes, err := json.Marshal(message)
 	if err != nil {

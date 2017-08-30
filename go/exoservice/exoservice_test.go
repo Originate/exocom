@@ -127,6 +127,35 @@ func FeatureContext(s *godog.Suite) {
 		})
 	})
 
+	s.Step(`^receiving a "([^"]*)" message with activityId "([^"]*)" and isSecurity true$`, func(name, activityId string) error {
+		message := structs.Message{
+			ActivityID: activityId,
+			ID:         uuid.NewV4().String(),
+			Name:       name,
+			IsSecurity: true,
+		}
+		_, err := exocom.WaitForConnection()
+		if err != nil {
+			return err
+		}
+		return exocom.Send(message)
+	})
+
+	s.Step(`^it sends a "([^"]*)" message as a reply to the message with activityId "([^"]*)" and isSecurity true$`, func(name, activityId string) error {
+		actualMessage, err := exocom.WaitForMessageWithName(name)
+		if err != nil {
+			return err
+		}
+		if actualMessage.ActivityID != activityId && activityId != "" {
+			return fmt.Errorf("Expected message to be a part of activity %s but got %s", activityId, actualMessage.ActivityID)
+		}
+		if !actualMessage.IsSecurity {
+			return fmt.Errorf("Expected message to be a response to have isSecurity true but got %s", actualMessage.IsSecurity)
+		}
+		return nil
+
+	})
+
 	s.Step(`^it sends a "([^"]*)" message with activityId "([^"]*)" and payload:$`, func(messageName, activityId string, payloadDocString *gherkin.DocString) error {
 		var expectedPayload structs.MessagePayload
 		err := json.Unmarshal([]byte(payloadDocString.Content), &expectedPayload)

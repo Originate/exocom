@@ -26,3 +26,8 @@ Feature: Outgoing replies
   Scenario: replying to a message with auth
     When receiving a "ping" message with activityId "123" and auth "1"
     Then it sends a "pong" message as a reply to the message with activityId "123" and auth "1"
+
+
+  Scenario: replying to a message with security
+    When receiving a "ping" message with activityId "123" and isSecurity true
+    Then it sends a "pong" message as a reply to the message with activityId "123" and isSecurity true

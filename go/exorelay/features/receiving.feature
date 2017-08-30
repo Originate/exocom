@@ -64,3 +64,14 @@ Feature: Receiving messages
       }
       """
     Then the fixture receives a message with the name "hello-world" and auth "1"
+
+  Scenario: receiveing a security message
+    When receiving this message:
+      """
+      {
+        "name": "hello-world",
+        "id": "123",
+        "isSecurity": true
+      }
+      """
+    Then the fixture receives a message with the name "hello-world" and isSecurity true

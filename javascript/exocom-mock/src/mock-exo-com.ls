@@ -46,7 +46,7 @@ class MockExoCom
     @received-messages = []
 
 
-  send: ({service, name, payload, message-id, activity-id, auth}) ~>
+  send: ({service, name, payload, message-id, activity-id, auth, is-security}) ~>
     | !@service-sockets[service]  =>  throw new Error "unknown service: '#{service}'"
     @received-messages = []
     request-data =
@@ -55,6 +55,7 @@ class MockExoCom
       id: message-id or uuid.v1!
       activity-id: activity-id or uuid.v1!
     request-data.auth = auth if auth
+    request-data.is-security = is-security if is-security
     @service-sockets[service].send JSON.stringify request-data
 
 

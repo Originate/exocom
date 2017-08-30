@@ -121,6 +121,7 @@ func (e *ExoService) receiveMessage(message structs.Message) {
 				Payload:    options.Payload,
 				ActivityID: message.ActivityID,
 				Auth:       message.Auth,
+				IsSecurity: message.IsSecurity,
 			})
 			return err
 		},

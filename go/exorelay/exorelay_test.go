@@ -215,6 +215,17 @@ func FeatureContext(s *godog.Suite) {
 		return nil
 	})
 
+	s.Step(`^the fixture receives a message with the name "([^"]*)" and isSecurity true$`, func(messageName string) error {
+		message, err := testFixture.WaitForMessageWithName(messageName)
+		if err != nil {
+			return err
+		}
+		if !message.IsSecurity {
+			return fmt.Errorf("Expected isSecurity true but got false")
+		}
+		return nil
+	})
+
 	s.Step(`^Exocom is offline$`, func() error {
 		return nil // noop
 	})

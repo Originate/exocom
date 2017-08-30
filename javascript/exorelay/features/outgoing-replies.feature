@@ -114,3 +114,33 @@ Feature: Sending outgoing replies to incoming messages
       activity-id: '456'
       auth: '1'
       """
+
+
+  Scenario: sending a reply when the incoming message has a security flag
+    Given the "users.create" message has this handler:
+      """
+      exo-relay.register-handler 'users.create', (user-attributes, {reply}) ->
+        # on this line we would create a user record with the given attributes in the database
+        reply 'users.created', id: 456, name: user-attributes.name
+      """
+    When receiving this message:
+      """
+      name: 'users.create'
+      payload:
+        name: 'Will Riker'
+      id: '123'
+      activity-id: '456'
+      is-security: true
+      """
+    Then my message handler replies with the message:
+      """
+      name: 'users.created'
+      sender: 'test-service'
+      payload:
+        id: 456
+        name: 'Will Riker'
+      id: '<%= request_uuid %>'
+      activity-id: '456'
+      is-security: true
+      """
+

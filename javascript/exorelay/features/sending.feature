@@ -120,6 +120,22 @@ Feature: Sending outgoing messages
       """
 
 
+  Scenario: sending a message with an auth parameter
+    When sending the message:
+      """
+      exo-relay.send 'sum', {}, auth: '123'
+      """
+    Then ExoRelay makes the WebSocket request:
+      """
+      name: 'sum'
+      sender: 'test-service'
+      payload: {}
+      id: '<%= request_uuid %>'
+      activity-id: '<%= request_activity_id %>'
+      auth: '123'
+      """
+
+
   Scenario: sending a message with whitespace in the name
     When sending the message:
       """

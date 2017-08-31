@@ -29,9 +29,13 @@ class ExoRelay extends EventEmitter
     delegate-event 'offline', from: @websocket-connector, to: @
 
 
-  send: (message-name, payload, reply-handler) ~>
-    | reply-handler and typeof reply-handler isnt 'function'  =>  return @emit 'error', Error 'The reply handler given to ExoRelay#send must be a function'
-    message = @websocket-connector.send message-name, payload
+  send: (message-name, payload, options, reply-handler) ~>
+    if typeof options isnt 'object'
+      reply-handler = options
+      options = {}
+    if reply-handler and typeof reply-handler isnt 'function'
+      return @emit 'error', Error 'The reply handler given to ExoRelay#send must be a function'
+    message = @websocket-connector.send message-name, payload, options
     if reply-handler
       @message-handler.register-reply-handler message.activity-id, reply-handler
     message

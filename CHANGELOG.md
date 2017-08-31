@@ -1,3 +1,28 @@
+# 0.25.2 (2017-08-31)
+
+#### BREAKING CHANGES
+
+* `javascript/exoservice`: the executable has been removed to make the interface flexible enough to support languages that transpile to javascript.
+  * Require `exoservice` in your file and use it in the following way.
+    ```javascript
+    const {bootstrap} = require('exoservice')
+
+    bootstrap({
+      'before-all': (done) => {
+        done()
+      },
+      ping: (_, {reply}) => {
+        reply('pong')
+      }
+    })
+    ```
+  * Run the file
+
+#### New Features
+
+* `exorelay` / `exoservice`: update reply handlers to retain the `isSecurity` flag
+* `javascript/exorelay`: add ability to supply `auth`
+
 # 0.25.1 (2017-08-29)
 
 #### Bug fixes
@@ -14,6 +39,7 @@
 #### New Features
 
 * add `javascript/exocom-lint`: a CLI tool for linting an exosphere application that uses exocom
+* `exocom`: add security adapter functionality
 
 #### Bug fixes
 

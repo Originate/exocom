@@ -32,17 +32,14 @@ type ReplyChannelMapping map[string]chan *structs.Message
 // Bootstrap brings an ExoService online using environment variables and the
 // given messageHandlers
 func Bootstrap(messageHandlers MessageHandlerMapping) {
-	port, err := strconv.Atoi(os.Getenv("EXOCOM_PORT"))
-	if err != nil {
-		panic(fmt.Sprintf("Invalid port: %s", os.Getenv("EXOCOM_PORT")))
-	}
+	port := getPort()
 	config := exorelay.Config{
 		Host: os.Getenv("EXOCOM_HOST"),
 		Port: port,
 		Role: os.Getenv("ROLE"),
 	}
 	service := ExoService{}
-	err = service.Connect(config)
+	err := service.Connect(config)
 	if err != nil {
 		panic(fmt.Sprintf("Error connecting: %v", err))
 	}
@@ -105,6 +102,20 @@ func (e *ExoService) ListenForMessages(messageHandlers MessageHandlerMapping) er
 }
 
 // Helpers
+
+func getPort() int {
+	defaultPort := 80
+	userPort := os.Getenv("EXOCOM_PORT")
+	if userPort == "" {
+		return defaultPort
+	}
+	port, err := strconv.Atoi(userPort)
+	if err != nil {
+		fmt.Printf("Given port is not numeric, using default port %d", defaultPort)
+		return defaultPort
+	}
+	return port
+}
 
 func (e *ExoService) receiveMessage(message structs.Message) {
 	if e.messageHandlers == nil {

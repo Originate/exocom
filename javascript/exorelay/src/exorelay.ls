@@ -9,10 +9,10 @@ debug = require('debug')('exorelay')
 
 class ExoRelay extends EventEmitter
 
-  (@config) ->
-    @config?.exocom-host or throw new Error 'ExoCom host not provided to Exorelay'
-    @config?.exocom-port or throw new Error 'ExoCom port not provided to Exorelay'
-    @config?.role or throw new Error 'Role not provided to Exorelay'
+  (@config = {}) ->
+    @config.exocom-host or throw new Error 'ExoCom host not provided to Exorelay'
+    @config.role or throw new Error 'Role not provided to Exorelay'
+    @config.exocom-port or= 80
 
     # manages the request handlers for incoming messages
     @message-handler = new HandlerManager!

@@ -30,7 +30,7 @@ var rootCmd = &cobra.Command{
 }
 
 func getPort() int {
-	defaultPort := 3100
+	defaultPort := 80
 	userPort := os.Getenv("PORT")
 	if userPort == "" {
 		return defaultPort

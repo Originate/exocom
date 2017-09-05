@@ -4,13 +4,13 @@ Feature: configuring the port
   I want to be able to boot ExoCom at various ports
   So that I have flexibility in testing my system.
 
-  - the default ExoCom port is 3100
+  - the default ExoCom port is 80
   - provide the "EXOCOM_PORT" environment variable to listen for HTTP requests on a custom port
 
 
   Scenario: running at the default port
     When starting ExoCom
-    Then I see "ExoCom online at port 3100"
+    Then I see "ExoCom online at port 80"
 
 
   Scenario: using a custom port

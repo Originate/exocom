@@ -7,7 +7,7 @@ require! {
 bootstrap = (handlers) ->
   new ExoService {
     exocom-host: process.env.EXOCOM_HOST ? "localhost"
-    exocom-port: process.env.EXOCOM_PORT
+    exocom-port: process.env.EXOCOM_PORT ? 80
     handlers
     role: process.env.ROLE
   }

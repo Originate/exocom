@@ -38,6 +38,9 @@ type ExoRelay struct {
 
 // Connect brings an ExoRelay instance online
 func (e *ExoRelay) Connect() error {
+	if e.Config.Port == 0 {
+		e.Config.Port = 80
+	}
 	exocomURL := fmt.Sprintf("ws://%s:%d/services", e.Config.Host, e.Config.Port)
 	socket, err := utils.ConnectWithRetry(exocomURL, 100)
 	if err != nil {

@@ -1,3 +1,9 @@
+# 0.26.1 (2017-09-05)
+
+#### New Features
+
+* Exocom comes online at port 80 when `PORT` env var is not set, and exorelay/exoservice connect to port 80 when `EXOCOM_PORT` env var is not set
+
 # 0.26.0 (2017-08-31)
 
 #### BREAKING CHANGES

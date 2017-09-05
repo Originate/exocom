@@ -35,7 +35,6 @@ func (c *MessageCache) clearCache() {
 			delete(c.cache, id)
 		}
 	}
-	return
 }
 
 // Get returns the timestamp for the given activityId and whether or not data exists for that messageId

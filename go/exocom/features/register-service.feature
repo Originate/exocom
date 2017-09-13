@@ -24,7 +24,8 @@ Feature: Manage new instances of services
       {
         "clients": [
           {
-            "role": "users"
+            "role": "users",
+            "instances": 1
           }
         ],
         "routes": {
@@ -58,7 +59,8 @@ Feature: Manage new instances of services
       {
         "clients": [
           {
-            "role": "users"
+            "role": "users",
+            "instances": 1
           }
         ],
         "routes": {

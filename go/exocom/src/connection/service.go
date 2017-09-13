@@ -8,12 +8,14 @@ import (
 	"github.com/Originate/exocom/go/utils"
 	"github.com/gorilla/websocket"
 	"github.com/pkg/errors"
+	uuid "github.com/satori/go.uuid"
 )
 
 // Service manages a single websocket connection
 type Service struct {
 	manager *Manager
 	role    string
+	id      string
 	socket  *websocket.Conn
 }
 
@@ -21,6 +23,7 @@ type Service struct {
 // service registers (by sending its first message) and deregisters (by disconnecting)
 func BootstrapService(manager *Manager, socket *websocket.Conn) {
 	service := Service{
+		id:      uuid.NewV4().String(),
 		manager: manager,
 		socket:  socket,
 	}
@@ -48,7 +51,7 @@ func (s *Service) listen() {
 		if message.Name == "exocom.register-service" {
 			s.handleRegisterMessage(message)
 		} else {
-			s.manager.onMessage(message)
+			s.manager.onMessage(s, message)
 		}
 		return nil
 	}, func(err error) {

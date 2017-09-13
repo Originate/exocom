@@ -17,6 +17,7 @@ import (
 	"github.com/DATA-DOG/godog/gherkin"
 	"github.com/Originate/exocom/go/exocom/test_helpers"
 	"github.com/Originate/exocom/go/structs"
+	"github.com/Originate/exocom/go/utils"
 	execplus "github.com/Originate/go-execplus"
 	"github.com/phayes/freeport"
 	"github.com/pkg/errors"
@@ -27,7 +28,7 @@ func FeatureContext(s *godog.Suite) {
 	var cmdPlus *execplus.CmdPlus
 	var server *http.Server
 	var exocomPort int
-	var services map[string]*testHelpers.MockService
+	var servicesByRole map[string][]*testHelpers.MockService
 	var outgoingMessageActivityID string
 
 	createService := func(serviceName string) error {
@@ -40,7 +41,10 @@ func FeatureContext(s *godog.Suite) {
 		if err != nil {
 			return err
 		}
-		services[serviceName] = service
+		if servicesByRole[serviceName] == nil {
+			servicesByRole[serviceName] = []*testHelpers.MockService{}
+		}
+		servicesByRole[serviceName] = append(servicesByRole[serviceName], service)
 		return nil
 	}
 
@@ -54,7 +58,7 @@ func FeatureContext(s *godog.Suite) {
 		cmdPlus = nil
 		server = nil
 		exocomPort = freeport.GetPort()
-		services = map[string]*testHelpers.MockService{}
+		servicesByRole = map[string][]*testHelpers.MockService{}
 		outgoingMessageActivityID = ""
 	})
 
@@ -71,10 +75,12 @@ func FeatureContext(s *godog.Suite) {
 				panic(err)
 			}
 		}
-		for _, service := range services {
-			err := service.Close()
-			if err != nil {
-				panic(err)
+		for _, services := range servicesByRole {
+			for _, service := range services {
+				err := service.Close()
+				if err != nil {
+					panic(err)
+				}
 			}
 		}
 	})
@@ -139,7 +145,7 @@ func FeatureContext(s *godog.Suite) {
 	})
 
 	s.Step(`^the "([^"]*)" service goes offline$`, func(serviceName string) error {
-		err := services[serviceName].Close()
+		err := servicesByRole[serviceName][0].Close()
 		if err != nil {
 			return err
 		}
@@ -153,7 +159,7 @@ func FeatureContext(s *godog.Suite) {
 			Sender:  serviceName,
 			Name:    messageName,
 		}
-		return services[serviceName].Send(message)
+		return servicesByRole[serviceName][0].Send(message)
 	})
 
 	s.Step(`^the "([^"]*)" service sends:$`, func(serviceName string, messageStr *gherkin.DocString) error {
@@ -175,7 +181,7 @@ func FeatureContext(s *godog.Suite) {
 			return err
 		}
 		message.Sender = serviceName
-		return services[serviceName].Send(message)
+		return servicesByRole[serviceName][0].Send(message)
 	})
 
 	s.Step(`^ExoCom broadcasts the following message to the "([^"]*)" service:$`, func(serviceName string, message *gherkin.DocString) error {
@@ -184,7 +190,7 @@ func FeatureContext(s *godog.Suite) {
 		if err != nil {
 			return err
 		}
-		actualMessage, err := services[serviceName].WaitForMessageWithName(expectedMessage.Name)
+		actualMessage, err := servicesByRole[serviceName][0].WaitForMessageWithName(expectedMessage.Name)
 		if err != nil {
 			return fmt.Errorf("Expected to receive a message but got %v", err)
 		}
@@ -218,7 +224,7 @@ func FeatureContext(s *godog.Suite) {
 	})
 
 	s.Step(`^ExoCom does not send any message to the "([^"]*)" service$`, func(serviceName string) error {
-		receivedMessages := services[serviceName].GetReceivedMessages()
+		receivedMessages := servicesByRole[serviceName][0].GetReceivedMessages()
 		if len(receivedMessages) == 0 {
 			return nil
 		}
@@ -255,17 +261,96 @@ func FeatureContext(s *godog.Suite) {
 	})
 
 	s.Step(`^ExoCom broadcasts the (?:message|reply) "([^"]*)" to the "([^"]*)" service$`, func(messageName, serviceName string) error {
-		_, err := services[serviceName].WaitForMessageWithName(messageName)
+		_, err := servicesByRole[serviceName][0].WaitForMessageWithName(messageName)
 		return err
 	})
 
 	s.Step(`^the "([^"]*)" service sends "([^"]*)" for activity "([^"]*)"$`, func(serviceName, replyMessage, activityId string) error {
-		return services[serviceName].Send(structs.Message{
+		return servicesByRole[serviceName][0].Send(structs.Message{
 			Sender:     serviceName,
 			Payload:    "",
 			ID:         "123",
 			Name:       replyMessage,
 			ActivityID: activityId,
+		})
+	})
+
+	s.Step(`^two running "([^"]*)" instances$`, func(serviceName string) error {
+		err := createService(serviceName)
+		if err != nil {
+			return err
+		}
+		return createService(serviceName)
+	})
+
+	s.Step(`^the (first|second) "([^"]*)" instance disconnects$`, func(instanceId, serviceName string) error {
+		index := 0
+		if instanceId == "second" {
+			index = 1
+		}
+		err := servicesByRole[serviceName][index].Close()
+		if err != nil {
+			return err
+		}
+		return cmdPlus.WaitForText(fmt.Sprintf("'%s' disconnected", serviceName), time.Second*10)
+	})
+
+	s.Step(`^ExoCom broadcasts the message "([^"]*)" to the (first|second) "([^"]*)" instance$`, func(messageName, instanceId, serviceName string) error {
+		index := 0
+		if instanceId == "second" {
+			index = 1
+		}
+		_, err := servicesByRole[serviceName][index].WaitForMessageWithName(messageName)
+		return err
+	})
+
+	s.Step(`^the (first|second) "([^"]*)" instance sends "([^"]*)" with activity "([^"]*)"$`, func(instanceId, serviceName, messageName, activityID string) error {
+		index := 0
+		if instanceId == "second" {
+			index = 1
+		}
+		return servicesByRole[serviceName][index].Send(structs.Message{
+			Sender:     serviceName,
+			Payload:    "",
+			ID:         "123",
+			Name:       messageName,
+			ActivityID: activityID,
+		})
+	})
+
+	s.Step(`^the "([^"]*)" service sends two "([^"]*)" messages for activity "([^"]*)"$`, func(serviceName, messageName, activityID string) error {
+		service := servicesByRole[serviceName][0]
+		err := service.Send(structs.Message{
+			Sender:     serviceName,
+			Payload:    "",
+			ID:         "123",
+			Name:       messageName,
+			ActivityID: activityID,
+		})
+		if err != nil {
+			return err
+		}
+		return service.Send(structs.Message{
+			Sender:     serviceName,
+			Payload:    "",
+			ID:         "456",
+			Name:       messageName,
+			ActivityID: activityID,
+		})
+	})
+
+	s.Step(`^one "([^"]*)" instance receives two messages and the other receives none$`, func(serviceName string) error {
+		return utils.WaitForf(func() bool {
+			instance1Count := len(servicesByRole[serviceName][0].GetReceivedMessages())
+			instance2Count := len(servicesByRole[serviceName][1].GetReceivedMessages())
+			return (instance1Count == 2 && instance2Count == 0) ||
+				(instance1Count == 0 && instance2Count == 2)
+		}, func() error {
+			return fmt.Errorf(
+				"Expected one instance to receive 2 messages and the other to receive none. The first service received: %s. The second service received: %s.",
+				servicesByRole[serviceName][0].GetReceivedMessages(),
+				servicesByRole[serviceName][1].GetReceivedMessages(),
+			)
 		})
 	})
 }
@@ -274,7 +359,7 @@ func TestMain(m *testing.M) {
 	var paths []string
 	var format string
 	if len(os.Args) == 3 && os.Args[1] == "--" {
-		format = "pretty"
+		format = "progress"
 		paths = append(paths, os.Args[2])
 	} else {
 		format = "progress"

@@ -24,11 +24,11 @@ class HandlerRegistry extends EventEmitter
 
   # Tries to handle the given incoming command.
   # Returns whether it was able to do this.
-  handle-command: ({message-name, payload}, methods) ->
+  handle-command: ({message-name, payload, activity-id}, methods) ->
     if handler = @get-handler message-name
       debug "handling message '#{message-name}'"
       try
-        handler payload, methods
+        handler payload, methods, activity-id
       catch
         console.log "\n#{red bold e.message}\n"
         console.log e.stack

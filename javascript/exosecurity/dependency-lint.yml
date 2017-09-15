@@ -1,0 +1,48 @@
+# See https://github.com/charlierudolph/dependency-lint/blob/v4.0.1/docs/configuration.md
+# for a detailed explanation of the options
+
+executedModules:
+  npmScripts:
+    dev:
+      - test
+  shellScripts:
+    dev: []
+    ignore: []
+    root: ''
+
+ignoreErrors:
+  missing: []
+  shouldBeDependency: []
+  shouldBeDevDependency:
+    - wait
+  unused:
+    - cucumber
+    - o-tools
+    - tertestrial
+    - json-loader
+    - webpack
+    - debug
+    - uuid
+    - ws
+    - babel-eslint
+    - eslint
+    - eslint-config-airbnb
+    - eslint-config-originate
+    - eslint-config-prettier
+    - eslint-plugin-filenames
+    - eslint-plugin-import
+    - eslint-plugin-jsx-a11y
+    - eslint-plugin-prettier
+    - eslint-plugin-react
+    - prettier
+
+requiredModules:
+  files:
+    dev:
+      - '{features,spec,test}/**/*'
+      - '**/*{.,_,-}{spec,test}.js'
+    ignore:
+      - 'node_modules/**/*'
+    root: '**/*.js'
+  stripLoaders: false
+  transpilers: []

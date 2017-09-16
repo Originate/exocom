@@ -46,7 +46,7 @@ type ObjectWithMessages interface {
 // WaitForMessageWithName waits to receive a message with the given name
 func WaitForMessageWithName(obj ObjectWithMessages, name string) (structs.Message, error) {
 	var savedMessage structs.Message
-	err := WaitFor(func() bool {
+	err := WaitForf(func() bool {
 		for _, message := range obj.GetReceivedMessages() {
 			if message.Name == name {
 				savedMessage = message
@@ -54,6 +54,8 @@ func WaitForMessageWithName(obj ObjectWithMessages, name string) (structs.Messag
 			}
 		}
 		return false
-	}, fmt.Sprintf("Expected to recieve a message with name '%s' but only has %v", name, obj.GetReceivedMessages()))
+	}, func() error {
+		return fmt.Errorf("Expected to recieve a message with name '%s' but only has %v", name, obj.GetReceivedMessages())
+	})
 	return savedMessage, err
 }

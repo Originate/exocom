@@ -1,5 +1,5 @@
 {
-  "name": "exoservice",
+  "name": "exosecurity",
   "version": "0.26.1",
   "author": "Kevin Goslar",
   "dependencies": {
@@ -12,29 +12,23 @@
   },
   "description": "Opinionated framework to create Exosphere micro-services in Node.js",
   "devDependencies": {
-    "babel-eslint": "^8.0.0",
     "chai": "^4.1.2",
     "cucumber": "3.0.0",
     "dependency-lint": "5.0.1",
     "eslint": "^4.6.1",
-    "eslint-config-airbnb": "^15.1.0",
-    "eslint-config-originate": "^1.0.3",
+    "eslint-config-originate": "2.0.0",
     "eslint-config-prettier": "^2.4.0",
     "eslint-plugin-filenames": "^1.2.0",
     "eslint-plugin-import": "^2.7.0",
-    "eslint-plugin-jsx-a11y": "^6.0.2",
     "eslint-plugin-prettier": "^2.2.0",
-    "eslint-plugin-react": "^7.3.0",
     "exosphere-shared": "0.9.4",
-    "json-loader": "0.5.7",
-    "lodash": "^4.17.4",    
+    "lodash": "^4.17.4",
     "nitroglycerin": "1.1.2",
-    "o-tools": "0.8.47",
     "observable-process": "3.2.2",
     "port-reservation": "0.3.2",
     "prettier": "^1.7.0",
-    "tertestrial": "0.3.2",
-    "webpack": "3.5.5"
+    "webpack": "3.4.0",
+    "webpack-node-externals": "^1.6.0"
   },
   "engines": {
     "npm": ">= 3.0.0"
@@ -43,12 +37,9 @@
     "dist"
   ],
   "license": "ISC",
-  "main": "src/index.js",
+  "main": "dist/bundle.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Originate/exoservice-js.git"
-  },
-  "scripts": {
-    "test": "bin/spec"
+    "url": "git+https://github.com/Originate/exocom.git"
   }
 }

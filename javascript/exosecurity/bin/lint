@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+node_modules/.bin/eslint src features
+node_modules/.bin/dependency-lint

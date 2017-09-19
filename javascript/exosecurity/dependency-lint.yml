@@ -6,34 +6,22 @@ executedModules:
     dev:
       - test
   shellScripts:
-    dev: []
+    dev:
+      - bin/*
     ignore: []
-    root: ''
+    root: 'bin/*'
 
 ignoreErrors:
   missing: []
   shouldBeDependency: []
-  shouldBeDevDependency:
-    - wait
+  shouldBeDevDependency: []
   unused:
-    - cucumber
-    - o-tools
-    - tertestrial
-    - json-loader
-    - webpack
-    - debug
-    - uuid
-    - ws
-    - babel-eslint
     - eslint
-    - eslint-config-airbnb
     - eslint-config-originate
     - eslint-config-prettier
     - eslint-plugin-filenames
     - eslint-plugin-import
-    - eslint-plugin-jsx-a11y
     - eslint-plugin-prettier
-    - eslint-plugin-react
     - prettier
 
 requiredModules:
@@ -41,6 +29,7 @@ requiredModules:
     dev:
       - '{features,spec,test}/**/*'
       - '**/*{.,_,-}{spec,test}.js'
+      - webpack.config.js
     ignore:
       - 'node_modules/**/*'
     root: '**/*.js'

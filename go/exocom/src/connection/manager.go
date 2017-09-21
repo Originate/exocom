@@ -80,6 +80,7 @@ func (m *Manager) registerService(service *Service) {
 
 func (m *Manager) deregisterService(service *Service) {
 	m.servicesMutex.Lock()
+	m.servicesByRoleAndActivityID.DeleteForService(service.role, service)
 	m.servicesByRoleAndID.Delete(service.role, service.id)
 	m.servicesMutex.Unlock()
 	m.deregisterChannel <- service.role

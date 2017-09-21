@@ -29,6 +29,19 @@ func (n NestedServiceMapping) GetRandom(key1 string) *Service {
 	return n[key1][key2]
 }
 
+// DeleteForService deletes all the keys under the given key that are the given service
+func (n NestedServiceMapping) DeleteForService(key1 string, service *Service) {
+	keysToDelete := []string{}
+	for key2, value := range n[key1] {
+		if value == service {
+			keysToDelete = append(keysToDelete, key2)
+		}
+	}
+	for _, key := range keysToDelete {
+		delete(n[key1], key)
+	}
+}
+
 // Get retrives the value for the given keys
 func (n NestedServiceMapping) Get(key1, key2 string) *Service {
 	if n[key1] == nil {

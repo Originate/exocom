@@ -49,3 +49,15 @@ Feature: Multiple instances of services
   Scenario: sends to instances based on activity ids (service chosen to receive that given activity id)
     When the "users" service sends two "user created" messages for activity "111"
     Then one "web" instance receives two messages and the other receives none
+
+  Scenario Outline: sends to instances based on activity ids, tolerating disconnects
+    Given the <INSTANCE_ID> "web" instance sends "create user" with activity "111"
+    And ExoCom broadcasts the message "create user" to the "users" service
+    And the <INSTANCE_ID> "web" instance disconnects
+    When the "users" service sends "user created" for activity "111"
+    Then ExoCom broadcasts the message "user created" to the <OTHER_INSTANCE_ID> "web" instance
+
+    Examples:
+      | INSTANCE_ID | OTHER_INSTANCE_ID |
+      | first       | second            |
+      | second      | first             |

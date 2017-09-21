@@ -16,7 +16,7 @@ git:
 
 before_install:
   - curl --output morula --location --fail https://github.com/Originate/morula/releases/download/0.1.1/morula-linux-amd64 && chmod +x morula
-  - nvm install 6 && nvm alias default 6
+  - nvm install 8 && nvm alias default 8
   - npm install -g yarn
 
 install: bin/setup_ci

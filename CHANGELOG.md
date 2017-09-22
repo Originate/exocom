@@ -1,3 +1,10 @@
+# 0.26.2 (2017-09-21)
+
+#### New Features
+
+* `exocom`: support multiple instances of a service
+* add `exosecurity` (javascript and go): to create security services
+
 # 0.26.1 (2017-09-05)
 
 #### New Features

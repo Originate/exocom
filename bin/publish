@@ -13,7 +13,8 @@ EXOCOM_SUBPROJECT = 'go/exocom'
 JS_PROJECTS_TO_PUBLISH = <[ javascript/exocom-lint
                             javascript/exocom-mock
                             javascript/exorelay
-                            javascript/exoservice  ]>
+                            javascript/exoservice
+                            javascript/exosecurity ]>
 
 ALL_PROJECTS_TO_PUBLISH = [EXOCOM_SUBPROJECT].concat(JS_PROJECTS_TO_PUBLISH)
 

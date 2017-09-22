@@ -65,7 +65,14 @@ class WebSocketConnector extends EventEmitter
 
 
   connect: ~>
+    @start-connect-time = Date.now()
+    @log-connect-error-delay = 1000
     @should-reconnect-on-socket-closed = yes
+    @should-use-internal-reconnect = true
+    @_internalConnect!
+
+
+  _internalConnect: ->
     @socket = new WebSocket "ws://#{@exocom-host}:#{@exocom-port}/services"
       ..on 'open', @_on-socket-open
       ..on 'message', @_on-socket-message
@@ -74,18 +81,27 @@ class WebSocketConnector extends EventEmitter
 
 
   _on-socket-close: ~>
-    @emit 'offline'
     if @should-reconnect-on-socket-closed
-      @connect!
+      if @should-use-internal-reconnect
+        @_internalConnect!
+      else
+        @connect!
+    else
+      @emit 'offline'
 
 
   _on-socket-open: ~>
+    @should-use-internal-reconnect = false
     @emit 'online'
 
 
   _on-socket-error: (error) ~>
-    | error.errno is 'EADDRINUSE'   => @emit 'error', "port #{@exocom-port} is already in use"
-    | otherwise                     => @emit 'error', error
+    | error.errno is 'EADDRINUSE' => @emit 'error', "port #{@exocom-port} is already in use"
+    | @socket.ready-state is WebSocket.CONNECTING =>
+      if Date.now() > @start-connect-time + @log-connect-error-delay
+        @emit 'error', "Could not connect after #{@log-connect-error-delay}ms: #{error.message}"
+        @log-connect-error-delay = @log-connect-error-delay * 2
+    | otherwise => @emit 'error', error
 
 
   _on-socket-message: (data) ~>

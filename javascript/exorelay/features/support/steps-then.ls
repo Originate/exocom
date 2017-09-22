@@ -24,7 +24,8 @@ Then /^ExoRelay is connected to ExoCom$/ (done) ->
 
 Then /^ExoRelay emits an "error" event with the error "([^"]*)"$/, (error-message, done) ->
   wait-until (~> @error), 1, ~>
-    expect(@error.message).to.equal error-message
+    message = @error.message or @error
+    expect(message).to.include error-message
     @error = null
     done!
 

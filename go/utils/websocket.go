@@ -2,6 +2,7 @@ package utils
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/gorilla/websocket"
 )
@@ -9,10 +10,15 @@ import (
 // ConnectWithRetry will attempt to connect a websocket to the given url
 // retrying if needed with the given delay (milliseconds) between calls
 func ConnectWithRetry(url string, delay int) (socket *websocket.Conn, err error) {
+	startTime := time.Now()
+	logErrorDelay := time.Duration(delay*10) * time.Millisecond
 	Retry(delay, func() bool {
 		socket, _, err = websocket.DefaultDialer.Dial(url, nil)
 		if err != nil {
-			fmt.Printf("Unable to connect (%s). Retrying...\n", err)
+			if time.Now().After(startTime.Add(logErrorDelay)) {
+				fmt.Printf("Unable to connect after %s (%s). Retrying...\n", logErrorDelay, err)
+				logErrorDelay = logErrorDelay * 2
+			}
 			return false
 		}
 		return true

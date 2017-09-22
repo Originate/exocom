@@ -2,7 +2,7 @@ require! {
   'cucumber': {After, Before, set-default-timeout}
 }
 
-set-default-timeout 1000
+set-default-timeout 3000
 
 
 After (scenarioResult, done) ->

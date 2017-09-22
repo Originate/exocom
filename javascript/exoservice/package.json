@@ -1,6 +1,6 @@
 {
   "name": "exoservice",
-  "version": "0.26.2",
+  "version": "0.26.1",
   "author": "Kevin Goslar",
   "dependencies": {
     "chalk": "2.1.0",

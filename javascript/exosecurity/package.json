@@ -1,6 +1,6 @@
 {
   "name": "exosecurity",
-  "version": "0.26.1",
+  "version": "0.26.2",
   "author": "Kevin Goslar",
   "dependencies": {
     "chalk": "2.1.0",

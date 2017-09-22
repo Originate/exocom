@@ -44,10 +44,11 @@ func New(serviceRoutes types.Routes) (*ExoCom, error) {
 		routingManager:    routing.NewManager(serviceRoutes),
 	}
 	result.connectionManager = connection.NewManager(connection.ManagerOptions{
-		DeregisterChannel: result.deregisterChannel,
-		ErrorChannel:      result.errorChannel,
-		MessageChannel:    result.messageChannel,
-		RegisterChannel:   result.registerChannel,
+		DeregisterChannel:         result.deregisterChannel,
+		ErrorChannel:              result.errorChannel,
+		MessageChannel:            result.messageChannel,
+		RegisterChannel:           result.registerChannel,
+		ActivityIDCleanupInterval: 60 * time.Second,
 	})
 	go result.listenForErrors()
 	go result.listenForMessages()

@@ -3,6 +3,7 @@ package connection
 import (
 	"fmt"
 	"sync"
+	"time"
 
 	"github.com/Originate/exocom/go/structs"
 	"github.com/gorilla/websocket"
@@ -17,18 +18,22 @@ type Manager struct {
 	servicesByRoleAndID         NestedServiceMapping
 	servicesByRoleAndActivityID NestedServiceMapping
 	servicesMutex               sync.RWMutex
+	activityIDCache             map[string]time.Time
 }
 
 // NewManager returns a new Manager
 func NewManager(options ManagerOptions) *Manager {
-	return &Manager{
+	manager := &Manager{
 		deregisterChannel:           options.DeregisterChannel,
 		errorChannel:                options.ErrorChannel,
 		messageChannel:              options.MessageChannel,
 		registerChannel:             options.RegisterChannel,
 		servicesByRoleAndID:         NestedServiceMapping{},
 		servicesByRoleAndActivityID: NestedServiceMapping{},
+		activityIDCache:             map[string]time.Time{},
 	}
+	manager.startActivityIDCleanup(options.ActivityIDCleanupInterval)
+	return manager
 }
 
 // AddWebsocket adds the websocket under the manager's control
@@ -67,6 +72,7 @@ func (m *Manager) logError(err error) {
 func (m *Manager) onMessage(service *Service, message structs.Message) {
 	m.servicesMutex.Lock()
 	m.servicesByRoleAndActivityID.Set(service.role, message.ActivityID, service)
+	m.activityIDCache[message.ActivityID] = time.Now()
 	m.servicesMutex.Unlock()
 	m.messageChannel <- message
 }
@@ -87,9 +93,10 @@ func (m *Manager) deregisterService(service *Service) {
 }
 
 func (m *Manager) getServiceToSendMessageTo(role string, message structs.Message) *Service {
-	m.servicesMutex.RLock()
+	m.servicesMutex.Lock()
+	m.activityIDCache[message.ActivityID] = time.Now()
 	service := m.servicesByRoleAndActivityID.Get(role, message.ActivityID)
-	m.servicesMutex.RUnlock()
+	m.servicesMutex.Unlock()
 	if service != nil {
 		return service
 	}
@@ -102,4 +109,28 @@ func (m *Manager) getServiceToSendMessageTo(role string, message structs.Message
 		m.servicesMutex.Unlock()
 	}
 	return service
+}
+
+func (m *Manager) startActivityIDCleanup(cleanupInterval time.Duration) {
+	go func() {
+		for {
+			time.Sleep(cleanupInterval)
+			m.clearCache(cleanupInterval)
+		}
+	}()
+}
+
+func (m *Manager) clearCache(cleanupInterval time.Duration) {
+	m.servicesMutex.Lock()
+	keysToDelete := []string{}
+	for activityID, timestamp := range m.activityIDCache {
+		if time.Since(timestamp) > cleanupInterval {
+			keysToDelete = append(keysToDelete, activityID)
+		}
+	}
+	for _, ID := range keysToDelete {
+		m.servicesByRoleAndActivityID.DeleteNestedKey(ID)
+		delete(m.activityIDCache, ID)
+	}
+	m.servicesMutex.Unlock()
 }

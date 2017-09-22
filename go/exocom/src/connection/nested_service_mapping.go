@@ -42,6 +42,20 @@ func (n NestedServiceMapping) DeleteForService(key1 string, service *Service) {
 	}
 }
 
+// DeleteNestedKey deletes entries for a nested key
+func (n NestedServiceMapping) DeleteNestedKey(nestedKey string) {
+	for _, nestedMap := range n {
+		var keyToDelete string
+		for key := range nestedMap {
+			if key == nestedKey {
+				keyToDelete = key
+				break
+			}
+		}
+		delete(nestedMap, keyToDelete)
+	}
+}
+
 // Get retrives the value for the given keys
 func (n NestedServiceMapping) Get(key1, key2 string) *Service {
 	if n[key1] == nil {

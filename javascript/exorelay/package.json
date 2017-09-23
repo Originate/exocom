@@ -1,6 +1,6 @@
 {
   "name": "exorelay",
-  "version": "0.26.2",
+  "version": "0.26.3",
   "author": "Kevin Goslar",
   "dependencies": {
     "chalk": "2.1.0",

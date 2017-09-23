@@ -1,3 +1,13 @@
+# 0.26.3 (2017-09-22)
+
+#### New Features
+
+* `exorelay`: exponential backoff for cannot connect logs
+
+#### Bug Fixes
+
+* `exocom`: fix memory leak (introduced in support of multiple instances of a service)
+
 # 0.26.2 (2017-09-21)
 
 #### New Features

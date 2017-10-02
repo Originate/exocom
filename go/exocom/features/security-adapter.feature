@@ -1,11 +1,11 @@
 Feature: Security Adapter
 
   Rules:
-    - A service with the role security does not define sends/recieves. 
+    - A service with the role security does not define sends/recieves.
       They are automatically:
         "receives": ["authorize message", "security response"]
         "sends": ["message authorized", "message unauthorized", "security request"]
-    - If any other service tries to list these messages in sends / receives, 
+    - If any other service tries to list these messages in sends / receives,
       exocom throws an error on startup
     - Exocom creates a new 'activityId' to be used for all security communication
       around a particular message
@@ -21,7 +21,7 @@ Feature: Security Adapter
       [
         {
           "role": "web",
-          "receives": ["user created"],
+          "receives": ["user created", "message unauthorized"],
           "sends": ["create user"]
         },
         {
@@ -53,10 +53,11 @@ Feature: Security Adapter
         "id": "111",
         "auth": "222",
         "isSecurity": false,
-        "activityId": "333"
+        "activityId": "333",
+        "sender": "web"
       }
       """
-    
+
 
   Scenario: message is authorized
     When ExoCom broadcasts the following message to the "security" service:
@@ -129,6 +130,26 @@ Feature: Security Adapter
       }
       """
     And ExoCom signals "Warning: Unauthorized message 'create user' from 'web' with activityId '333'"
+    And ExoCom broadcasts the following message to the "web" service:
+      """
+      {
+        "name": "message unauthorized",
+        "payload": {
+          "name": "create user",
+          "payload": {
+            "name": "John Smith"
+          },
+          "id": "111",
+          "auth": "222",
+          "isSecurity": false,
+          "activityId": "333",
+          "sender": "web"
+        },
+        "id": "3",
+        "activityId": "333",
+        "isSecurity": false
+      }
+      """
 
 
   Scenario: security request

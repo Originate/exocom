@@ -54,9 +54,16 @@ func (m *Manager) ReceiveMessage(message structs.Message) *Result {
 		messageToSend = m.authTable[message.ActivityID]
 		delete(m.authTable, message.ActivityID)
 	case "message unauthorized":
-		messageNotToSend := m.authTable[message.ActivityID]
+		unauthorizedMessage := *m.authTable[message.ActivityID]
 		delete(m.authTable, message.ActivityID)
-		warningMessage = fmt.Sprintf("Warning: Unauthorized message '%s' from '%s' with activityId '%s'", messageNotToSend.Name, messageNotToSend.Sender, messageNotToSend.ActivityID)
+		messageToSend = &structs.Message{
+			Name:       "message unauthorized",
+			Payload:    unauthorizedMessage,
+			ID:         uuid.NewV4().String(),
+			ActivityID: unauthorizedMessage.ActivityID,
+			Sender:     message.Sender,
+		}
+		warningMessage = fmt.Sprintf("Warning: Unauthorized message '%s' from '%s' with activityId '%s'", unauthorizedMessage.Name, unauthorizedMessage.Sender, unauthorizedMessage.ActivityID)
 	default:
 		activityID, ok := m.requestTable[message.ActivityID]
 		if ok {

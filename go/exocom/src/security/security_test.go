@@ -39,6 +39,7 @@ var _ = Describe("Security", func() {
 					}
 					initialSecurityResult = manager.ReceiveMessage(initialMessage)
 				})
+
 				It("finds and returns authorized messages", func() {
 					securityResult := manager.ReceiveMessage(structs.Message{
 						Name:       "message authorized",
@@ -47,12 +48,17 @@ var _ = Describe("Security", func() {
 					Expect(*securityResult.MessageToSend).To(Equal(initialMessage))
 					Expect(securityResult.WarningMessage).To(Equal(""))
 				})
+
 				It("does not allow unauthorized messages", func() {
 					securityResult := manager.ReceiveMessage(structs.Message{
 						Name:       "message unauthorized",
 						ActivityID: initialSecurityResult.MessageToSend.ActivityID,
+						Sender:     "Security",
 					})
-					Expect(securityResult.MessageToSend).To((BeNil()))
+					Expect(securityResult.MessageToSend.Name).To(Equal("message unauthorized"))
+					Expect(securityResult.MessageToSend.Payload).To(Equal(initialMessage))
+					Expect(securityResult.MessageToSend.ActivityID).To(Equal(initialMessage.ActivityID))
+					Expect(securityResult.MessageToSend.Sender).To(Equal("Security"))
 					Expect(securityResult.WarningMessage).To(Equal("Warning: Unauthorized message 'create user' from 'sender' with activityId '2'"))
 				})
 			})

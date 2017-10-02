@@ -1,3 +1,9 @@
+# 0.26.4 (2017-10-02)
+
+#### New Features
+
+* `exocom`: forward "message unauthorized" to sender of the unauthorized message
+
 # 0.26.3 (2017-09-22)
 
 #### New Features

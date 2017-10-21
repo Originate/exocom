@@ -1,0 +1,4 @@
+{
+  "Disable": ["gotype", "gotypex"],
+  "Debug": true
+}

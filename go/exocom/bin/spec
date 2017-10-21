@@ -3,4 +3,5 @@ set -e
 
 bin/lint
 ginkgo --race src/...
+go install
 go test --race

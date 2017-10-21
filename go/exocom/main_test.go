@@ -23,7 +23,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-// nolint gocyclo
+// nolint: gocyclo
 func FeatureContext(s *godog.Suite) {
 	var cmdPlus *execplus.CmdPlus
 	var server *http.Server

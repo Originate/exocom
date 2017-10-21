@@ -135,7 +135,12 @@ func (w *FrontendBridge) listenForClients(clientPort int) error {
 		Addr:    fmt.Sprintf(":%d", clientPort),
 	}
 	w.connections = []*Connection{}
-	go w.server.ListenAndServe()
+	go func() {
+		err := w.server.ListenAndServe()
+		if err != nil && err.Error() != "http: Server closed" {
+			fmt.Println("Error listening:", err)
+		}
+	}()
 	return nil
 }
 

@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+set -e
+
+go get -u github.com/alecthomas/gometalinter github.com/onsi/gomega github.com/onsi/ginkgo/ginkgo
+gometalinter --install

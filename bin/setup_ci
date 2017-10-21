@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 
-(cd go && ../morula all --never=vendor bin/setup)
+(cd go && bin/setup)
 (cd javascript && ../morula all bin/setup)

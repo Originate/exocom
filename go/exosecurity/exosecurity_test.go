@@ -30,7 +30,7 @@ func newExocom(port int) *exocomMock.ExoComMock {
 	return exocom
 }
 
-// nolint gocyclo
+// nolint: gocyclo
 func FeatureContext(s *godog.Suite) {
 
 	var exocomPort int
@@ -122,7 +122,7 @@ func FeatureContext(s *godog.Suite) {
 		}
 
 		if !reflect.DeepEqual(actualPayload, expectedPayload) {
-			return fmt.Errorf("Expected payload to be %s but got %s", expectedPayload, actualPayload)
+			return fmt.Errorf("Expected payload to be %v but got %v", expectedPayload, actualPayload)
 		}
 		return nil
 	})

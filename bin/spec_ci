@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 set -ex
 
-(cd go && ../morula all --never=vendor bin/spec_ci)
+(cd go && ../morula all bin/spec_ci)
 (cd javascript && ../morula all bin/spec_ci)

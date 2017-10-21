@@ -2,7 +2,6 @@ package connection
 
 import (
 	"encoding/json"
-	"fmt"
 
 	"github.com/Originate/exocom/go/structs"
 	"github.com/Originate/exocom/go/utils"
@@ -55,7 +54,7 @@ func (s *Service) listen() {
 		}
 		return nil
 	}, func(err error) {
-		fmt.Println(errors.Wrap(err, "Exocom listening for messages"))
+		s.manager.logError(errors.Wrapf(err, "Error listening for messages for %s %s", s.role, s.id))
 	})
 	if s.role != "" {
 		s.manager.deregisterService(s)

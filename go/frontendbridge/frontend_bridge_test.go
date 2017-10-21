@@ -35,8 +35,7 @@ func newExocom(port int) *exocomMock.ExoComMock {
 	return exocom
 }
 
-// Cucumber step definitions
-// nolint gocyclo
+// nolint: gocyclo
 func FeatureContext(s *godog.Suite) {
 	var exocomPort int
 	var clientPort int
@@ -45,15 +44,11 @@ func FeatureContext(s *godog.Suite) {
 	var frontendBridgeInstance *frontendbridge.FrontendBridge
 	var clientWebsocket *websocket.Conn
 	var clientCount int
-	var outgoingMessageId string
-	var savedError error
 
 	s.BeforeScenario(func(interface{}) {
 		exocomPort = freeport.GetPort()
 		clientPort = freeport.GetPort()
 		clientURL = fmt.Sprintf("ws://localhost:%v", clientPort)
-		outgoingMessageId = ""
-		savedError = nil
 		clientWebsocket = nil
 		clientCount = 0
 	})
@@ -87,8 +82,10 @@ func FeatureContext(s *godog.Suite) {
 		if err != nil {
 			return err
 		}
-		outgoingMessageId = message.ID
 		marshaledMessage, err := json.Marshal(message)
+		if err != nil {
+			return err
+		}
 		return clientWebsocket.WriteMessage(websocket.TextMessage, marshaledMessage)
 	})
 
@@ -174,7 +171,7 @@ func FeatureContext(s *godog.Suite) {
 		expectedMessage.Auth = actualMessage.Auth
 		expectedMessage.ActivityID = actualMessage.ActivityID
 		if !reflect.DeepEqual(actualMessage, expectedMessage) {
-			return fmt.Errorf("Expected request to equal %s but got %s", expectedMessage, actualMessage)
+			return fmt.Errorf("Expected request to equal %v but got %v", expectedMessage, actualMessage)
 		}
 		return nil
 	})
@@ -195,15 +192,18 @@ func FeatureContext(s *godog.Suite) {
 			return err
 		}
 		if !reflect.DeepEqual(actualMessage, expectedMessage) {
-			return fmt.Errorf("Expected request to equal %s but got %s", expectedMessage, actualMessage)
+			return fmt.Errorf("Expected request to equal %v but got %v", expectedMessage, actualMessage)
 		}
 		return nil
 	})
 
 	s.Step(`^the frontend bridge does not send a message to the client$`, func() error {
 		var bytes []byte
-		clientWebsocket.SetReadDeadline(time.Now().Add(time.Second * time.Duration(1)))
-		_, bytes, err := clientWebsocket.ReadMessage()
+		err := clientWebsocket.SetReadDeadline(time.Now().Add(time.Second * time.Duration(1)))
+		if err == nil {
+			return err
+		}
+		_, bytes, err = clientWebsocket.ReadMessage()
 		if err == nil {
 			return fmt.Errorf("Expected timeout error got %s", string(bytes))
 		}

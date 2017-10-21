@@ -33,8 +33,7 @@ func newExocom(port int) *exocomMock.ExoComMock {
 	return exocom
 }
 
-// Cucumber step definitions
-// nolint gocyclo
+// nolint: gocyclo
 func FeatureContext(s *godog.Suite) {
 	var exocomPort int
 	var exocom *exocomMock.ExoComMock
@@ -143,7 +142,7 @@ func FeatureContext(s *godog.Suite) {
 			return err
 		}
 		if !reflect.DeepEqual(actualMessage, expectedMessage) {
-			return fmt.Errorf("Expected request to equal %s but got %s", expectedMessage, actualMessage)
+			return fmt.Errorf("Expected request to equal %v but got %v", expectedMessage, actualMessage)
 		}
 		return nil
 	})
@@ -234,7 +233,10 @@ func FeatureContext(s *godog.Suite) {
 		var wg sync.WaitGroup
 		wg.Add(1)
 		go func() {
-			exoInstance.Connect()
+			err := exoInstance.Connect()
+			if err != nil {
+				panic(err)
+			}
 			wg.Done()
 		}()
 		time.Sleep(time.Duration(200) * time.Millisecond)
@@ -245,10 +247,7 @@ func FeatureContext(s *godog.Suite) {
 
 	s.Step(`^ExoRelay should (?:re)?connect to Exocom$`, func() error {
 		_, err := exocom.WaitForConnection()
-		if err != nil {
-			return err
-		}
-		return nil
+		return err
 	})
 
 	s.Step(`^Exocom goes offline momentarily`, func() error {

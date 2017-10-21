@@ -7,6 +7,6 @@ The repo needs to live in a particular place in order for go to find everything 
 * `cd $GOPATH/src/github.com/Originate`
 * `git clone git@github.com:Originate/exocom.git`
 
-Now you should be able to run into any of the package directories and run the tests.
+After running `bin/setup` from this directory, you should be able to `cd` into any of the project directories and run the tests.
 
 See [here](https://golang.org/doc/code.html) for more documentation

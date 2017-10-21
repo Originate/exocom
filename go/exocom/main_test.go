@@ -50,7 +50,7 @@ func FeatureContext(s *godog.Suite) {
 
 	startExocom := func(env []string) error {
 		cmdPlus = execplus.NewCmdPlus("exocom")
-		cmdPlus.SetEnv(env)
+		cmdPlus.AppendEnv(env)
 		return cmdPlus.Start()
 	}
 
@@ -118,7 +118,7 @@ func FeatureContext(s *godog.Suite) {
 
 	s.Step(`^trying to start ExoCom at port (\d+)$`, func(port int) error {
 		cmdPlus = execplus.NewCmdPlus("exocom")
-		cmdPlus.SetEnv([]string{
+		cmdPlus.AppendEnv([]string{
 			fmt.Sprintf("PORT=%d", port),
 			fmt.Sprintf("SERVICE_ROUTES=%s", "[]"),
 		})

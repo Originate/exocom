@@ -4,7 +4,6 @@ import (
 	"os"
 	"path"
 	"regexp"
-	"sort"
 	"strings"
 	"time"
 
@@ -12,21 +11,6 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
-
-// ByFullOutput is used to sort output chunks for the case when
-// the send of two chunks to the channel block and
-// thus may be received in any order
-type ByFullOutput []execplus.OutputChunk
-
-func (b ByFullOutput) Len() int {
-	return len(b)
-}
-func (b ByFullOutput) Swap(i, j int) {
-	b[i], b[j] = b[j], b[i]
-}
-func (b ByFullOutput) Less(i, j int) bool {
-	return len(b[i].Full) < len(b[j].Full)
-}
 
 var _ = Describe("Process", func() {
 	It("returns no errors when the process succeeds", func() {
@@ -62,7 +46,7 @@ var _ = Describe("Process", func() {
 
 	It("allows settings of the env variables", func() {
 		cmdPlus := execplus.NewCmdPlus("./test_executables/print_env")
-		cmdPlus.SetEnv([]string{"MY_VAR=special"})
+		cmdPlus.AppendEnv([]string{"MY_VAR=special"})
 		err := cmdPlus.Run()
 		Expect(err).To(BeNil())
 		Expect(cmdPlus.GetOutput()).To(Equal("special"))
@@ -100,7 +84,6 @@ var _ = Describe("Process", func() {
 				<-outputChannel,
 				<-outputChannel,
 			}
-			sort.Sort(ByFullOutput(chunks))
 			Expect(chunks).To(Equal([]execplus.OutputChunk{
 				{Chunk: "", Full: ""},
 				{Chunk: "chunk 1", Full: "chunk 1"},
@@ -120,6 +103,36 @@ var _ = Describe("Process", func() {
 			outputChannel, _ := cmdPlus.GetOutputChannel()
 			chunk := <-outputChannel
 			Expect(chunk).To(Equal(execplus.OutputChunk{Chunk: "", Full: "chunk 1\nspecial chunk 2\nchunk 3"}))
+			err = cmdPlus.Kill()
+			Expect(err).To(BeNil())
+		})
+
+		It("works with stderr", func() {
+			cmdPlus := execplus.NewCmdPlus("./test_executables/print_to_stderr")
+			err := cmdPlus.Start()
+			Expect(err).To(BeNil())
+			outputChannel, _ := cmdPlus.GetOutputChannel()
+			chunks := []execplus.OutputChunk{
+				<-outputChannel,
+				<-outputChannel,
+				<-outputChannel,
+				<-outputChannel,
+			}
+			Expect(chunks).To(Equal([]execplus.OutputChunk{
+				{Chunk: "", Full: ""},
+				{
+					Chunk: "stdout chunk 1",
+					Full:  "stdout chunk 1",
+				},
+				{
+					Chunk: "stderr chunk",
+					Full:  "stdout chunk 1\nstderr chunk",
+				},
+				{
+					Chunk: "stdout chunk 2",
+					Full:  "stdout chunk 1\nstderr chunk\nstdout chunk 2",
+				},
+			}))
 			err = cmdPlus.Kill()
 			Expect(err).To(BeNil())
 		})
@@ -147,6 +160,22 @@ var _ = Describe("Process", func() {
 			}, time.Second*2)
 			Expect(err).To(HaveOccurred())
 			Expect(err.Error()).To(Equal("Timed out after 2s, full output:\nchunk 1\nspecial chunk 2\nchunk 3"))
+			err = cmdPlus.Kill()
+			Expect(err).To(BeNil())
+		})
+
+		It("works for sequential waits", func() {
+			cmdPlus := execplus.NewCmdPlus("./test_executables/output_chunks")
+			err := cmdPlus.Start()
+			Expect(err).To(BeNil())
+			err = cmdPlus.WaitForCondition(func(chunk, full string) bool {
+				return chunk == "chunk 1"
+			}, time.Second*2)
+			Expect(err).To(BeNil())
+			err = cmdPlus.WaitForCondition(func(chunk, full string) bool {
+				return chunk == "late chunk 4"
+			}, time.Second*8)
+			Expect(err).To(BeNil())
 			err = cmdPlus.Kill()
 			Expect(err).To(BeNil())
 		})

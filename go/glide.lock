@@ -1,5 +1,5 @@
-hash: cf016cbb6b68de82ed76e66cda25720fdbde40f602f82d364a98e959dd00609f
-updated: 2017-08-09T10:26:49.249807701-07:00
+hash: a0ad17d147d67092308f08fe4dfa3a272c302de5d4a9bd74e9aa28f21d4927ce
+updated: 2017-10-21T09:22:52.574862174-06:00
 imports:
 - name: github.com/DATA-DOG/godog
   version: 92fbee719c9593813b24a6ef042bcad40324ede4
@@ -19,17 +19,17 @@ imports:
   version: 57fdcb988a5c543893cc61bce354a6e24ab70022
   repo: https://github.com/mattn/go-isatty
 - name: github.com/Originate/go-execplus
-  version: bbc206c2b49072dc6114af34db9e33e7cf02e24c
+  version: ae74c67086e55f4d53db7ba9ec69d75aa457e668
 - name: github.com/phayes/freeport
-  version: e7681b37614941bf73b404e0caa37f19e33b5fed
+  version: e27662a4a9d6b2083dfd7e7b5d0e30985daca925
 - name: github.com/pkg/errors
   version: 645ef00459ed84a119197bfb8d8205042c6df63d
 - name: github.com/satori/go.uuid
   version: 879c5887cd475cd7864858769793b2ceb0d44feb
 - name: github.com/spf13/cobra
-  version: 9495bc009a56819bdb0ddbc1a373e29c140bc674
+  version: 92ea23a837e66f46ac9e7d04fa826602b7b0a42d
 - name: github.com/spf13/pflag
-  version: 5ccb023bc27df288a957c5e994cd44fd19619465
+  version: 9ff6c6923cfffbcd502984b8e0c80539a94968b7
 - name: golang.org/x/sys
   version: e24f485414aeafb646f6fca458b0bf869c0880a1
   repo: https://go.googlesource.com/sys

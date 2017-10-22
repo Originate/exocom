@@ -3,6 +3,8 @@ require! {
   './message-handler/message-manager' : HandlerManager
   'rails-delegate' : {delegate, delegate-event}
   './websocket-connector/websocket-connector' : WebSocketConnector
+  'lodash/isPlainObject'
+  'lodash/isFunction'
 }
 debug = require('debug')('exorelay')
 
@@ -30,11 +32,13 @@ class ExoRelay extends EventEmitter
 
 
   send: (message-name, payload, options, reply-handler) ~>
-    if typeof options isnt 'object'
+    if isFunction(options)
       reply-handler = options
       options = {}
-    if reply-handler and typeof reply-handler isnt 'function'
-      return @emit 'error', Error 'The reply handler given to ExoRelay#send must be a function'
+    if options and !isPlainObject(options)
+      return @emit 'error', Error 'The third argument to ExoRelay#send must be an object (when supplying options) or a function (when supplying a reply handler)'
+    if reply-handler and !isFunction(reply-handler)
+      return @emit 'error', Error 'The fourth argument to ExoRelay#send must be a function'
     message = @websocket-connector.send message-name, payload, options
     if reply-handler
       @message-handler.register-reply-handler message.activity-id, reply-handler

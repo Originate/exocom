@@ -70,9 +70,16 @@ Feature: Handling incoming replies to sent message
 
   # ERROR HANDLING
 
-  Scenario: providing a non-callable object as the reply handler
+  Scenario: providing an invalid third argument
     When trying to send a message with a non-callable reply handler:
       """
       exo-relay.send 'users.create', {name: 'Will Riker'}, 'zonk'
       """
-    Then ExoRelay emits an "error" event with the error "The reply handler given to ExoRelay#send must be a function"
+    Then ExoRelay emits an "error" event with the error "The third argument to ExoRelay#send must be an object (when supplying options) or a function (when supplying a reply handler)"
+
+  Scenario: providing a non-callable object as the reply handler
+    When trying to send a message with a non-callable reply handler:
+      """
+      exo-relay.send 'users.create', {name: 'Will Riker'}, {}, 'zonk'
+      """
+    Then ExoRelay emits an "error" event with the error "The fourth argument to ExoRelay#send must be a function"

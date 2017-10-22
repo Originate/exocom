@@ -14,7 +14,6 @@ ignoreErrors:
   missing: []
   shouldBeDependency: []
   shouldBeDevDependency:
-    - wait
   unused:
     - cucumber
     - o-tools
@@ -23,18 +22,17 @@ ignoreErrors:
     - json-loader
     - livescript-loader
     - webpack
-    - debug
     - uuid
-    - ws
 
 requiredModules:
   files:
     dev:
       - '{features,spec,test}/**/*'
       - '**/*{.,_,-}{spec,test}.ls'
+      - 'webpack.config.ls'
     ignore:
       - 'node_modules/**/*'
-    root: '**/*.ls'
+    root: '**/*.{js,ls}'
   stripLoaders: false
   transpilers:
     - extension: .ls

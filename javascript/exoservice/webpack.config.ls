@@ -1,28 +1,19 @@
 require!{
   'path'
   'fs'
+  'webpack-node-externals'
 }
-
-node-modules = {}
-apps = {}
-
-fs.readdir-sync('node_modules')
-  .filter((x) -> x isnt '.bin')
-  .for-each((mod) -> node-modules[mod] = 'commonjs ' + mod)
 
 module.exports = {
   entry:
     'bundle': './src/index.ls'
   target: 'node'
-  node:
-    __filename: yes
-    __dirname: yes
   output:
-    path: path.join process.cwd!, 'dist'
+    path: path.join __dirname, 'dist'
     filename: '[name].js'
     libraryTarget: 'commonjs2'
     library: 'ExoService'
-  externals: node-modules
+  externals: [webpackNodeExternals()]
   module:
     rules:
       * test: /\.ls$/

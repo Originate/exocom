@@ -1,7 +1,6 @@
 package exosecurity
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"os"
@@ -80,16 +79,10 @@ func (e *ExoSecurity) ListenForMessages(messageAuthorizer MessageAuthorizer) err
 		if !ok {
 			return nil
 		}
-		bytes, err := json.Marshal(message.Payload)
+		payload, err := message.GetPayloadAsMessage()
 		if err != nil {
 			return err
 		}
-		payload := structs.Message{}
-		err = json.Unmarshal(bytes, &payload)
-		if err != nil {
-			return err
-		}
-
 		if message.Name == "authorize message" {
 			go e.receiveMessage(payload, message.ActivityID)
 		} else if message.Name == "security response" {
@@ -126,18 +119,12 @@ func (e *ExoSecurity) buildRequester(activityID string) func(*structs.Message) *
 		}()
 		select {
 		case message := <-messageChannel:
-			bytes, err := json.Marshal(message.Payload)
+			payload, err := message.GetPayloadAsMessage()
 			if err != nil {
 				fmt.Println(err)
-				return &structs.Message{}
+				return nil
 			}
-			payload := structs.Message{}
-			err = json.Unmarshal(bytes, &payload)
-			if err != nil {
-				fmt.Println(err)
-				return &structs.Message{}
-			}
-			return &payload
+			return payload
 		case <-time.After(time.Second * 5):
 			fmt.Printf("Did not receive a reply for '%s' after 5 seconds", activityID)
 			return &structs.Message{}
@@ -145,7 +132,7 @@ func (e *ExoSecurity) buildRequester(activityID string) func(*structs.Message) *
 	}
 }
 
-func (e *ExoSecurity) receiveMessage(payload structs.Message, activityID string) {
+func (e *ExoSecurity) receiveMessage(payload *structs.Message, activityID string) {
 	if e.messageAuthorizer == nil {
 		return
 	}
@@ -153,7 +140,7 @@ func (e *ExoSecurity) receiveMessage(payload structs.Message, activityID string)
 	messageToSend := exorelay.MessageOptions{
 		ActivityID: activityID,
 	}
-	if e.messageAuthorizer(&payload, e.buildRequester(activityID)) {
+	if e.messageAuthorizer(payload, e.buildRequester(activityID)) {
 		name = "message authorized"
 	} else {
 		name = "message unauthorized"

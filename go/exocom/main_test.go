@@ -195,27 +195,16 @@ func FeatureContext(s *godog.Suite) {
 			return fmt.Errorf("Expected to receive a message but got %v", err)
 		}
 		outgoingMessageActivityID = actualMessage.ActivityID
-
-		expectedBytes, err := json.Marshal(expectedMessage.Payload)
+		actualMessagePayload, err := actualMessage.GetPayloadAsMessage()
 		if err != nil {
 			return err
 		}
-		actualBytes, err := json.Marshal(actualMessage.Payload)
-		if err != nil {
-			return err
-		}
-		actualMessagePayload := structs.Message{}
-		expectedMessagePayload := structs.Message{}
-		err = json.Unmarshal(actualBytes, &actualMessagePayload)
-		if err != nil {
-			return err
-		}
-		err = json.Unmarshal(expectedBytes, &expectedMessagePayload)
+		expectedMessagePayload, err := expectedMessage.GetPayloadAsMessage()
 		if err != nil {
 			return err
 		}
 		if !reflect.DeepEqual(expectedMessagePayload, actualMessagePayload) {
-			return fmt.Errorf("Expected payload to equal %s but got %s", expectedMessagePayload, actualMessagePayload)
+			return fmt.Errorf("Expected payload to equal %v but got %v", expectedMessagePayload, actualMessagePayload)
 		}
 		if expectedMessage.Name != actualMessage.Name {
 			return fmt.Errorf("Expected name to equal %s but got %s", expectedMessage.Name, actualMessage.Name)

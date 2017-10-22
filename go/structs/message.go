@@ -1,6 +1,9 @@
 package structs
 
-import "time"
+import (
+	"encoding/json"
+	"time"
+)
 
 // Message defines the structure of websocket packets representing messages
 type Message struct {
@@ -15,8 +18,16 @@ type Message struct {
 	Timestamp    time.Time      `json:"timestamp"`
 }
 
-// MessagePayload defines the structure of Message.Payload
-type MessagePayload interface{}
-
-// MessageAuth defines the structure of Message.Auth
-type MessageAuth interface{}
+// GetPayloadAsMessage returns the payload converted to a Message
+func (m *Message) GetPayloadAsMessage() (*Message, error) {
+	output := &Message{}
+	bytes, err := json.Marshal(m.Payload)
+	if err != nil {
+		return nil, err
+	}
+	err = json.Unmarshal(bytes, output)
+	if err != nil {
+		return nil, err
+	}
+	return output, nil
+}

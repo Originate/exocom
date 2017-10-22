@@ -1,7 +1,6 @@
 package security
 
 import (
-	"encoding/json"
 	"fmt"
 
 	"github.com/Originate/exocom/go/structs"
@@ -38,15 +37,10 @@ func (m *Manager) ReceiveMessage(message structs.Message) *Result {
 	warningMessage := ""
 	switch message.Name {
 	case "security request":
-		bytes, err := json.Marshal(message.Payload)
+		var err error
+		messageToSend, err = message.GetPayloadAsMessage()
 		if err != nil {
-			warningMessage = errors.Wrap(err, "Marshaling 'security request' payload").Error()
-			break
-		}
-		messageToSend = &structs.Message{}
-		err = json.Unmarshal(bytes, messageToSend)
-		if err != nil {
-			warningMessage = errors.Wrap(err, "Unmarshaling 'security request' payload").Error()
+			warningMessage = errors.Wrap(err, "Converting 'security request' payload to a message").Error()
 			break
 		}
 		m.requestTable[messageToSend.ActivityID] = message.ActivityID

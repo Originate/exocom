@@ -101,26 +101,14 @@ func FeatureContext(s *godog.Suite) {
 		if actualMessage.ActivityID != expectedMessage.ActivityID {
 			return fmt.Errorf("Expected message to be a part of activity %s but got %s", expectedMessage.ActivityID, actualMessage.ActivityID)
 		}
-
-		actualPayload := structs.Message{}
-		bytes, err := json.Marshal(actualMessage.Payload)
+		actualPayload, err := actualMessage.GetPayloadAsMessage()
 		if err != nil {
 			return err
 		}
-		err = json.Unmarshal(bytes, &actualPayload)
+		expectedPayload, err := expectedMessage.GetPayloadAsMessage()
 		if err != nil {
 			return err
 		}
-		expectedPayload := structs.Message{}
-		bytes, err = json.Marshal(expectedMessage.Payload)
-		if err != nil {
-			return err
-		}
-		err = json.Unmarshal(bytes, &expectedPayload)
-		if err != nil {
-			return err
-		}
-
 		if !reflect.DeepEqual(actualPayload, expectedPayload) {
 			return fmt.Errorf("Expected payload to be %v but got %v", expectedPayload, actualPayload)
 		}

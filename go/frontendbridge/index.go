@@ -7,7 +7,7 @@ import (
 	"reflect"
 	"sync"
 
-	"github.com/Originate/exocom/go/exorelay"
+	"github.com/Originate/exocom/go/exosocket"
 	"github.com/Originate/exocom/go/structs"
 	"github.com/Originate/exocom/go/utils"
 	"github.com/pkg/errors"
@@ -18,46 +18,48 @@ import (
 
 var upgrader = websocket.Upgrader{}
 
-// Connection represents a connection
-type Connection struct {
-	socket *websocket.Conn
-	auth   structs.MessageAuth
-}
-
 // FrontendBridge handles communication between an Exosphere backend and
 // a browser front-end using websockets
 type FrontendBridge struct {
 	connections      []*Connection
 	connectionsMutex sync.RWMutex
-	exoRelay         exorelay.ExoRelay
-	exoRelayMutex    sync.Mutex
+	exoSocket        *exosocket.ExoSocket
+	exoSocketMutex   sync.Mutex
 	open             bool
 	openMutex        sync.RWMutex
 	server           http.Server
 }
 
-// Open sets up connection to exocom and a server to listen for connections from clients
-func (w *FrontendBridge) Open(config exorelay.Config, clientPort int) error {
-	err := w.connectToExocom(config)
-	if err != nil {
-		return err
+// NewFrontendBridge returns a FrontendBridge instance
+func NewFrontendBridge(config exosocket.Config, messageBufferSize int, clientPort string) *FrontendBridge {
+	w := &FrontendBridge{
+		exoSocket:   exosocket.NewExoSocket(config, messageBufferSize),
+		connections: []*Connection{},
 	}
-	err = w.listenForClients(clientPort)
-	if err != nil {
-		return err
+	var handler http.HandlerFunc = func(resWriter http.ResponseWriter, req *http.Request) {
+		conn, err := upgrader.Upgrade(resWriter, req, nil)
+		if err != nil {
+			fmt.Println("Error upgrading request to websocket:", err)
+			return
+		}
+		w.websocketHandler(conn)
 	}
-	w.open = true
-	return nil
+	w.server = http.Server{
+		Handler: handler,
+		Addr:    fmt.Sprintf(":%s", clientPort),
+	}
+	return w
 }
 
-// ConnectToExocom sets up an ExoRelay to communicate with exocom
-func (w *FrontendBridge) connectToExocom(config exorelay.Config) error {
-	w.exoRelay = exorelay.ExoRelay{Config: config}
-	err := w.exoRelay.Connect()
+// Open sets up connection to exocom and a server to listen for connections from clients
+func (w *FrontendBridge) Open() error {
+	err := w.exoSocket.Connect()
 	if err != nil {
 		return err
 	}
 	go w.listenForExocomMessages()
+	go w.listenForClients()
+	w.open = true
 	return nil
 }
 
@@ -95,7 +97,7 @@ func (w *FrontendBridge) removeConnection(auth structs.MessageAuth) {
 }
 
 func (w *FrontendBridge) listenForExocomMessages() {
-	messageChannel := w.exoRelay.GetMessageChannel()
+	messageChannel := w.exoSocket.GetMessageChannel()
 	for {
 		message, ok := <-messageChannel
 		if !ok {
@@ -121,27 +123,11 @@ func (w *FrontendBridge) listenForExocomMessages() {
 }
 
 // ListenForClients sets up a server to listen for incoming websocket connections
-func (w *FrontendBridge) listenForClients(clientPort int) error {
-	var handler http.HandlerFunc = func(resWriter http.ResponseWriter, req *http.Request) {
-		conn, err := upgrader.Upgrade(resWriter, req, nil)
-		if err != nil {
-			fmt.Println("Error upgrading request to websocket:", err)
-			return
-		}
-		w.websocketHandler(conn)
+func (w *FrontendBridge) listenForClients() {
+	err := w.server.ListenAndServe()
+	if err != nil && err.Error() != "http: Server closed" {
+		fmt.Println("Error listening:", err)
 	}
-	w.server = http.Server{
-		Handler: handler,
-		Addr:    fmt.Sprintf(":%d", clientPort),
-	}
-	w.connections = []*Connection{}
-	go func() {
-		err := w.server.ListenAndServe()
-		if err != nil && err.Error() != "http: Server closed" {
-			fmt.Println("Error listening:", err)
-		}
-	}()
-	return nil
 }
 
 // Close closes the server, all the open sockets, and nils the socketMap
@@ -161,7 +147,7 @@ func (w *FrontendBridge) Close() error {
 	if err != nil {
 		return err
 	}
-	err = w.exoRelay.Close()
+	err = w.exoSocket.Close()
 	if err != nil {
 		return err
 	}
@@ -175,14 +161,14 @@ func (w *FrontendBridge) websocketHandler(socket *websocket.Conn) {
 	auth := map[string]interface{}{"sessionId": uuid.NewV4().String()}
 	w.addConnection(auth, socket)
 	utils.ListenForMessages(socket, func(message structs.Message) error {
-		w.exoRelayMutex.Lock()
-		_, err := w.exoRelay.Send(exorelay.MessageOptions{
+		w.exoSocketMutex.Lock()
+		_, err := w.exoSocket.Send(exosocket.MessageOptions{
 			Name:       message.Name,
 			Payload:    message.Payload,
 			ActivityID: message.ActivityID,
 			Auth:       auth,
 		})
-		w.exoRelayMutex.Unlock()
+		w.exoSocketMutex.Unlock()
 		if err != nil {
 			return errors.Wrap(err, "Error sending message to websocket:")
 		}

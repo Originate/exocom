@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"reflect"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -14,7 +15,7 @@ import (
 	"github.com/DATA-DOG/godog"
 	"github.com/DATA-DOG/godog/gherkin"
 	"github.com/Originate/exocom/go/exocom-mock"
-	"github.com/Originate/exocom/go/exorelay"
+	"github.com/Originate/exocom/go/exosocket"
 	"github.com/Originate/exocom/go/frontendbridge"
 	"github.com/Originate/exocom/go/structs"
 	"github.com/Originate/exocom/go/utils"
@@ -37,18 +38,20 @@ func newExocom(port int) *exocomMock.ExoComMock {
 
 // nolint: gocyclo
 func FeatureContext(s *godog.Suite) {
-	var exocomPort int
-	var clientPort int
-	var clientURL string
-	var exocom *exocomMock.ExoComMock
-	var frontendBridgeInstance *frontendbridge.FrontendBridge
-	var clientWebsocket *websocket.Conn
-	var clientCount int
+	var (
+		exocomPort             int
+		clientPort             string
+		clientURL              string
+		exocom                 *exocomMock.ExoComMock
+		frontendBridgeInstance *frontendbridge.FrontendBridge
+		clientWebsocket        *websocket.Conn
+		clientCount            int
+	)
 
 	s.BeforeScenario(func(interface{}) {
 		exocomPort = freeport.GetPort()
-		clientPort = freeport.GetPort()
-		clientURL = fmt.Sprintf("ws://localhost:%v", clientPort)
+		clientPort = strconv.Itoa(freeport.GetPort())
+		clientURL = fmt.Sprintf("ws://localhost:%s", clientPort)
 		clientWebsocket = nil
 		clientCount = 0
 	})
@@ -66,9 +69,13 @@ func FeatureContext(s *godog.Suite) {
 
 	s.Step(`a frontend bridge connected to Exocom`, func() error {
 		exocom = newExocom(exocomPort)
-		frontendBridgeInstance = &frontendbridge.FrontendBridge{}
-		config := exorelay.Config{Host: "localhost", Port: exocomPort, Role: "websocket-test"}
-		return frontendBridgeInstance.Open(config, clientPort)
+		config := exosocket.Config{
+			Host: "localhost",
+			Port: strconv.Itoa(exocomPort),
+			Role: "websocket-test",
+		}
+		frontendBridgeInstance = frontendbridge.NewFrontendBridge(config, 0, clientPort)
+		return frontendBridgeInstance.Open()
 	})
 
 	s.Step(`receiving this message from the client:`, func(payloadStr *gherkin.DocString) error {

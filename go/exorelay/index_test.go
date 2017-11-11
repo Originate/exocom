@@ -1,4 +1,4 @@
-package exoservice_test
+package exorelay_test
 
 import (
 	"encoding/json"
@@ -8,15 +8,15 @@ import (
 	"os"
 	"reflect"
 	"testing"
+	"time"
 
 	"github.com/DATA-DOG/godog"
 	"github.com/DATA-DOG/godog/gherkin"
 	"github.com/Originate/exocom/go/exocom-mock"
-	"github.com/Originate/exocom/go/exorelay"
-	"github.com/Originate/exocom/go/exoservice"
-	"github.com/Originate/exocom/go/exoservice/test-fixtures"
 	"github.com/Originate/exocom/go/structs"
+	execplus "github.com/Originate/go-execplus"
 	"github.com/phayes/freeport"
+	"github.com/pkg/errors"
 	uuid "github.com/satori/go.uuid"
 )
 
@@ -31,47 +31,48 @@ func newExocom(port int) *exocomMock.ExoComMock {
 	return exocom
 }
 
+// Cucumber step definitions
 // nolint gocyclo
 func FeatureContext(s *godog.Suite) {
 	var exocomPort int
-	var exocom *exocomMock.ExoComMock
-	var exoService *exoservice.ExoService
-	var testFixture exoserviceTestFixtures.TestFixture
+	var exocomMockInstance *exocomMock.ExoComMock
+	var cmdPlus *execplus.CmdPlus
 
 	s.BeforeScenario(func(interface{}) {
 		exocomPort = freeport.GetPort()
 	})
 
 	s.AfterScenario(func(interface{}, error) {
-		err := exoService.Close()
+		err := cmdPlus.Kill()
 		if err != nil {
 			panic(err)
 		}
-		err = exocom.Close()
+		err = exocomMockInstance.Close()
 		if err != nil {
 			panic(err)
 		}
 	})
 
-	s.Step(`^I connect the "([^"]*)" test fixture$`, func(name string) error {
-		exocom = newExocom(exocomPort)
-		testFixture = exoserviceTestFixtures.Get(name)
-		config := exorelay.Config{
-			Host: "localhost",
-			Port: exocomPort,
-			Role: "test-service",
-		}
-		exoService = &exoservice.ExoService{}
-		err := exoService.Connect(config)
+	s.Step(`^the "([^"]*)" test fixture runs with the role "([^"]*)"$`, func(name, role string) error {
+		exocomMockInstance = newExocom(exocomPort)
+		cmdPlus = execplus.NewCmdPlus("go", "run", fmt.Sprintf("./test-fixtures/%s/main.go", name))
+		cmdPlus.AppendEnv([]string{
+			fmt.Sprintf("EXOCOM_PORT=%d", exocomPort),
+			fmt.Sprintf("ROLE=%d", role),
+		})
+		err := cmdPlus.Start()
 		if err != nil {
 			return err
 		}
-		go func() {
-			err := exoService.ListenForMessages(testFixture.GetMessageHandler())
-			if err != nil {
-				panic(err)
-			}
-		}()
+		_, err = exocomMockInstance.WaitForConnection()
+		if err != nil {
+			return errors.Wrapf(err, "Child Output: %s", cmdPlus.GetOutput())
+		}
+		return nil
+	})
+
+	s.Step(`^no message is received$`, func() error {
+		time.Sleep(time.Millisecond * 1500)
 		return nil
 	})
 
@@ -82,30 +83,22 @@ func FeatureContext(s *godog.Suite) {
 			Name:       name,
 			Auth:       auth,
 		}
-		_, err := exocom.WaitForConnection()
-		if err != nil {
-			return err
-		}
-		return exocom.Send(message)
+		return exocomMockInstance.Send(message)
 	})
 
-	s.Step(`^it sends a "([^"]*)" message(?: as a reply to the message with (?:activityId "([^"]*)")?(?:(?: and )?auth "([^"]*)")?)?$`, func(name, activityId, auth string) error {
-		actualMessage, err := exocom.WaitForMessageWithName(name)
-		if err != nil {
-			return err
+	s.Step(`^receiving a "([^"]*)" message with activityId "([^"]*)" and isSecurity true$`, func(name, activityId string) error {
+		message := structs.Message{
+			ActivityID: activityId,
+			ID:         uuid.NewV4().String(),
+			Name:       name,
+			IsSecurity: true,
 		}
-		if actualMessage.ActivityID != activityId && activityId != "" {
-			return fmt.Errorf("Expected message to be a part of activity %s but got %s", activityId, actualMessage.ActivityID)
-		}
-		if !reflect.DeepEqual(actualMessage.Auth, auth) {
-			return fmt.Errorf("Expected message to be a response to have auth %s but got %s", auth, actualMessage.Auth)
-		}
-		return nil
+		return exocomMockInstance.Send(message)
 	})
 
 	s.Step(`^receiving a "([^"]*)" message with the same activityId as the "([^"]*)" message and the payload:$`, func(messageName, sentMessageName string, payloadDocString *gherkin.DocString) error {
 		activityId := ""
-		receivedMessages := exocom.GetReceivedMessages()
+		receivedMessages := exocomMockInstance.GetReceivedMessages()
 		for _, message := range receivedMessages {
 			if message.Name == sentMessageName {
 				activityId = message.ActivityID
@@ -119,7 +112,7 @@ func FeatureContext(s *godog.Suite) {
 		if err != nil {
 			return err
 		}
-		return exocom.Send(structs.Message{
+		return exocomMockInstance.Send(structs.Message{
 			ActivityID: activityId,
 			ID:         uuid.NewV4().String(),
 			Name:       messageName,
@@ -127,22 +120,27 @@ func FeatureContext(s *godog.Suite) {
 		})
 	})
 
-	s.Step(`^receiving a "([^"]*)" message with activityId "([^"]*)" and isSecurity true$`, func(name, activityId string) error {
-		message := structs.Message{
-			ActivityID: activityId,
-			ID:         uuid.NewV4().String(),
-			Name:       name,
-			IsSecurity: true,
-		}
-		_, err := exocom.WaitForConnection()
+	s.Step(`^it sends a "([^"]*)" message with activityId "([^"]*)" and payload:$`, func(messageName, activityId string, payloadDocString *gherkin.DocString) error {
+		var expectedPayload structs.MessagePayload
+		err := json.Unmarshal([]byte(payloadDocString.Content), &expectedPayload)
 		if err != nil {
 			return err
 		}
-		return exocom.Send(message)
+		actualMessage, err := exocomMockInstance.WaitForMessageWithName(messageName)
+		if err != nil {
+			return err
+		}
+		if actualMessage.ActivityID != activityId {
+			return fmt.Errorf("Expected message to be a part of activity %s but got %s", activityId, actualMessage.ActivityID)
+		}
+		if !reflect.DeepEqual(actualMessage.Payload, expectedPayload) {
+			return fmt.Errorf("Expected payload to %s but got %s", expectedPayload, actualMessage.Payload)
+		}
+		return nil
 	})
 
 	s.Step(`^it sends a "([^"]*)" message as a reply to the message with activityId "([^"]*)" and isSecurity true$`, func(name, activityId string) error {
-		actualMessage, err := exocom.WaitForMessageWithName(name)
+		actualMessage, err := exocomMockInstance.WaitForMessageWithName(name)
 		if err != nil {
 			return err
 		}
@@ -153,24 +151,18 @@ func FeatureContext(s *godog.Suite) {
 			return fmt.Errorf("Expected message to be a response to have isSecurity true but got %s", actualMessage.IsSecurity)
 		}
 		return nil
-
 	})
 
-	s.Step(`^it sends a "([^"]*)" message with activityId "([^"]*)" and payload:$`, func(messageName, activityId string, payloadDocString *gherkin.DocString) error {
-		var expectedPayload structs.MessagePayload
-		err := json.Unmarshal([]byte(payloadDocString.Content), &expectedPayload)
+	s.Step(`^it sends a "([^"]*)" message(?: as a reply to the message with (?:activityId "([^"]*)")?(?:(?: and )?auth "([^"]*)")?)?$`, func(name, activityId, auth string) error {
+		actualMessage, err := exocomMockInstance.WaitForMessageWithName(name)
 		if err != nil {
 			return err
 		}
-		actualMessage, err := exocom.WaitForMessageWithName(messageName)
-		if err != nil {
-			return err
-		}
-		if actualMessage.ActivityID != activityId && activityId != "" {
+		if activityId != "" && actualMessage.ActivityID != activityId {
 			return fmt.Errorf("Expected message to be a part of activity %s but got %s", activityId, actualMessage.ActivityID)
 		}
-		if !reflect.DeepEqual(actualMessage.Payload, expectedPayload) {
-			return fmt.Errorf("Expected payload to %s but got %s", expectedPayload, actualMessage.Payload)
+		if auth != "" && !reflect.DeepEqual(actualMessage.Auth, auth) {
+			return fmt.Errorf("Expected message to be a response to have auth %s but got %s", auth, actualMessage.Auth)
 		}
 		return nil
 	})

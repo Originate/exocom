@@ -10,7 +10,7 @@ Feature: Outgoing replies
 
 
   Background:
-    Given I connect the "simple" test fixture
+    Given the "simple" test fixture runs
 
 
   Scenario: determining a message is authorized

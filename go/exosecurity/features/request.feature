@@ -10,7 +10,7 @@ Feature: Outgoing replies
 
 
   Background:
-    Given I connect the "complex" test fixture
+    Given the "complex" test fixture runs
     And receiving this message:
       """
       {
@@ -114,6 +114,3 @@ Feature: Outgoing replies
         "id": "666"
       }
       """
-
-
-

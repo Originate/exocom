@@ -6,7 +6,7 @@ if [ -n "$(goimports -d . 2>&1)" ]; then
   exit 1
 fi
 
-gometalinter --config="../lint_config.json" . ./test-fixtures 2> lint_output.txt
+gometalinter --config="../lint_config.json" . ./test-fixtures/... 2> lint_output.txt
 if [ -n "$(grep 'warning:' lint_output.txt)" ]; then
   echo "There are linter warnings. Check 'lint_output.txt'"
   echo "Expected warning: gocyclo FeatureContext"

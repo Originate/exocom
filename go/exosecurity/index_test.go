@@ -12,11 +12,10 @@ import (
 	"github.com/DATA-DOG/godog"
 	"github.com/DATA-DOG/godog/gherkin"
 	"github.com/Originate/exocom/go/exocom-mock"
-	"github.com/Originate/exocom/go/exorelay"
-	"github.com/Originate/exocom/go/exosecurity"
-	"github.com/Originate/exocom/go/exosecurity/test-fixtures"
 	"github.com/Originate/exocom/go/structs"
+	execplus "github.com/Originate/go-execplus"
 	"github.com/phayes/freeport"
+	"github.com/pkg/errors"
 )
 
 func newExocom(port int) *exocomMock.ExoComMock {
@@ -32,46 +31,37 @@ func newExocom(port int) *exocomMock.ExoComMock {
 
 // nolint: gocyclo
 func FeatureContext(s *godog.Suite) {
-
 	var exocomPort int
-	var exocom *exocomMock.ExoComMock
-	var exoSecurity *exosecurity.ExoSecurity
-	var testFixture exosecurityTestFixtures.TestFixture
+	var exocomMockInstance *exocomMock.ExoComMock
+	var cmdPlus *execplus.CmdPlus
 
 	s.BeforeScenario(func(interface{}) {
 		exocomPort = freeport.GetPort()
 	})
 
 	s.AfterScenario(func(interface{}, error) {
-		err := exoSecurity.Close()
+		err := cmdPlus.Kill()
 		if err != nil {
 			panic(err)
 		}
-		err = exocom.Close()
+		err = exocomMockInstance.Close()
 		if err != nil {
 			panic(err)
 		}
 	})
 
-	s.Step(`^I connect the "([^"]*)" test fixture$`, func(fixtureName string) error {
-		exocom = newExocom(exocomPort)
-		testFixture = exosecurityTestFixtures.Get(fixtureName)
-		config := exorelay.Config{
-			Host: "localhost",
-			Port: exocomPort,
-			Role: "test-service",
-		}
-		exoSecurity = &exosecurity.ExoSecurity{}
-		err := exoSecurity.Connect(config)
+	s.Step(`^the "([^"]*)" test fixture runs$`, func(name string) error {
+		exocomMockInstance = newExocom(exocomPort)
+		cmdPlus = execplus.NewCmdPlus("go", "run", fmt.Sprintf("./test-fixtures/%s/main.go", name))
+		cmdPlus.AppendEnv([]string{fmt.Sprintf("EXOCOM_PORT=%d", exocomPort)})
+		err := cmdPlus.Start()
 		if err != nil {
 			return err
 		}
-		go func() {
-			err := exoSecurity.ListenForMessages(testFixture.GetMessageValidator())
-			if err != nil {
-				panic(err)
-			}
-		}()
+		_, err = exocomMockInstance.WaitForConnection()
+		if err != nil {
+			return errors.Wrapf(err, "Child Output: %s", cmdPlus.GetOutput())
+		}
 		return nil
 	})
 
@@ -81,11 +71,7 @@ func FeatureContext(s *godog.Suite) {
 		if err != nil {
 			return err
 		}
-		_, err = exocom.WaitForConnection()
-		if err != nil {
-			return err
-		}
-		return exocom.Send(unmarshaled)
+		return exocomMockInstance.Send(unmarshaled)
 	})
 
 	s.Step(`^it sends the message:$`, func(message *gherkin.DocString) error {
@@ -94,7 +80,7 @@ func FeatureContext(s *godog.Suite) {
 		if err != nil {
 			return err
 		}
-		actualMessage, err := exocom.WaitForMessageWithName(expectedMessage.Name)
+		actualMessage, err := exocomMockInstance.WaitForMessageWithName(expectedMessage.Name)
 		if err != nil {
 			return err
 		}
@@ -121,9 +107,8 @@ func FeatureContext(s *godog.Suite) {
 		if err != nil {
 			return err
 		}
-		return exocom.Send(messageToSend)
+		return exocomMockInstance.Send(messageToSend)
 	})
-
 }
 
 func TestMain(m *testing.M) {

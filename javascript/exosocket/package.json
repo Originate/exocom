@@ -1,0 +1,25 @@
+{
+  "name": "exosocket",
+  "version": "0.26.4",
+  "main": "index.js",
+  "license": "ISC",
+  "dependencies": {
+    "uuid": "^3.1.0"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-eslint": "^8.0.2",
+    "babel-plugin-transform-class-properties": "^6.24.1",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
+    "babel-register": "^6.26.0",
+    "cucumber": "^3.1.0",
+    "eslint": "^4.11.0",
+    "eslint-config-originate": "^2.0.3",
+    "eslint-config-prettier": "^2.7.0",
+    "eslint-plugin-filenames": "^1.2.0",
+    "eslint-plugin-import": "^2.8.0",
+    "eslint-plugin-prettier": "^2.3.1",
+    "prettier": "^1.8.2"
+  }
+}

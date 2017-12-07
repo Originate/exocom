@@ -13,7 +13,7 @@ var rootCmd = &cobra.Command{
 	Use:   "exocom",
 	Short: "",
 	Run: func(cmd *cobra.Command, args []string) {
-		serviceRoutes, err := exocom.ParseServiceData(os.Getenv("SERVICE_DATA"))
+		serviceRoutes, err := exocom.ParseServiceRoutes(os.Getenv("SERVICE_ROUTES"))
 		if err != nil {
 			panic(err)
 		}

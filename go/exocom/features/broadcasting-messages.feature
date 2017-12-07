@@ -11,15 +11,17 @@ Feature: Broadcasting messages
   Background:
     Given an ExoCom instance configured with the routes:
     """
-    {
-      "web": {
+    [
+      {
+        "role": "web",
         "receives": ["users created"],
         "sends": ["users create", "users list", "delete user"]
       },
-      "users": {
+      {
+        "role": "users",
         "receives": ["mongo create", "delete user"],
         "sends": ["mongo created"],
-        "translations": [
+        "messageTranslations": [
           {
             "public": "users create",
             "internal": "mongo create"
@@ -30,10 +32,11 @@ Feature: Broadcasting messages
           }
         ]
       },
-      "log": {
+      {
+        "role": "log",
         "receives": ["users create"]
       }
-    }
+    ]
     """
     And a running "web" instance
     And a running "users" instance
@@ -69,4 +72,4 @@ Feature: Broadcasting messages
 
   Scenario: broadcasting a message with no receivers
     When the "web" service sends "users list"
-    Then ExoCom signals "Warning: No receivers for message 'users list' registered"
+    Then ExoCom signals "Warning: No receivers for message 'users list' registered" 

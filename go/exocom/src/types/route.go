@@ -6,5 +6,5 @@ import "github.com/Originate/exocom/go/exocom/src/translation"
 type Route struct {
 	Receives            []string                         `json:"receives"`
 	Sends               []string                         `json:"sends"`
-	MessageTranslations []translation.MessageTranslation `json:"translations"`
+	MessageTranslations []translation.MessageTranslation `json:"messageTranslations"`
 }

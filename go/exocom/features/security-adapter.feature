@@ -18,21 +18,26 @@ Feature: Security Adapter
   Background:
     Given an ExoCom instance configured with the routes:
       """
-      {
-        "web": {
+      [
+        {
+          "role": "web",
           "receives": ["user created", "message unauthorized"],
           "sends": ["create user"]
         },
-        "users": {
+        {
+          "role": "users",
           "receives": ["create user"],
           "sends": ["user created"]
         },
-        "security": {},
-        "sessions": {
+        {
+          "role": "security"
+        },
+        {
+          "role": "sessions",
           "receives": ["create session", "get session"],
           "sends": ["session data"]
         }
-      }
+      ]
       """
     And a running "web" instance
     And a running "users" instance

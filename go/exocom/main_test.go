@@ -51,11 +51,7 @@ func FeatureContext(s *godog.Suite) {
 	startExocom := func(env []string) error {
 		cmdPlus = execplus.NewCmdPlus("exocom")
 		cmdPlus.AppendEnv(env)
-		err := cmdPlus.Start()
-		if err != nil {
-			return err
-		}
-		return cmdPlus.WaitForText("ExoCom online at port", time.Second*10)
+		return cmdPlus.Start()
 	}
 
 	s.BeforeScenario(func(arg1 interface{}) {
@@ -91,7 +87,7 @@ func FeatureContext(s *godog.Suite) {
 
 	s.Step(`^starting ExoCom$`, func() error {
 		return startExocom([]string{
-			fmt.Sprintf("SERVICE_DATA=%s", "{}"),
+			fmt.Sprintf("SERVICE_ROUTES=%s", "[]"),
 		})
 	})
 
@@ -116,7 +112,7 @@ func FeatureContext(s *godog.Suite) {
 		exocomPort = port
 		return startExocom([]string{
 			fmt.Sprintf("PORT=%d", exocomPort),
-			fmt.Sprintf("SERVICE_DATA=%s", "{}"),
+			fmt.Sprintf("SERVICE_ROUTES=%s", "[]"),
 		})
 	})
 
@@ -124,7 +120,7 @@ func FeatureContext(s *godog.Suite) {
 		cmdPlus = execplus.NewCmdPlus("exocom")
 		cmdPlus.AppendEnv([]string{
 			fmt.Sprintf("PORT=%d", port),
-			fmt.Sprintf("SERVICE_DATA=%s", "{}"),
+			fmt.Sprintf("SERVICE_ROUTES=%s", "[]"),
 		})
 		err := cmdPlus.Run()
 		if err == nil {
@@ -136,7 +132,7 @@ func FeatureContext(s *godog.Suite) {
 	s.Step(`^an ExoCom instance configured with the routes:$`, func(docString *gherkin.DocString) error {
 		return startExocom([]string{
 			fmt.Sprintf("PORT=%d", exocomPort),
-			fmt.Sprintf("SERVICE_DATA=%s", docString.Content),
+			fmt.Sprintf("SERVICE_ROUTES=%s", docString.Content),
 		})
 	})
 
@@ -363,7 +359,7 @@ func TestMain(m *testing.M) {
 	}, godog.Options{
 		Format:        format,
 		NoColors:      false,
-		StopOnFailure: true,
+		StopOnFailure: false,
 		Paths:         paths,
 	})
 

@@ -12,9 +12,11 @@ Feature: Manage new instances of services
   Scenario: a new service comes online
     Given an ExoCom instance configured with the routes:
       """
-      {
-        "users": {}
-      }
+      [
+        {
+          "role": "users"
+        }
+      ]
       """
     When a "users" service connects and registers itself
     Then ExoCom should have the config:
@@ -30,7 +32,7 @@ Feature: Manage new instances of services
           "users": {
             "sends": [],
             "receives": [],
-            "translations": []
+            "messageTranslations": []
           }
         }
       }
@@ -40,10 +42,14 @@ Feature: Manage new instances of services
   Scenario: deregister a service once it goes offline
     Given an ExoCom instance configured with the routes:
       """
-      {
-        "users": {},
-        "tweets": {}
-      }
+      [
+        {
+          "role": "users"
+        },
+        {
+          "role": "tweets"
+        }
+      ]
       """
     And a running "users" instance
     And a running "tweets" instance
@@ -61,12 +67,12 @@ Feature: Manage new instances of services
           "tweets": {
             "sends": [],
             "receives": [],
-            "translations": []
+            "messageTranslations": []
           },
           "users": {
             "sends": [],
             "receives": [],
-            "translations": []
+            "messageTranslations": []
           }
         }
       }

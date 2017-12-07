@@ -13,15 +13,17 @@ Feature: Translating messages
   Background:
     Given an ExoCom instance configured with the routes:
     """
-    {
-      "web": {
+    [
+      {
+        "role": "web",
         "receives": ["tweets created"],
         "sends": ["tweets create"]
       },
-      "tweets": {
+      {
+        "role": "tweets",
         "receives": ["text-snippets create"],
         "sends": ["text-snippets created"],
-        "translations": [
+        "messageTranslations": [
           {
             "public":"tweets create",
             "internal":"text-snippets create"
@@ -32,7 +34,7 @@ Feature: Translating messages
           }
         ]
       }
-    }
+    ]
     """
     And a running "web" instance
     And a running "tweets" instance

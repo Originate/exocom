@@ -31,7 +31,7 @@ func ParseServiceData(data string) (types.Routes, error) {
 		}
 		parsed[serviceRole] = route
 	}
-	if _, ok := parsed["security"]; ok {
+	if unmarshaled.HasSecurity() {
 		parsed["security"] = types.Route{
 			Sends:               []string{"message authorized", "message unauthorized", "security request"},
 			Receives:            []string{"authorize message", "security response"},

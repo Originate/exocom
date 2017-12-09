@@ -83,7 +83,7 @@ class WebSocketConnector extends EventEmitter
   _on-socket-close: ~>
     if @should-reconnect-on-socket-closed
       if @should-use-internal-reconnect
-        @_internalConnect!
+        setTimeout (~> @_internalConnect!), 100
       else
         @connect!
     else

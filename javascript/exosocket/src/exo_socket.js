@@ -90,7 +90,6 @@ export default class ExoSocket extends EventEmitter {
   }
 
   onSocketError = error => {
-    console.log('got error')
     if (error.errno === 'EADDRINUSE') {
       this.emit('error', `port ${this.exocomPort} is already in use`)
     } else if (this.socket.readyState === WebSocket.CONNECTING) {
@@ -104,7 +103,6 @@ export default class ExoSocket extends EventEmitter {
         this.logConnectErrorDelay = this.logConnectErrorDelay * 2
       }
     } else {
-      console.log('emiting')
       this.emit('error', error)
     }
   }

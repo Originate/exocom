@@ -11,18 +11,12 @@ When('ExoSocket connects to ExoCom', async function() {
   })
 })
 
-When('ExoSocket boots up a second before ExoCom', async () => {
-  // try {
-  //   this.exoSocketInstance.connect()
-  // } catch (e) {
-  //   console.log('caught', e)
-  // }
-  // console.log('delay')
-  // await Promise.delay(200)
-  // console.log('delay done')
-  // this.exoComMockInstance.listen(this.exocomPort)
-  // console.log('waiting')
-  // await this.exoComMockInstance.waitUntilKnowsService(this.role)
+When('ExoSocket boots up a second before ExoCom', async function() {
+  this.exoSocketInstance.connect()
+  await Promise.delay(200)
+  this.exoComMockInstance = new MockExoCom()
+  this.exoComMockInstance.listen(this.exocomPort)
+  await this.exoComMockInstance.waitUntilKnowsService(this.role)
 })
 
 When('sending the message {string}', function(messageName) {

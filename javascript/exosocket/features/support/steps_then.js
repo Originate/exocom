@@ -67,3 +67,7 @@ Then(
     expect(actualMessage.isSecurity).to.eql(true)
   }
 )
+
+Then('ExoSocket should reconnect to ExoCom', function() {
+  return this.waitForConnection()
+})

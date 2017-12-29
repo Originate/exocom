@@ -4,11 +4,7 @@ import MockExoCom from '../../../exocom-mock'
 
 When('ExoSocket connects to ExoCom', async function() {
   this.exoComMockInstance = new MockExoCom()
-  this.exoComMockInstance.listen(this.exocomPort)
-  await this.exoSocketInstance.connect()
-  await new Promise(resolve => {
-    this.exoComMockInstance.waitUntilKnowsService(this.role, resolve)
-  })
+  this.connectInstances()
 })
 
 When('ExoSocket boots up a second before ExoCom', async function() {
@@ -53,4 +49,10 @@ When('sending the message {string} with auth {string}', function(
 
 When('receiving this message:', function(docString) {
   this.exoComMockInstance.send(this.role, JSON.parse(docString))
+})
+
+When('Exocom crashes and reboots', async function() {
+  await this.exoComMockInstance.close()
+  this.exoComMockInstance = new MockExoCom()
+  this.exoComMockInstance.listen(this.exocomPort)
 })

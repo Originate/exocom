@@ -1,15 +1,13 @@
 import { After, Before, setWorldConstructor } from 'cucumber'
 import World from './world'
 
-const closeIfDefined = async obj => {
-  if (obj) {
-    await obj.close()
-  }
-}
-
 After(async function() {
-  await closeIfDefined(this.exoSocketInstance)
-  await closeIfDefined(this.exoComMockInstance)
+  if (this.exoSocketInstance) {
+    await this.exoSocketInstance.close()
+  }
+  if (this.exoComMockInstance) {
+    await new Promise(resolve => this.exoComMockInstance.close(resolve))
+  }
 })
 
 Before(function() {

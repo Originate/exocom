@@ -2,6 +2,14 @@ import { expect } from 'chai'
 import * as waitFor from './wait_for'
 
 export default class World {
+  async connectInstances() {
+    this.exoComMockInstance.listen(this.exocomPort)
+    await this.exoSocketInstance.connect()
+    await new Promise(resolve => {
+      this.exoComMockInstance.waitUntilKnowsService(this.role, resolve)
+    })
+  }
+
   waitForMessageCount(count, timeout) {
     return waitFor.condition(() => {
       expect(this.exoComMockInstance.receivedMessages).to.have.lengthOf(count)

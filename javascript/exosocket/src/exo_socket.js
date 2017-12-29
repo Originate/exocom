@@ -18,7 +18,10 @@ export default class ExoSocket extends EventEmitter {
     this.logConnectErrorDelay = 1000
     this.shouldReconnectOnSocketClosed = true
     this.shouldUseInternalConnect = true
-    return this.internalConnect()
+    this.internalConnect()
+    return new Promise(resolve => {
+      this.once('online', resolve)
+    })
   }
 
   async close() {
@@ -64,23 +67,20 @@ export default class ExoSocket extends EventEmitter {
   // Private functions
 
   internalConnect() {
-    return new Promise(resolve => {
-      this.socket = new WebSocket(
-        `ws://${this.exocomHost}:${this.exocomPort}/services`
-      )
-      this.socket
-        .on('close', this.onSocketClose)
-        .on('error', this.onSocketError)
-        .on('message', this.onSocketMessage)
-        .on('open', this.onSocketOpen)
-        .once('open', resolve)
-    })
+    this.socket = new WebSocket(
+      `ws://${this.exocomHost}:${this.exocomPort}/services`
+    )
+    this.socket
+      .on('close', this.onSocketClose)
+      .on('error', this.onSocketError)
+      .on('message', this.onSocketMessage)
+      .on('open', this.onSocketOpen)
   }
 
   onSocketClose = () => {
     if (this.shouldReconnectOnSocketClosed) {
       if (this.shouldUseInternalConnect) {
-        this.internalConnect()
+        setTimeout(() => this.internalConnect(), 100)
       } else {
         this.connect()
       }

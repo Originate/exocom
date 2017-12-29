@@ -31,3 +31,39 @@ Then('ExoSocket makes the WebSocket request:', async function(docString) {
 Then('ExoSocket errors with {string}', function(message) {
   expect(this.error.message).to.eql(message)
 })
+
+Then(
+  'the fixture receives a message with the name {string} and no payload',
+  async function(messageName) {
+    const actualMessage = await this.getTestFixtureReceivedMessage()
+    expect(actualMessage.name).to.eql(messageName)
+    expect(actualMessage.payload).to.eql(undefined)
+  }
+)
+
+Then(
+  'the fixture receives a message with the name {string} and the payload:',
+  async function(messageName, docString) {
+    const actualMessage = await this.getTestFixtureReceivedMessage()
+    expect(actualMessage.name).to.eql(messageName)
+    expect(actualMessage.payload).to.eql(JSON.parse(docString))
+  }
+)
+
+Then(
+  'the fixture receives a message with the name {string} and auth {string}',
+  async function(messageName, auth) {
+    const actualMessage = await this.getTestFixtureReceivedMessage()
+    expect(actualMessage.name).to.eql(messageName)
+    expect(actualMessage.auth).to.eql(auth)
+  }
+)
+
+Then(
+  'the fixture receives a message with the name {string} and isSecurity true',
+  async function(messageName) {
+    const actualMessage = await this.getTestFixtureReceivedMessage()
+    expect(actualMessage.name).to.eql(messageName)
+    expect(actualMessage.isSecurity).to.eql(true)
+  }
+)

@@ -57,8 +57,6 @@ When('sending the message {string} with auth {string}', function(
   })
 })
 
-When('receiving this message:', function(docString, callback) {
-  this.exoComMockInstance.send(dock)
-  // Write code here that turns the phrase above into concrete actions
-  callback(null, 'pending')
+When('receiving this message:', function(docString) {
+  this.exoComMockInstance.send(this.role, JSON.parse(docString))
 })

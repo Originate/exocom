@@ -8,6 +8,13 @@ export default class World {
     }, timeout)
   }
 
+  async getTestFixtureReceivedMessage() {
+    await waitFor.condition(() => {
+      expect(this.testFixture.receivedMessages).to.have.lengthOf(1)
+    }, 2000)
+    return this.testFixture.receivedMessages[0]
+  }
+
   async waitForConnection() {
     await this.waitForMessageCount(1, 2000)
     const message = this.exoComMockInstance.receivedMessages[0]

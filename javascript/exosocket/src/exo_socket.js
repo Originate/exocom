@@ -1,5 +1,7 @@
 import { EventEmitter } from 'events'
 import uuid from 'uuid'
+import WebSocket from 'ws'
+import Promise from 'bluebird'
 
 export default class ExoSocket extends EventEmitter {
   constructor({ exocomHost, exocomPort, role }) {
@@ -16,32 +18,31 @@ export default class ExoSocket extends EventEmitter {
     this.logConnectErrorDelay = 1000
     this.shouldReconnectOnSocketClosed = true
     this.shouldUseInternalConnect = true
-    this.internalConnect()
+    return this.internalConnect()
   }
 
-  close(done) {
+  async close() {
     if (!this.socket) {
-      done()
       return
     }
     this.shouldReconnectOnSocketClosed = false
+    // eslint-disable-next-line default-case
     switch (this.socket.readyState) {
       case WebSocket.CONNECTING: {
         this.socket.terminate()
-        done()
         return
       }
       case WebSocket.OPEN: {
-        this.socket.on('close', done)
-        this.socket.close()
+        await new Promise(resolve => {
+          this.socket.on('close', resolve)
+          this.socket.close()
+        })
         return
       }
       case WebSocket.CLOSING: {
-        this.socket.on('close', done)
-        return
-      }
-      default: {
-        done()
+        await new Promise(resolve => {
+          this.socket.on('close', resolve)
+        })
       }
     }
   }
@@ -63,14 +64,17 @@ export default class ExoSocket extends EventEmitter {
   // Private functions
 
   internalConnect() {
-    this.socket = new WebSocket(
-      `ws://${this.exocomHost}:${this.exocomPort}/services`
-    )
-    this.socket
-      .on('close', this.onSocketClose)
-      .on('error', this.onSocketError)
-      .on('message', this.onSocketMessage)
-      .on('open', this.onSocketOpen)
+    return new Promise(resolve => {
+      this.socket = new WebSocket(
+        `ws://${this.exocomHost}:${this.exocomPort}/services`
+      )
+      this.socket
+        .on('close', this.onSocketClose)
+        .on('error', this.onSocketError)
+        .on('message', this.onSocketMessage)
+        .on('open', this.onSocketOpen)
+        .once('open', resolve)
+    })
   }
 
   onSocketClose = () => {
@@ -86,6 +90,7 @@ export default class ExoSocket extends EventEmitter {
   }
 
   onSocketError = error => {
+    console.log('got error')
     if (error.errno === 'EADDRINUSE') {
       this.emit('error', `port ${this.exocomPort} is already in use`)
     } else if (this.socket.readyState === WebSocket.CONNECTING) {
@@ -99,6 +104,7 @@ export default class ExoSocket extends EventEmitter {
         this.logConnectErrorDelay = this.logConnectErrorDelay * 2
       }
     } else {
+      console.log('emiting')
       this.emit('error', error)
     }
   }

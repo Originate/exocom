@@ -19,8 +19,8 @@ Feature: Sending outgoing messages
       {
         "name": "hello-world",
         "sender": "test-service",
-        "id": "{{.outgoingMessageId}}",
-        "activityId": "{{.outgoingActivityId}}"
+        "id": "{{outgoingMessageId}}",
+        "activityId": "{{outgoingActivityId}}"
       }
       """
 
@@ -32,8 +32,8 @@ Feature: Sending outgoing messages
       {
         "name": "hello world",
         "sender": "test-service",
-        "id": "{{.outgoingMessageId}}",
-        "activityId": "{{.outgoingActivityId}}"
+        "id": "{{outgoingMessageId}}",
+        "activityId": "{{outgoingActivityId}}"
       }
       """
 
@@ -51,14 +51,14 @@ Feature: Sending outgoing messages
           "name": "world"
         },
         "sender": "test-service",
-        "id": "{{.outgoingMessageId}}",
-        "activityId": "{{.outgoingActivityId}}"
+        "id": "{{outgoingMessageId}}",
+        "activityId": "{{outgoingActivityId}}"
       }
       """
 
   Scenario: trying to send an empty message
     When trying to send an empty message
-    Then ExoSocket errors with "ExoRelay#Send cannot send empty messages"
+    Then ExoSocket errors with "Message must have a name"
 
 
   Scenario: sending a message with auth
@@ -68,8 +68,8 @@ Feature: Sending outgoing messages
       {
         "name": "hello-world",
         "sender": "test-service",
-        "id": "{{.outgoingMessageId}}",
-        "activityId": "{{.outgoingActivityId}}",
+        "id": "{{outgoingMessageId}}",
+        "activityId": "{{outgoingActivityId}}",
         "auth": "1"
       }
       """

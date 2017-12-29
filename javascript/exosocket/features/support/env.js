@@ -1,19 +1,19 @@
-import { After, Before } from 'cucumber'
+import { After, Before, setWorldConstructor } from 'cucumber'
+import World from './world'
 
-const closeIfDefined = (obj, done) => {
+const closeIfDefined = async obj => {
   if (obj) {
-    obj.close(done)
-  } else {
-    done()
+    await obj.close()
   }
 }
 
-After(function(_, done) {
-  closeIfDefined(this.exoSocketInstance, () => {
-    closeIfDefined(this.exoComMockInstance, done)
-  })
+After(async function() {
+  await closeIfDefined(this.exoSocketInstance)
+  await closeIfDefined(this.exoComMockInstance)
 })
 
 Before(function() {
   this.exocomPort = 4100
 })
+
+setWorldConstructor(World)

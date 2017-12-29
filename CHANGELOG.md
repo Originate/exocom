@@ -1,3 +1,41 @@
+# 0.27.0 (2017-12-08)
+
+#### BREAKING CHANGES
+
+* `exocom`: update `SERVICE_ROUTES` env variable to `SREVICE_DATA` and give it a new structure:
+  * Before:
+  ```json
+  [
+    {
+      "messageTranslations": [],
+      "receives": [],
+      "role": "roleA",
+      "sends": []
+    }
+  ]
+  ```
+  * After:
+  ```json
+  {
+    "roleA": {
+      "receives": [],
+      "sends": [],
+      "translations": []
+    }
+  }
+  ```
+* `go`
+  * rename `exorelay` to `exosocket` as the low level interface to `exocom`
+  * add `exorelay` as a mid level interface to `exocom`
+
+#### New Features
+
+* `javascript/exorelay`: add 100 ms delay between attempts to reconnect
+
+#### Bug Fixes
+
+* `javascript/exorelay`: update optional parameter to give a better error message when calling `send` with the wrong type of arguments
+
 # 0.26.4 (2017-10-02)
 
 #### New Features

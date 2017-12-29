@@ -20,7 +20,7 @@ World = !->
 
 
   @exocom-send-message = ({exocom, service, message-data}) ->
-    exocom.send service: service, name: message-data.name, payload: message-data.payload
+    exocom.send service, name: message-data.name, payload: message-data.payload
 
 
 

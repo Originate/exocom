@@ -6,18 +6,16 @@ Feature: Multiple instances of services
   Background:
     Given an ExoCom instance configured with the routes:
     """
-    [
-      {
-        "role": "web",
+    {
+      "web": {
         "receives": ["user created"],
         "sends": ["create user"]
       },
-      {
-        "role": "users",
+      "users": {
         "receives": ["create user"],
         "sends": ["user created"]
       }
-    ]
+    }
     """
     And two running "web" instances
     And a running "users" instance

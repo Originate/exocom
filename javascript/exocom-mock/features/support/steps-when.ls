@@ -40,7 +40,7 @@ defineSupportCode ({When}) ->
 
   When /^trying to send a "([^"]*)" message to the "([^"]*)" service$/, (message-name, service-name, done) ->
     try
-      @exocom.send service: service-name, name: message-name
+      @exocom.send service-name, name: message-name
     catch
       @error = e
       done!

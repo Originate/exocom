@@ -36,7 +36,7 @@ func New(serviceRoutes types.Routes) (*ExoCom, error) {
 	result := &ExoCom{
 		deregisterChannel: make(chan string),
 		errorChannel:      make(chan error),
-		securityManager:   security.NewSecurityManager(serviceRoutes.GetHasSecurity()),
+		securityManager:   security.NewSecurityManager(serviceRoutes.HasSecurity()),
 		logger:            NewLogger(os.Stdout),
 		messageCache:      NewMessageCache(time.Minute),
 		messageChannel:    make(chan structs.Message),

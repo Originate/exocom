@@ -11,12 +11,10 @@ import (
 var _ = Describe("ParseServiceRoutes", func() {
 	Describe("with role only", func() {
 		It("returns the routes", func() {
-			routes, err := exocom.ParseServiceRoutes(
-				`[
-						{
-								"role": "role 1"
-						}
-				 ]`)
+			routes, err := exocom.ParseServiceData(
+				`{
+						"role 1": {}
+				 }`)
 			Expect(err).To(BeNil())
 			Expect(routes).To(Equal(types.Routes{
 				"role 1": {
@@ -30,14 +28,13 @@ var _ = Describe("ParseServiceRoutes", func() {
 
 	Describe("with sends / receives", func() {
 		It("returns the routes", func() {
-			routes, err := exocom.ParseServiceRoutes(
-				`[
-						{
+			routes, err := exocom.ParseServiceData(
+				`{
+						"role 1": {
 								"receives": ["message 1 name"],
-								"role": "role 1",
 								"sends": ["message 2 name"]
 						}
-				 ]`)
+				 }`)
 			Expect(err).To(BeNil())
 			Expect(routes).To(Equal(types.Routes{
 				"role 1": {
@@ -51,13 +48,12 @@ var _ = Describe("ParseServiceRoutes", func() {
 
 	Describe("with sends / receives and translation", func() {
 		It("returns the routes", func() {
-			routes, err := exocom.ParseServiceRoutes(
-				`[
-						{
-								"role": "tweets",
+			routes, err := exocom.ParseServiceData(
+				`{
+						"tweets": {
 								"sends": ["text-snippets created"],
 								"receives": ["text-snippets create"],
-								"messageTranslations": [
+								"translations": [
 									{
 										"public": "tweets create",
 										"internal": "text-snippets create"
@@ -68,7 +64,7 @@ var _ = Describe("ParseServiceRoutes", func() {
 									}
 								]
 						}
-				 ]`)
+				 }`)
 			Expect(err).To(BeNil())
 			Expect(routes).To(Equal(types.Routes{
 				"tweets": {
@@ -91,15 +87,11 @@ var _ = Describe("ParseServiceRoutes", func() {
 
 	Describe("with multiple roles", func() {
 		It("returns the routes", func() {
-			routes, err := exocom.ParseServiceRoutes(
-				`[
-						{
-								"role": "role 1"
-						},
-						{
-								"role": "role 2"
-						}
-				 ]`)
+			routes, err := exocom.ParseServiceData(
+				`{
+						"role 1": {},
+						"role 2": {}
+				 }`)
 			Expect(err).To(BeNil())
 			Expect(routes).To(Equal(types.Routes{
 				"role 1": {
@@ -117,13 +109,10 @@ var _ = Describe("ParseServiceRoutes", func() {
 	})
 	Describe("with security", func() {
 		It("creates a service route for the security service", func() {
-			routes, err := exocom.ParseServiceRoutes(
-				`
-				[
-					{
-						"role": "security"
-					}
-				]`)
+			routes, err := exocom.ParseServiceData(
+				`{
+						"security": {}
+				 }`)
 			Expect(err).To(BeNil())
 			Expect(routes).To(Equal(types.Routes{
 				"security": {

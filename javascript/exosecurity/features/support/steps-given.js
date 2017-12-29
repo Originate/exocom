@@ -16,9 +16,8 @@ Given(/^an ExoCom instance$/, function(done) {
 
 Given(/^receiving this message:$/, function(messageStr) {
   const message = JSON.parse(messageStr)
-  message.service = this.role
   this.exocom.reset()
-  this.exocom.send(message)
+  this.exocom.send(this.role, message)
 })
 
 Given(/^an instance of the "([^"]*)" fixture$/, function(role, done) {

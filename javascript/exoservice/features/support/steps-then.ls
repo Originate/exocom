@@ -30,7 +30,7 @@ defineSupportCode ({Then}) ->
 
 
   Then /^it connects to the ExoCom instance$/, (done) ->
-    @exocom.send service: @role, name: '__status' , id: '123'
+    @exocom.send @role, name: '__status' , id: '123'
     wait-until (~> @exocom.received-messages[0]), 1, ~>
       if @exocom.received-messages[0].name is "__status-ok"
         done!
@@ -39,7 +39,7 @@ defineSupportCode ({Then}) ->
   Then /^it runs the "([^"]*)" hook$/, (hook-name, done) ->
     @exocom
       ..reset!
-      ..send name: 'which-hooks-ran', service: @role
+      ..send @role, name: 'which-hooks-ran'
       ..on-receive ~>
         expect(@exocom.received-messages[0].payload).to.eql ['before-all']
         done!

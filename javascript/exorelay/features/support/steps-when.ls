@@ -36,7 +36,7 @@ When /^an ExoRelay instance running inside the "([^"]*)" service comes online$/ 
 
 
 When /^I check the status$/, (done) ->
-  @exocom.send service: 'test-service', name: '__status'
+  @exocom.send 'test-service', name: '__status'
   wait-until (~> @exocom.received-messages.length), 1, ~>
     @status-code = @exocom.received-messages[0].name
     done!
@@ -94,23 +94,20 @@ When /^I try to take it online$/, (done) ->
 
 When /^receiving the "([^"]*)" message with payload "([^"]*)" as a reply to the "(?:[^"]*)" message$/, (message-name, payload, done) ->
   wait-until (~> @exocom.received-messages.length), 1, ~>
-    exocom-data =
-      service: 'test-service'
+    message-data =
       name: message-name
       payload: payload
       id: '123'
       activity-id: @exocom.received-messages[0].activity-id
     @exocom
       ..reset!
-      ..send exocom-data
+      ..send 'test-service', message-data
     done!
 
 
 When /^receiving this message:$/, (request-data) ->
   eval livescript.compile "data = {\n#{request-data}\n}", bare: yes, header: no
-  data.message-id = data.id
-  data.service = 'test-service'
-  @exocom.send data
+  @exocom.send 'test-service', data
 
 
 When /^running this multi\-level request:$/, (code) ->
@@ -129,8 +126,7 @@ When /^the reply arrives via this message:$/, (request-data) ->
     request_uuid: @message-id,
     request_activity_id: @message-activity-id
   eval livescript.compile "data = {\n#{rendered}\n}", bare: yes, header: no
-  data.service = 'test-service'
-  @exocom.send data
+  @exocom.send 'test-service', data
 
 
 When /^trying to create an ExoRelay without providing the ExoCom port$/, ->

@@ -54,7 +54,7 @@ Then /^ExoRelay sends the "([^"]*)" message with payload "([^"]*)"$/, (message-n
 
 Then /^it connects to the given ExoCom host and port$/, (done) ->
   @exocom
-    ..send service: @role, name: '__status'
+    ..send @role, name: '__status'
   current-length = @exocom.received-messages.length
   wait-until (~> @exocom.received-messages.length > current-length), 1, ~>
     if @exocom.received-messages |> any (.name is "__status-ok")

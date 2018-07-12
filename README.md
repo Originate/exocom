@@ -42,7 +42,7 @@ __optimized for heterogenous micro-service architectures__
 - [omnipresent](documentation/frontend_bridge.md): connects back-end, front-end,
   mobile, and IoT services into a real-time connectivity layer<sup>*</sup>
 
-__ultra effective__
+__effective__
 - client SDKs optimized for developer ergonomics and efficiency
   available for many popular languages<sup>*</sup>
 - allows to develop services as lambda functions
@@ -51,6 +51,8 @@ __ultra effective__
   then efficiently and seamlessly evolve it
   into a production-grade AI-native cloud application
 - real-time inspection and tracing<sup>*</sup>
+
+In other words, Exocom is the central nervous system for AI-native cloud applications.
 
 
 ## Related projects
